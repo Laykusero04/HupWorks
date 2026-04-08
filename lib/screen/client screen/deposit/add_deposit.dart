@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
+import 'package:freelancer/services/transaction_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../widgets/constant.dart';
@@ -13,50 +14,53 @@ class AddDeposit extends StatefulWidget {
 }
 
 class _AddDepositState extends State<AddDeposit> {
-  //__________Payment_Method_____________________________________________
-  DropdownButton<String> getMethod() {
-    List<DropdownMenuItem<String>> dropDownItems = [];
-    for (String des in gateWay) {
-      var item = DropdownMenuItem(
-        value: des,
-        child: Text(des),
-      );
-      dropDownItems.add(item);
-    }
-    return DropdownButton(
-      icon: const Icon(FeatherIcons.chevronDown),
-      items: dropDownItems,
-      value: selectedGateWay,
-      style: kTextStyle.copyWith(color: kSubTitleColor),
-      onChanged: (value) {
-        setState(() {
-          selectedGateWay = value!;
-        });
-      },
-    );
+  final _amountController = TextEditingController();
+  String _selectedGateway = 'paypal';
+  String _selectedCurrency = 'USD';
+  bool _isLoading = false;
+
+  final List<String> _gateways = ['paypal', 'credit_card', 'bkash'];
+  final List<String> _gatewayLabels = ['PayPal', 'Credit Card', 'Bkash'];
+  final List<String> _currencies = ['USD', 'BDT'];
+
+  @override
+  void dispose() {
+    _amountController.dispose();
+    super.dispose();
   }
 
-  //__________Currency___________________________________________________
-  DropdownButton<String> getCurrency() {
-    List<DropdownMenuItem<String>> dropDownItems = [];
-    for (String des in currency) {
-      var item = DropdownMenuItem(
-        value: des,
-        child: Text(des),
+  Future<void> _handleSubmit() async {
+    final amount = double.tryParse(_amountController.text.trim());
+    if (amount == null || amount <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid amount')),
       );
-      dropDownItems.add(item);
+      return;
     }
-    return DropdownButton(
-      icon: const Icon(FeatherIcons.chevronDown),
-      items: dropDownItems,
-      value: selectedCurrency,
-      style: kTextStyle.copyWith(color: kSubTitleColor),
-      onChanged: (value) {
-        setState(() {
-          selectedCurrency = value!;
-        });
-      },
-    );
+
+    setState(() => _isLoading = true);
+
+    try {
+      await TransactionService.createDeposit(
+        amount: amount,
+        gateway: _selectedGateway,
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Deposit submitted successfully!')),
+        );
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   @override
@@ -76,12 +80,12 @@ class _AddDepositState extends State<AddDeposit> {
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(color: kWhite),
         child: ButtonGlobalWithoutIcon(
-          buttontext: 'Submit',
+          buttontext: _isLoading ? 'Submitting...' : 'Submit',
           buttonDecoration: kButtonDecoration.copyWith(
-            color: kPrimaryColor,
+            color: _isLoading ? kLightNeutralColor : kPrimaryColor,
             borderRadius: BorderRadius.circular(30.0),
           ),
-          onPressed: () {},
+          onPressed: _isLoading ? null : _handleSubmit,
           buttonTextColor: kWhite,
         ),
       ),
@@ -106,9 +110,7 @@ class _AddDepositState extends State<AddDeposit> {
                   return InputDecorator(
                     decoration: kInputDecoration.copyWith(
                       enabledBorder: const OutlineInputBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(8.0),
-                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(8.0)),
                         borderSide: BorderSide(color: kBorderColorTextField, width: 2),
                       ),
                       contentPadding: const EdgeInsets.all(7.0),
@@ -116,7 +118,17 @@ class _AddDepositState extends State<AddDeposit> {
                       labelText: 'Select Payment Method',
                       labelStyle: kTextStyle.copyWith(color: kNeutralColor),
                     ),
-                    child: DropdownButtonHideUnderline(child: getMethod()),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        icon: const Icon(FeatherIcons.chevronDown),
+                        value: _selectedGateway,
+                        style: kTextStyle.copyWith(color: kSubTitleColor),
+                        items: List.generate(_gateways.length, (i) {
+                          return DropdownMenuItem(value: _gateways[i], child: Text(_gatewayLabels[i]));
+                        }),
+                        onChanged: (value) => setState(() => _selectedGateway = value!),
+                      ),
+                    ),
                   );
                 },
               ),
@@ -125,9 +137,10 @@ class _AddDepositState extends State<AddDeposit> {
                 children: [
                   Expanded(
                     child: TextFormField(
-                      keyboardType: TextInputType.name,
+                      controller: _amountController,
+                      keyboardType: TextInputType.number,
                       cursorColor: kNeutralColor,
-                      textInputAction: TextInputAction.next,
+                      textInputAction: TextInputAction.done,
                       decoration: kInputDecoration.copyWith(
                         labelText: 'Amount',
                         labelStyle: kTextStyle.copyWith(color: kNeutralColor),
@@ -150,47 +163,17 @@ class _AddDepositState extends State<AddDeposit> {
                             labelText: 'Currency',
                             labelStyle: kTextStyle.copyWith(color: kNeutralColor),
                           ),
-                          child: DropdownButtonHideUnderline(child: getCurrency()),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              icon: const Icon(FeatherIcons.chevronDown),
+                              value: _selectedCurrency,
+                              style: kTextStyle.copyWith(color: kSubTitleColor),
+                              items: _currencies.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
+                              onChanged: (value) => setState(() => _selectedCurrency = value!),
+                            ),
+                          ),
                         );
                       },
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20.0),
-              Row(
-                children: [
-                  Expanded(
-                      flex: 2,
-                      child: Text(
-                        'Charge',
-                        style: kTextStyle.copyWith(color: kSubTitleColor),
-                      )),
-                  const Expanded(flex: 1, child: Text(':')),
-                  Expanded(
-                    flex: 2,
-                    child: Text(
-                      '10.00 USD',
-                      style: kTextStyle.copyWith(color: kSubTitleColor),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20.0),
-              Row(
-                children: [
-                  Expanded(
-                      flex: 2,
-                      child: Text(
-                        'Total Payable',
-                        style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
-                      )),
-                  const Expanded(flex: 1, child: Text(':')),
-                  Expanded(
-                    flex: 2,
-                    child: Text(
-                      '5010 USD',
-                      style: kTextStyle.copyWith(color: kSubTitleColor, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],

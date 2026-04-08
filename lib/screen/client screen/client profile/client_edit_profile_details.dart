@@ -1,13 +1,10 @@
-// import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
-import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
+import 'package:freelancer/services/profile_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
-import '../../seller screen/seller popUp/seller_popup.dart';
 import '../../widgets/constant.dart';
-import 'client_profile_details.dart';
 
 class ClientEditProfile extends StatefulWidget {
   const ClientEditProfile({Key? key}) : super(key: key);
@@ -17,134 +14,90 @@ class ClientEditProfile extends StatefulWidget {
 }
 
 class _ClientEditProfileState extends State<ClientEditProfile> {
-  //__________Language List____________________________________________________
-  DropdownButton<String> getLanguage() {
-    List<DropdownMenuItem<String>> dropDownItems = [];
-    for (String des in language) {
-      var item = DropdownMenuItem(
-        value: des,
-        child: Text(des),
-      );
-      dropDownItems.add(item);
-    }
-    return DropdownButton(
-      icon: const Icon(FeatherIcons.chevronDown),
-      items: dropDownItems,
-      value: selectedLanguage,
-      style: kTextStyle.copyWith(color: kSubTitleColor),
-      onChanged: (value) {
+  final _nameController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _countryController = TextEditingController();
+  final _cityController = TextEditingController();
+
+  String _selectedGender = 'Male';
+  bool _isLoading = true;
+  bool _isSaving = false;
+  String? _profileImageUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _phoneController.dispose();
+    _countryController.dispose();
+    _cityController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadProfile() async {
+    try {
+      final profile = await ProfileService.getProfile();
+      if (mounted && profile != null) {
         setState(() {
-          selectedLanguage = value!;
+          _nameController.text = profile['name'] ?? '';
+          _phoneController.text = profile['phone'] ?? '';
+          _countryController.text = profile['country'] ?? '';
+          _cityController.text = profile['city'] ?? '';
+          _selectedGender = profile['gender'] ?? 'Male';
+          _profileImageUrl = profile['profile_image_url'];
+          _isLoading = false;
         });
-      },
-    );
-  }
-
-  //__________gender___________________________________________________________
-  DropdownButton<String> getGender() {
-    List<DropdownMenuItem<String>> dropDownItems = [];
-    for (String des in gender) {
-      var item = DropdownMenuItem(
-        value: des,
-        child: Text(des),
-      );
-      dropDownItems.add(item);
+      } else {
+        if (mounted) setState(() => _isLoading = false);
+      }
+    } catch (e) {
+      if (mounted) setState(() => _isLoading = false);
     }
-    return DropdownButton(
-      icon: const Icon(FeatherIcons.chevronDown),
-      items: dropDownItems,
-      value: selectedGender,
-      style: kTextStyle.copyWith(color: kSubTitleColor),
-      onChanged: (value) {
-        setState(() {
-          selectedGender = value!;
-        });
-      },
-    );
   }
 
-  //__________Add_Language popup________________________________________________
-  void showLanguagePopUp() {
-    showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, void Function(void Function()) setState) {
-            return Dialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0),
-              ),
-              child: const SellerAddLanguagePopUp(),
-            );
-          },
-        );
-      },
-    );
-  }
+  Future<void> _handleSave() async {
+    setState(() => _isSaving = true);
 
-  //__________Add_Skill popup________________________________________________
-  void showSkillPopUp() {
-    showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, void Function(void Function()) setState) {
-            return Dialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0),
-              ),
-              child: const SellerAddSkillPopUp(),
-            );
-          },
-        );
-      },
-    );
-  }
+    try {
+      await ProfileService.updateProfile({
+        'name': _nameController.text.trim(),
+        'phone': _phoneController.text.trim(),
+        'country': _countryController.text.trim(),
+        'city': _cityController.text.trim(),
+        'gender': _selectedGender,
+      });
 
-  //__________Import_Profile_picture_popup_____________________________________
-  void showImportProfilePopUp() {
-    showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, void Function(void Function()) setState) {
-            return Dialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              child: const ImportImagePopUp(),
-            );
-          },
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Profile updated successfully!')),
         );
-      },
-    );
-  }
-
-  //__________Save_Profile_success_popup_______________________________________
-  void saveProfilePopUp() {
-    showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, void Function(void Function()) setState) {
-            return Dialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0),
-              ),
-              child: const SaveProfilePopUp(),
-            );
-          },
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
         );
-      },
-    );
+      }
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(
+        backgroundColor: kDarkWhite,
+        body: Center(child: CircularProgressIndicator(color: kPrimaryColor)),
+      );
+    }
+
     return Scaffold(
       backgroundColor: kDarkWhite,
       appBar: AppBar(
@@ -175,213 +128,132 @@ class _ClientEditProfileState extends State<ClientEditProfile> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 20.0),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                const SizedBox(height: 15.0),
+
+                // Profile image
+                Row(
                   children: [
-                    const SizedBox(height: 15.0),
-                    Row(
-                      children: [
-                        Stack(
-                          alignment: Alignment.bottomRight,
-                          children: [
-                            Container(
-                              height: 80,
-                              width: 80,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(color: kPrimaryColor),
-                                image: const DecorationImage(
-                                  image: AssetImage('images/profile3.png'),
-                                ),
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                showImportProfilePopUp();
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.all(5),
-                                decoration: BoxDecoration(
-                                  color: kWhite,
-                                  shape: BoxShape.circle,
-                                  border: Border.all(color: kPrimaryColor),
-                                ),
-                                child: const Icon(
-                                  IconlyBold.camera,
-                                  color: kPrimaryColor,
-                                  size: 18,
-                                ),
-                              ),
-                            ),
-                          ],
+                    Container(
+                      height: 80,
+                      width: 80,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: kPrimaryColor),
+                        image: DecorationImage(
+                          image: _profileImageUrl != null
+                              ? NetworkImage(_profileImageUrl!) as ImageProvider
+                              : const AssetImage('images/profile3.png'),
+                          fit: BoxFit.cover,
                         ),
-                        const SizedBox(width: 10.0),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Shaidulislam',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 18.0),
-                            ),
-                            Text(
-                              'shaidulislamma@gmail.com',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: kTextStyle.copyWith(color: kSubTitleColor),
-                            ),
-                          ],
+                      ),
+                    ),
+                    const SizedBox(width: 10.0),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _nameController.text.isEmpty ? 'User' : _nameController.text,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 18.0),
+                        ),
+                        Text(
+                          'Edit your profile details',
+                          style: kTextStyle.copyWith(color: kSubTitleColor),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 30.0),
-                    TextFormField(
-                      keyboardType: TextInputType.name,
-                      cursorColor: kNeutralColor,
-                      textInputAction: TextInputAction.next,
-                      decoration: kInputDecoration.copyWith(
-                        labelText: 'User Name',
-                        labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                        hintText: 'Enter user name',
-                        hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
-                        focusColor: kNeutralColor,
-                        border: const OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 20.0),
-                    TextFormField(
-                      keyboardType: TextInputType.emailAddress,
-                      cursorColor: kNeutralColor,
-                      textInputAction: TextInputAction.next,
-                      decoration: kInputDecoration.copyWith(
-                        hintText: 'Enter Phone No.',
-                        hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
-                        focusColor: kNeutralColor,
-                        border: const OutlineInputBorder(),
-                        // prefixIcon: CountryCodePicker(
-                        //   padding: EdgeInsets.zero,
-                        //   onChanged: print,
-                        //   initialSelection: 'BD',
-                        //   showFlag: true,
-                        //   showDropDownButton: true,
-                        //   alignLeft: false,
-                        // ),
-                      ),
-                    ),
-                    const SizedBox(height: 20.0),
-                    FormField(
-                      builder: (FormFieldState<dynamic> field) {
-                        return InputDecorator(
-                          decoration: InputDecoration(
-                            enabledBorder: const OutlineInputBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(8.0),
-                              ),
-                              borderSide: BorderSide(color: kBorderColorTextField, width: 2),
-                            ),
-                            contentPadding: const EdgeInsets.all(7.0),
-                            floatingLabelBehavior: FloatingLabelBehavior.always,
-                            labelText: 'Select Language',
-                            labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                          ),
-                          child: DropdownButtonHideUnderline(child: getLanguage()),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 20.0),
-                    TextFormField(
-                      keyboardType: TextInputType.name,
-                      cursorColor: kNeutralColor,
-                      textInputAction: TextInputAction.next,
-                      decoration: kInputDecoration.copyWith(
-                        labelText: 'Country',
-                        labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                        hintText: 'Enter Country Name',
-                        hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
-                        focusColor: kNeutralColor,
-                        border: const OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 20.0),
-                    TextFormField(
-                      keyboardType: TextInputType.name,
-                      cursorColor: kNeutralColor,
-                      textInputAction: TextInputAction.next,
-                      decoration: kInputDecoration.copyWith(
-                        labelText: 'Street Address (won’t show on profile)',
-                        labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                        hintText: 'Enter street address',
-                        hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
-                        focusColor: kNeutralColor,
-                        border: const OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 20.0),
-                    TextFormField(
-                      keyboardType: TextInputType.name,
-                      cursorColor: kNeutralColor,
-                      textInputAction: TextInputAction.next,
-                      decoration: kInputDecoration.copyWith(
-                        labelText: 'City',
-                        labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                        hintText: 'Enter city',
-                        hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
-                        focusColor: kNeutralColor,
-                        border: const OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 20.0),
-                    TextFormField(
-                      keyboardType: TextInputType.name,
-                      cursorColor: kNeutralColor,
-                      textInputAction: TextInputAction.next,
-                      decoration: kInputDecoration.copyWith(
-                        labelText: 'State',
-                        labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                        hintText: 'Enter state',
-                        hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
-                        focusColor: kNeutralColor,
-                        border: const OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 20.0),
-                    TextFormField(
-                      keyboardType: TextInputType.name,
-                      cursorColor: kNeutralColor,
-                      textInputAction: TextInputAction.next,
-                      decoration: kInputDecoration.copyWith(
-                        labelText: 'ZIP/Postal Code',
-                        labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                        hintText: 'Enter zip/post code',
-                        hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
-                        focusColor: kNeutralColor,
-                        border: const OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 20.0),
-                    FormField(
-                      builder: (FormFieldState<dynamic> field) {
-                        return InputDecorator(
-                          decoration: kInputDecoration.copyWith(
-                            enabledBorder: const OutlineInputBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(8.0),
-                              ),
-                              borderSide: BorderSide(color: kBorderColorTextField, width: 2),
-                            ),
-                            contentPadding: const EdgeInsets.all(7.0),
-                            floatingLabelBehavior: FloatingLabelBehavior.always,
-                            labelText: 'Select Gender',
-                            labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                          ),
-                          child: DropdownButtonHideUnderline(child: getGender()),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 10.0),
                   ],
                 ),
+                const SizedBox(height: 30.0),
+
+                TextFormField(
+                  controller: _nameController,
+                  keyboardType: TextInputType.name,
+                  cursorColor: kNeutralColor,
+                  textInputAction: TextInputAction.next,
+                  decoration: kInputDecoration.copyWith(
+                    labelText: 'Full Name',
+                    labelStyle: kTextStyle.copyWith(color: kNeutralColor),
+                    hintText: 'Enter your name',
+                    hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
+                    focusColor: kNeutralColor,
+                    border: const OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 20.0),
+                TextFormField(
+                  controller: _phoneController,
+                  keyboardType: TextInputType.phone,
+                  cursorColor: kNeutralColor,
+                  textInputAction: TextInputAction.next,
+                  decoration: kInputDecoration.copyWith(
+                    labelText: 'Phone No.',
+                    hintText: 'Enter Phone No.',
+                    hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
+                    focusColor: kNeutralColor,
+                    border: const OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 20.0),
+                TextFormField(
+                  controller: _countryController,
+                  keyboardType: TextInputType.name,
+                  cursorColor: kNeutralColor,
+                  textInputAction: TextInputAction.next,
+                  decoration: kInputDecoration.copyWith(
+                    labelText: 'Country',
+                    labelStyle: kTextStyle.copyWith(color: kNeutralColor),
+                    hintText: 'Enter Country Name',
+                    hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
+                    focusColor: kNeutralColor,
+                    border: const OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 20.0),
+                TextFormField(
+                  controller: _cityController,
+                  keyboardType: TextInputType.name,
+                  cursorColor: kNeutralColor,
+                  textInputAction: TextInputAction.next,
+                  decoration: kInputDecoration.copyWith(
+                    labelText: 'City',
+                    labelStyle: kTextStyle.copyWith(color: kNeutralColor),
+                    hintText: 'Enter city',
+                    hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
+                    focusColor: kNeutralColor,
+                    border: const OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 20.0),
+                FormField(
+                  builder: (FormFieldState<dynamic> field) {
+                    return InputDecorator(
+                      decoration: InputDecoration(
+                        enabledBorder: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                          borderSide: BorderSide(color: kBorderColorTextField, width: 2),
+                        ),
+                        contentPadding: const EdgeInsets.all(7.0),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        labelText: 'Select Gender',
+                        labelStyle: kTextStyle.copyWith(color: kNeutralColor),
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          icon: const Icon(FeatherIcons.chevronDown),
+                          value: gender.contains(_selectedGender) ? _selectedGender : gender.first,
+                          style: kTextStyle.copyWith(color: kSubTitleColor),
+                          items: gender.map((g) => DropdownMenuItem(value: g, child: Text(g))).toList(),
+                          onChanged: (value) {
+                            setState(() => _selectedGender = value!);
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 10.0),
               ],
             ),
           ),
@@ -390,15 +262,14 @@ class _ClientEditProfileState extends State<ClientEditProfile> {
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(color: kWhite),
         child: ButtonGlobalWithoutIcon(
-            buttontext: 'Update Profile',
-            buttonDecoration: kButtonDecoration.copyWith(
-              color: kPrimaryColor,
-              borderRadius: BorderRadius.circular(30.0),
-            ),
-            onPressed: () {
-              const ClientProfileDetails().launch(context);
-            },
-            buttonTextColor: kWhite),
+          buttontext: _isSaving ? 'Updating...' : 'Update Profile',
+          buttonDecoration: kButtonDecoration.copyWith(
+            color: _isSaving ? kLightNeutralColor : kPrimaryColor,
+            borderRadius: BorderRadius.circular(30.0),
+          ),
+          onPressed: _isSaving ? null : _handleSave,
+          buttonTextColor: kWhite,
+        ),
       ),
     );
   }

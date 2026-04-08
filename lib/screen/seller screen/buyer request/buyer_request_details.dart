@@ -1,80 +1,75 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/screen/widgets/button_global.dart';
+import 'package:freelancer/services/seller_orders_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../widgets/constant.dart';
-import '../../widgets/icons.dart';
-import '../seller popUp/seller_popup.dart';
+import 'create_customer_offer.dart';
 
 class BuyerRequestDetails extends StatefulWidget {
-  const BuyerRequestDetails({Key? key}) : super(key: key);
+  final String jobPostId;
+
+  const BuyerRequestDetails({Key? key, required this.jobPostId}) : super(key: key);
 
   @override
   State<BuyerRequestDetails> createState() => _BuyerRequestDetailsState();
 }
 
 class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
-  //__________send_Offer_PopUp________________________________________________
-  void sendOfferPopUp() {
-    showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, void Function(void Function()) setState) {
-            return Dialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0),
-              ),
-              child: const SendOfferPopUp(),
-            );
-          },
-        );
-      },
-    );
+  Map<String, dynamic>? _jobPost;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDetails();
+  }
+
+  Future<void> _loadDetails() async {
+    try {
+      final data = await SellerOrdersService.getBuyerRequestDetails(widget.jobPostId);
+      if (mounted) setState(() { _jobPost = data; _isLoading = false; });
+    } catch (e) {
+      if (mounted) { setState(() => _isLoading = false); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'))); }
+    }
+  }
+
+  String _formatDate(String? s) {
+    if (s == null) return '';
+    final d = DateTime.tryParse(s);
+    if (d == null) return '';
+    const m = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return '${d.day} ${m[d.month-1]} ${d.year}';
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) return const Scaffold(backgroundColor: kDarkWhite, body: Center(child: CircularProgressIndicator(color: kPrimaryColor)));
+
+    final buyer = _jobPost?['profiles'] as Map<String, dynamic>?;
+    final category = (_jobPost?['categories'] as Map<String, dynamic>?)?['name'] ?? 'General';
+    final title = _jobPost?['title'] ?? 'Job Post';
+    final description = _jobPost?['description'] ?? '';
+    final budgetMin = _jobPost?['budget_min'];
+    final budgetMax = _jobPost?['budget_max'];
+    final offerCount = _jobPost?['offer_count'] ?? 0;
+
     return Scaffold(
       backgroundColor: kDarkWhite,
       appBar: AppBar(
-        backgroundColor: kDarkWhite,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: kNeutralColor),
-        title: Text(
-          'Buyer Request',
-          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
+        backgroundColor: kDarkWhite, elevation: 0, iconTheme: const IconThemeData(color: kNeutralColor),
+        title: Text('Buyer Request', style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)), centerTitle: true,
       ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(color: kWhite),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Expanded(
-              child: Button(
-                containerBg: kWhite,
-                borderColor: Colors.red,
-                buttonText: 'Cancel Offer',
-                textColor: Colors.red,
-                onPressed: () {},
-              ),
-            ),
-            Expanded(
-              child: Button(
-                containerBg: kPrimaryColor,
-                borderColor: kPrimaryColor,
-                buttonText: 'Send Offer',
-                textColor: kWhite,
-                onPressed: () {
-                  setState(() {
-                    sendOfferPopUp();
-                  });
-                },
-              ),
-            ),
-          ],
+        child: ButtonGlobalWithoutIcon(
+          buttontext: 'Send Offer',
+          buttonDecoration: kButtonDecoration.copyWith(color: kPrimaryColor, borderRadius: BorderRadius.circular(30.0)),
+          onPressed: () async {
+            await CreateCustomerOffer(jobPostId: widget.jobPostId, jobTitle: title).launch(context);
+            _loadDetails();
+          },
+          buttonTextColor: kWhite,
         ),
       ),
       body: Padding(
@@ -82,117 +77,58 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
         child: Container(
           padding: const EdgeInsets.only(left: 15.0, right: 15.0),
           width: context.width(),
-          height: context.height(),
-          decoration: const BoxDecoration(
-            color: kWhite,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(30.0),
-              topRight: Radius.circular(30.0),
-            ),
-          ),
+          decoration: const BoxDecoration(color: kWhite, borderRadius: BorderRadius.only(topLeft: Radius.circular(30.0), topRight: Radius.circular(30.0))),
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 20),
-                Container(
-                  padding: const EdgeInsets.all(10.0),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10.0),
-                    color: kWhite,
-                    border: Border.all(color: kBorderColorTextField),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: kBorderColorTextField,
-                        spreadRadius: 0.2,
-                        blurRadius: 4.0,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        leading: Container(
-                          height: 44,
-                          width: 44,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
-                              image: AssetImage('images/profile1.png'),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                        title: Text(
-                          'Shaidul Islam',
-                          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: Text(
-                          '28 Jun 2023',
-                          style: kTextStyle.copyWith(color: kSubTitleColor),
-                        ),
-                      ),
-                      const Divider(
-                        height: 0,
-                        thickness: 1.0,
-                        color: kBorderColorTextField,
-                      ),
-                      const SizedBox(height: 10.0),
-                      Text(
-                        'I Need UI UX Designer',
-                        style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 5.0),
-                      Text(
-                        'Lorem ipsum dolor sit amet consectetur. Elementum nulla quis nunc Lorem ipsum dolor sit amet consectetur. O rci pulvinar sit nec donec pellentesque ve nenatis nunc vel pretium. Dictumst bib en dum pharetra hendrerit tortor nisl. Nulla accumsan ',
-                        style: kTextStyle.copyWith(color: kSubTitleColor),
-                      ),
-                      const SizedBox(height: 20.0),
-                      RichText(
-                        text: TextSpan(text: 'Category: ', style: kTextStyle.copyWith(color: kSubTitleColor, fontWeight: FontWeight.bold), children: [
-                          TextSpan(
-                            text: 'UI UX Designer',
-                            style: kTextStyle.copyWith(color: kNeutralColor),
-                          )
-                        ]),
-                      ),
-                      const SizedBox(height: 10.0),
-                      RichText(
-                        text: TextSpan(text: 'Duration: ', style: kTextStyle.copyWith(color: kSubTitleColor, fontWeight: FontWeight.bold), children: [
-                          TextSpan(
-                            text: '3 Days',
-                            style: kTextStyle.copyWith(color: kNeutralColor),
-                          )
-                        ]),
-                      ),
-                      const SizedBox(height: 10.0),
-                      RichText(
-                        text: TextSpan(text: 'Price: ', style: kTextStyle.copyWith(color: kSubTitleColor, fontWeight: FontWeight.bold), children: [
-                          TextSpan(
-                            text: '$currencySign 50',
-                            style: kTextStyle.copyWith(color: kNeutralColor),
-                          )
-                        ]),
-                      ),
-                      const SizedBox(height: 10.0),
-                      RichText(
-                        text: TextSpan(
-                          text: 'Offer Sent: ',
-                          style: kTextStyle.copyWith(color: kSubTitleColor, fontWeight: FontWeight.bold),
-                          children: [
-                            TextSpan(
-                              text: '17',
-                              style: kTextStyle.copyWith(color: kNeutralColor),
-                            )
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                const SizedBox(height: 15.0),
+                // Buyer info
+                Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 25,
+                      backgroundImage: buyer?['profile_image_url'] != null
+                          ? NetworkImage(buyer!['profile_image_url'])
+                          : const AssetImage('images/profile1.png') as ImageProvider,
+                    ),
+                    const SizedBox(width: 10),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(buyer?['name'] ?? 'Buyer', style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)),
+                        Text(_formatDate(_jobPost?['created_at']), style: kTextStyle.copyWith(color: kLightNeutralColor)),
+                      ],
+                    ),
+                  ],
                 ),
+                const SizedBox(height: 15.0),
+
+                // Title
+                Text(title, style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 16)),
+                const SizedBox(height: 10.0),
+
+                // Description
+                ReadMoreText(
+                  description,
+                  style: kTextStyle.copyWith(color: kSubTitleColor),
+                  trimLines: 3, colorClickableText: kPrimaryColor, trimMode: TrimMode.Line,
+                  trimCollapsedText: '..Read more', trimExpandedText: '..Read less',
+                ),
+                const SizedBox(height: 15.0),
+
+                // Details
+                _row('Category', category),
+                const SizedBox(height: 8.0),
+                if (budgetMin != null || budgetMax != null) ...[
+                  _row('Budget', '$currencySign${budgetMin ?? 0} - $currencySign${budgetMax ?? 0}'),
+                  const SizedBox(height: 8.0),
+                ],
+                _row('Offers Sent', '$offerCount'),
+                const SizedBox(height: 8.0),
+                _row('Date', _formatDate(_jobPost?['created_at'])),
+                const SizedBox(height: 20.0),
               ],
             ),
           ),
@@ -200,4 +136,12 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
       ),
     );
   }
+
+  Widget _row(String l, String v) => Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+    Expanded(flex: 2, child: Text(l, style: kTextStyle.copyWith(color: kSubTitleColor))),
+    Expanded(flex: 4, child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Text(':', style: kTextStyle.copyWith(color: kSubTitleColor)), const SizedBox(width: 10.0),
+      Flexible(child: Text(v, style: kTextStyle.copyWith(color: kSubTitleColor), overflow: TextOverflow.ellipsis, maxLines: 2)),
+    ])),
+  ]);
 }

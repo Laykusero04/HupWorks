@@ -97,81 +97,81 @@
 - [x] Accept/reject offers
 
 ### Client Profile
-- [ ] Fetch and display profile data from `profiles`
-- [ ] Update profile (name, email, phone, country, image)
-- [ ] Upload profile image to Supabase Storage
+- [x] Fetch and display profile data from `profiles`
+- [x] Update profile (name, email, phone, country, image)
+- [x] Upload profile image to Supabase Storage
 
 ### Client Favourites
-- [ ] Fetch favourited services from `favourites` joined with `services`
+- [x] Fetch favourited services from `favourites` joined with `services`
 
 ### Client Dashboard
-- [ ] Fetch order stats (total spent, active orders, completed orders)
+- [x] Fetch order stats (total spent, active orders, completed orders)
 
 ### Client Notifications
-- [ ] Fetch notifications from `notifications` table
-- [ ] Mark notifications as read
+- [x] Fetch notifications from `notifications` table
+- [x] Mark notifications as read
 
 ### Client Deposit / Transaction
-- [ ] Fetch transaction history from `transactions`
-- [ ] Handle deposit flow (insert transaction record)
+- [x] Fetch transaction history from `transactions`
+- [x] Handle deposit flow (insert transaction record)
 
 ---
 
 ## 5. Seller Screens - Data Integration
 
 ### Seller Home Screen (Dashboard)
-- [ ] Fetch seller performance metrics (impressions, interactions, reach)
-- [ ] Fetch earnings data for chart (from `transactions` where type = earning)
-- [ ] Support period filtering (Last Month / This Month)
+- [x] Fetch seller performance metrics (impressions, interactions, reach)
+- [x] Fetch earnings data for chart (from `transactions` where type = earning)
+- [x] Support period filtering (Last Month / This Month)
 
 ### Seller My Services
-- [ ] Fetch seller's services from `services` where seller_id = current user
-- [ ] Edit existing service
-- [ ] Delete / pause service
+- [x] Fetch seller's services from `services` where seller_id = current user
+- [x] Edit existing service
+- [x] Delete / pause service
 
 ### Create New Service (3-step wizard)
-- [ ] Step 1: Save title, category, sub-category, service type, price, delivery time, revisions
-- [ ] Step 2: Upload service images to Supabase Storage
-- [ ] Step 3: Add service requirements
-- [ ] Insert complete service into `services` table
+- [x] Step 1: Save title, category, sub-category, service type, price, delivery time, revisions
+- [x] Step 2: Upload service images to Supabase Storage
+- [x] Step 3: Add service requirements
+- [x] Insert complete service into `services` table
 
 ### Seller Orders
-- [ ] Fetch seller orders filtered by status
-- [ ] Update order status (accept, deliver, complete)
-- [ ] Deliver order (upload attachment, send delivery message)
+- [x] Fetch seller orders filtered by status
+- [x] Update order status (accept, deliver, complete)
+- [x] Deliver order (upload attachment, send delivery message)
 
 ### Seller Buyer Requests
-- [ ] Fetch open job posts relevant to seller's categories from `job_posts`
-- [ ] Create offer on a job post (insert into `job_offers`)
+- [x] Fetch open job posts relevant to seller's categories from `job_posts`
+- [x] Create offer on a job post (insert into `job_offers`)
 
 ### Seller Profile
-- [ ] Fetch and display seller profile + seller_profiles data
-- [ ] Update profile details
-- [ ] Upload profile image to Supabase Storage
+- [x] Fetch and display seller profile + seller_profiles data
+- [x] Update profile details
+- [x] Upload profile image to Supabase Storage
 
 ### Seller Payment Methods
 - [ ] CRUD operations on `payment_methods`
 
 ### Seller Withdraw Money
-- [ ] Create withdrawal request (insert into `withdrawal_requests`)
-- [ ] Fetch withdrawal history
+- [x] Create withdrawal request (insert into `withdrawal_requests`)
+- [x] Fetch withdrawal history
 
 ### Seller Transactions
-- [ ] Fetch transaction history from `transactions`
+- [x] Fetch transaction history from `transactions`
 
 ### Seller Notifications
-- [ ] Fetch notifications from `notifications`
+- [x] Fetch notifications from `notifications`
 
 ---
 
 ## 6. Chat / Messaging (Both Roles)
 
-- [ ] Fetch conversation list from `conversations` joined with `profiles`
-- [ ] Fetch messages for a conversation from `messages`
-- [ ] Send message (insert into `messages`)
-- [ ] Subscribe to Supabase Realtime for new messages
-- [ ] Mark messages as read
-- [ ] Support image/file attachments via Supabase Storage
+- [x] Fetch conversation list from `conversations` joined with `profiles`
+- [x] Fetch messages for a conversation from `messages`
+- [x] Send message (insert into `messages`)
+- [x] Subscribe to Supabase Realtime for new messages
+- [x] Mark messages as read
+- [x] Support image/file attachments via Supabase Storage
 
 ---
 

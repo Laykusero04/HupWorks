@@ -1,6 +1,6 @@
-import 'package:badges/badges.dart' as t;
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:freelancer/services/notification_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../widgets/constant.dart';
@@ -13,6 +13,46 @@ class ClientNotification extends StatefulWidget {
 }
 
 class _ClientNotificationState extends State<ClientNotification> {
+  List<Map<String, dynamic>> _notifications = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadNotifications();
+  }
+
+  Future<void> _loadNotifications() async {
+    try {
+      final notifs = await NotificationService.getNotifications();
+      if (mounted) {
+        setState(() {
+          _notifications = notifs;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
+    }
+  }
+
+  String _timeAgo(String? dateStr) {
+    if (dateStr == null) return '';
+    final date = DateTime.tryParse(dateStr);
+    if (date == null) return '';
+    final diff = DateTime.now().difference(date);
+    if (diff.inMinutes < 1) return 'Just now';
+    if (diff.inMinutes < 60) return '${diff.inMinutes} min ago';
+    if (diff.inHours < 24) return '${diff.inHours} hours ago';
+    if (diff.inDays < 7) return '${diff.inDays} days ago';
+    return '${date.day}/${date.month}/${date.year}';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,6 +66,16 @@ class _ClientNotificationState extends State<ClientNotification> {
           style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
+        actions: [
+          if (_notifications.any((n) => n['read'] == false))
+            TextButton(
+              onPressed: () async {
+                await NotificationService.markAllAsRead();
+                _loadNotifications();
+              },
+              child: Text('Read All', style: kTextStyle.copyWith(color: kPrimaryColor)),
+            ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.only(top: 15.0),
@@ -39,172 +89,73 @@ class _ClientNotificationState extends State<ClientNotification> {
               topRight: Radius.circular(30.0),
             ),
           ),
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Column(
-              children: [
-                const SizedBox(height: 15.0),
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: Container(
-                    padding: const EdgeInsets.all(10.0),
-                    decoration: const BoxDecoration(shape: BoxShape.circle, color: kDarkWhite),
-                    child: const Icon(FeatherIcons.bell),
-                  ),
-                  title: Text(
-                    'Start left feedback on their order.Rate your experience to view their',
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
-                    style: kTextStyle.copyWith(color: kNeutralColor),
-                  ),
-                  subtitle: Text(
-                    '2 min ago “New Message”',
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
-                    style: kTextStyle.copyWith(color: kLightNeutralColor),
-                  ),
-                ),
-                ListView.builder(
-                  padding: EdgeInsets.zero,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: 10,
-                  shrinkWrap: true,
-                  itemBuilder: (_, i) {
-                    return Column(
-                      children: [
-                        ListTile(
-                          visualDensity: const VisualDensity(vertical: -4),
-                          contentPadding: EdgeInsets.zero,
-                          leading: Stack(
-                            alignment: Alignment.bottomRight,
-                            children: [
-                              Container(
-                                height: 45,
-                                width: 45,
-                                padding: const EdgeInsets.all(10.0),
-                                decoration: const BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: kDarkWhite,
-                                  image: DecorationImage(image: AssetImage('images/profilepic.png'), fit: BoxFit.cover),
-                                ),
+          child: _isLoading
+              ? const Center(child: CircularProgressIndicator(color: kPrimaryColor))
+              : _notifications.isEmpty
+                  ? Center(
+                      child: Text('No notifications', style: kTextStyle.copyWith(color: kLightNeutralColor)),
+                    )
+                  : RefreshIndicator(
+                      color: kPrimaryColor,
+                      onRefresh: _loadNotifications,
+                      child: ListView.builder(
+                        physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                        padding: const EdgeInsets.only(top: 15.0, bottom: 15.0),
+                        itemCount: _notifications.length,
+                        itemBuilder: (_, i) {
+                          final notif = _notifications[i];
+                          final isRead = notif['read'] == true;
+
+                          return ListTile(
+                            onTap: () async {
+                              if (!isRead) {
+                                await NotificationService.markAsRead(notif['id']);
+                                setState(() {
+                                  _notifications[i] = {...notif, 'read': true};
+                                });
+                              }
+                            },
+                            contentPadding: EdgeInsets.zero,
+                            leading: Container(
+                              padding: const EdgeInsets.all(10.0),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: isRead ? kDarkWhite : kPrimaryColor.withOpacity(0.1),
                               ),
-                              const Padding(
-                                padding: EdgeInsets.only(right: 5.0),
-                                child: t.Badge(
-                                  badgeStyle: t.BadgeStyle(
-                                    elevation: 0,
-                                    shape: t.BadgeShape.circle,
-                                    badgeColor: kPrimaryColor,
-                                    borderSide: BorderSide(color: kWhite, width: 1.0),
+                              child: Icon(
+                                FeatherIcons.bell,
+                                color: isRead ? kLightNeutralColor : kPrimaryColor,
+                              ),
+                            ),
+                            title: Text(
+                              notif['title'] ?? 'Notification',
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
+                              style: kTextStyle.copyWith(
+                                color: kNeutralColor,
+                                fontWeight: isRead ? FontWeight.normal : FontWeight.bold,
+                              ),
+                            ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (notif['body'] != null && notif['body'].toString().isNotEmpty)
+                                  Text(
+                                    notif['body'],
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    style: kTextStyle.copyWith(color: kSubTitleColor),
                                   ),
+                                Text(
+                                  _timeAgo(notif['created_at']),
+                                  style: kTextStyle.copyWith(color: kLightNeutralColor),
                                 ),
-                              ),
-                            ],
-                          ),
-                          title: Text(
-                            'Leslie Alexander',
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            style: kTextStyle.copyWith(color: kNeutralColor),
-                          ),
-                          subtitle: Text(
-                            '2 min ago “New Message”',
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            style: kTextStyle.copyWith(color: kLightNeutralColor),
-                          ),
-                        ),
-                        ListTile(
-                          visualDensity: const VisualDensity(vertical: -4),
-                          contentPadding: EdgeInsets.zero,
-                          leading: Stack(
-                            alignment: Alignment.bottomRight,
-                            children: [
-                              Container(
-                                height: 45,
-                                width: 45,
-                                padding: const EdgeInsets.all(10.0),
-                                decoration: const BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: kDarkWhite,
-                                  image: DecorationImage(image: AssetImage('images/profilepic.png'), fit: BoxFit.cover),
-                                ),
-                              ),
-                              const Padding(
-                                padding: EdgeInsets.only(right: 5.0),
-                                child: t.Badge(
-                                  badgeStyle: t.BadgeStyle(
-                                    elevation: 0,
-                                    shape: t.BadgeShape.circle,
-                                    badgeColor: kPrimaryColor,
-                                    borderSide: BorderSide(color: kWhite, width: 1.0),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          title: Text(
-                            'Leslie Alexander',
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            style: kTextStyle.copyWith(color: kNeutralColor),
-                          ),
-                          subtitle: Text(
-                            '7 min ago “New Message”',
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            style: kTextStyle.copyWith(color: kLightNeutralColor),
-                          ),
-                        ),
-                        ListTile(
-                          visualDensity: const VisualDensity(vertical: -4),
-                          contentPadding: EdgeInsets.zero,
-                          leading: Stack(
-                            alignment: Alignment.bottomRight,
-                            children: [
-                              Container(
-                                height: 45,
-                                width: 45,
-                                padding: const EdgeInsets.all(10.0),
-                                decoration: const BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: kDarkWhite,
-                                  image: DecorationImage(image: AssetImage('images/profilepic.png'), fit: BoxFit.cover),
-                                ),
-                              ),
-                              const Padding(
-                                padding: EdgeInsets.only(right: 5.0),
-                                child: t.Badge(
-                                  badgeStyle: t.BadgeStyle(
-                                    elevation: 0,
-                                    shape: t.BadgeShape.circle,
-                                    badgeColor: kPrimaryColor,
-                                    borderSide: BorderSide(color: kWhite, width: 1.0),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          title: Text(
-                            'Leslie Alexander',
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            style: kTextStyle.copyWith(color: kNeutralColor),
-                          ),
-                          subtitle: Text(
-                            '1 day ago “New Message”',
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            style: kTextStyle.copyWith(color: kLightNeutralColor),
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
         ),
       ),
     );

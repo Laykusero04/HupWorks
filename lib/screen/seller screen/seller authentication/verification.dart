@@ -6,7 +6,9 @@ import '../../widgets/constant.dart';
 import '../setup seller profile/setup_profile.dart';
 
 class OtpVerification extends StatefulWidget {
-  const OtpVerification({Key? key}) : super(key: key);
+  final String email;
+
+  const OtpVerification({Key? key, required this.email}) : super(key: key);
 
   @override
   State<OtpVerification> createState() => _OtpVerificationState();
@@ -49,11 +51,11 @@ class _OtpVerificationState extends State<OtpVerification> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Text(
-                'We’ve the code send to your email-',
+                'We\'ve sent the code to your email-',
                 style: kTextStyle.copyWith(color: kSubTitleColor),
               ),
               Text(
-                'shadulislam@gmail.com',
+                widget.email,
                 style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20.0),
@@ -81,7 +83,7 @@ class _OtpVerificationState extends State<OtpVerification> {
               const SizedBox(height: 10.0),
               RichText(
                 text: TextSpan(
-                  text: 'Didn’t receive code? ',
+                  text: 'Didn\'t receive code? ',
                   style: kTextStyle.copyWith(color: kSubTitleColor),
                   children: [
                     TextSpan(

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
-import 'package:nb_utils/nb_utils.dart';
+import 'package:freelancer/services/auth_service.dart';
 
 import '../../widgets/constant.dart';
-import 'client_otp_verification.dart';
 
 class ClientForgotPassword extends StatefulWidget {
   const ClientForgotPassword({Key? key}) : super(key: key);
@@ -13,6 +12,47 @@ class ClientForgotPassword extends StatefulWidget {
 }
 
 class _ClientForgotPasswordState extends State<ClientForgotPassword> {
+  final _emailController = TextEditingController();
+  bool isLoading = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleResetPassword() async {
+    final email = _emailController.text.trim();
+
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter your email')),
+      );
+      return;
+    }
+
+    setState(() => isLoading = true);
+
+    try {
+      await AuthService.resetPassword(email: email);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Password reset email sent! Check your inbox.')),
+        );
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString())),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => isLoading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,16 +82,17 @@ class _ClientForgotPasswordState extends State<ClientForgotPassword> {
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: Text(
-                'Enter you email address and we will send you code',
+                'Enter your email address and we will send you a reset link',
                 style: kTextStyle.copyWith(color: kLightNeutralColor),
                 textAlign: TextAlign.center,
               ),
             ),
             const SizedBox(height: 20.0),
             TextFormField(
-              keyboardType: TextInputType.name,
+              controller: _emailController,
+              keyboardType: TextInputType.emailAddress,
               cursorColor: kNeutralColor,
-              textInputAction: TextInputAction.next,
+              textInputAction: TextInputAction.done,
               decoration: kInputDecoration.copyWith(
                 labelText: 'Email',
                 labelStyle: kTextStyle.copyWith(color: kNeutralColor),
@@ -63,11 +104,11 @@ class _ClientForgotPasswordState extends State<ClientForgotPassword> {
             ),
             const Spacer(),
             ButtonGlobalWithoutIcon(
-              buttontext: 'Reset Password',
-              buttonDecoration: kButtonDecoration.copyWith(color: kPrimaryColor),
-              onPressed: () {
-                const ClientOtpVerification().launch(context);
-              },
+              buttontext: isLoading ? 'Sending...' : 'Reset Password',
+              buttonDecoration: kButtonDecoration.copyWith(
+                color: isLoading ? kLightNeutralColor : kPrimaryColor,
+              ),
+              onPressed: isLoading ? null : _handleResetPassword,
               buttonTextColor: kWhite,
             ),
           ],

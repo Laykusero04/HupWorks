@@ -1156,7 +1156,7 @@ class _VerifyPopUpState extends State<VerifyPopUp> {
                 textColor: kWhite,
                 onPressed: () {
                   finish(context);
-                  const OtpVerification().launch(context);
+                  const OtpVerification(email: '').launch(context);
                 },
               ),
             ),

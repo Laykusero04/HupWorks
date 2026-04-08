@@ -1,11 +1,10 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
+import 'package:freelancer/services/auth_service.dart';
 
 import '../app_config/app_config.dart';
-import '../model/purchase_model/purchase_model.dart';
+import '../client screen/client home/client_home.dart';
+import '../seller screen/seller home/seller_home.dart';
 import 'onboard.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -23,36 +22,42 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> init() async {
-    await Future.delayed(const Duration(seconds: 2)).then((value) => checkUser());
-  }
+    await Future.delayed(const Duration(seconds: 2));
+    if (!mounted) return;
 
-  checkUser() async {
-    await PurchaseModel().isActiveBuyer().then((value) {
-      if (value) {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const OnBoard()));
-      } else {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text("Not Active User"),
-            content: Text("Please use the valid purchase code to use the app."),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  //Exit app
-                  if (Platform.isAndroid) {
-                    SystemNavigator.pop();
-                  } else {
-                    exit(0);
-                  }
-                },
-                child: Text("OK"),
-              ),
-            ],
-          ),
-        );
+    if (AuthService.isLoggedIn) {
+      // User is already logged in — check role and go to correct home
+      try {
+        final role = await AuthService.getUserRole();
+        if (!mounted) return;
+
+        if (role == 'seller') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const SellerHome()),
+          );
+        } else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const ClientHome()),
+          );
+        }
+      } catch (_) {
+        // If role fetch fails, go to onboard
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const OnBoard()),
+          );
+        }
       }
-    });
+    } else {
+      // Not logged in — go to onboarding
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const OnBoard()),
+      );
+    }
   }
 
   @override

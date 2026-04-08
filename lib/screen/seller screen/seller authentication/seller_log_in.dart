@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:freelancer/screen/seller%20screen/seller%20authentication/seller_forgot_password.dart';
 import 'package:freelancer/screen/welcome%20screen/welcome_screen.dart';
+import 'package:freelancer/services/auth_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../app_config/app_config.dart';
@@ -19,6 +20,47 @@ class SellerLogIn extends StatefulWidget {
 
 class _SellerLogInState extends State<SellerLogIn> {
   bool hidePassword = false;
+  bool isLoading = false;
+
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleLogin() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in all fields')),
+      );
+      return;
+    }
+
+    setState(() => isLoading = true);
+
+    try {
+      await AuthService.signIn(email: email, password: password);
+
+      if (mounted) {
+        const SellerHome().launch(context, isNewTask: true);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString())),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,13 +116,14 @@ class _SellerLogInState extends State<SellerLogIn> {
               ),
               const SizedBox(height: 30.0),
               TextFormField(
-                keyboardType: TextInputType.name,
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
                 cursorColor: kNeutralColor,
                 textInputAction: TextInputAction.next,
                 decoration: kInputDecoration.copyWith(
-                  labelText: 'User Name / Email',
+                  labelText: 'Email',
                   labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                  hintText: 'Enter your user name / email',
+                  hintText: 'Enter your email',
                   hintStyle: kTextStyle.copyWith(color: kLightNeutralColor),
                   focusColor: kNeutralColor,
                   border: const OutlineInputBorder(),
@@ -88,8 +131,9 @@ class _SellerLogInState extends State<SellerLogIn> {
               ),
               const SizedBox(height: 20.0),
               TextFormField(
+                controller: _passwordController,
                 cursorColor: kNeutralColor,
-                keyboardType: TextInputType.emailAddress,
+                keyboardType: TextInputType.visiblePassword,
                 obscureText: hidePassword,
                 textInputAction: TextInputAction.done,
                 decoration: kInputDecoration.copyWith(
@@ -127,14 +171,12 @@ class _SellerLogInState extends State<SellerLogIn> {
               ),
               const SizedBox(height: 20.0),
               ButtonGlobalWithoutIcon(
-                  buttontext: 'Log In',
+                  buttontext: isLoading ? 'Logging In...' : 'Log In',
                   buttonDecoration: kButtonDecoration.copyWith(
-                    color: kPrimaryColor,
+                    color: isLoading ? kLightNeutralColor : kPrimaryColor,
                     borderRadius: BorderRadius.circular(30.0),
                   ),
-                  onPressed: () {
-                    const SellerHome().launch(context);
-                  },
+                  onPressed: isLoading ? null : _handleLogin,
                   buttonTextColor: kWhite),
               const SizedBox(height: 20.0),
               Row(
@@ -199,7 +241,7 @@ class _SellerLogInState extends State<SellerLogIn> {
                   onTap: () => const WelcomeScreen().launch(context),
                   child: RichText(
                     text: TextSpan(
-                      text: 'Don’t have an account? ',
+                      text: 'Don\'t have an account? ',
                       style: kTextStyle.copyWith(color: kSubTitleColor),
                       children: [
                         TextSpan(

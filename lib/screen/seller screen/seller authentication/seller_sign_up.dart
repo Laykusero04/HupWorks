@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:freelancer/screen/seller%20screen/seller%20authentication/verification.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
+import 'package:freelancer/services/auth_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../app_config/app_config.dart';
@@ -19,6 +20,81 @@ class SellerSignUp extends StatefulWidget {
 class _SellerSignUpState extends State<SellerSignUp> {
   bool hidePassword = true;
   bool isCheck = true;
+  bool isLoading = false;
+
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleSignUp() async {
+    final firstName = _firstNameController.text.trim();
+    final lastName = _lastNameController.text.trim();
+    final email = _emailController.text.trim();
+    final phone = _phoneController.text.trim();
+    final password = _passwordController.text;
+
+    if (firstName.isEmpty || lastName.isEmpty || email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in all required fields')),
+      );
+      return;
+    }
+
+    if (password.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Password must be at least 6 characters')),
+      );
+      return;
+    }
+
+    if (!isCheck) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please agree to the Terms of Service')),
+      );
+      return;
+    }
+
+    setState(() => isLoading = true);
+
+    try {
+      await AuthService.signUp(
+        email: email,
+        password: password,
+        name: '$firstName $lastName',
+        role: 'seller',
+        phone: phone.isNotEmpty ? phone : null,
+      );
+
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => OtpVerification(email: email),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString())),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,6 +150,7 @@ class _SellerSignUpState extends State<SellerSignUp> {
                 ),
                 const SizedBox(height: 20.0),
                 TextFormField(
+                  controller: _firstNameController,
                   keyboardType: TextInputType.name,
                   cursorColor: kNeutralColor,
                   textInputAction: TextInputAction.next,
@@ -88,6 +165,7 @@ class _SellerSignUpState extends State<SellerSignUp> {
                 ),
                 const SizedBox(height: 20.0),
                 TextFormField(
+                  controller: _lastNameController,
                   keyboardType: TextInputType.name,
                   cursorColor: kNeutralColor,
                   textInputAction: TextInputAction.next,
@@ -102,6 +180,7 @@ class _SellerSignUpState extends State<SellerSignUp> {
                 ),
                 const SizedBox(height: 20.0),
                 TextFormField(
+                  controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   cursorColor: kNeutralColor,
                   textInputAction: TextInputAction.next,
@@ -116,38 +195,24 @@ class _SellerSignUpState extends State<SellerSignUp> {
                 ),
                 const SizedBox(height: 20.0),
                 TextFormField(
-                  keyboardType: TextInputType.emailAddress,
+                  controller: _phoneController,
+                  keyboardType: TextInputType.phone,
                   cursorColor: kNeutralColor,
                   textInputAction: TextInputAction.next,
                   decoration: kInputDecoration.copyWith(
                       labelText: 'Phone',
                       labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                      hintText: AutofillHints.countryName,
+                      hintText: 'Enter your phone number',
                       hintStyle: kTextStyle.copyWith(color: kLightNeutralColor),
                       focusColor: kNeutralColor,
                       border: const OutlineInputBorder(),
-                      // prefixIcon: Container(
-                      //   padding: const EdgeInsets.all(5),
-                      //   width: context.width(),
-                      //   decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(color: kBorderColorTextField, width: 2.0)),
-                      //   child: CountryCodePicker(
-                      //     showOnlyCountryWhenClosed: true,
-                      //     showCountryOnly: true,
-                      //     padding: EdgeInsets.zero,
-                      //     onChanged: print,
-                      //     initialSelection: 'BD',
-                      //     showFlag: true,
-                      //     showDropDownButton: false,
-                      //     alignLeft: true,
-                      //   ),
-                      // ),
-                      // suffixIcon: const Icon(FeatherIcons.chevronDown),
                       floatingLabelBehavior: FloatingLabelBehavior.always),
                 ),
                 const SizedBox(height: 20.0),
                 TextFormField(
+                  controller: _passwordController,
                   cursorColor: kNeutralColor,
-                  keyboardType: TextInputType.emailAddress,
+                  keyboardType: TextInputType.visiblePassword,
                   obscureText: hidePassword,
                   textInputAction: TextInputAction.done,
                   decoration: kInputDecoration.copyWith(
@@ -203,14 +268,12 @@ class _SellerSignUpState extends State<SellerSignUp> {
                 ),
                 const SizedBox(height: 20.0),
                 ButtonGlobalWithoutIcon(
-                    buttontext: 'Sign Up',
+                    buttontext: isLoading ? 'Signing Up...' : 'Sign Up',
                     buttonDecoration: kButtonDecoration.copyWith(
-                      color: kPrimaryColor,
+                      color: isLoading ? kLightNeutralColor : kPrimaryColor,
                       borderRadius: BorderRadius.circular(30.0),
                     ),
-                    onPressed: () {
-                      const OtpVerification().launch(context);
-                    },
+                    onPressed: isLoading ? null : _handleSignUp,
                     buttonTextColor: kWhite),
                 const SizedBox(height: 20.0),
                 Row(

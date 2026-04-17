@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
-import 'package:freelancer/services/auth_service.dart';
+import 'package:freelancer/features/auth/bloc/auth_bloc.dart';
+import 'package:freelancer/features/auth/bloc/auth_event.dart';
 import 'package:freelancer/services/profile_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../widgets/constant.dart';
-import '../../welcome screen/welcome_screen.dart';
 import '../client dashboard/client_dashboard.dart';
 import '../client favourite/client_favourite_list.dart';
 import '../client invite/client_invite.dart';
@@ -48,23 +49,8 @@ class _ClientProfileState extends State<ClientProfile> {
     }
   }
 
-  Future<void> _handleLogout() async {
-    try {
-      await AuthService.signOut();
-      if (mounted) {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const WelcomeScreen()),
-          (route) => false,
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error logging out: $e')),
-        );
-      }
-    }
+  void _handleLogout() {
+    context.read<AuthBloc>().add(AuthLogoutRequested());
   }
 
   @override

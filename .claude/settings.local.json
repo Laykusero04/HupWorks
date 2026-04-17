@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Bash(xargs grep:*)",
-      "Bash(flutter analyze:*)"
+      "Bash(flutter analyze:*)",
+      "Bash(ls -d C:/seve/flutter/HupWorks/lib/features/seller/*/bloc/)",
+      "Bash(dart analyze:*)",
+      "Bash(flutter build:*)"
     ]
   }
 }

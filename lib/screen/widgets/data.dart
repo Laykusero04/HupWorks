@@ -143,7 +143,7 @@ class Summary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 72,
+      constraints: const BoxConstraints(minHeight: 72),
       padding: const EdgeInsets.all(10.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(4.0),

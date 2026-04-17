@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:freelancer/features/auth/bloc/auth_bloc.dart';
+import 'package:freelancer/features/auth/bloc/auth_event.dart';
 import 'package:freelancer/screen/seller%20screen/profile/seller_profile_details.dart';
-import 'package:freelancer/services/auth_service.dart';
 import 'package:freelancer/services/profile_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
-import '../../welcome screen/welcome_screen.dart';
 import '../../widgets/constant.dart';
 import '../add payment method/seller_add_payment_method.dart';
 import '../buyer request/seller_buyer_request.dart';
@@ -44,13 +45,8 @@ class _SellerProfileState extends State<SellerProfile> {
     }
   }
 
-  Future<void> _handleLogout() async {
-    try {
-      await AuthService.signOut();
-      if (mounted) Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => const WelcomeScreen()), (r) => false);
-    } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
-    }
+  void _handleLogout() {
+    context.read<AuthBloc>().add(AuthLogoutRequested());
   }
 
   @override

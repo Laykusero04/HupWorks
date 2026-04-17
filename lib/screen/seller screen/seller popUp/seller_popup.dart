@@ -11,7 +11,6 @@ import 'package:nb_utils/nb_utils.dart';
 import '../../client screen/client_authentication/client_log_in.dart';
 import '../../widgets/constant.dart';
 import '../../widgets/icons.dart';
-import '../buyer request/create_customer_offer.dart';
 import '../seller authentication/seller_log_in.dart';
 
 class SellerAddLanguagePopUp extends StatefulWidget {
@@ -1018,10 +1017,7 @@ class _SendOfferPopUpState extends State<SendOfferPopUp> {
                 borderRadius: BorderRadius.circular(30.0),
               ),
               onPressed: () {
-                setState(() {
-                  finish(context);
-                  const CreateCustomerOffer().launch(context);
-                });
+                finish(context);
               },
               buttonTextColor: kWhite),
           const SizedBox(height: 15.0),

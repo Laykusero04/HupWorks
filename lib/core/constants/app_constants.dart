@@ -4,7 +4,7 @@ import 'package:freelancer/screen/widgets/data.dart';
 bool isClient = false;
 bool isFreelancer = false;
 bool isFavorite = false;
-const String currencySign = '\$';
+const String currencySign = '€';
 
 //__________Gender______________________________________________________
 const List<String> gender = ['Male', 'Female'];
@@ -81,5 +81,5 @@ String selectedReportTitle = 'Non original content';
 const List<String> gateWay = ['PayPal', 'Credit Card', 'Bkash'];
 String selectedGateWay = 'PayPal';
 
-const List<String> currency = ['USD', 'BDT'];
+const List<String> currency = ['EUR', 'USD', 'BDT'];
 String selectedCurrency = 'USD';

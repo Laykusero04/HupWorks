@@ -254,6 +254,36 @@ class _JobPostState extends State<JobPost> {
                                               ],
                                             ),
                                           ),
+                                          if ((job['location'] as String?)?.isNotEmpty ?? false) ...[
+                                            const SizedBox(height: 6.0),
+                                            Row(
+                                              children: [
+                                                const Icon(FeatherIcons.mapPin, size: 14, color: kLightNeutralColor),
+                                                const SizedBox(width: 4.0),
+                                                Expanded(
+                                                  child: Text(
+                                                    job['location'] as String,
+                                                    style: kTextStyle.copyWith(color: kSubTitleColor),
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                          if (((job['workers_needed'] as int?) ?? 1) > 1) ...[
+                                            const SizedBox(height: 6.0),
+                                            Row(
+                                              children: [
+                                                const Icon(FeatherIcons.users, size: 14, color: kLightNeutralColor),
+                                                const SizedBox(width: 4.0),
+                                                Text(
+                                                  '${job['workers_needed']} workers needed',
+                                                  style: kTextStyle.copyWith(color: kSubTitleColor),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
                                           const SizedBox(height: 10.0),
                                           Row(
                                             children: [

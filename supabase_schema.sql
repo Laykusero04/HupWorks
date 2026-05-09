@@ -237,6 +237,8 @@ create table public.job_posts (
   deadline timestamptz,
   status text default 'open' check (status in ('open', 'closed')),
   job_type text not null default 'gig' check (job_type in ('gig', 'full_time', 'part_time')),
+  location text,
+  workers_needed int not null default 1 check (workers_needed >= 1),
   created_at timestamptz default now()
 );
 

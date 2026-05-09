@@ -87,7 +87,7 @@ GoRouter createRouter() {
               BottomNavigationBarItem(icon: Icon(IconlyBold.chat), label: 'Message'),
               BottomNavigationBarItem(icon: Icon(IconlyBold.paperPlus), label: 'My Jobs'),
               BottomNavigationBarItem(icon: Icon(IconlyBold.document), label: 'Contracts'),
-              BottomNavigationBarItem(icon: Icon(IconlyBold.profile), label: 'Profile'),
+              BottomNavigationBarItem(icon: Icon(Icons.menu_rounded), label: 'Menu'),
             ],
           );
         },
@@ -138,7 +138,7 @@ GoRouter createRouter() {
               BottomNavigationBarItem(icon: Icon(IconlyBold.chat), label: 'Message'),
               BottomNavigationBarItem(icon: Icon(IconlyBold.search), label: 'Find Jobs'),
               BottomNavigationBarItem(icon: Icon(IconlyBold.document), label: 'Contracts'),
-              BottomNavigationBarItem(icon: Icon(IconlyBold.profile), label: 'Profile'),
+              BottomNavigationBarItem(icon: Icon(Icons.menu_rounded), label: 'Menu'),
             ],
           );
         },

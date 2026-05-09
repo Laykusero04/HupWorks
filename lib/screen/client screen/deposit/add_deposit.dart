@@ -144,7 +144,7 @@ class _AddDepositState extends State<AddDeposit> {
                       decoration: kInputDecoration.copyWith(
                         labelText: 'Amount',
                         labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                        hintText: '\$5000.00',
+                        hintText: '€5000.00',
                         hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
                         focusColor: kNeutralColor,
                         border: const OutlineInputBorder(),

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/services/chat_service.dart';
 import 'package:freelancer/services/seller_orders_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../widgets/constant.dart';
+import '../seller messgae/chat_inbox.dart';
 
 class SellerApplications extends StatefulWidget {
   const SellerApplications({super.key});
@@ -57,6 +59,28 @@ class _SellerApplicationsState extends State<SellerApplications> {
       case 'gig':
       default:
         return 'Gig';
+    }
+  }
+
+  Future<void> _openChatWithClient(Map<String, dynamic> app) async {
+    final jobPost = app['job_posts'] as Map<String, dynamic>?;
+    final client = jobPost?['client'] as Map<String, dynamic>?;
+    final clientId = jobPost?['client_id'] as String?;
+    if (clientId == null) return;
+    try {
+      final conversation = await ChatService.getOrCreateConversation(clientId);
+      if (!mounted) return;
+      ChatInbox(
+        conversationId: conversation['id'] as String,
+        otherUserName: client?['name'] ?? 'Client',
+        otherUserImage: client?['profile_image_url'] ?? '',
+      ).launch(context);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not open chat: $e')),
+        );
+      }
     }
   }
 
@@ -152,6 +176,14 @@ class _SellerApplicationsState extends State<SellerApplications> {
                                           status.label,
                                           style: kTextStyle.copyWith(color: status.fg, fontSize: 12.0),
                                         ),
+                                      ),
+                                      IconButton(
+                                        visualDensity: VisualDensity.compact,
+                                        padding: EdgeInsets.zero,
+                                        constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                                        tooltip: 'Message client',
+                                        icon: const Icon(Icons.chat_bubble_outline, size: 20, color: kPrimaryColor),
+                                        onPressed: () => _openChatWithClient(app),
                                       ),
                                     ],
                                   ),

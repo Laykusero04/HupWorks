@@ -16,8 +16,8 @@ class SellerOrderList extends StatefulWidget {
 class _SellerOrderListState extends State<SellerOrderList> {
   List<Map<String, dynamic>> _orders = [];
   bool _isLoading = true;
-  String _selectedStatus = 'Active';
-  final List<String> _statusTabs = ['Active', 'Pending', 'Completed', 'Delivered'];
+  String _selectedStatus = 'All';
+  final List<String> _statusTabs = ['All', 'Active', 'Pending', 'Completed', 'Delivered'];
 
   @override
   void initState() {
@@ -28,7 +28,9 @@ class _SellerOrderListState extends State<SellerOrderList> {
   Future<void> _loadOrders() async {
     setState(() => _isLoading = true);
     try {
-      final orders = await SellerOrdersService.getSellerOrders(status: _selectedStatus.toLowerCase());
+      final orders = await SellerOrdersService.getSellerOrders(
+        status: _selectedStatus == 'All' ? null : _selectedStatus.toLowerCase(),
+      );
       if (mounted) setState(() { _orders = orders; _isLoading = false; });
     } catch (e) {
       if (mounted) { setState(() => _isLoading = false); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'))); }
@@ -82,7 +84,10 @@ class _SellerOrderListState extends State<SellerOrderList> {
                 child: _isLoading
                     ? const Center(child: CircularProgressIndicator(color: kPrimaryColor))
                     : _orders.isEmpty
-                        ? Center(child: Text('No ${_selectedStatus.toLowerCase()} orders', style: kTextStyle.copyWith(color: kLightNeutralColor)))
+                        ? Center(child: Text(
+                            _selectedStatus == 'All' ? 'No contracts yet' : 'No ${_selectedStatus.toLowerCase()} contracts',
+                            style: kTextStyle.copyWith(color: kLightNeutralColor),
+                          ))
                         : RefreshIndicator(
                             color: kPrimaryColor, onRefresh: _loadOrders,
                             child: ListView.builder(

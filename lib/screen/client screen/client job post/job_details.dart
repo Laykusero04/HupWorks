@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/screen/seller%20screen/seller%20messgae/chat_inbox.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
+import 'package:freelancer/services/chat_service.dart';
 import 'package:freelancer/services/job_posts_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -60,6 +62,27 @@ class _JobDetailsState extends State<JobDetails> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
+    }
+  }
+
+  Future<void> _handleMessageSeller(Map<String, dynamic> offer) async {
+    final seller = offer['profiles'] as Map<String, dynamic>?;
+    final sellerId = offer['seller_id'] as String?;
+    if (sellerId == null) return;
+    try {
+      final conversation = await ChatService.getOrCreateConversation(sellerId);
+      if (!mounted) return;
+      ChatInbox(
+        conversationId: conversation['id'] as String,
+        otherUserName: seller?['name'] ?? 'Freelancer',
+        otherUserImage: seller?['profile_image_url'] ?? '',
+      ).launch(context);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not open chat: $e')),
+        );
       }
     }
   }
@@ -146,6 +169,8 @@ class _JobDetailsState extends State<JobDetails> {
     final status = _jobPost?['status'] ?? 'open';
     final budgetMin = _jobPost?['budget_min'];
     final budgetMax = _jobPost?['budget_max'];
+    final location = _jobPost?['location'] as String?;
+    final workersNeeded = (_jobPost?['workers_needed'] as int?) ?? 1;
     final isOpen = status == 'open';
 
     return Scaffold(
@@ -225,6 +250,12 @@ class _JobDetailsState extends State<JobDetails> {
                         _buildRow('Budget', '$currencySign${budgetMin ?? 0} - $currencySign${budgetMax ?? 0}'),
                         const SizedBox(height: 8.0),
                       ],
+                    if (location != null && location.isNotEmpty) ...[
+                      _buildRow('Location', location),
+                      const SizedBox(height: 8.0),
+                    ],
+                    _buildRow('Workers needed', '$workersNeeded'),
+                    const SizedBox(height: 8.0),
                     _buildRow('Status', status.toString().substring(0, 1).toUpperCase() + status.toString().substring(1)),
                     const SizedBox(height: 8.0),
                     _buildRow('Date', _formatDate(_jobPost?['created_at'])),
@@ -306,6 +337,15 @@ class _JobDetailsState extends State<JobDetails> {
                                         fontSize: 12,
                                       ),
                                     ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  IconButton(
+                                    visualDensity: VisualDensity.compact,
+                                    padding: EdgeInsets.zero,
+                                    constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                                    tooltip: 'Message freelancer',
+                                    icon: const Icon(Icons.chat_bubble_outline, size: 20, color: kPrimaryColor),
+                                    onPressed: () => _handleMessageSeller(offer),
                                   ),
                                 ],
                               ),

@@ -16,9 +16,9 @@ class ClientOrderList extends StatefulWidget {
 class _ClientOrderListState extends State<ClientOrderList> {
   List<Map<String, dynamic>> _orders = [];
   bool _isLoading = true;
-  String _selectedStatus = 'Active';
+  String _selectedStatus = 'All';
 
-  final List<String> _statusTabs = ['Active', 'Pending', 'Completed', 'Cancelled'];
+  final List<String> _statusTabs = ['All', 'Active', 'Pending', 'Completed', 'Cancelled'];
 
   @override
   void initState() {
@@ -30,7 +30,7 @@ class _ClientOrderListState extends State<ClientOrderList> {
     setState(() => _isLoading = true);
     try {
       final orders = await OrdersService.getClientOrders(
-        status: _selectedStatus.toLowerCase(),
+        status: _selectedStatus == 'All' ? null : _selectedStatus.toLowerCase(),
       );
       if (mounted) {
         setState(() {
@@ -129,7 +129,9 @@ class _ClientOrderListState extends State<ClientOrderList> {
                     : _orders.isEmpty
                         ? Center(
                             child: Text(
-                              'No ${_selectedStatus.toLowerCase()} orders',
+                              _selectedStatus == 'All'
+                                  ? 'No contracts yet'
+                                  : 'No ${_selectedStatus.toLowerCase()} contracts',
                               style: kTextStyle.copyWith(color: kLightNeutralColor),
                             ),
                           )

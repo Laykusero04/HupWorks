@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:freelancer/core/constants/app_constants.dart';
+import 'package:freelancer/services/chat_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SellerOrdersService {
@@ -99,7 +101,9 @@ class SellerOrdersService {
     return data;
   }
 
-  /// Create offer on a job post
+  /// Create offer on a job post.
+  /// Also seeds the (client, seller) chat with a formatted bid message so
+  /// negotiation can continue in chat.
   static Future<void> createOffer({
     required String jobPostId,
     required double price,
@@ -117,18 +121,50 @@ class SellerOrdersService {
       'cover_letter': coverLetter,
       'status': 'pending',
     });
+
+    // Seed the chat — best-effort, never blocks the apply flow.
+    try {
+      final job = await _client
+          .from('job_posts')
+          .select('title, client_id')
+          .eq('id', jobPostId)
+          .single();
+
+      final conversation =
+          await ChatService.getOrCreateConversation(job['client_id'] as String);
+
+      final body = StringBuffer()
+        ..writeln('📋 New bid for "${job['title']}"')
+        ..writeln(
+            'Amount: $currencySign${price.toStringAsFixed(0)} · Delivery: $deliveryTime days');
+      if (coverLetter != null && coverLetter.trim().isNotEmpty) {
+        body
+          ..writeln()
+          ..writeln(coverLetter.trim());
+      }
+
+      await ChatService.sendMessage(
+        conversationId: conversation['id'] as String,
+        content: body.toString().trim(),
+      );
+    } catch (_) {
+      // Bid is already saved; chat seeding is best-effort.
+    }
   }
 
   /// Fetch the current freelancer's submitted applications (job_offers).
-  /// Joined with the parent job post's title, status, and job_type so the
-  /// list screen can render context without a second roundtrip.
+  /// Joined with the parent job post's title/status/job_type AND the client's
+  /// profile, so a "Message" action can open chat without an extra lookup.
   static Future<List<Map<String, dynamic>>> getMyApplications() async {
     final user = _client.auth.currentUser;
     if (user == null) return [];
 
     final data = await _client
         .from('job_offers')
-        .select('*, job_posts!job_post_id(id, title, status, job_type)')
+        .select(
+          '*, job_posts!job_post_id(id, title, status, job_type, client_id, '
+          'client:profiles!job_posts_client_id_fkey(id, name, profile_image_url))',
+        )
         .eq('seller_id', user.id)
         .order('created_at', ascending: false);
     return List<Map<String, dynamic>>.from(data);

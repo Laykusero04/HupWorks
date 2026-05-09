@@ -73,7 +73,7 @@ class _ClientInviteState extends State<ClientInvite> {
                 ),
                 const SizedBox(height: 10.0),
                 Text(
-                  'Share your code with 4 friends. When they use it for the first login, you and your friends earn \$10.00',
+                  'Share your code with 4 friends. When they use it for the first login, you and your friends earn €10.00',
                   style: kTextStyle.copyWith(color: kLightNeutralColor),
                   textAlign: TextAlign.center,
                 ),

@@ -25,6 +25,8 @@ class JobPostsService {
     double? budgetMax,
     DateTime? deadline,
     String jobType = 'gig',
+    String? location,
+    int workersNeeded = 1,
   }) async {
     final user = _client.auth.currentUser;
     if (user == null) throw Exception('Not logged in');
@@ -39,6 +41,8 @@ class JobPostsService {
       'deadline': deadline?.toIso8601String(),
       'status': 'open',
       'job_type': jobType,
+      'location': location,
+      'workers_needed': workersNeeded,
     }).select().single();
 
     return data;

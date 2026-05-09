@@ -772,7 +772,7 @@ class _OrderCompletePopUpState extends State<OrderCompletePopUp> {
             ),
             const SizedBox(height: 10.0),
             Text(
-              'Your Earned \$5.00',
+              'Your Earned €5.00',
               maxLines: 1,
               textAlign: TextAlign.center,
               style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),

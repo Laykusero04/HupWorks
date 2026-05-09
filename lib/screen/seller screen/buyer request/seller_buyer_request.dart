@@ -109,6 +109,36 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
                                     Text(req['title'] ?? 'Job Post', style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)),
                                     const SizedBox(height: 5.0),
                                     Text(req['description'] ?? '', maxLines: 2, overflow: TextOverflow.ellipsis, style: kTextStyle.copyWith(color: kSubTitleColor)),
+                                    if ((req['location'] as String?)?.isNotEmpty ?? false) ...[
+                                      const SizedBox(height: 6.0),
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.location_on_outlined, size: 14, color: kLightNeutralColor),
+                                          const SizedBox(width: 4.0),
+                                          Expanded(
+                                            child: Text(
+                                              req['location'] as String,
+                                              style: kTextStyle.copyWith(color: kSubTitleColor),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                    if (((req['workers_needed'] as int?) ?? 1) > 1) ...[
+                                      const SizedBox(height: 6.0),
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.group_outlined, size: 14, color: kLightNeutralColor),
+                                          const SizedBox(width: 4.0),
+                                          Text(
+                                            '${req['workers_needed']} workers needed',
+                                            style: kTextStyle.copyWith(color: kSubTitleColor),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                     const SizedBox(height: 10.0),
                                     Row(
                                       children: [

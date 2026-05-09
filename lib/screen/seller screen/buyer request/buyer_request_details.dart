@@ -52,6 +52,8 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
     final description = _jobPost?['description'] ?? '';
     final budgetMin = _jobPost?['budget_min'];
     final budgetMax = _jobPost?['budget_max'];
+    final location = _jobPost?['location'] as String?;
+    final workersNeeded = (_jobPost?['workers_needed'] as int?) ?? 1;
     final offerCount = _jobPost?['offer_count'] ?? 0;
 
     return Scaffold(
@@ -125,6 +127,12 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
                   _row('Budget', '$currencySign${budgetMin ?? 0} - $currencySign${budgetMax ?? 0}'),
                   const SizedBox(height: 8.0),
                 ],
+                if (location != null && location.isNotEmpty) ...[
+                  _row('Location', location),
+                  const SizedBox(height: 8.0),
+                ],
+                _row('Workers needed', '$workersNeeded'),
+                const SizedBox(height: 8.0),
                 _row('Offers Sent', '$offerCount'),
                 const SizedBox(height: 8.0),
                 _row('Date', _formatDate(_jobPost?['created_at'])),

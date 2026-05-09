@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/services/job_posts_service.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -6,7 +7,7 @@ import 'package:nb_utils/nb_utils.dart';
 import '../../widgets/constant.dart';
 
 class CreateNewJobPost extends StatefulWidget {
-  const CreateNewJobPost({Key? key}) : super(key: key);
+  const CreateNewJobPost({super.key});
 
   @override
   State<CreateNewJobPost> createState() => _CreateNewJobPostState();
@@ -17,10 +18,12 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
   final _descriptionController = TextEditingController();
   final _budgetMinController = TextEditingController();
   final _budgetMaxController = TextEditingController();
+  final _locationController = TextEditingController();
 
   List<Map<String, dynamic>> _categories = [];
   String? _selectedCategoryId;
   String _selectedJobType = 'gig';
+  int _workersNeeded = 1;
   bool _isLoading = false;
   bool _isCategoriesLoading = true;
 
@@ -42,6 +45,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
     _descriptionController.dispose();
     _budgetMinController.dispose();
     _budgetMaxController.dispose();
+    _locationController.dispose();
     super.dispose();
   }
 
@@ -80,6 +84,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
     setState(() => _isLoading = true);
 
     try {
+      final locationText = _locationController.text.trim();
       await JobPostsService.createJobPost(
         title: title,
         description: description,
@@ -87,6 +92,8 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
         budgetMin: double.tryParse(_budgetMinController.text.trim()),
         budgetMax: double.tryParse(_budgetMaxController.text.trim()),
         jobType: _selectedJobType,
+        location: locationText.isEmpty ? null : locationText,
+        workersNeeded: _workersNeeded,
       );
 
       if (mounted) {
@@ -115,7 +122,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
         elevation: 0,
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
-          'Create New Job Post',
+          'Post a Job',
           style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -124,7 +131,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
         padding: const EdgeInsets.only(top: 15.0),
         child: Container(
           width: context.width(),
-          padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
           decoration: const BoxDecoration(
             color: kWhite,
             borderRadius: BorderRadius.only(
@@ -137,33 +144,60 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 20.0),
-                Text(
-                  'Overview',
-                  style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 15.0),
+                const SizedBox(height: 24.0),
+
+                // ───── Section 1: Basics ─────
+                _sectionHeader(IconlyBold.paper, 'Basics'),
+                const SizedBox(height: 12.0),
+
                 TextFormField(
                   controller: _titleController,
-                  keyboardType: TextInputType.name,
+                  keyboardType: TextInputType.text,
                   cursorColor: kNeutralColor,
                   textInputAction: TextInputAction.next,
                   decoration: kInputDecoration.copyWith(
                     labelText: 'Job Title',
                     labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                    hintText: 'Enter job title',
+                    hintText: 'e.g. Logo for new SaaS product',
                     hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
-                    focusColor: kNeutralColor,
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     border: const OutlineInputBorder(),
                   ),
                 ),
+                const SizedBox(height: 16.0),
+
+                _isCategoriesLoading
+                    ? const Center(child: CircularProgressIndicator(color: kPrimaryColor))
+                    : InputDecorator(
+                        decoration: kInputDecoration.copyWith(
+                          enabledBorder: const OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                            borderSide: BorderSide(color: kBorderColorTextField, width: 2),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          labelText: 'Category',
+                          labelStyle: kTextStyle.copyWith(color: kNeutralColor),
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: _selectedCategoryId,
+                            isExpanded: true,
+                            hint: Text('Select category', style: kTextStyle.copyWith(color: kSubTitleColor)),
+                            style: kTextStyle.copyWith(color: kNeutralColor),
+                            items: _categories.map((cat) {
+                              return DropdownMenuItem<String>(
+                                value: cat['id'] as String?,
+                                child: Text(cat['name'] as String),
+                              );
+                            }).toList(),
+                            onChanged: (value) => setState(() => _selectedCategoryId = value),
+                          ),
+                        ),
+                      ),
                 const SizedBox(height: 20.0),
 
-                // Job type segmented selector (Gig / Full-time / Part-time)
-                Text(
-                  'Job Type',
-                  style: kTextStyle.copyWith(color: kNeutralColor),
-                ),
+                _label('Job Type'),
                 const SizedBox(height: 8.0),
                 Wrap(
                   spacing: 8.0,
@@ -175,60 +209,92 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
                       onSelected: (_) => setState(() => _selectedJobType = opt['value']!),
                       selectedColor: kPrimaryColor,
                       backgroundColor: kDarkWhite,
-                      labelStyle: kTextStyle.copyWith(
-                        color: selected ? kWhite : kNeutralColor,
-                      ),
+                      labelStyle: kTextStyle.copyWith(color: selected ? kWhite : kNeutralColor),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20.0),
-                        side: BorderSide(
-                          color: selected ? kPrimaryColor : kBorderColorTextField,
-                        ),
+                        side: BorderSide(color: selected ? kPrimaryColor : kBorderColorTextField),
                       ),
                     );
                   }).toList(),
                 ),
-                const SizedBox(height: 20.0),
 
-                // Category dropdown
-                _isCategoriesLoading
-                    ? const Center(child: CircularProgressIndicator(color: kPrimaryColor))
-                    : FormField(
-                        builder: (FormFieldState<dynamic> field) {
-                          return InputDecorator(
-                            decoration: kInputDecoration.copyWith(
-                              enabledBorder: const OutlineInputBorder(
-                                borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                                borderSide: BorderSide(color: kBorderColorTextField, width: 2),
-                              ),
-                              contentPadding: const EdgeInsets.all(7.0),
-                              floatingLabelBehavior: FloatingLabelBehavior.always,
-                              labelText: 'Choose a Category',
-                              labelStyle: kTextStyle.copyWith(color: kNeutralColor),
+                const SizedBox(height: 28.0),
+
+                // ───── Section 2: Hiring ─────
+                _sectionHeader(IconlyBold.user2, 'Hiring'),
+                const SizedBox(height: 12.0),
+
+                // Workers needed stepper
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8.0),
+                    border: Border.all(color: kBorderColorTextField, width: 2),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Workers needed',
+                              style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
                             ),
-                            child: DropdownButtonHideUnderline(
-                              child: DropdownButton<String>(
-                                value: _selectedCategoryId,
-                                hint: Text('Select category', style: kTextStyle.copyWith(color: kSubTitleColor)),
-                                style: kTextStyle.copyWith(color: kSubTitleColor),
-                                items: _categories.map((cat) {
-                                  return DropdownMenuItem<String>(
-                                    value: cat['id'],
-                                    child: Text(cat['name']),
-                                  );
-                                }).toList(),
-                                onChanged: (value) {
-                                  setState(() {
-                                    _selectedCategoryId = value;
-                                  });
-                                },
-                              ),
+                            const SizedBox(height: 2),
+                            Text(
+                              'How many freelancers will you hire?',
+                              style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
                             ),
-                          );
-                        },
+                          ],
+                        ),
                       ),
-                const SizedBox(height: 20.0),
+                      _stepperButton(
+                        icon: Icons.remove,
+                        enabled: _workersNeeded > 1,
+                        onTap: () => setState(() => _workersNeeded--),
+                      ),
+                      Container(
+                        width: 36,
+                        alignment: Alignment.center,
+                        child: Text(
+                          '$_workersNeeded',
+                          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                      ),
+                      _stepperButton(
+                        icon: Icons.add,
+                        enabled: _workersNeeded < 99,
+                        onTap: () => setState(() => _workersNeeded++),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16.0),
 
-                // Budget range
+                // Location
+                TextFormField(
+                  controller: _locationController,
+                  keyboardType: TextInputType.text,
+                  cursorColor: kNeutralColor,
+                  textInputAction: TextInputAction.next,
+                  decoration: kInputDecoration.copyWith(
+                    labelText: 'Location (optional)',
+                    labelStyle: kTextStyle.copyWith(color: kNeutralColor),
+                    hintText: 'e.g. Remote, Manila PH, Berlin',
+                    hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    prefixIcon: const Icon(Icons.location_on_outlined, color: kLightNeutralColor),
+                    border: const OutlineInputBorder(),
+                  ),
+                ),
+
+                const SizedBox(height: 28.0),
+
+                // ───── Section 3: Budget ─────
+                _sectionHeader(IconlyBold.wallet, 'Budget'),
+                const SizedBox(height: 12.0),
+
                 Row(
                   children: [
                     Expanded(
@@ -238,15 +304,17 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
                         cursorColor: kNeutralColor,
                         textInputAction: TextInputAction.next,
                         decoration: kInputDecoration.copyWith(
-                          labelText: 'Min Budget',
+                          labelText: 'Min',
                           labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                          hintText: '\$5',
+                          hintText: '${currencySign}5',
                           hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          prefixText: '$currencySign ',
                           border: const OutlineInputBorder(),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 15),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: TextFormField(
                         controller: _budgetMaxController,
@@ -254,50 +322,104 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
                         cursorColor: kNeutralColor,
                         textInputAction: TextInputAction.next,
                         decoration: kInputDecoration.copyWith(
-                          labelText: 'Max Budget',
+                          labelText: 'Max',
                           labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                          hintText: '\$100',
+                          hintText: '${currencySign}100',
                           hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          prefixText: '$currencySign ',
                           border: const OutlineInputBorder(),
                         ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 20.0),
+
+                const SizedBox(height: 28.0),
+
+                // ───── Section 4: Description ─────
+                _sectionHeader(IconlyBold.document, 'Description'),
+                const SizedBox(height: 12.0),
 
                 TextFormField(
                   controller: _descriptionController,
                   keyboardType: TextInputType.multiline,
                   cursorColor: kNeutralColor,
                   textInputAction: TextInputAction.newline,
-                  maxLines: 4,
+                  maxLines: 5,
+                  minLines: 4,
                   decoration: kInputDecoration.copyWith(
-                    labelText: 'Describe The Job',
+                    labelText: 'Describe the job',
                     labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                    hintText: 'I need a ui ux designer...',
+                    hintText: 'What does the freelancer need to deliver, deadlines, requirements...',
                     hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
-                    focusColor: kNeutralColor,
                     floatingLabelBehavior: FloatingLabelBehavior.always,
+                    alignLabelWithHint: true,
                     border: const OutlineInputBorder(),
                   ),
                 ),
-                const SizedBox(height: 10.0),
+                const SizedBox(height: 24.0),
               ],
             ),
           ),
         ),
       ),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(color: kWhite),
-        child: ButtonGlobalWithoutIcon(
-          buttontext: _isLoading ? 'Posting...' : 'Post',
-          buttonDecoration: kButtonDecoration.copyWith(
-            color: _isLoading ? kLightNeutralColor : kPrimaryColor,
-            borderRadius: BorderRadius.circular(30.0),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+          child: ButtonGlobalWithoutIcon(
+            buttontext: _isLoading ? 'Posting…' : 'Post Job',
+            buttonDecoration: kButtonDecoration.copyWith(
+              color: _isLoading ? kLightNeutralColor : kPrimaryColor,
+              borderRadius: BorderRadius.circular(30.0),
+            ),
+            onPressed: _isLoading ? null : _handlePost,
+            buttonTextColor: kWhite,
           ),
-          onPressed: _isLoading ? null : _handlePost,
-          buttonTextColor: kWhite,
+        ),
+      ),
+    );
+  }
+
+  Widget _sectionHeader(IconData icon, String title) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: kPrimaryColor.withOpacity(0.1),
+          ),
+          child: Icon(icon, color: kPrimaryColor, size: 18),
+        ),
+        const SizedBox(width: 10),
+        Text(
+          title,
+          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+      ],
+    );
+  }
+
+  Widget _label(String text) {
+    return Text(text, style: kTextStyle.copyWith(color: kNeutralColor));
+  }
+
+  Widget _stepperButton({required IconData icon, required bool enabled, required VoidCallback onTap}) {
+    return InkWell(
+      onTap: enabled ? onTap : null,
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        height: 36,
+        width: 36,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: enabled ? kPrimaryColor.withOpacity(0.1) : kDarkWhite,
+        ),
+        child: Icon(
+          icon,
+          color: enabled ? kPrimaryColor : kLightNeutralColor,
+          size: 20,
         ),
       ),
     );

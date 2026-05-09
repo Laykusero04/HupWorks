@@ -11,8 +11,6 @@ import 'data/repositories/job_post_repository.dart';
 import 'data/repositories/notification_repository.dart';
 import 'data/repositories/order_repository.dart';
 import 'data/repositories/profile_repository.dart';
-import 'data/repositories/recently_viewed_repository.dart';
-import 'data/repositories/service_repository.dart';
 import 'data/repositories/transaction_repository.dart';
 import 'features/auth/bloc/auth_bloc.dart';
 import 'features/auth/bloc/auth_event.dart';
@@ -35,7 +33,7 @@ class _HupWorksAppState extends State<HupWorksApp> {
     super.initState();
     _authRepository = AuthRepository();
     _authBloc = AuthBloc(authRepository: _authRepository)..add(AuthCheckRequested());
-    _router = createRouter(_authBloc);
+    _router = createRouter();
   }
 
   @override
@@ -51,14 +49,12 @@ class _HupWorksAppState extends State<HupWorksApp> {
         RepositoryProvider.value(value: _authRepository),
         RepositoryProvider(create: (_) => ProfileRepository()),
         RepositoryProvider(create: (_) => CategoryRepository()),
-        RepositoryProvider(create: (_) => ServiceRepository()),
         RepositoryProvider(create: (_) => OrderRepository()),
         RepositoryProvider(create: (_) => ChatRepository()),
         RepositoryProvider(create: (_) => JobPostRepository()),
         RepositoryProvider(create: (_) => NotificationRepository()),
         RepositoryProvider(create: (_) => TransactionRepository()),
         RepositoryProvider(create: (_) => DashboardRepository()),
-        RepositoryProvider(create: (_) => RecentlyViewedRepository()),
       ],
       child: BlocProvider.value(
         value: _authBloc,

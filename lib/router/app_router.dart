@@ -1,11 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../core/constants/colors.dart';
-import '../features/auth/bloc/auth_bloc.dart';
-import '../features/auth/bloc/auth_state.dart';
 
 // Old screens — used during incremental migration
 import '../screen/splash screen/mt_splash_screen.dart';
@@ -22,44 +22,46 @@ import '../screen/seller screen/seller authentication/seller_sign_up.dart';
 import '../screen/seller screen/seller home/seller_home_screen.dart';
 import '../screen/seller screen/orders/seller_orders.dart';
 import '../screen/seller screen/profile/seller_profile.dart';
-import '../screen/seller screen/seller services/create_service.dart';
+import '../screen/seller screen/applications/seller_applications.dart';
+import '../screen/seller screen/buyer request/seller_buyer_request.dart';
 import '../screen/seller screen/seller messgae/chat_list.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _clientShellKey = GlobalKey<NavigatorState>();
 final _sellerShellKey = GlobalKey<NavigatorState>();
 
-GoRouter createRouter(AuthBloc authBloc) {
+GoRouter createRouter() {
+  final supabase = Supabase.instance.client;
+
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/',
     debugLogDiagnostics: false,
     redirect: (context, state) {
-      final authState = authBloc.state;
+      final session = supabase.auth.currentSession;
+      final loggedIn = session != null;
       final location = state.matchedLocation;
-      final isAuthRoute = location == '/' ||
-          location.startsWith('/onboard') ||
+      final isSplash = location == '/';
+      final isPublicAuthRoute = location.startsWith('/onboard') ||
           location.startsWith('/welcome') ||
           location.startsWith('/auth');
 
-      // Still loading auth state — show splash
-      if (authState is AuthInitial || authState is AuthLoading) {
-        return location == '/' ? null : '/';
+      // Not signed in — send to the login hub (welcome)
+      if (!loggedIn) {
+        if (isSplash) return '/welcome';
+        return isPublicAuthRoute ? null : '/welcome';
       }
 
-      // Not authenticated — redirect to onboard if trying to access protected routes
-      if (authState is Unauthenticated || authState is AuthError) {
-        return isAuthRoute ? null : '/onboard';
-      }
-
-      // Authenticated — redirect away from auth routes to correct home
-      if (authState is Authenticated && isAuthRoute) {
-        return authState.role == 'seller' ? '/seller' : '/client';
+      // Signed in — bounce splash/auth screens to the correct home
+      if (isSplash || isPublicAuthRoute) {
+        final role = supabase.auth.currentUser?.userMetadata?['role'] as String?;
+        return role == 'seller' ? '/seller' : '/client';
       }
 
       return null;
     },
-    refreshListenable: _GoRouterAuthRefreshStream(authBloc.stream),
+    refreshListenable:
+        _SupabaseAuthRefreshStream(supabase.auth.onAuthStateChange),
     routes: [
       // Splash
       GoRoute(
@@ -83,8 +85,8 @@ GoRouter createRouter(AuthBloc authBloc) {
             items: const [
               BottomNavigationBarItem(icon: Icon(IconlyBold.home), label: 'Home'),
               BottomNavigationBarItem(icon: Icon(IconlyBold.chat), label: 'Message'),
-              BottomNavigationBarItem(icon: Icon(IconlyBold.paperPlus), label: 'Job Apply'),
-              BottomNavigationBarItem(icon: Icon(IconlyBold.document), label: 'Orders'),
+              BottomNavigationBarItem(icon: Icon(IconlyBold.paperPlus), label: 'My Jobs'),
+              BottomNavigationBarItem(icon: Icon(IconlyBold.document), label: 'Contracts'),
               BottomNavigationBarItem(icon: Icon(IconlyBold.profile), label: 'Profile'),
             ],
           );
@@ -134,8 +136,8 @@ GoRouter createRouter(AuthBloc authBloc) {
             items: const [
               BottomNavigationBarItem(icon: Icon(IconlyBold.home), label: 'Home'),
               BottomNavigationBarItem(icon: Icon(IconlyBold.chat), label: 'Message'),
-              BottomNavigationBarItem(icon: Icon(IconlyBold.paperPlus), label: 'Service'),
-              BottomNavigationBarItem(icon: Icon(IconlyBold.document), label: 'Orders'),
+              BottomNavigationBarItem(icon: Icon(IconlyBold.search), label: 'Find Jobs'),
+              BottomNavigationBarItem(icon: Icon(IconlyBold.document), label: 'Contracts'),
               BottomNavigationBarItem(icon: Icon(IconlyBold.profile), label: 'Profile'),
             ],
           );
@@ -158,8 +160,8 @@ GoRouter createRouter(AuthBloc authBloc) {
           ]),
           StatefulShellBranch(routes: [
             GoRoute(
-              path: '/seller/create-service',
-              builder: (context, state) => const CreateService(),
+              path: '/seller/find-jobs',
+              builder: (context, state) => const SellerBuyerRequest(),
             ),
           ]),
           StatefulShellBranch(routes: [
@@ -175,6 +177,14 @@ GoRouter createRouter(AuthBloc authBloc) {
             ),
           ]),
         ],
+      ),
+
+      // Seller — My Applications (sub-screen, outside the shell so it pushes
+      // on top of the bottom-nav scaffold).
+      GoRoute(
+        path: '/seller/applications',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const SellerApplications(),
       ),
     ],
   );
@@ -221,14 +231,14 @@ class _ScaffoldWithNavBar extends StatelessWidget {
   }
 }
 
-/// Converts a BLoC stream to a ChangeNotifier for GoRouter's refreshListenable
-class _GoRouterAuthRefreshStream extends ChangeNotifier {
-  _GoRouterAuthRefreshStream(Stream<dynamic> stream) {
-    notifyListeners();
-    _subscription = stream.asBroadcastStream().listen((_) => notifyListeners());
+/// Bridges Supabase's auth state stream to a ChangeNotifier so GoRouter
+/// re-evaluates the redirect every time the user signs in or out.
+class _SupabaseAuthRefreshStream extends ChangeNotifier {
+  _SupabaseAuthRefreshStream(Stream<AuthState> stream) {
+    _subscription = stream.listen((_) => notifyListeners());
   }
 
-  late final dynamic _subscription;
+  late final StreamSubscription<AuthState> _subscription;
 
   @override
   void dispose() {

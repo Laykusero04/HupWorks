@@ -20,8 +20,15 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
 
   List<Map<String, dynamic>> _categories = [];
   String? _selectedCategoryId;
+  String _selectedJobType = 'gig';
   bool _isLoading = false;
   bool _isCategoriesLoading = true;
+
+  static const _jobTypeOptions = <Map<String, String>>[
+    {'value': 'gig', 'label': 'Gig'},
+    {'value': 'full_time', 'label': 'Full-time'},
+    {'value': 'part_time', 'label': 'Part-time'},
+  ];
 
   @override
   void initState() {
@@ -79,6 +86,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
         categoryId: _selectedCategoryId,
         budgetMin: double.tryParse(_budgetMinController.text.trim()),
         budgetMax: double.tryParse(_budgetMaxController.text.trim()),
+        jobType: _selectedJobType,
       );
 
       if (mounted) {
@@ -148,6 +156,36 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
                     focusColor: kNeutralColor,
                     border: const OutlineInputBorder(),
                   ),
+                ),
+                const SizedBox(height: 20.0),
+
+                // Job type segmented selector (Gig / Full-time / Part-time)
+                Text(
+                  'Job Type',
+                  style: kTextStyle.copyWith(color: kNeutralColor),
+                ),
+                const SizedBox(height: 8.0),
+                Wrap(
+                  spacing: 8.0,
+                  children: _jobTypeOptions.map((opt) {
+                    final selected = _selectedJobType == opt['value'];
+                    return ChoiceChip(
+                      label: Text(opt['label']!),
+                      selected: selected,
+                      onSelected: (_) => setState(() => _selectedJobType = opt['value']!),
+                      selectedColor: kPrimaryColor,
+                      backgroundColor: kDarkWhite,
+                      labelStyle: kTextStyle.copyWith(
+                        color: selected ? kWhite : kNeutralColor,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                        side: BorderSide(
+                          color: selected ? kPrimaryColor : kBorderColorTextField,
+                        ),
+                      ),
+                    );
+                  }).toList(),
                 ),
                 const SizedBox(height: 20.0),
 

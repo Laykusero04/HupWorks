@@ -79,15 +79,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Future<void> _onLogoutRequested(AuthLogoutRequested event, Emitter<AuthState> emit) async {
-    emit(AuthLoading());
     try {
       await _authRepository.signOut();
-      emit(Unauthenticated());
-    } on Failure catch (e) {
-      emit(AuthError(e.message));
-    } catch (e) {
-      emit(AuthError(e.toString()));
+    } catch (_) {
+      // Even if sign-out fails server-side, treat the user as logged out locally
     }
+    emit(Unauthenticated());
   }
 
   Future<void> _onPasswordResetRequested(AuthPasswordResetRequested event, Emitter<AuthState> emit) async {

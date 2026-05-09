@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:freelancer/screen/seller%20screen/applications/seller_applications.dart';
 import 'package:freelancer/screen/seller%20screen/profile/seller_profile.dart';
-import 'package:freelancer/screen/seller%20screen/seller%20home/my%20service/service_details.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
 import 'package:freelancer/services/seller_home_service.dart';
+import 'package:freelancer/services/seller_orders_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../widgets/chart.dart';
 import '../../widgets/data.dart';
 import '../notification/seller_notification.dart';
-import 'my service/my_service.dart';
 
 class SellerHomeScreen extends StatefulWidget {
   const SellerHomeScreen({Key? key}) : super(key: key);
@@ -24,7 +24,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
   Map<String, dynamic> _performance = {};
   Map<String, double> _statistics = {};
   Map<String, dynamic> _earnings = {};
-  List<Map<String, dynamic>> _myServices = [];
+  List<Map<String, dynamic>> _myApplications = [];
   bool _isLoading = true;
 
   String _selectedPerformancePeriod = 'This Month';
@@ -44,16 +44,17 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
         SellerHomeService.getPerformance(isLastMonth: _selectedPerformancePeriod == 'Last Month'),
         SellerHomeService.getStatistics(),
         SellerHomeService.getEarnings(isLastMonth: _selectedEarningPeriod == 'Last Month'),
-        SellerHomeService.getMyServices(),
+        SellerOrdersService.getMyApplications(),
       ]);
 
       if (mounted) {
+        final apps = results[4] as List<Map<String, dynamic>>;
         setState(() {
           _profile = results[0] as Map<String, dynamic>?;
           _performance = results[1] as Map<String, dynamic>;
           _statistics = results[2] as Map<String, double>;
           _earnings = results[3] as Map<String, dynamic>;
-          _myServices = results[4] as List<Map<String, dynamic>>;
+          _myApplications = apps.take(5).toList();
           _isLoading = false;
         });
       }
@@ -289,104 +290,81 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
                     ),
                     const SizedBox(height: 20.0),
 
-                    // My Services
+                    // My Applications
                     Row(
                       children: [
-                        Text('My Services', style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)),
+                        Text('My Applications', style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)),
                         const Spacer(),
                         GestureDetector(
-                          onTap: () => const MyServices().launch(context),
-                          child: Text('view All', style: kTextStyle.copyWith(color: kLightNeutralColor)),
+                          onTap: () => const SellerApplications().launch(context),
+                          child: Text('View All', style: kTextStyle.copyWith(color: kLightNeutralColor)),
                         ),
                       ],
                     ),
                     const SizedBox(height: 15.0),
-                    _myServices.isEmpty
+                    _myApplications.isEmpty
                         ? Padding(
                             padding: const EdgeInsets.all(20.0),
-                            child: Center(child: Text('No services yet', style: kTextStyle.copyWith(color: kLightNeutralColor))),
+                            child: Center(
+                              child: Text('No applications yet', style: kTextStyle.copyWith(color: kLightNeutralColor)),
+                            ),
                           )
-                        : HorizontalList(
-                            spacing: 10.0,
-                            padding: const EdgeInsets.only(bottom: 10.0),
-                            itemCount: _myServices.length,
-                            itemBuilder: (_, i) {
-                              final service = _myServices[i];
-                              final images = service['images'] as List<dynamic>?;
-                              final imageUrl = (images != null && images.isNotEmpty) ? images[0] : null;
+                        : Column(
+                            children: _myApplications.map((app) {
+                              final jobPost = app['job_posts'] as Map<String, dynamic>?;
+                              final status = (app['status'] as String?) ?? 'pending';
+                              final (Color statusBg, Color statusFg, String statusLabel) = switch (status) {
+                                'accepted' => (kPrimaryColor.withOpacity(0.1), kPrimaryColor, 'Accepted'),
+                                'rejected' => (const Color(0xFFFFE5E3), const Color(0xFFFF3B30), 'Rejected'),
+                                _          => (const Color(0xFFFFEFE0), const Color(0xFFFF7A00), 'Pending'),
+                              };
 
-                              return GestureDetector(
-                                onTap: () => const ServiceDetails().launch(context),
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 10.0),
                                 child: Container(
-                                  height: 205,
-                                  width: 156,
+                                  padding: const EdgeInsets.all(12.0),
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8.0),
+                                    color: kWhite,
+                                    borderRadius: BorderRadius.circular(10.0),
                                     border: Border.all(color: kBorderColorTextField),
-                                    boxShadow: const [
-                                      BoxShadow(color: kDarkWhite, blurRadius: 5.0, spreadRadius: 2.0, offset: Offset(0, 5)),
-                                    ],
                                   ),
                                   child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Container(
-                                        height: 100,
-                                        width: 156,
-                                        decoration: BoxDecoration(
-                                          borderRadius: const BorderRadius.only(
-                                            topRight: Radius.circular(8.0),
-                                            topLeft: Radius.circular(8.0),
-                                          ),
-                                          image: DecorationImage(
-                                            image: imageUrl != null
-                                                ? NetworkImage(imageUrl) as ImageProvider
-                                                : const AssetImage('images/shot1.png'),
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(5.0),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              service['title'] ?? 'Service',
-                                              style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
-                                              maxLines: 2,
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              jobPost?['title'] ?? 'Untitled job',
+                                              maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
+                                              style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
                                             ),
-                                            const SizedBox(height: 5.0),
-                                            Row(
-                                              children: [
-                                                const Icon(IconlyBold.star, color: Colors.amber, size: 18.0),
-                                                const SizedBox(width: 2.0),
-                                                Text('${service['rating'] ?? 0}', style: kTextStyle.copyWith(color: kNeutralColor)),
-                                                const SizedBox(width: 2.0),
-                                                Text('(${service['review_count'] ?? 0})', style: kTextStyle.copyWith(color: kLightNeutralColor)),
-                                              ],
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 8),
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(20),
+                                              color: statusBg,
                                             ),
-                                            const SizedBox(height: 5.0),
-                                            RichText(
-                                              text: TextSpan(
-                                                text: 'Price: ',
-                                                style: kTextStyle.copyWith(color: kLightNeutralColor),
-                                                children: [
-                                                  TextSpan(
-                                                    text: '$currencySign${service['price'] ?? 0}',
-                                                    style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold),
-                                                  ),
-                                                ],
-                                              ),
+                                            child: Text(
+                                              statusLabel,
+                                              style: kTextStyle.copyWith(color: statusFg, fontSize: 12),
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 6),
+                                      Text(
+                                        '$currencySign${app['price'] ?? 0} • ${app['delivery_time'] ?? 0} days',
+                                        style: kTextStyle.copyWith(color: kSubTitleColor),
                                       ),
                                     ],
                                   ),
                                 ),
                               );
-                            },
+                            }).toList(),
                           ),
                     const SizedBox(height: 20.0),
                   ],

@@ -58,12 +58,12 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
       backgroundColor: kDarkWhite,
       appBar: AppBar(
         backgroundColor: kDarkWhite, elevation: 0, iconTheme: const IconThemeData(color: kNeutralColor),
-        title: Text('Buyer Request', style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)), centerTitle: true,
+        title: Text('Job Details', style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)), centerTitle: true,
       ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(color: kWhite),
         child: ButtonGlobalWithoutIcon(
-          buttontext: 'Send Offer',
+          buttontext: 'Apply Now',
           buttonDecoration: kButtonDecoration.copyWith(color: kPrimaryColor, borderRadius: BorderRadius.circular(30.0)),
           onPressed: () async {
             await CreateCustomerOffer(jobPostId: widget.jobPostId, jobTitle: title).launch(context);

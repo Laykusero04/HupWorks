@@ -173,13 +173,15 @@ create policy "Sellers can delete their service requirements"
 
 create table public.orders (
   id uuid default gen_random_uuid() primary key,
-  service_id uuid references public.services(id) not null,
+  -- service_id is nullable: contracts created from job_offers have no service
+  service_id uuid references public.services(id),
   client_id uuid references public.profiles(id) not null,
   seller_id uuid references public.profiles(id) not null,
   status text default 'pending' check (status in ('active', 'pending', 'completed', 'cancelled', 'delivered')),
   price numeric(10,2) not null,
   requirements_response jsonb,
   delivery_deadline timestamptz,
+  job_offer_id uuid, -- FK added after job_offers is created (see below)
   created_at timestamptz default now(),
   completed_at timestamptz
 );
@@ -234,6 +236,7 @@ create table public.job_posts (
   budget_max numeric(10,2),
   deadline timestamptz,
   status text default 'open' check (status in ('open', 'closed')),
+  job_type text not null default 'gig' check (job_type in ('gig', 'full_time', 'part_time')),
   created_at timestamptz default now()
 );
 
@@ -282,6 +285,13 @@ create policy "Offer participants can update offers"
     auth.uid() = seller_id
     or auth.uid() in (select client_id from job_posts where id = job_post_id)
   );
+
+-- Deferred FK from orders.job_offer_id (orders is defined before job_offers).
+alter table public.orders
+  add constraint orders_job_offer_id_fkey
+  foreign key (job_offer_id) references public.job_offers(id) on delete set null;
+
+create index if not exists orders_job_offer_id_idx on public.orders(job_offer_id);
 
 -- ==================
 -- 11. CONVERSATIONS
@@ -364,10 +374,13 @@ create table public.reviews (
   reviewer_id uuid references public.profiles(id) on delete cascade not null,
   reviewed_id uuid references public.profiles(id) on delete cascade not null,
   service_id uuid references public.services(id) on delete cascade not null,
+  job_offer_id uuid references public.job_offers(id) on delete set null,
   rating int not null check (rating >= 1 and rating <= 5),
   comment text,
   created_at timestamptz default now()
 );
+
+create index if not exists reviews_job_offer_id_idx on public.reviews(job_offer_id);
 
 alter table public.reviews enable row level security;
 
@@ -534,6 +547,65 @@ $$ language plpgsql security definer;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
+
+-- ============================================
+-- ACCEPT JOB OFFER RPC
+-- ============================================
+-- Atomically: marks an offer accepted, auto-rejects sibling pending offers,
+-- closes the parent job post, and creates the contract (orders row).
+-- Authorization: only the client who posted the job may invoke this.
+-- ============================================
+
+create or replace function public.accept_job_offer(p_offer_id uuid)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_offer record;
+  v_order_id uuid;
+  v_deadline timestamptz;
+begin
+  select jo.id, jo.job_post_id, jo.seller_id, jo.price, jo.delivery_time,
+         jp.client_id as job_client_id
+    into v_offer
+    from public.job_offers jo
+    join public.job_posts  jp on jp.id = jo.job_post_id
+    where jo.id = p_offer_id;
+
+  if not found then
+    raise exception 'Offer not found';
+  end if;
+
+  if v_offer.job_client_id <> auth.uid() then
+    raise exception 'Not authorized';
+  end if;
+
+  v_deadline := now() + (v_offer.delivery_time::text || ' days')::interval;
+
+  update public.job_offers set status = 'accepted' where id = p_offer_id;
+
+  update public.job_offers
+     set status = 'rejected'
+   where job_post_id = v_offer.job_post_id
+     and id <> p_offer_id
+     and status = 'pending';
+
+  update public.job_posts set status = 'closed' where id = v_offer.job_post_id;
+
+  insert into public.orders
+    (job_offer_id, client_id, seller_id, price, status, delivery_deadline)
+  values
+    (p_offer_id, v_offer.job_client_id, v_offer.seller_id, v_offer.price,
+     'pending', v_deadline)
+  returning id into v_order_id;
+
+  return v_order_id;
+end;
+$$;
+
+grant execute on function public.accept_job_offer(uuid) to authenticated;
 
 -- ============================================
 -- SEED DATA: Default Categories

@@ -4,7 +4,6 @@ import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:freelancer/screen/seller%20screen/profile/seller_profile.dart';
 import 'package:freelancer/screen/seller%20screen/seller%20authentication/verification.dart';
-import 'package:freelancer/screen/seller%20screen/seller%20home/seller_home.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -861,10 +860,7 @@ class _ReviewSubmittedPopUpState extends State<ReviewSubmittedPopUp> {
                   borderRadius: BorderRadius.circular(30.0),
                 ),
                 onPressed: () {
-                  setState(() {
-                    finish(context);
-                    const SellerHome().launch(context);
-                  });
+                  Navigator.of(context).pop();
                 },
                 buttonTextColor: kWhite),
           ],

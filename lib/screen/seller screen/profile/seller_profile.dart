@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
-import 'package:freelancer/features/auth/bloc/auth_bloc.dart';
-import 'package:freelancer/features/auth/bloc/auth_event.dart';
 import 'package:freelancer/screen/seller%20screen/profile/seller_profile_details.dart';
 import 'package:freelancer/services/profile_service.dart';
 import 'package:nb_utils/nb_utils.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../widgets/constant.dart';
 import '../add payment method/seller_add_payment_method.dart';
-import '../buyer request/seller_buyer_request.dart';
+import '../applications/seller_applications.dart';
 import '../favourite/seller_favourite_list.dart';
 import '../report/seller_report.dart';
 import '../setting/seller_invite.dart';
@@ -45,8 +43,8 @@ class _SellerProfileState extends State<SellerProfile> {
     }
   }
 
-  void _handleLogout() {
-    context.read<AuthBloc>().add(AuthLogoutRequested());
+  Future<void> _handleLogout() async {
+    await Supabase.instance.client.auth.signOut();
   }
 
   @override
@@ -79,7 +77,7 @@ class _SellerProfileState extends State<SellerProfile> {
             child: Column(children: [
               const SizedBox(height: 20.0),
               _item(IconlyBold.profile, kPrimaryColor, const Color(0xFFE2EED8), 'My Profile', () async { await const SellerProfileDetails().launch(context); _loadProfile(); }),
-              _item(IconlyBold.buy, const Color(0xFF144BD6), const Color(0xFFE3EDFF), 'Buyer Requests', () => const SellerBuyerRequest().launch(context)),
+              _item(IconlyBold.paper, const Color(0xFF144BD6), const Color(0xFFE3EDFF), 'My Applications', () => const SellerApplications().launch(context)),
               _item(IconlyBold.wallet, const Color(0xFFFF7A00), const Color(0xFFFFEFE0), 'Payment Methods', () => const SellerAddPaymentMethod().launch(context)),
               _item(IconlyBold.heart, const Color(0xFF7E5BFF), const Color(0xFFE8E1FF), 'Favorite', () => const SellerFavList().launch(context)),
               _item(IconlyBold.ticketStar, const Color(0xFFFF3B30), const Color(0xFFFFE5E3), 'Transaction', () => const SellerTransaction().launch(context)),

@@ -57,7 +57,7 @@ class _SellerOrderListState extends State<SellerOrderList> {
     return Scaffold(
       backgroundColor: kDarkWhite,
       appBar: AppBar(backgroundColor: kDarkWhite, elevation: 0, iconTheme: const IconThemeData(color: kNeutralColor),
-        title: Text('Orders', style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)), centerTitle: true),
+        title: Text('Contracts', style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)), centerTitle: true),
       body: Padding(
         padding: const EdgeInsets.only(top: 10.0),
         child: Container(

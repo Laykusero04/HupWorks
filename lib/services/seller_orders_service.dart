@@ -118,4 +118,19 @@ class SellerOrdersService {
       'status': 'pending',
     });
   }
+
+  /// Fetch the current freelancer's submitted applications (job_offers).
+  /// Joined with the parent job post's title, status, and job_type so the
+  /// list screen can render context without a second roundtrip.
+  static Future<List<Map<String, dynamic>>> getMyApplications() async {
+    final user = _client.auth.currentUser;
+    if (user == null) return [];
+
+    final data = await _client
+        .from('job_offers')
+        .select('*, job_posts!job_post_id(id, title, status, job_type)')
+        .eq('seller_id', user.id)
+        .order('created_at', ascending: false);
+    return List<Map<String, dynamic>>.from(data);
+  }
 }

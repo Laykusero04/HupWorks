@@ -8,7 +8,6 @@ import '../../app_config/app_config.dart';
 import '../../widgets/button_global.dart';
 import '../../widgets/constant.dart';
 import '../../widgets/icons.dart';
-import '../client home/client_home.dart';
 import 'client_forgot_password.dart';
 
 class ClientLogIn extends StatefulWidget {
@@ -47,10 +46,8 @@ class _ClientLogInState extends State<ClientLogIn> {
 
     try {
       await AuthService.signIn(email: email, password: password);
-
-      if (mounted) {
-        const ClientHome().launch(context, isNewTask: true);
-      }
+      // Navigation is handled by the GoRouter redirect listening to
+      // Supabase's auth state stream; no explicit push needed here.
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

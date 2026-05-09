@@ -1,0 +1,39 @@
+-- ============================================
+-- Migration 0003 — Phase 6 of FLOW_MIGRATION.md  (DEFERRED — DO NOT RUN YET)
+-- ============================================
+-- Drops the legacy `services` and `service_requirements` tables.
+--
+-- WHY DEFERRED:
+--   The `services` table is still referenced by:
+--     - orders.service_id        (FK, nullable since 0002 — old rows may have it set)
+--     - reviews.service_id       (FK, NOT NULL — every old review has a service_id)
+--     - favourites.service_id    (FK, NOT NULL — every favourite is a service)
+--   Dropping it cascades through all of these. ANY pre-migration order, review,
+--   or favourite will be permanently lost.
+--
+-- WHEN TO RUN:
+--   Only after you have decided the legacy data is disposable, OR you have
+--   migrated/archived it elsewhere.
+--
+-- BEFORE RUNNING — CHECK THE BLAST RADIUS:
+--   select 'orders'      as t, count(*) from public.orders      where service_id is not null
+--   union all
+--   select 'reviews'     as t, count(*) from public.reviews     where service_id is not null
+--   union all
+--   select 'favourites'  as t, count(*) from public.favourites;
+--
+--   If those counts are all zero (or you don't care about the rows), you're
+--   safe to run the script below.
+-- ============================================
+
+-- Uncomment ONLY when you've decided legacy data is disposable.
+
+-- -- Drop the dependent tables / FKs
+-- drop table if exists public.service_requirements cascade;
+-- drop table if exists public.favourites          cascade;  -- service-based; rebuild as job favourites later
+-- drop table if exists public.services            cascade;
+--
+-- -- Tighten the now-orphaned columns. orders.service_id and reviews.service_id
+-- -- become useless once `services` is gone — drop them.
+-- alter table public.orders   drop column if exists service_id;
+-- alter table public.reviews  drop column if exists service_id;

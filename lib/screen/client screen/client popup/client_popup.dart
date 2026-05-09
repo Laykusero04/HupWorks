@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:freelancer/screen/client%20screen/client%20home/client_home.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../widgets/constant.dart';
@@ -175,7 +174,7 @@ class _UploadCompletePopUpState extends State<UploadCompletePopUp> {
               buttonText: 'Done',
               textColor: kWhite,
               onPressed: () {
-                const ClientHome().launch(context);
+                Navigator.of(context).pop();
               },
             )
           ],

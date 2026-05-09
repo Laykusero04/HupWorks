@@ -1,0 +1,204 @@
+import 'package:flutter/material.dart';
+import 'package:freelancer/services/seller_orders_service.dart';
+import 'package:nb_utils/nb_utils.dart';
+
+import '../../widgets/constant.dart';
+
+class SellerApplications extends StatefulWidget {
+  const SellerApplications({super.key});
+
+  @override
+  State<SellerApplications> createState() => _SellerApplicationsState();
+}
+
+class _SellerApplicationsState extends State<SellerApplications> {
+  List<Map<String, dynamic>> _applications = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    try {
+      final apps = await SellerOrdersService.getMyApplications();
+      if (mounted) {
+        setState(() {
+          _applications = apps;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error loading applications: $e')),
+        );
+      }
+    }
+  }
+
+  String _formatDate(String? s) {
+    if (s == null) return '';
+    final d = DateTime.tryParse(s);
+    if (d == null) return '';
+    const m = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return '${d.day} ${m[d.month - 1]} ${d.year}';
+  }
+
+  String _jobTypeLabel(String? t) {
+    switch (t) {
+      case 'full_time':
+        return 'Full-time';
+      case 'part_time':
+        return 'Part-time';
+      case 'gig':
+      default:
+        return 'Gig';
+    }
+  }
+
+  ({Color bg, Color fg, String label}) _statusStyle(String? status) {
+    switch (status) {
+      case 'accepted':
+        return (bg: kPrimaryColor.withOpacity(0.1), fg: kPrimaryColor, label: 'Accepted');
+      case 'rejected':
+        return (bg: const Color(0xFFFFE5E3), fg: const Color(0xFFFF3B30), label: 'Rejected');
+      case 'pending':
+      default:
+        return (bg: const Color(0xFFFFEFE0), fg: const Color(0xFFFF7A00), label: 'Pending');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: kDarkWhite,
+      appBar: AppBar(
+        backgroundColor: kDarkWhite,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: kNeutralColor),
+        title: Text(
+          'My Applications',
+          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.only(top: 10.0),
+        child: Container(
+          width: context.width(),
+          padding: const EdgeInsets.symmetric(horizontal: 15.0),
+          decoration: const BoxDecoration(
+            color: kWhite,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(30.0),
+              topRight: Radius.circular(30.0),
+            ),
+          ),
+          child: _isLoading
+              ? const Center(child: CircularProgressIndicator(color: kPrimaryColor))
+              : _applications.isEmpty
+                  ? Center(
+                      child: Text(
+                        'You haven\'t applied to any jobs yet',
+                        style: kTextStyle.copyWith(color: kLightNeutralColor),
+                      ),
+                    )
+                  : RefreshIndicator(
+                      color: kPrimaryColor,
+                      onRefresh: _load,
+                      child: ListView.builder(
+                        physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                        padding: const EdgeInsets.only(top: 15.0, bottom: 15.0),
+                        itemCount: _applications.length,
+                        itemBuilder: (_, i) {
+                          final app = _applications[i];
+                          final jobPost = app['job_posts'] as Map<String, dynamic>?;
+                          final status = _statusStyle(app['status'] as String?);
+
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 10.0),
+                            child: Container(
+                              padding: const EdgeInsets.all(12.0),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10.0),
+                                color: kWhite,
+                                border: Border.all(color: kBorderColorTextField),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          jobPost?['title'] ?? 'Untitled job',
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8.0),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(vertical: 3.0, horizontal: 8.0),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(20.0),
+                                          color: status.bg,
+                                        ),
+                                        child: Text(
+                                          status.label,
+                                          style: kTextStyle.copyWith(color: status.fg, fontSize: 12.0),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8.0),
+                                  Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(20.0),
+                                          color: kDarkWhite,
+                                        ),
+                                        child: Text(
+                                          _jobTypeLabel(jobPost?['job_type'] as String?),
+                                          style: kTextStyle.copyWith(color: kNeutralColor, fontSize: 12.0),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10.0),
+                                      Text(
+                                        '$currencySign${app['price'] ?? 0}',
+                                        style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold),
+                                      ),
+                                      const Spacer(),
+                                      Text(
+                                        _formatDate(app['created_at'] as String?),
+                                        style: kTextStyle.copyWith(color: kLightNeutralColor),
+                                      ),
+                                    ],
+                                  ),
+                                  if ((app['cover_letter'] as String?)?.isNotEmpty ?? false) ...[
+                                    const SizedBox(height: 8.0),
+                                    Text(
+                                      app['cover_letter'] as String,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: kTextStyle.copyWith(color: kSubTitleColor),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+        ),
+      ),
+    );
+  }
+}

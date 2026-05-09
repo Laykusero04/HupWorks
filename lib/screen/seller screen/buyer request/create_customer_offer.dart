@@ -47,7 +47,7 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
       );
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Offer sent successfully!')));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Application submitted!')));
         Navigator.pop(context);
       }
     } catch (e) {
@@ -63,12 +63,12 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
       backgroundColor: kDarkWhite,
       appBar: AppBar(
         backgroundColor: kDarkWhite, elevation: 0, iconTheme: const IconThemeData(color: kNeutralColor),
-        title: Text('Create Offer', style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)), centerTitle: true,
+        title: Text('Submit Application', style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)), centerTitle: true,
       ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(color: kWhite),
         child: ButtonGlobalWithoutIcon(
-          buttontext: _isSubmitting ? 'Submitting...' : 'Submit Offer',
+          buttontext: _isSubmitting ? 'Submitting...' : 'Submit Application',
           buttonDecoration: kButtonDecoration.copyWith(color: _isSubmitting ? kLightNeutralColor : kPrimaryColor, borderRadius: BorderRadius.circular(30.0)),
           onPressed: _isSubmitting ? null : _handleSubmit,
           buttonTextColor: kWhite,
@@ -107,8 +107,8 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
                   keyboardType: TextInputType.number,
                   cursorColor: kNeutralColor,
                   decoration: kInputDecoration.copyWith(
-                    labelText: 'Total Offer Amount', labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                    hintText: 'Enter amount', hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
+                    labelText: 'Your Bid', labelStyle: kTextStyle.copyWith(color: kNeutralColor),
+                    hintText: 'Enter your bid amount', hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
                     border: const OutlineInputBorder(),
                   ),
                 ),
@@ -145,7 +145,7 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
                   cursorColor: kNeutralColor,
                   maxLines: 5,
                   decoration: kInputDecoration.copyWith(
-                    labelText: 'Cover Letter (optional)', labelStyle: kTextStyle.copyWith(color: kNeutralColor),
+                    labelText: 'Proposal (optional)', labelStyle: kTextStyle.copyWith(color: kNeutralColor),
                     hintText: 'Describe why you are the best fit...', hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
                     floatingLabelBehavior: FloatingLabelBehavior.always, border: const OutlineInputBorder(),
                   ),

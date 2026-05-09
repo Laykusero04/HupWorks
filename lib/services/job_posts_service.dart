@@ -24,6 +24,7 @@ class JobPostsService {
     double? budgetMin,
     double? budgetMax,
     DateTime? deadline,
+    String jobType = 'gig',
   }) async {
     final user = _client.auth.currentUser;
     if (user == null) throw Exception('Not logged in');
@@ -37,6 +38,7 @@ class JobPostsService {
       'budget_max': budgetMax,
       'deadline': deadline?.toIso8601String(),
       'status': 'open',
+      'job_type': jobType,
     }).select().single();
 
     return data;
@@ -62,9 +64,22 @@ class JobPostsService {
     return List<Map<String, dynamic>>.from(data);
   }
 
-  /// Accept or reject an offer
+  /// Accept or reject an offer.
+  /// For "accepted" prefer [acceptJobOffer], which atomically also creates
+  /// the contract and closes the job post.
   static Future<void> updateOfferStatus(String offerId, String status) async {
     await _client.from('job_offers').update({'status': status}).eq('id', offerId);
+  }
+
+  /// Accept an application atomically: marks the offer accepted, rejects
+  /// other pending offers on the same job, closes the job post, and creates
+  /// the contract (orders row). Returns the new order id.
+  static Future<String> acceptJobOffer(String offerId) async {
+    final result = await _client.rpc(
+      'accept_job_offer',
+      params: {'p_offer_id': offerId},
+    );
+    return result.toString();
   }
 
   /// Close a job post

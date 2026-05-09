@@ -9,7 +9,6 @@ import '../../app_config/app_config.dart';
 import '../../widgets/button_global.dart';
 import '../../widgets/constant.dart';
 import '../../widgets/icons.dart';
-import '../seller home/seller_home.dart';
 
 class SellerLogIn extends StatefulWidget {
   const SellerLogIn({Key? key}) : super(key: key);
@@ -47,10 +46,8 @@ class _SellerLogInState extends State<SellerLogIn> {
 
     try {
       await AuthService.signIn(email: email, password: password);
-
-      if (mounted) {
-        const SellerHome().launch(context, isNewTask: true);
-      }
+      // Navigation is handled by the GoRouter redirect listening to
+      // Supabase's auth state stream; no explicit push needed here.
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

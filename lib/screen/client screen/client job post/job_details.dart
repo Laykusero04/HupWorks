@@ -64,12 +64,55 @@ class _JobDetailsState extends State<JobDetails> {
     }
   }
 
-  Future<void> _handleOfferAction(String offerId, String status) async {
+  Future<void> _handleRejectOffer(String offerId) async {
     try {
-      await JobPostsService.updateOfferStatus(offerId, status);
+      await JobPostsService.updateOfferStatus(offerId, 'rejected');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Offer ${status}')),
+          const SnackBar(content: Text('Application rejected')),
+        );
+        _loadData();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
+    }
+  }
+
+  Future<void> _handleAcceptOffer(Map<String, dynamic> offer) async {
+    final seller = offer['profiles'] as Map<String, dynamic>?;
+    final sellerName = seller?['name'] ?? 'this freelancer';
+    final price = offer['price'];
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Hire freelancer?'),
+        content: Text(
+          'Accept $sellerName for $currencySign$price? '
+          'Your job post will be closed and any other pending applications will be rejected.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('Cancel', style: kTextStyle.copyWith(color: kSubTitleColor)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text('Hire', style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    try {
+      await JobPostsService.acceptJobOffer(offer['id'] as String);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Hired! Contract created.')),
         );
         _loadData();
       }
@@ -189,10 +232,10 @@ class _JobDetailsState extends State<JobDetails> {
                 ),
               ),
 
-              // Offers section
+              // Applications section
               const SizedBox(height: 20.0),
               Text(
-                'Seller Offers (${_offers.length})',
+                'Applications (${_offers.length})',
                 style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10.0),
@@ -200,7 +243,7 @@ class _JobDetailsState extends State<JobDetails> {
                   ? Padding(
                       padding: const EdgeInsets.all(20.0),
                       child: Center(
-                        child: Text('No offers yet', style: kTextStyle.copyWith(color: kLightNeutralColor)),
+                        child: Text('No applications yet', style: kTextStyle.copyWith(color: kLightNeutralColor)),
                       ),
                     )
                   : ListView.builder(
@@ -286,15 +329,15 @@ class _JobDetailsState extends State<JobDetails> {
                                           color: kWhite,
                                           border: Border.all(color: Colors.red),
                                         ),
-                                        onPressed: () => _handleOfferAction(offer['id'], 'rejected'),
+                                        onPressed: () => _handleRejectOffer(offer['id'] as String),
                                         buttonTextColor: Colors.red,
                                       ),
                                     ),
                                     Expanded(
                                       child: ButtonGlobalWithoutIcon(
-                                        buttontext: 'Accept',
+                                        buttontext: 'Hire',
                                         buttonDecoration: kButtonDecoration.copyWith(color: kPrimaryColor),
-                                        onPressed: () => _handleOfferAction(offer['id'], 'accepted'),
+                                        onPressed: () => _handleAcceptOffer(offer),
                                         buttonTextColor: kWhite,
                                       ),
                                     ),

@@ -45,7 +45,7 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
       backgroundColor: kDarkWhite,
       appBar: AppBar(
         backgroundColor: kDarkWhite, elevation: 0, iconTheme: const IconThemeData(color: kNeutralColor),
-        title: Text('Buyer Requests', style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)), centerTitle: true,
+        title: Text('Find Jobs', style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)), centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.only(top: 10.0),
@@ -56,7 +56,7 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
           child: _isLoading
               ? const Center(child: CircularProgressIndicator(color: kPrimaryColor))
               : _requests.isEmpty
-                  ? Center(child: Text('No buyer requests', style: kTextStyle.copyWith(color: kLightNeutralColor)))
+                  ? Center(child: Text('No open jobs right now', style: kTextStyle.copyWith(color: kLightNeutralColor)))
                   : RefreshIndicator(
                       color: kPrimaryColor,
                       onRefresh: _loadRequests,

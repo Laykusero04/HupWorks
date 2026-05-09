@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
-import 'package:freelancer/features/auth/bloc/auth_bloc.dart';
-import 'package:freelancer/features/auth/bloc/auth_event.dart';
 import 'package:freelancer/services/profile_service.dart';
 import 'package:nb_utils/nb_utils.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../widgets/constant.dart';
 import '../client dashboard/client_dashboard.dart';
@@ -49,8 +47,8 @@ class _ClientProfileState extends State<ClientProfile> {
     }
   }
 
-  void _handleLogout() {
-    context.read<AuthBloc>().add(AuthLogoutRequested());
+  Future<void> _handleLogout() async {
+    await Supabase.instance.client.auth.signOut();
   }
 
   @override

@@ -17,6 +17,31 @@ class JobPost extends StatefulWidget {
 class _JobPostState extends State<JobPost> {
   List<Map<String, dynamic>> _jobPosts = [];
   bool _isLoading = true;
+  String? _typeFilter; // null = all
+
+  static const _filterOptions = <Map<String, String?>>[
+    {'value': null, 'label': 'All'},
+    {'value': 'gig', 'label': 'Gig'},
+    {'value': 'full_time', 'label': 'Full-time'},
+    {'value': 'part_time', 'label': 'Part-time'},
+  ];
+
+  static String _jobTypeLabel(String? type) {
+    switch (type) {
+      case 'full_time':
+        return 'Full-time';
+      case 'part_time':
+        return 'Part-time';
+      case 'gig':
+      default:
+        return 'Gig';
+    }
+  }
+
+  List<Map<String, dynamic>> get _visibleJobPosts {
+    if (_typeFilter == null) return _jobPosts;
+    return _jobPosts.where((j) => j['job_type'] == _typeFilter).toList();
+  }
 
   @override
   void initState() {
@@ -120,18 +145,48 @@ class _JobPostState extends State<JobPost> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const SizedBox(height: 15.0),
+                            // Job-type filter chips
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              physics: const BouncingScrollPhysics(),
+                              child: Row(
+                                children: _filterOptions.map((opt) {
+                                  final selected = _typeFilter == opt['value'];
+                                  return Padding(
+                                    padding: const EdgeInsets.only(right: 8.0),
+                                    child: ChoiceChip(
+                                      label: Text(opt['label']!),
+                                      selected: selected,
+                                      onSelected: (_) => setState(() => _typeFilter = opt['value']),
+                                      selectedColor: kPrimaryColor,
+                                      backgroundColor: kDarkWhite,
+                                      labelStyle: kTextStyle.copyWith(
+                                        color: selected ? kWhite : kNeutralColor,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(20.0),
+                                        side: BorderSide(
+                                          color: selected ? kPrimaryColor : kBorderColorTextField,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                            const SizedBox(height: 15.0),
                             Text(
-                              'Total Job Post (${_jobPosts.length})',
+                              'Total Job Post (${_visibleJobPosts.length})',
                               style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 15.0),
                             ListView.builder(
-                              itemCount: _jobPosts.length,
+                              itemCount: _visibleJobPosts.length,
                               shrinkWrap: true,
                               padding: const EdgeInsets.only(bottom: 10.0),
                               physics: const NeverScrollableScrollPhysics(),
                               itemBuilder: (_, i) {
-                                final job = _jobPosts[i];
+                                final job = _visibleJobPosts[i];
                                 final category = job['categories'] as Map<String, dynamic>?;
 
                                 return Padding(
@@ -152,9 +207,32 @@ class _JobPostState extends State<JobPost> {
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Text(
-                                            job['title'] ?? 'Untitled',
-                                            style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: Text(
+                                                  job['title'] ?? 'Untitled',
+                                                  style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 8.0),
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(vertical: 3.0, horizontal: 8.0),
+                                                decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(20.0),
+                                                  color: kPrimaryColor.withOpacity(0.1),
+                                                ),
+                                                child: Text(
+                                                  _jobTypeLabel(job['job_type'] as String?),
+                                                  style: kTextStyle.copyWith(
+                                                    color: kPrimaryColor,
+                                                    fontSize: 12.0,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                           const SizedBox(height: 10.0),
                                           Text(

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:nb_utils/nb_utils.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../services/chat_service.dart';
@@ -34,22 +33,32 @@ class _ChatInboxState extends State<ChatInbox> {
   final ImagePicker _imagePicker = ImagePicker();
 
   List<Message> _messages = [];
+  final List<_PendingMessage> _pendingMessages = [];
   bool _isLoading = true;
-  bool _isSending = false;
+  bool _isUploadingAttachment = false;
+  bool _hasText = false;
   RealtimeChannel? _messageChannel;
 
-  String get _currentUserId => Supabase.instance.client.auth.currentUser?.id ?? '';
+  String get _currentUserId =>
+      Supabase.instance.client.auth.currentUser?.id ?? '';
 
   @override
   void initState() {
     super.initState();
-    _loadMessages();
-    _subscribeToMessages();
-    _markAsRead();
+    _messageController.addListener(_onTextChanged);
+    // Defer Supabase calls until after the first frame so the skeleton
+    // bubbles paint immediately.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _loadMessages();
+      _subscribeToMessages();
+      _markAsRead();
+    });
   }
 
   @override
   void dispose() {
+    _messageController.removeListener(_onTextChanged);
     _messageController.dispose();
     _scrollController.dispose();
     _msgFocusNode.dispose();
@@ -57,6 +66,13 @@ class _ChatInboxState extends State<ChatInbox> {
       ChatService.unsubscribe(_messageChannel!);
     }
     super.dispose();
+  }
+
+  void _onTextChanged() {
+    final hasText = _messageController.text.trim().isNotEmpty;
+    if (hasText != _hasText) {
+      setState(() => _hasText = hasText);
+    }
   }
 
   Future<void> _loadMessages() async {
@@ -83,7 +99,6 @@ class _ChatInboxState extends State<ChatInbox> {
     _messageChannel = ChatService.subscribeToMessages(
       conversationId: widget.conversationId,
       onNewMessage: (newRecord) async {
-        // Fetch the full message with sender info
         final data = await ChatService.getMessages(widget.conversationId);
         if (mounted) {
           setState(() {
@@ -112,33 +127,61 @@ class _ChatInboxState extends State<ChatInbox> {
     });
   }
 
+  /// Optimistic text send: the message appears instantly in the UI and is
+  /// reconciled with the server in the background. Failed sends are kept
+  /// in the list with a retry affordance.
   Future<void> _sendMessage() async {
     final text = _messageController.text.trim();
-    if (text.isEmpty || _isSending) return;
+    if (text.isEmpty) return;
+
+    final pending = _PendingMessage(
+      tempId: 't_${DateTime.now().microsecondsSinceEpoch}',
+      content: text,
+      createdAt: DateTime.now(),
+    );
 
     _messageController.clear();
-    setState(() => _isSending = true);
+    setState(() {
+      _pendingMessages.add(pending);
+      _hasText = false;
+    });
+    _scrollToBottom();
 
+    await _flushPending(pending);
+  }
+
+  Future<void> _flushPending(_PendingMessage pending) async {
     try {
       await ChatService.sendMessage(
         conversationId: widget.conversationId,
-        content: text,
+        content: pending.content,
+        attachmentUrl: pending.attachmentUrl,
       );
-    } catch (e) {
+      // The realtime subscription will refetch and bring the real row in.
+      // We optimistically drop the pending entry now; if realtime is slow,
+      // the bubble simply disappears here and reappears as the server copy.
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to send message: $e')),
-        );
+        setState(() {
+          _pendingMessages
+              .removeWhere((m) => m.tempId == pending.tempId);
+        });
       }
-    } finally {
+    } catch (_) {
       if (mounted) {
-        setState(() => _isSending = false);
-        FocusScope.of(context).requestFocus(_msgFocusNode);
+        setState(() {
+          pending.status = _PendingStatus.failed;
+        });
       }
     }
   }
 
+  Future<void> _retryPending(_PendingMessage pending) async {
+    setState(() => pending.status = _PendingStatus.sending);
+    await _flushPending(pending);
+  }
+
   Future<void> _pickAndSendImage() async {
+    if (_isUploadingAttachment) return;
     try {
       final picked = await _imagePicker.pickImage(
         source: ImageSource.gallery,
@@ -146,24 +189,32 @@ class _ChatInboxState extends State<ChatInbox> {
       );
       if (picked == null) return;
 
-      setState(() => _isSending = true);
+      setState(() => _isUploadingAttachment = true);
 
       final file = File(picked.path);
-      final url = await ChatService.uploadAttachment(file, widget.conversationId);
+      final url =
+          await ChatService.uploadAttachment(file, widget.conversationId);
 
-      await ChatService.sendMessage(
-        conversationId: widget.conversationId,
+      // After upload, queue the message optimistically just like text.
+      final pending = _PendingMessage(
+        tempId: 't_${DateTime.now().microsecondsSinceEpoch}',
         content: '',
         attachmentUrl: url,
+        createdAt: DateTime.now(),
       );
+      setState(() {
+        _pendingMessages.add(pending);
+        _isUploadingAttachment = false;
+      });
+      _scrollToBottom();
+      await _flushPending(pending);
     } catch (e) {
       if (mounted) {
+        setState(() => _isUploadingAttachment = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to send attachment: $e')),
         );
       }
-    } finally {
-      if (mounted) setState(() => _isSending = false);
     }
   }
 
@@ -173,7 +224,8 @@ class _ChatInboxState extends State<ChatInbox> {
       context: context,
       builder: (BuildContext context) {
         return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16.0)),
           child: const BlockingReasonPopUp(),
         );
       },
@@ -194,284 +246,980 @@ class _ChatInboxState extends State<ChatInbox> {
     final messageDate = DateTime(dateTime.year, dateTime.month, dateTime.day);
 
     if (messageDate == today) return 'Today';
-    if (messageDate == today.subtract(const Duration(days: 1))) return 'Yesterday';
+    if (messageDate == today.subtract(const Duration(days: 1))) {
+      return 'Yesterday';
+    }
     return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
   }
 
+  bool _isSameDay(DateTime a, DateTime b) =>
+      a.year == b.year && a.month == b.month && a.day == b.day;
+
   bool _shouldShowDateHeader(int index) {
     if (index == 0) return true;
-    final current = DateTime(_messages[index].createdAt.year, _messages[index].createdAt.month, _messages[index].createdAt.day);
-    final previous = DateTime(_messages[index - 1].createdAt.year, _messages[index - 1].createdAt.month, _messages[index - 1].createdAt.day);
-    return current != previous;
+    return !_isSameDay(_messages[index].createdAt,
+        _messages[index - 1].createdAt);
+  }
+
+  /// True when the previous message in the list is from the same sender and same day.
+  bool _isContinuationFromPrevious(int index) {
+    if (index == 0) return false;
+    if (!_isSameDay(
+        _messages[index].createdAt, _messages[index - 1].createdAt)) {
+      return false;
+    }
+    return _messages[index].senderId == _messages[index - 1].senderId;
+  }
+
+  /// True when the next message is from the same sender and same day.
+  bool _isContinuedByNext(int index) {
+    if (index == _messages.length - 1) return false;
+    if (!_isSameDay(
+        _messages[index].createdAt, _messages[index + 1].createdAt)) {
+      return false;
+    }
+    return _messages[index].senderId == _messages[index + 1].senderId;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kDarkWhite,
-      appBar: AppBar(
-        automaticallyImplyLeading: true,
-        leadingWidth: 24,
-        iconTheme: const IconThemeData(color: kNeutralColor),
-        backgroundColor: kDarkWhite,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            CircleAvatar(
-              radius: 20,
-              backgroundImage: widget.otherUserImage.isNotEmpty ? NetworkImage(widget.otherUserImage) : null,
-              backgroundColor: kWhite,
-              child: widget.otherUserImage.isEmpty
-                  ? Text(
-                      widget.otherUserName.isNotEmpty ? widget.otherUserName[0].toUpperCase() : '?',
-                      style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold),
-                    )
-                  : null,
-            ),
-            8.width,
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(widget.otherUserName, style: boldTextStyle(), overflow: TextOverflow.ellipsis),
-                ],
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 10.0),
-            child: Container(
-              padding: const EdgeInsets.all(5.0),
-              decoration: const BoxDecoration(shape: BoxShape.circle, color: kWhite),
-              child: PopupMenuButton(
-                itemBuilder: (BuildContext bc) => [
-                  PopupMenuItem(
-                    child: Text('Block', style: kTextStyle.copyWith(color: kNeutralColor)),
-                    onTap: () => Future.delayed(Duration.zero, _showBlockPopUp),
-                  ),
-                  PopupMenuItem(
-                    child: Text('Report', style: kTextStyle.copyWith(color: kNeutralColor)),
-                  ),
-                ],
-                child: const Icon(FeatherIcons.moreVertical, color: kNeutralColor),
-              ),
-            ),
-          )
-        ],
-        shadowColor: kNeutralColor.withOpacity(0.5),
-        elevation: 0,
-      ),
+      appBar: _buildAppBar(),
       body: Column(
         children: [
           Expanded(
             child: _isLoading
-                ? const Center(child: CircularProgressIndicator(color: kPrimaryColor))
-                : _messages.isEmpty
-                    ? Center(
-                        child: Text(
-                          'No messages yet. Say hello!',
-                          style: kTextStyle.copyWith(color: kLightNeutralColor),
-                        ),
-                      )
-                    : ListView.builder(
-                        controller: _scrollController,
-                        padding: const EdgeInsets.all(16.0),
-                        physics: const BouncingScrollPhysics(),
-                        itemCount: _messages.length,
-                        itemBuilder: (context, index) {
-                          final message = _messages[index];
-                          final isMine = message.isMine(_currentUserId);
-
-                          return Column(
-                            children: [
-                              // Date header
-                              if (_shouldShowDateHeader(index))
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
-                                  child: Text(
-                                    _formatDateHeader(message.createdAt),
-                                    style: secondaryTextStyle(size: 13),
-                                  ),
-                                ),
-                              // Message bubble
-                              _buildMessageBubble(message, isMine),
-                              const SizedBox(height: 8),
-                            ],
-                          );
-                        },
-                      ),
+                ? _buildSkeleton()
+                : (_messages.isEmpty && _pendingMessages.isEmpty)
+                    ? _buildEmptyState()
+                    : _buildMessageList(),
           ),
-          // Message input
           _buildMessageInput(),
         ],
       ),
     );
   }
 
-  Widget _buildMessageBubble(Message message, bool isMine) {
-    return Row(
-      mainAxisAlignment: isMine ? MainAxisAlignment.end : MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        if (!isMine) ...[
-          CircleAvatar(
-            radius: 16,
-            backgroundImage: widget.otherUserImage.isNotEmpty ? NetworkImage(widget.otherUserImage) : null,
-            backgroundColor: kDarkWhite,
-            child: widget.otherUserImage.isEmpty
-                ? Text(widget.otherUserName.isNotEmpty ? widget.otherUserName[0].toUpperCase() : '?',
-                    style: const TextStyle(fontSize: 12, color: kPrimaryColor))
-                : null,
-          ),
-          6.width,
-        ],
-        Flexible(
-          child: Column(
-            crossAxisAlignment: isMine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-            children: [
-              Container(
-                decoration: boxDecorationWithRoundedCorners(
-                  backgroundColor: isMine ? kPrimaryColor : kDarkWhite,
-                  borderRadius: BorderRadius.only(
-                    topRight: const Radius.circular(20.0),
-                    topLeft: const Radius.circular(20.0),
-                    bottomLeft: isMine ? const Radius.circular(20.0) : Radius.zero,
-                    bottomRight: isMine ? Radius.zero : const Radius.circular(20.0),
+  // ---------------------------------------------------------------- App bar
+  PreferredSizeWidget _buildAppBar() {
+    return AppBar(
+      backgroundColor: kWhite,
+      surfaceTintColor: kWhite,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      iconTheme: const IconThemeData(color: kNeutralColor),
+      leadingWidth: 44,
+      leading: Padding(
+        padding: const EdgeInsets.only(left: 8),
+        child: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
+          onPressed: () => Navigator.of(context).maybePop(),
+        ),
+      ),
+      titleSpacing: 0,
+      title: Row(
+        children: [
+          _appBarAvatar(),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.otherUserName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: kTextStyle.copyWith(
+                    color: kNeutralColor,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
                   ),
                 ),
-                padding: const EdgeInsets.all(12.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                const SizedBox(height: 2),
+                Row(
                   children: [
-                    // Attachment
-                    if (message.attachmentUrl != null) ...[
-                      if (message.attachmentType == 'image')
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.network(
-                            message.attachmentUrl!,
-                            width: 200,
-                            height: 200,
-                            fit: BoxFit.cover,
-                            loadingBuilder: (_, child, progress) {
-                              if (progress == null) return child;
-                              return const SizedBox(
-                                width: 200,
-                                height: 200,
-                                child: Center(child: CircularProgressIndicator(color: kPrimaryColor)),
-                              );
-                            },
-                          ),
-                        )
-                      else
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.attach_file, color: isMine ? white : kNeutralColor, size: 18),
-                            4.width,
-                            Text(
-                              'Attachment',
-                              style: primaryTextStyle(color: isMine ? white : kNeutralColor),
-                            ),
-                          ],
-                        ),
-                      if (message.content.isNotEmpty) 6.height,
-                    ],
-                    // Text content
-                    if (message.content.isNotEmpty)
-                      Text(
-                        message.content,
-                        style: primaryTextStyle(color: isMine ? white : kNeutralColor),
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: const BoxDecoration(
+                        color: kPrimaryColor,
+                        shape: BoxShape.circle,
                       ),
-                  ],
-                ),
-              ),
-              4.height,
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    _formatMessageTime(message.createdAt),
-                    style: secondaryTextStyle(size: 11),
-                  ),
-                  if (isMine) ...[
-                    4.width,
-                    Icon(
-                      message.isRead ? Icons.done_all : Icons.done,
-                      size: 14,
-                      color: message.isRead ? kPrimaryColor : kLightNeutralColor,
+                    ),
+                    const SizedBox(width: 5),
+                    Text(
+                      'Active now',
+                      style: kTextStyle.copyWith(
+                        color: kLightNeutralColor,
+                        fontSize: 11,
+                      ),
                     ),
                   ],
-                ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 8),
+          child: Container(
+            decoration: BoxDecoration(
+              color: kDarkWhite,
+              shape: BoxShape.circle,
+            ),
+            child: PopupMenuButton<String>(
+              icon: const Icon(FeatherIcons.moreVertical,
+                  color: kNeutralColor, size: 18),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
               ),
-            ],
+              itemBuilder: (BuildContext bc) => [
+                PopupMenuItem(
+                  value: 'block',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.block_rounded,
+                          size: 18, color: kNeutralColor),
+                      const SizedBox(width: 10),
+                      Text('Block',
+                          style: kTextStyle.copyWith(color: kNeutralColor)),
+                    ],
+                  ),
+                ),
+                PopupMenuItem(
+                  value: 'report',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.flag_outlined,
+                          size: 18, color: kNeutralColor),
+                      const SizedBox(width: 10),
+                      Text('Report',
+                          style: kTextStyle.copyWith(color: kNeutralColor)),
+                    ],
+                  ),
+                ),
+              ],
+              onSelected: (value) {
+                if (value == 'block') {
+                  Future.delayed(Duration.zero, _showBlockPopUp);
+                }
+              },
+            ),
           ),
         ),
-        if (isMine) 6.width,
+      ],
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(1),
+        child: Container(height: 1, color: kBorderColorTextField),
+      ),
+    );
+  }
+
+  Widget _appBarAvatar() {
+    final hasImage = widget.otherUserImage.isNotEmpty;
+    final initial = widget.otherUserName.isNotEmpty
+        ? widget.otherUserName[0].toUpperCase()
+        : '?';
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Container(
+          width: 38,
+          height: 38,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: kPrimaryColor.withOpacity(0.10),
+            image: hasImage
+                ? DecorationImage(
+                    image: NetworkImage(widget.otherUserImage),
+                    fit: BoxFit.cover)
+                : null,
+          ),
+          alignment: Alignment.center,
+          child: hasImage
+              ? null
+              : Text(
+                  initial,
+                  style: kTextStyle.copyWith(
+                    color: kPrimaryColor,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                  ),
+                ),
+        ),
+        Positioned(
+          right: -2,
+          bottom: -2,
+          child: Container(
+            width: 12,
+            height: 12,
+            decoration: BoxDecoration(
+              color: kPrimaryColor,
+              shape: BoxShape.circle,
+              border: Border.all(color: kWhite, width: 2),
+            ),
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildMessageInput() {
-    return Container(
-      padding: MediaQuery.of(context).viewInsets,
-      decoration: boxDecorationWithRoundedCorners(
-        backgroundColor: context.cardColor,
-        borderRadius: radius(0.0),
-        border: Border.all(color: Colors.grey.shade100),
-      ),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-        child: Row(
+  // ---------------------------------------------------------------- Empty
+  Widget _buildEmptyState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 40),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Attachment button
-            GestureDetector(
-              onTap: _isSending ? null : _pickAndSendImage,
-              child: Container(
-                padding: const EdgeInsets.all(10.0),
-                decoration: const BoxDecoration(shape: BoxShape.circle, color: kDarkWhite),
-                child: Icon(
-                  FeatherIcons.image,
-                  color: _isSending ? kLightNeutralColor : kNeutralColor,
-                ),
+            Container(
+              padding: const EdgeInsets.all(22),
+              decoration: BoxDecoration(
+                color: kPrimaryColor.withOpacity(0.10),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.chat_bubble_outline_rounded,
+                  color: kPrimaryColor, size: 48),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Say hello to ${widget.otherUserName}',
+              textAlign: TextAlign.center,
+              style: kTextStyle.copyWith(
+                color: kNeutralColor,
+                fontWeight: FontWeight.w700,
+                fontSize: 16,
               ),
             ),
-            8.width,
-            // Text field
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.only(left: 10.0, right: 10.0),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30.0),
-                  color: kDarkWhite,
-                ),
-                child: AppTextField(
-                  controller: _messageController,
-                  textFieldType: TextFieldType.OTHER,
-                  focus: _msgFocusNode,
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: 'Message...',
-                    hintStyle: secondaryTextStyle(size: 16),
-                    suffixIcon: _isSending
-                        ? const Padding(
-                            padding: EdgeInsets.all(12.0),
-                            child: SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2, color: kPrimaryColor),
-                            ),
-                          )
-                        : const Icon(Icons.send_outlined, size: 24, color: kPrimaryColor).paddingAll(4.0).onTap(_sendMessage),
-                  ),
-                ),
+            const SizedBox(height: 6),
+            Text(
+              'Start a conversation by sending your first message',
+              textAlign: TextAlign.center,
+              style: kTextStyle.copyWith(
+                color: kLightNeutralColor,
+                fontSize: 13,
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  // ---------------------------------------------------------------- Messages
+  Widget _buildMessageList() {
+    final totalCount = _messages.length + _pendingMessages.length;
+    return ListView.builder(
+      controller: _scrollController,
+      padding: const EdgeInsets.fromLTRB(14, 10, 14, 14),
+      physics: const BouncingScrollPhysics(),
+      itemCount: totalCount,
+      itemBuilder: (context, index) {
+        if (index < _messages.length) {
+          return _buildRealMessageItem(index);
+        }
+        final pending = _pendingMessages[index - _messages.length];
+        final isFirstPending = index == _messages.length;
+        return _buildPendingBubble(pending, isFirstPending: isFirstPending);
+      },
+    );
+  }
+
+  Widget _buildRealMessageItem(int index) {
+    final message = _messages[index];
+    final isMine = message.isMine(_currentUserId);
+    final showDateHeader = _shouldShowDateHeader(index);
+    final isContinuation =
+        !showDateHeader && _isContinuationFromPrevious(index);
+    final isContinued = _isContinuedByNext(index);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (showDateHeader) _dateHeader(message.createdAt),
+        _buildMessageBubble(
+          message,
+          isMine: isMine,
+          isContinuation: isContinuation,
+          isContinued: isContinued,
+        ),
+      ],
+    );
+  }
+
+  Widget _dateHeader(DateTime date) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Center(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+          decoration: BoxDecoration(
+            color: kDarkWhite,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: kBorderColorTextField),
+          ),
+          child: Text(
+            _formatDateHeader(date),
+            style: kTextStyle.copyWith(
+              color: kLightNeutralColor,
+              fontWeight: FontWeight.w600,
+              fontSize: 11,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMessageBubble(
+    Message message, {
+    required bool isMine,
+    required bool isContinuation,
+    required bool isContinued,
+  }) {
+    final radius = const Radius.circular(18);
+    final smallRadius = const Radius.circular(6);
+
+    final borderRadius = BorderRadius.only(
+      topLeft: isMine ? radius : (isContinuation ? smallRadius : radius),
+      topRight: !isMine ? radius : (isContinuation ? smallRadius : radius),
+      bottomLeft: !isMine
+          ? (isContinued ? radius : smallRadius)
+          : radius,
+      bottomRight: isMine
+          ? (isContinued ? radius : smallRadius)
+          : radius,
+    );
+
+    return Padding(
+      padding: EdgeInsets.only(
+        top: isContinuation ? 3 : 8,
+        bottom: 0,
+      ),
+      child: Row(
+        mainAxisAlignment:
+            isMine ? MainAxisAlignment.end : MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          if (!isMine) ...[
+            if (!isContinued)
+              _smallAvatar()
+            else
+              const SizedBox(width: 28),
+            const SizedBox(width: 6),
+          ],
+          Flexible(
+            child: Column(
+              crossAxisAlignment:
+                  isMine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              children: [
+                Container(
+                  constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width * 0.72,
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 14, vertical: 10),
+                  decoration: BoxDecoration(
+                    gradient: isMine
+                        ? const LinearGradient(
+                            colors: [
+                              Color(0xFF16A34A),
+                              Color(0xFF38C172),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          )
+                        : null,
+                    color: isMine ? null : kWhite,
+                    borderRadius: borderRadius,
+                    boxShadow: [
+                      BoxShadow(
+                        color: isMine
+                            ? kPrimaryColor.withOpacity(0.22)
+                            : Colors.black.withOpacity(0.04),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: _bubbleContent(message, isMine),
+                ),
+                if (!isContinued) ...[
+                  const SizedBox(height: 4),
+                  Padding(
+                    padding: EdgeInsets.only(
+                      left: isMine ? 0 : 6,
+                      right: isMine ? 6 : 0,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          _formatMessageTime(message.createdAt),
+                          style: kTextStyle.copyWith(
+                            color: kLightNeutralColor,
+                            fontSize: 10,
+                          ),
+                        ),
+                        if (isMine) ...[
+                          const SizedBox(width: 4),
+                          Icon(
+                            message.isRead
+                                ? Icons.done_all_rounded
+                                : Icons.done_rounded,
+                            size: 14,
+                            color: message.isRead
+                                ? kPrimaryColor
+                                : kLightNeutralColor,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          if (isMine) const SizedBox(width: 4),
+        ],
+      ),
+    );
+  }
+
+  Widget _bubbleContent(Message message, bool isMine) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (message.attachmentUrl != null) ...[
+          if (message.attachmentType == 'image')
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.network(
+                message.attachmentUrl!,
+                width: 220,
+                height: 220,
+                fit: BoxFit.cover,
+                loadingBuilder: (_, child, progress) {
+                  if (progress == null) return child;
+                  return Container(
+                    width: 220,
+                    height: 220,
+                    color: kDarkWhite,
+                    child: const Center(
+                      child: CircularProgressIndicator(
+                          color: kPrimaryColor, strokeWidth: 2),
+                    ),
+                  );
+                },
+                errorBuilder: (_, __, ___) => Container(
+                  width: 220,
+                  height: 220,
+                  color: kDarkWhite,
+                  child: const Icon(Icons.broken_image_outlined,
+                      color: kLightNeutralColor, size: 32),
+                ),
+              ),
+            )
+          else
+            Container(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 10, vertical: 8),
+              decoration: BoxDecoration(
+                color: (isMine ? Colors.white : kPrimaryColor)
+                    .withOpacity(0.15),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.insert_drive_file_rounded,
+                      color: isMine ? Colors.white : kPrimaryColor,
+                      size: 18),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Attachment',
+                    style: kTextStyle.copyWith(
+                      color: isMine ? Colors.white : kPrimaryColor,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          if (message.content.isNotEmpty) const SizedBox(height: 6),
+        ],
+        if (message.content.isNotEmpty)
+          Text(
+            message.content,
+            style: kTextStyle.copyWith(
+              color: isMine ? Colors.white : kNeutralColor,
+              fontSize: 14,
+              height: 1.35,
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _smallAvatar() {
+    final hasImage = widget.otherUserImage.isNotEmpty;
+    final initial = widget.otherUserName.isNotEmpty
+        ? widget.otherUserName[0].toUpperCase()
+        : '?';
+    return Container(
+      width: 28,
+      height: 28,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: kPrimaryColor.withOpacity(0.10),
+        image: hasImage
+            ? DecorationImage(
+                image: NetworkImage(widget.otherUserImage),
+                fit: BoxFit.cover)
+            : null,
+      ),
+      alignment: Alignment.center,
+      child: hasImage
+          ? null
+          : Text(
+              initial,
+              style: kTextStyle.copyWith(
+                color: kPrimaryColor,
+                fontWeight: FontWeight.w700,
+                fontSize: 11,
+              ),
+            ),
+    );
+  }
+
+  // ---------------------------------------------------------------- Input
+  Widget _buildMessageInput() {
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(12, 6, 12, 10),
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(6, 6, 6, 6),
+          decoration: BoxDecoration(
+            color: kWhite,
+            borderRadius: BorderRadius.circular(28),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.06),
+                blurRadius: 18,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              GestureDetector(
+                onTap: _isUploadingAttachment ? null : _pickAndSendImage,
+                child: Container(
+                  margin: const EdgeInsets.all(2),
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: kPrimaryColor.withOpacity(0.10),
+                    shape: BoxShape.circle,
+                  ),
+                  child: _isUploadingAttachment
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                kPrimaryColor),
+                          ),
+                        )
+                      : const Icon(
+                          Icons.attach_file_rounded,
+                          color: kPrimaryColor,
+                          size: 20,
+                        ),
+                ),
+              ),
+              const SizedBox(width: 4),
+              Expanded(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 120),
+                  child: TextField(
+                    controller: _messageController,
+                    focusNode: _msgFocusNode,
+                    minLines: 1,
+                    maxLines: 5,
+                    textInputAction: TextInputAction.newline,
+                    style: kTextStyle.copyWith(
+                      color: kNeutralColor,
+                      fontSize: 14,
+                    ),
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      isCollapsed: true,
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 12),
+                      hintText: 'Type a message...',
+                      hintStyle: kTextStyle.copyWith(
+                        color: kLightNeutralColor,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 4),
+              _buildSendButton(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSendButton() {
+    final active = _hasText;
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 220),
+      curve: Curves.easeOut,
+      width: 42,
+      height: 42,
+      margin: const EdgeInsets.all(2),
+      decoration: BoxDecoration(
+        gradient: active
+            ? const LinearGradient(
+                colors: [Color(0xFF16A34A), Color(0xFF38C172)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : null,
+        color: active ? null : kDarkWhite,
+        shape: BoxShape.circle,
+        boxShadow: active
+            ? [
+                BoxShadow(
+                  color: kPrimaryColor.withOpacity(0.30),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ]
+            : null,
+      ),
+      child: Material(
+        color: Colors.transparent,
+        shape: const CircleBorder(),
+        child: InkWell(
+          customBorder: const CircleBorder(),
+          onTap: active ? _sendMessage : null,
+          child: Center(
+            child: Icon(
+              Icons.send_rounded,
+              size: 20,
+              color: active ? Colors.white : kLightNeutralColor,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------- Pending bubble
+  Widget _buildPendingBubble(_PendingMessage pending,
+      {required bool isFirstPending}) {
+    final maxWidth = MediaQuery.of(context).size.width * 0.72;
+    final isFailed = pending.status == _PendingStatus.failed;
+    final radius = const Radius.circular(18);
+    final smallRadius = const Radius.circular(6);
+
+    return Padding(
+      padding: EdgeInsets.only(top: isFirstPending ? 8 : 3),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Flexible(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Opacity(
+                  opacity: isFailed ? 1 : 0.75,
+                  child: Container(
+                    constraints: BoxConstraints(maxWidth: maxWidth),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 10),
+                    decoration: BoxDecoration(
+                      gradient: isFailed
+                          ? null
+                          : const LinearGradient(
+                              colors: [
+                                Color(0xFF16A34A),
+                                Color(0xFF38C172),
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                      color: isFailed
+                          ? const Color(0xFFFEE2E2)
+                          : null,
+                      border: isFailed
+                          ? Border.all(
+                              color: const Color(0xFFEF4444), width: 1)
+                          : null,
+                      borderRadius: BorderRadius.only(
+                        topLeft: radius,
+                        topRight: radius,
+                        bottomLeft: radius,
+                        bottomRight: smallRadius,
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (pending.attachmentUrl != null) ...[
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.network(
+                              pending.attachmentUrl!,
+                              width: 220,
+                              height: 220,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => Container(
+                                width: 220,
+                                height: 220,
+                                color: kDarkWhite,
+                                child: const Icon(
+                                    Icons.broken_image_outlined,
+                                    color: kLightNeutralColor,
+                                    size: 32),
+                              ),
+                            ),
+                          ),
+                          if (pending.content.isNotEmpty)
+                            const SizedBox(height: 6),
+                        ],
+                        if (pending.content.isNotEmpty)
+                          Text(
+                            pending.content,
+                            style: kTextStyle.copyWith(
+                              color: isFailed
+                                  ? const Color(0xFF991B1B)
+                                  : Colors.white,
+                              fontSize: 14,
+                              height: 1.35,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Padding(
+                  padding: const EdgeInsets.only(right: 6),
+                  child: isFailed
+                      ? GestureDetector(
+                          onTap: () => _retryPending(pending),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.error_outline_rounded,
+                                  size: 14, color: Color(0xFFEF4444)),
+                              const SizedBox(width: 4),
+                              Text(
+                                'Failed — Tap to retry',
+                                style: kTextStyle.copyWith(
+                                  color: const Color(0xFFEF4444),
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      : Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const SizedBox(
+                              width: 10,
+                              height: 10,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 1.5,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                    kLightNeutralColor),
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Sending...',
+                              style: kTextStyle.copyWith(
+                                color: kLightNeutralColor,
+                                fontSize: 10,
+                              ),
+                            ),
+                          ],
+                        ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 4),
+        ],
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------- Skeleton
+  Widget _buildSkeleton() {
+    // A plausible mix of incoming/outgoing bubbles of varying widths.
+    final stub = const <_SkeletonStub>[
+      _SkeletonStub(mine: false, widthFactor: 0.55),
+      _SkeletonStub(mine: true, widthFactor: 0.40),
+      _SkeletonStub(mine: false, widthFactor: 0.70),
+      _SkeletonStub(mine: true, widthFactor: 0.50),
+      _SkeletonStub(mine: false, widthFactor: 0.35),
+      _SkeletonStub(mine: true, widthFactor: 0.60),
+    ];
+
+    return _Shimmer(
+      child: ListView.builder(
+        physics: const NeverScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
+        itemCount: stub.length,
+        itemBuilder: (context, i) {
+          final s = stub[i];
+          final width = MediaQuery.of(context).size.width * s.widthFactor;
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            child: Row(
+              mainAxisAlignment:
+                  s.mine ? MainAxisAlignment.end : MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                if (!s.mine) ...[
+                  const _SkeletonBox(width: 28, height: 28, radius: 14),
+                  const SizedBox(width: 6),
+                ],
+                _SkeletonBox(width: width, height: 36, radius: 18),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+// =============================================================
+// Pending message model
+// =============================================================
+enum _PendingStatus { sending, failed }
+
+class _PendingMessage {
+  final String tempId;
+  final String content;
+  final String? attachmentUrl;
+  final DateTime createdAt;
+  _PendingStatus status = _PendingStatus.sending;
+
+  _PendingMessage({
+    required this.tempId,
+    required this.content,
+    this.attachmentUrl,
+    required this.createdAt,
+  });
+}
+
+// =============================================================
+// Shimmer primitives
+// =============================================================
+class _SkeletonStub {
+  final bool mine;
+  final double widthFactor;
+  const _SkeletonStub({required this.mine, required this.widthFactor});
+}
+
+class _SkeletonBox extends StatelessWidget {
+  final double? width;
+  final double height;
+  final double radius;
+
+  const _SkeletonBox({
+    this.width,
+    required this.height,
+    this.radius = 8,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: const Color(0xFFE6E6E6),
+        borderRadius: BorderRadius.circular(radius),
+      ),
+    );
+  }
+}
+
+class _Shimmer extends StatefulWidget {
+  final Widget child;
+  const _Shimmer({required this.child});
+
+  @override
+  State<_Shimmer> createState() => _ShimmerState();
+}
+
+class _ShimmerState extends State<_Shimmer>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1400),
+  )..repeat();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) => ShaderMask(
+        blendMode: BlendMode.srcATop,
+        shaderCallback: (bounds) => LinearGradient(
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          colors: const [
+            Color(0xFFE6E6E6),
+            Color(0xFFF6F6F6),
+            Color(0xFFE6E6E6),
+          ],
+          stops: const [0.1, 0.5, 0.9],
+          transform: _SlidingGradientTransform(_controller.value),
+        ).createShader(bounds),
+        child: child,
+      ),
+      child: widget.child,
+    );
+  }
+}
+
+class _SlidingGradientTransform extends GradientTransform {
+  final double slidePercent;
+  const _SlidingGradientTransform(this.slidePercent);
+
+  @override
+  Matrix4? transform(Rect bounds, {TextDirection? textDirection}) {
+    return Matrix4.translationValues(
+      bounds.width * (slidePercent * 2 - 1),
+      0,
+      0,
     );
   }
 }

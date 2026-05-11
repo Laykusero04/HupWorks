@@ -190,7 +190,9 @@ GoRouter createRouter() {
   );
 }
 
-/// Shared bottom nav scaffold for both client and seller shells
+/// Shared bottom nav scaffold for both client and seller shells.
+/// Uses a floating capsule design: unselected tabs show only the icon,
+/// the selected tab expands into a primary-tinted pill with icon + label.
 class _ScaffoldWithNavBar extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
   final List<BottomNavigationBarItem> items;
@@ -204,27 +206,121 @@ class _ScaffoldWithNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kWhite,
+      extendBody: true,
       body: navigationShell,
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(8.0),
-        decoration: const BoxDecoration(
-          color: kWhite,
-          borderRadius: BorderRadius.only(
-            topRight: Radius.circular(30.0),
-            topLeft: Radius.circular(30.0),
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            decoration: BoxDecoration(
+              color: kWhite,
+              borderRadius: BorderRadius.circular(28),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.10),
+                  blurRadius: 22,
+                  offset: const Offset(0, 10),
+                ),
+                BoxShadow(
+                  color: kPrimaryColor.withOpacity(0.06),
+                  blurRadius: 18,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: List.generate(items.length, (i) {
+                final item = items[i];
+                final selected = i == navigationShell.currentIndex;
+                return _CapsuleNavItem(
+                  icon: item.icon,
+                  label: item.label ?? '',
+                  selected: selected,
+                  onTap: () => navigationShell.goBranch(
+                    i,
+                    initialLocation: i == navigationShell.currentIndex,
+                  ),
+                );
+              }),
+            ),
           ),
-          boxShadow: [BoxShadow(color: kDarkWhite, blurRadius: 5.0, spreadRadius: 3.0, offset: Offset(0, -2))],
         ),
-        child: BottomNavigationBar(
-          elevation: 0.0,
-          selectedItemColor: kPrimaryColor,
-          unselectedItemColor: kLightNeutralColor,
-          backgroundColor: kWhite,
-          showUnselectedLabels: true,
-          type: BottomNavigationBarType.fixed,
-          items: items,
-          currentIndex: navigationShell.currentIndex,
-          onTap: (index) => navigationShell.goBranch(index, initialLocation: index == navigationShell.currentIndex),
+      ),
+    );
+  }
+}
+
+class _CapsuleNavItem extends StatelessWidget {
+  final Widget icon;
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _CapsuleNavItem({
+    required this.icon,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    const duration = Duration(milliseconds: 280);
+    const curve = Curves.easeOutCubic;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(24),
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: duration,
+          curve: curve,
+          padding: EdgeInsets.symmetric(
+            horizontal: selected ? 14 : 12,
+            vertical: 10,
+          ),
+          decoration: BoxDecoration(
+            color: selected
+                ? kPrimaryColor.withOpacity(0.12)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(24),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconTheme(
+                data: IconThemeData(
+                  color: selected ? kPrimaryColor : kLightNeutralColor,
+                  size: 22,
+                ),
+                child: icon,
+              ),
+              AnimatedSize(
+                duration: duration,
+                curve: curve,
+                child: selected
+                    ? Padding(
+                        padding: const EdgeInsets.only(left: 6),
+                        child: Text(
+                          label,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: kPrimaryColor,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 12,
+                            fontFamily: 'Display',
+                          ),
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+              ),
+            ],
+          ),
         ),
       ),
     );

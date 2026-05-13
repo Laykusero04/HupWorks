@@ -580,6 +580,11 @@ class _ChatInboxState extends State<ChatInbox> {
     required bool isContinuation,
     required bool isContinued,
   }) {
+    final bidInfo = _parseBidMessage(message.content);
+    if (bidInfo != null) {
+      return _buildBidBubble(message, isMine, bidInfo);
+    }
+
     final radius = const Radius.circular(18);
     final smallRadius = const Radius.circular(6);
 
@@ -1110,6 +1115,185 @@ class _ChatInboxState extends State<ChatInbox> {
       ),
     );
   }
+
+  // ---------------------------------------------------------------- Bid card
+  _BidMessageInfo? _parseBidMessage(String content) {
+    final lines = content.split('\n').map((l) => l.trim()).toList();
+    if (lines.isEmpty || !lines[0].contains('New bid for')) return null;
+
+    final titleMatch = RegExp(r'"([^"]+)"').firstMatch(lines[0]);
+    final jobTitle = titleMatch?.group(1) ?? '';
+    if (jobTitle.isEmpty || lines.length < 2) return null;
+
+    final amountMatch = RegExp(r'Amount:\s*([^·]+?)(?:\s*·|$)').firstMatch(lines[1]);
+    final deliveryMatch = RegExp(r'Delivery:\s*(.+)$').firstMatch(lines[1]);
+    final amount = amountMatch?.group(1)?.trim() ?? '';
+    final delivery = deliveryMatch?.group(1)?.trim() ?? '';
+    if (amount.isEmpty || delivery.isEmpty) return null;
+
+    String? proposal;
+    if (lines.length > 2) {
+      proposal = lines.sublist(2).join('\n').trim();
+      if (proposal.isEmpty) proposal = null;
+    }
+
+    return _BidMessageInfo(jobTitle: jobTitle, amount: amount, delivery: delivery, proposal: proposal);
+  }
+
+  Widget _buildBidBubble(Message message, bool isMine, _BidMessageInfo bid) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        mainAxisAlignment: isMine ? MainAxisAlignment.end : MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          if (!isMine) ...[
+            _smallAvatar(),
+            const SizedBox(width: 6),
+          ],
+          Flexible(
+            child: Column(
+              crossAxisAlignment: isMine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              children: [
+                Container(
+                  constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.78),
+                  decoration: BoxDecoration(
+                    color: kWhite,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: kPrimaryColor.withOpacity(0.25), width: 1.2),
+                    boxShadow: [
+                      BoxShadow(color: kPrimaryColor.withOpacity(0.08), blurRadius: 12, offset: const Offset(0, 4)),
+                    ],
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                        color: kPrimaryColor.withOpacity(0.10),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: const BoxDecoration(shape: BoxShape.circle, color: kPrimaryColor),
+                              child: const Icon(Icons.assignment_outlined, color: kWhite, size: 14),
+                            ),
+                            const SizedBox(width: 8),
+                            Text('Bid Offer',
+                                style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold, fontSize: 13, letterSpacing: 0.3)),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(14),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              bid.jobTitle,
+                              style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 15, height: 1.25),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 10),
+                            Row(
+                              children: [
+                                Expanded(child: _buildBidPill(icon: Icons.payments_outlined, label: 'AMOUNT', value: bid.amount)),
+                                const SizedBox(width: 8),
+                                Expanded(child: _buildBidPill(icon: Icons.schedule, label: 'DELIVERY', value: bid.delivery)),
+                              ],
+                            ),
+                            if (bid.proposal != null) ...[
+                              const SizedBox(height: 12),
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: kDarkWhite,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(color: kBorderColorTextField),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('PROPOSAL',
+                                        style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 0.5)),
+                                    const SizedBox(height: 4),
+                                    Text(bid.proposal!,
+                                        style: kTextStyle.copyWith(color: kNeutralColor, fontSize: 13, height: 1.35)),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(_formatMessageTime(message.createdAt),
+                        style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 11)),
+                    if (isMine) ...[
+                      const SizedBox(width: 4),
+                      Icon(message.isRead ? Icons.done_all : Icons.done,
+                          size: 14, color: message.isRead ? kPrimaryColor : kLightNeutralColor),
+                    ],
+                  ],
+                ),
+              ],
+            ),
+          ),
+          if (isMine) const SizedBox(width: 6),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBidPill({required IconData icon, required String label, required String value}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: kDarkWhite,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: kBorderColorTextField),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 13, color: kPrimaryColor),
+              const SizedBox(width: 4),
+              Flexible(
+                child: Text(label,
+                    style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 0.5),
+                    overflow: TextOverflow.ellipsis),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(value,
+              style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 14),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis),
+        ],
+      ),
+    );
+  }
+}
+
+class _BidMessageInfo {
+  final String jobTitle;
+  final String amount;
+  final String delivery;
+  final String? proposal;
+  _BidMessageInfo({required this.jobTitle, required this.amount, required this.delivery, this.proposal});
 }
 
 // =============================================================

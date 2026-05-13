@@ -8,6 +8,7 @@ import 'package:freelancer/services/client_home_service.dart';
 import 'package:freelancer/services/job_posts_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
+import '../../../router/app_router.dart';
 import '../../widgets/constant.dart';
 import '../client notification/client_notification.dart';
 import '../search/search.dart';
@@ -235,17 +236,20 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
             children: [
               Row(
                 children: [
-                  Container(
-                    height: 46,
-                    width: 46,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 2),
-                      image: DecorationImage(
-                        image: profileImageUrl != null
-                            ? NetworkImage(profileImageUrl) as ImageProvider
-                            : const AssetImage('images/profile3.png'),
-                        fit: BoxFit.cover,
+                  GestureDetector(
+                    onTap: () => clientShellScaffoldKey.currentState?.openDrawer(),
+                    child: Container(
+                      height: 46,
+                      width: 46,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 2),
+                        image: DecorationImage(
+                          image: profileImageUrl != null
+                              ? NetworkImage(profileImageUrl) as ImageProvider
+                              : const AssetImage('images/profile3.png'),
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
                   ),

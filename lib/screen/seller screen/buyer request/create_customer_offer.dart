@@ -6,6 +6,8 @@ import 'package:nb_utils/nb_utils.dart';
 
 import '../../widgets/constant.dart';
 
+enum _MessageType { success, error, warning }
+
 class CreateCustomerOffer extends StatefulWidget {
   final String jobPostId;
   final String jobTitle;
@@ -29,10 +31,63 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
     super.dispose();
   }
 
+  void _showMessage(String message, {required _MessageType type}) {
+    final Color bg;
+    final IconData icon;
+    final String title;
+    switch (type) {
+      case _MessageType.success:
+        bg = kPrimaryColor;
+        icon = Icons.check_circle_outline;
+        title = 'Success';
+        break;
+      case _MessageType.error:
+        bg = const Color(0xFFDC2626);
+        icon = Icons.error_outline;
+        title = 'Something went wrong';
+        break;
+      case _MessageType.warning:
+        bg = const Color(0xFFF59E0B);
+        icon = Icons.info_outline;
+        title = 'Heads up';
+        break;
+    }
+
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          backgroundColor: bg,
+          behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.all(16),
+          elevation: 6,
+          duration: const Duration(seconds: 3),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          content: Row(
+            children: [
+              Icon(icon, color: kWhite, size: 24),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: kTextStyle.copyWith(color: kWhite, fontWeight: FontWeight.bold, fontSize: 14)),
+                    const SizedBox(height: 2),
+                    Text(message, style: kTextStyle.copyWith(color: kWhite, fontSize: 13)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+  }
+
   Future<void> _handleSubmit() async {
     final amount = double.tryParse(_amountController.text.trim());
     if (amount == null || amount <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please enter a valid amount')));
+      _showMessage('Please enter a valid bid amount', type: _MessageType.warning);
       return;
     }
 
@@ -47,11 +102,12 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
       );
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Application submitted!')));
-        Navigator.pop(context);
+        _showMessage('Your application has been submitted', type: _MessageType.success);
+        await Future.delayed(const Duration(milliseconds: 600));
+        if (mounted) Navigator.pop(context);
       }
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      if (mounted) _showMessage(e.toString(), type: _MessageType.error);
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }

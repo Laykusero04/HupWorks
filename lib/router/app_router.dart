@@ -30,6 +30,10 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _clientShellKey = GlobalKey<NavigatorState>();
 final _sellerShellKey = GlobalKey<NavigatorState>();
 
+/// Key on the client shell's Scaffold so descendant screens can open the
+/// drawer (e.g. from a hamburger button in the AppHeader).
+final clientShellScaffoldKey = GlobalKey<ScaffoldState>();
+
 GoRouter createRouter() {
   final supabase = Supabase.instance.client;
 
@@ -81,13 +85,14 @@ GoRouter createRouter() {
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return _ScaffoldWithNavBar(
+            scaffoldKey: clientShellScaffoldKey,
+            drawer: const Drawer(child: ClientProfile()),
             navigationShell: navigationShell,
             items: const [
               BottomNavigationBarItem(icon: Icon(IconlyBold.home), label: 'Home'),
               BottomNavigationBarItem(icon: Icon(IconlyBold.chat), label: 'Message'),
               BottomNavigationBarItem(icon: Icon(IconlyBold.paperPlus), label: 'My Jobs'),
               BottomNavigationBarItem(icon: Icon(IconlyBold.document), label: 'Contracts'),
-              BottomNavigationBarItem(icon: Icon(Icons.menu_rounded), label: 'Menu'),
             ],
           );
         },
@@ -117,12 +122,6 @@ GoRouter createRouter() {
             GoRoute(
               path: '/client/orders',
               builder: (context, state) => const ClientOrderList(),
-            ),
-          ]),
-          StatefulShellBranch(routes: [
-            GoRoute(
-              path: '/client/profile',
-              builder: (context, state) => const ClientProfile(),
             ),
           ]),
         ],
@@ -196,17 +195,23 @@ GoRouter createRouter() {
 class _ScaffoldWithNavBar extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
   final List<BottomNavigationBarItem> items;
+  final Widget? drawer;
+  final GlobalKey<ScaffoldState>? scaffoldKey;
 
   const _ScaffoldWithNavBar({
     required this.navigationShell,
     required this.items,
+    this.drawer,
+    this.scaffoldKey,
   });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: scaffoldKey,
       backgroundColor: kWhite,
       extendBody: true,
+      drawer: drawer,
       body: navigationShell,
       bottomNavigationBar: SafeArea(
         top: false,

@@ -5,6 +5,7 @@ import 'package:freelancer/services/profile_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../widgets/app_header.dart';
 import '../../widgets/constant.dart';
 import '../client dashboard/client_dashboard.dart';
 import '../client favourite/client_favourite_list.dart';
@@ -59,54 +60,28 @@ class _ClientProfileState extends State<ClientProfile> {
 
     return Scaffold(
       backgroundColor: kDarkWhite,
-      appBar: AppBar(
-        backgroundColor: kDarkWhite,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: kNeutralColor),
-        titleSpacing: 0,
-        title: _isLoading
-            ? const SizedBox()
-            : ListTile(
-                visualDensity: const VisualDensity(vertical: -4),
-                contentPadding: EdgeInsets.zero,
-                leading: Container(
-                  height: 45,
-                  width: 45,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: kDarkWhite,
-                    image: DecorationImage(
-                      image: profileImageUrl != null
-                          ? NetworkImage(profileImageUrl) as ImageProvider
-                          : const AssetImage('images/profile1.png'),
-                      fit: BoxFit.cover,
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            AppHeader(
+              title: name,
+              subtitle: RichText(
+                text: TextSpan(
+                  text: 'Deposit Balance: ',
+                  style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
+                  children: [
+                    TextSpan(
+                      text: '$currencySign $balance',
+                      style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.w600, fontSize: 12),
                     ),
-                  ),
-                ),
-                title: Text(
-                  name,
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                  style: kTextStyle.copyWith(color: kNeutralColor),
-                ),
-                subtitle: RichText(
-                  text: TextSpan(
-                    text: 'Deposit Balance: ',
-                    style: kTextStyle.copyWith(color: kLightNeutralColor),
-                    children: [
-                      TextSpan(
-                        text: '$currencySign $balance',
-                        style: kTextStyle.copyWith(color: kNeutralColor),
-                      ),
-                    ],
-                  ),
+                  ],
                 ),
               ),
-        centerTitle: true,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.only(top: 30.0),
-        child: Container(
+              leading: AppHeaderAvatar(imageUrl: profileImageUrl as String?),
+            ),
+            Expanded(
+              child: Container(
           padding: const EdgeInsets.only(left: 20.0, right: 20.0),
           width: context.width(),
           decoration: const BoxDecoration(
@@ -222,6 +197,9 @@ class _ClientProfileState extends State<ClientProfile> {
               ],
             ),
           ),
+        ),
+            ),
+          ],
         ),
       ),
     );

@@ -4,6 +4,8 @@ import 'package:freelancer/screen/widgets/constant.dart';
 import 'package:freelancer/services/job_posts_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
+import '../../../router/app_router.dart';
+import '../../widgets/app_header.dart';
 import 'create_new_job_post.dart';
 import 'job_details.dart';
 
@@ -80,16 +82,6 @@ class _JobPostState extends State<JobPost> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kDarkWhite,
-      appBar: AppBar(
-        backgroundColor: kDarkWhite,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: kNeutralColor),
-        title: Text(
-          'Job Posts',
-          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-      ),
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 20.0),
         child: FloatingActionButton(
@@ -104,9 +96,20 @@ class _JobPostState extends State<JobPost> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      body: Padding(
-        padding: const EdgeInsets.only(top: 10.0),
-        child: Container(
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            AppHeader(
+              title: 'Job Posts',
+              leading: AppHeaderAction(
+                icon: Icons.menu_rounded,
+                onPressed: () => clientShellScaffoldKey.currentState?.openDrawer(),
+                tooltip: 'Menu',
+              ),
+            ),
+            Expanded(
+              child: Container(
           width: context.width(),
           padding: const EdgeInsets.only(left: 15.0, right: 15.0),
           decoration: const BoxDecoration(
@@ -319,6 +322,9 @@ class _JobPostState extends State<JobPost> {
                         ),
                       ),
                     ),
+        ),
+            ),
+          ],
         ),
       ),
     );

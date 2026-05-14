@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
+import 'package:freelancer/services/job_posts_service.dart';
 import 'package:freelancer/services/seller_orders_service.dart';
 import 'package:nb_utils/nb_utils.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../widgets/constant.dart';
 import 'create_customer_offer.dart';
@@ -10,6 +12,10 @@ class BuyerRequestDetails extends StatefulWidget {
   final String jobPostId;
 
   const BuyerRequestDetails({Key? key, required this.jobPostId}) : super(key: key);
+
+  /// Parent seller shell uses a floating capsule nav; inner [Scaffold.bottomNavigationBar]
+  /// sits under it unless we add this lift (see client Job Post FAB pattern).
+  static const double _shellFloatingNavLift = 72;
 
   @override
   State<BuyerRequestDetails> createState() => _BuyerRequestDetailsState();
@@ -53,8 +59,32 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
     final budgetMin = _jobPost?['budget_min'];
     final budgetMax = _jobPost?['budget_max'];
     final location = _jobPost?['location'] as String?;
-    final workersNeeded = (_jobPost?['workers_needed'] as int?) ?? 1;
     final offerCount = _jobPost?['offer_count'] ?? 0;
+    final jobStatus = (_jobPost?['status'] as String?) ?? 'open';
+    final myUid = Supabase.instance.client.auth.currentUser?.id;
+    final clientId = _jobPost?['client_id'] as String?;
+    final myOffer = _jobPost?['my_offer'] as Map<String, dynamic>?;
+
+    String? applyBlockedReason() {
+      if (jobStatus.toLowerCase() != 'open') {
+        return 'This job is closed and is not accepting applications.';
+      }
+      if (myUid != null && clientId != null && myUid == clientId) {
+        return 'You cannot apply to your own job post.';
+      }
+      if (myOffer != null) {
+        final st = (myOffer['status'] as String?)?.toLowerCase();
+        if (st == 'pending' || st == 'accepted') {
+          return 'You have already submitted an application for this job.';
+        }
+      }
+      return null;
+    }
+
+    final applyBlock = applyBlockedReason();
+    final canApply = applyBlock == null;
+
+    final bottomLift = MediaQuery.paddingOf(context).bottom + BuyerRequestDetails._shellFloatingNavLift;
 
     return Scaffold(
       backgroundColor: kDarkWhite,
@@ -62,16 +92,42 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
         backgroundColor: kDarkWhite, elevation: 0, iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text('Job Details', style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)), centerTitle: true,
       ),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(color: kWhite),
-        child: ButtonGlobalWithoutIcon(
-          buttontext: 'Apply Now',
-          buttonDecoration: kButtonDecoration.copyWith(color: kPrimaryColor, borderRadius: BorderRadius.circular(30.0)),
-          onPressed: () async {
-            await CreateCustomerOffer(jobPostId: widget.jobPostId, jobTitle: title).launch(context);
-            _loadDetails();
-          },
-          buttonTextColor: kWhite,
+      bottomNavigationBar: Material(
+        color: kWhite,
+        elevation: 12,
+        shadowColor: Colors.black26,
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(16, 8, 16, bottomLift),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (!canApply)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Text(
+                    applyBlock,
+                    textAlign: TextAlign.center,
+                    style: kTextStyle.copyWith(color: const Color(0xFF92400E), fontSize: 13, height: 1.35),
+                  ),
+                ),
+              ButtonGlobalWithoutIcon(
+                buttontext: canApply ? 'Submit offer' : 'Cannot submit offer',
+                buttonDecoration: kButtonDecoration.copyWith(
+                  color: canApply ? kPrimaryColor : kLightNeutralColor,
+                  borderRadius: BorderRadius.circular(30.0),
+                ),
+                onPressed: !canApply
+                    ? () {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(applyBlock)));
+                      }
+                    : () async {
+                        await CreateCustomerOffer(jobPostId: widget.jobPostId, jobTitle: title).launch(context);
+                        _loadDetails();
+                      },
+                buttonTextColor: kWhite,
+              ),
+            ],
+          ),
         ),
       ),
       body: Padding(
@@ -124,19 +180,19 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
                 _row('Category', category),
                 const SizedBox(height: 8.0),
                 if (budgetMin != null || budgetMax != null) ...[
-                  _row('Budget', '$currencySign${budgetMin ?? 0} - $currencySign${budgetMax ?? 0}'),
+                  _row('Budget', JobPostsService.formatBudgetRange(budgetMin, budgetMax, _jobPost?['budget_basis'])),
                   const SizedBox(height: 8.0),
                 ],
                 if (location != null && location.isNotEmpty) ...[
                   _row('Location', location),
                   const SizedBox(height: 8.0),
                 ],
-                _row('Workers needed', '$workersNeeded'),
+                _row('Workers needed', JobPostsService.workersNeededDetailLabel(_jobPost?['workers_needed'])),
                 const SizedBox(height: 8.0),
                 _row('Offers Sent', '$offerCount'),
                 const SizedBox(height: 8.0),
                 _row('Date', _formatDate(_jobPost?['created_at'])),
-                const SizedBox(height: 20.0),
+                SizedBox(height: bottomLift + 24),
               ],
             ),
           ),

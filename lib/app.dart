@@ -60,6 +60,7 @@ class _HupWorksAppState extends State<HupWorksApp> {
         value: _authBloc,
         child: MaterialApp.router(
           title: 'HupWorks',
+          debugShowCheckedModeBanner: false,
           theme: appTheme(),
           routerConfig: _router,
         ),

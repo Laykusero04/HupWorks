@@ -319,45 +319,20 @@ class _ChatInboxState extends State<ChatInbox> {
       ),
       titleSpacing: 0,
       title: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           _appBarAvatar(),
           const SizedBox(width: 10),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.otherUserName,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: kTextStyle.copyWith(
-                    color: kNeutralColor,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 15,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Row(
-                  children: [
-                    Container(
-                      width: 8,
-                      height: 8,
-                      decoration: const BoxDecoration(
-                        color: kPrimaryColor,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 5),
-                    Text(
-                      'Active now',
-                      style: kTextStyle.copyWith(
-                        color: kLightNeutralColor,
-                        fontSize: 11,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+            child: Text(
+              widget.otherUserName,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: kTextStyle.copyWith(
+                color: kNeutralColor,
+                fontWeight: FontWeight.w700,
+                fontSize: 15,
+              ),
             ),
           ),
         ],
@@ -423,47 +398,30 @@ class _ChatInboxState extends State<ChatInbox> {
     final initial = widget.otherUserName.isNotEmpty
         ? widget.otherUserName[0].toUpperCase()
         : '?';
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        Container(
-          width: 38,
-          height: 38,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: kPrimaryColor.withOpacity(0.10),
-            image: hasImage
-                ? DecorationImage(
-                    image: NetworkImage(widget.otherUserImage),
-                    fit: BoxFit.cover)
-                : null,
-          ),
-          alignment: Alignment.center,
-          child: hasImage
-              ? null
-              : Text(
-                  initial,
-                  style: kTextStyle.copyWith(
-                    color: kPrimaryColor,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 15,
-                  ),
-                ),
-        ),
-        Positioned(
-          right: -2,
-          bottom: -2,
-          child: Container(
-            width: 12,
-            height: 12,
-            decoration: BoxDecoration(
-              color: kPrimaryColor,
-              shape: BoxShape.circle,
-              border: Border.all(color: kWhite, width: 2),
+    return Container(
+      width: 38,
+      height: 38,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: kPrimaryColor.withOpacity(0.10),
+        image: hasImage
+            ? DecorationImage(
+                image: NetworkImage(widget.otherUserImage),
+                fit: BoxFit.cover,
+              )
+            : null,
+      ),
+      alignment: Alignment.center,
+      child: hasImage
+          ? null
+          : Text(
+              initial,
+              style: kTextStyle.copyWith(
+                color: kPrimaryColor,
+                fontWeight: FontWeight.w700,
+                fontSize: 15,
+              ),
             ),
-          ),
-        ),
-      ],
     );
   }
 
@@ -1126,10 +1084,10 @@ class _ChatInboxState extends State<ChatInbox> {
     if (jobTitle.isEmpty || lines.length < 2) return null;
 
     final amountMatch = RegExp(r'Amount:\s*([^·]+?)(?:\s*·|$)').firstMatch(lines[1]);
-    final deliveryMatch = RegExp(r'Delivery:\s*(.+)$').firstMatch(lines[1]);
+    final deliveryMatch = RegExp(r'·\s*Delivery:\s*(.+)$').firstMatch(lines[1]);
     final amount = amountMatch?.group(1)?.trim() ?? '';
-    final delivery = deliveryMatch?.group(1)?.trim() ?? '';
-    if (amount.isEmpty || delivery.isEmpty) return null;
+    final delivery = deliveryMatch?.group(1)?.trim() ?? 'Agreed in chat';
+    if (amount.isEmpty) return null;
 
     String? proposal;
     if (lines.length > 2) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/services/job_posts_service.dart';
 import 'package:freelancer/services/seller_orders_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -126,14 +127,14 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
                                         ],
                                       ),
                                     ],
-                                    if (((req['workers_needed'] as int?) ?? 1) > 1) ...[
+                                    if (JobPostsService.workersNeededShowOnCard(req['workers_needed'])) ...[
                                       const SizedBox(height: 6.0),
                                       Row(
                                         children: [
                                           const Icon(Icons.group_outlined, size: 14, color: kLightNeutralColor),
                                           const SizedBox(width: 4.0),
                                           Text(
-                                            '${req['workers_needed']} workers needed',
+                                            JobPostsService.workersNeededCardLine(req['workers_needed']),
                                             style: kTextStyle.copyWith(color: kSubTitleColor),
                                           ),
                                         ],
@@ -149,8 +150,14 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
                                         ),
                                         const Spacer(),
                                         if (req['budget_min'] != null || req['budget_max'] != null)
-                                          Text('$currencySign${req['budget_min'] ?? 0} - $currencySign${req['budget_max'] ?? 0}',
-                                            style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold)),
+                                          Text(
+                                            JobPostsService.formatBudgetRangeShort(
+                                              req['budget_min'],
+                                              req['budget_max'],
+                                              req['budget_basis'],
+                                            ),
+                                            style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold),
+                                          ),
                                       ],
                                     ),
                                   ],

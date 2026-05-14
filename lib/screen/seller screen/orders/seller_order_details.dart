@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/utils/order_contract_display.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/services/seller_orders_service.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -84,16 +85,17 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
   Widget build(BuildContext context) {
     if (_isLoading) return const Scaffold(backgroundColor: kDarkWhite, body: Center(child: CircularProgressIndicator(color: kPrimaryColor)));
 
-    final status = _order?['status'] ?? 'pending';
+    final status = ((_order?['status'] as String?) ?? 'pending').toLowerCase();
     final isCompleted = status == 'completed';
     final isDelivered = status == 'delivered';
-    final title = _service?['title'] ?? 'Service';
-    final description = _service?['description'] ?? '';
+    final title = OrderContractDisplay.title(_order, _service);
+    final description = OrderContractDisplay.serviceInfo(_order, _service);
+    final durationText = OrderContractDisplay.durationLabel(_order, _service);
+    final revisionText = OrderContractDisplay.revisionsLabel(_order, _service);
     final price = _order?['price'] ?? 0;
-    final deliveryTime = _service?['delivery_time'] ?? 0;
-    final revisionCount = _service?['revision_count'] ?? 0;
     final clientName = _client?['name'] ?? 'Client';
     final orderId = widget.orderId.substring(0, 8).toUpperCase();
+    final bottomInset = MediaQuery.paddingOf(context).bottom + 12;
 
     return Scaffold(
       backgroundColor: kDarkWhite,
@@ -101,34 +103,39 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
         backgroundColor: kDarkWhite, elevation: 0, iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text('Order Details', style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)), centerTitle: true,
       ),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(color: kWhite),
-        child: Row(
-          children: [
-            if (!isCompleted)
+      bottomNavigationBar: Material(
+        color: kWhite,
+        elevation: 12,
+        shadowColor: Colors.black26,
+        child: Padding(
+          padding: EdgeInsets.only(bottom: bottomInset),
+          child: Row(
+            children: [
+              if (!isCompleted)
+                Expanded(
+                  child: ButtonGlobalWithoutIcon(
+                    buttontext: 'Cancel', buttonTextColor: Colors.red,
+                    buttonDecoration: kButtonDecoration.copyWith(color: kWhite, border: Border.all(color: Colors.red)),
+                    onPressed: _handleCancel,
+                  ),
+                ),
               Expanded(
                 child: ButtonGlobalWithoutIcon(
-                  buttontext: 'Cancel', buttonTextColor: Colors.red,
-                  buttonDecoration: kButtonDecoration.copyWith(color: kWhite, border: Border.all(color: Colors.red)),
-                  onPressed: _handleCancel,
+                  buttontext: isCompleted ? 'Completed' : isDelivered ? 'Complete Order' : 'Deliver Work',
+                  buttonTextColor: kWhite,
+                  buttonDecoration: kButtonDecoration.copyWith(color: isCompleted ? kLightNeutralColor : kPrimaryColor),
+                  onPressed: isCompleted
+                      ? () {}
+                      : isDelivered
+                          ? _handleComplete
+                          : () async {
+                              await SellerDeliverOrder(orderId: widget.orderId).launch(context);
+                              _loadOrder();
+                            },
                 ),
               ),
-            Expanded(
-              child: ButtonGlobalWithoutIcon(
-                buttontext: isCompleted ? 'Completed' : isDelivered ? 'Complete Order' : 'Deliver Work',
-                buttonTextColor: kWhite,
-                buttonDecoration: kButtonDecoration.copyWith(color: isCompleted ? kLightNeutralColor : kPrimaryColor),
-                onPressed: isCompleted
-                    ? () {}
-                    : isDelivered
-                        ? _handleComplete
-                        : () async {
-                            await SellerDeliverOrder(orderId: widget.orderId).launch(context);
-                            _loadOrder();
-                          },
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       body: Padding(
@@ -166,11 +173,11 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
                       const SizedBox(height: 8.0),
                       const Divider(thickness: 1.0, color: kBorderColorTextField, height: 1.0),
                       const SizedBox(height: 8.0),
-                      _row('Title', title),
+                      _row('Title', title, emphasizeValue: true),
                       const SizedBox(height: 8.0),
                       _rowExpand('Service Info', description),
                       const SizedBox(height: 8.0),
-                      _row('Duration', '$deliveryTime Days'),
+                      _row('Duration', durationText),
                       const SizedBox(height: 8.0),
                       _row('Amount', '$currencySign$price'),
                       const SizedBox(height: 8.0),
@@ -178,14 +185,14 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
                       const SizedBox(height: 15.0),
                       Text('Order Details', style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 8.0),
-                      _row('Revisions', revisionCount == 0 ? 'Unlimited' : '$revisionCount'),
+                      _row('Revisions', revisionText),
                       const SizedBox(height: 15.0),
                       Text('Order Summary', style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 8.0),
                       _row('Total', '$currencySign$price'),
                       const SizedBox(height: 8.0),
                       _row('Delivery date', _formatDate(_order?['delivery_deadline'])),
-                      const SizedBox(height: 15.0),
+                      SizedBox(height: 15.0 + bottomInset),
                     ],
                   ),
                 ),
@@ -197,11 +204,20 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
     );
   }
 
-  Widget _row(String l, String v) => Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+  Widget _row(String l, String v, {bool emphasizeValue = false}) => Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
     Expanded(flex: 2, child: Text(l, style: kTextStyle.copyWith(color: kSubTitleColor))),
     Expanded(flex: 4, child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(':', style: kTextStyle.copyWith(color: kSubTitleColor)), const SizedBox(width: 10.0),
-      Flexible(child: Text(v, style: kTextStyle.copyWith(color: kSubTitleColor), overflow: TextOverflow.ellipsis, maxLines: 2)),
+      Flexible(
+        child: Text(
+          v,
+          style: emphasizeValue
+              ? kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.w700, height: 1.35)
+              : kTextStyle.copyWith(color: kSubTitleColor, height: 1.35),
+          overflow: TextOverflow.ellipsis,
+          maxLines: emphasizeValue ? 8 : 2,
+        ),
+      ),
     ])),
   ]);
 

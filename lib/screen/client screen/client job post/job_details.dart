@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/utils/job_offer_delivery.dart';
 import 'package:freelancer/screen/seller%20screen/seller%20messgae/chat_inbox.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/services/chat_service.dart';
@@ -106,16 +107,32 @@ class _JobDetailsState extends State<JobDetails> {
   Future<void> _handleAcceptOffer(Map<String, dynamic> offer) async {
     final seller = offer['profiles'] as Map<String, dynamic>?;
     final sellerName = seller?['name'] ?? 'this freelancer';
-    final price = offer['price'];
+    final priceLabel = JobPostsService.formatOfferAmountShort(offer['price'], offer['price_basis']);
+    final accepted = JobPostsService.countAcceptedOffers(_offers);
+    final unlimited = JobPostsService.workersNeededIsUnlimited(_jobPost?['workers_needed']);
+    final fillsAll = JobPostsService.acceptingFillsAllSlots(_jobPost?['workers_needed'], accepted);
+    final cap = JobPostsService.parseWorkersNeeded(_jobPost?['workers_needed']);
+
+    final String bodyText;
+    if (unlimited) {
+      bodyText =
+          "Accept $sellerName's offer ($priceLabel)? The job stays open so you can hire more freelancers until you close it.";
+    } else if (fillsAll) {
+      bodyText =
+          "Accept $sellerName's offer ($priceLabel)? This fills your last hire spot (${accepted + 1} of $cap). "
+          'The job will close to new applicants. Other applications stay on your list as pending — reject them only if you do not want them.';
+    } else {
+      final remaining = cap - accepted - 1;
+      bodyText =
+          "Accept $sellerName's offer ($priceLabel)? After this hire you will have $remaining more open spot${remaining == 1 ? '' : 's'} "
+          '(${accepted + 1} of $cap filled). Other pending applications stay open.';
+    }
 
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Hire freelancer?'),
-        content: Text(
-          'Accept $sellerName for $currencySign$price? '
-          'Your job post will be closed and any other pending applications will be rejected.',
-        ),
+        content: Text(bodyText),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -135,7 +152,13 @@ class _JobDetailsState extends State<JobDetails> {
       await JobPostsService.acceptJobOffer(offer['id'] as String);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Hired! Contract created.')),
+          SnackBar(
+            content: Text(
+              fillsAll
+                  ? 'Hired! This job is now full and closed to new applicants.'
+                  : 'Hired! Contract created.',
+            ),
+          ),
         );
         _loadData();
       }
@@ -170,7 +193,6 @@ class _JobDetailsState extends State<JobDetails> {
     final budgetMin = _jobPost?['budget_min'];
     final budgetMax = _jobPost?['budget_max'];
     final location = _jobPost?['location'] as String?;
-    final workersNeeded = (_jobPost?['workers_needed'] as int?) ?? 1;
     final isOpen = status == 'open';
 
     return Scaffold(
@@ -247,14 +269,14 @@ class _JobDetailsState extends State<JobDetails> {
                     const SizedBox(height: 8.0),
                     if (budgetMin != null || budgetMax != null)
                       ...[
-                        _buildRow('Budget', '$currencySign${budgetMin ?? 0} - $currencySign${budgetMax ?? 0}'),
+                        _buildRow('Budget', JobPostsService.formatBudgetRange(budgetMin, budgetMax, _jobPost?['budget_basis'])),
                         const SizedBox(height: 8.0),
                       ],
                     if (location != null && location.isNotEmpty) ...[
                       _buildRow('Location', location),
                       const SizedBox(height: 8.0),
                     ],
-                    _buildRow('Workers needed', '$workersNeeded'),
+                    _buildRow('Workers needed', JobPostsService.workersNeededDetailLabel(_jobPost?['workers_needed'])),
                     const SizedBox(height: 8.0),
                     _buildRow('Status', status.toString().substring(0, 1).toUpperCase() + status.toString().substring(1)),
                     const SizedBox(height: 8.0),
@@ -314,7 +336,7 @@ class _JobDetailsState extends State<JobDetails> {
                                           style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
                                         ),
                                         Text(
-                                          '$currencySign${offer['price']} • ${offer['delivery_time']} days',
+                                          '${JobPostsService.formatOfferAmountShort(offer['price'], offer['price_basis'])} • ${JobOfferDelivery.formatLabel(offer['delivery_time'], offer['delivery_time_unit'])}',
                                           style: kTextStyle.copyWith(color: kSubTitleColor),
                                         ),
                                       ],

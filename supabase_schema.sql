@@ -1,7 +1,16 @@
 -- ============================================
--- HupWorks - Full Supabase Database Schema
+-- HupWorks - Full Supabase Database Schema (REFERENCE / NEW PROJECT ONLY)
 -- ============================================
--- Run this in Supabase Dashboard > SQL Editor
+-- DO NOT run this entire file on a Supabase project that already has tables.
+-- You will get errors like: relation "profiles" already exists (42P07).
+--
+-- Use instead:
+--   • Existing project: run only the numbered scripts in /migrations/ (0001,
+--     0002, …) in order, or run the specific migration you need.
+--   • Brand-new empty database: this file can create everything from scratch.
+--
+-- Supabase-hosted projects usually already include auth + often a starter
+-- schema — apply incremental migrations only.
 -- ============================================
 
 -- ==================
@@ -234,6 +243,7 @@ create table public.job_posts (
   category_id uuid references public.categories(id),
   budget_min numeric(10,2),
   budget_max numeric(10,2),
+  budget_basis text not null default 'fixed' check (budget_basis in ('fixed', 'per_hour', 'per_day', 'per_month')),
   deadline timestamptz,
   status text default 'open' check (status in ('open', 'closed')),
   job_type text not null default 'gig' check (job_type in ('gig', 'full_time', 'part_time')),
@@ -265,10 +275,20 @@ create table public.job_offers (
   job_post_id uuid references public.job_posts(id) on delete cascade not null,
   seller_id uuid references public.profiles(id) on delete cascade not null,
   price numeric(10,2) not null,
-  delivery_time int not null, -- in days
+  price_basis text not null default 'fixed' check (price_basis in ('fixed', 'per_hour', 'per_day', 'per_month')),
+  delivery_time int,
+  delivery_time_unit text,
   cover_letter text,
   status text default 'pending' check (status in ('pending', 'accepted', 'rejected')),
-  created_at timestamptz default now()
+  created_at timestamptz default now(),
+  constraint job_offers_delivery_pair_check check (
+    (delivery_time is null and delivery_time_unit is null)
+    or (
+      delivery_time is not null
+      and delivery_time > 0
+      and delivery_time_unit in ('hours', 'days')
+    )
+  )
 );
 
 alter table public.job_offers enable row level security;
@@ -375,7 +395,7 @@ create table public.reviews (
   order_id uuid references public.orders(id) on delete cascade not null,
   reviewer_id uuid references public.profiles(id) on delete cascade not null,
   reviewed_id uuid references public.profiles(id) on delete cascade not null,
-  service_id uuid references public.services(id) on delete cascade not null,
+  service_id uuid references public.services(id) on delete cascade,
   job_offer_id uuid references public.job_offers(id) on delete set null,
   rating int not null check (rating >= 1 and rating <= 5),
   comment text,
@@ -383,6 +403,9 @@ create table public.reviews (
 );
 
 create index if not exists reviews_job_offer_id_idx on public.reviews(job_offer_id);
+
+create unique index if not exists reviews_order_reviewer_unique
+  on public.reviews (order_id, reviewer_id);
 
 alter table public.reviews enable row level security;
 
@@ -553,9 +576,9 @@ create trigger on_auth_user_created
 -- ============================================
 -- ACCEPT JOB OFFER RPC
 -- ============================================
--- Atomically: marks an offer accepted, auto-rejects sibling pending offers,
--- closes the parent job post, and creates the contract (orders row).
--- Authorization: only the client who posted the job may invoke this.
+-- Accepts one offer, creates contract. If workers_needed is a finite cap and
+-- this hire fills it, closes the job. Other applications stay pending until you
+-- reject them in the app. Sentinel workers_needed >= 999 = no cap (job stays open).
 -- ============================================
 
 create or replace function public.accept_job_offer(p_offer_id uuid)
@@ -565,42 +588,98 @@ security definer
 set search_path = public
 as $$
 declare
-  v_offer record;
-  v_order_id uuid;
+  v_post_id uuid;
+  v_client uuid;
+  v_seller uuid;
+  v_price numeric;
+  v_delivery_time int;
+  v_delivery_time_unit text;
+  v_workers_needed int;
+  v_offer_status text;
+  v_job_status text;
   v_deadline timestamptz;
+  v_unit text;
+  v_accepted_before int;
+  v_accepted_after int;
+  v_order_id uuid;
 begin
-  select jo.id, jo.job_post_id, jo.seller_id, jo.price, jo.delivery_time,
-         jp.client_id as job_client_id
-    into v_offer
-    from public.job_offers jo
-    join public.job_posts  jp on jp.id = jo.job_post_id
-    where jo.id = p_offer_id;
+  select
+    jo.job_post_id,
+    jo.seller_id,
+    jo.price,
+    jo.delivery_time,
+    jo.delivery_time_unit,
+    jp.client_id,
+    jp.workers_needed,
+    jo.status,
+    jp.status
+  into
+    v_post_id,
+    v_seller,
+    v_price,
+    v_delivery_time,
+    v_delivery_time_unit,
+    v_client,
+    v_workers_needed,
+    v_offer_status,
+    v_job_status
+  from public.job_offers jo
+  join public.job_posts jp on jp.id = jo.job_post_id
+  where jo.id = p_offer_id;
 
   if not found then
     raise exception 'Offer not found';
   end if;
 
-  if v_offer.job_client_id <> auth.uid() then
+  if v_client is distinct from auth.uid() then
     raise exception 'Not authorized';
   end if;
 
-  v_deadline := now() + (v_offer.delivery_time::text || ' days')::interval;
+  if lower(coalesce(v_job_status, '')) <> 'open' then
+    raise exception 'This job is not open for new hires';
+  end if;
+
+  if lower(coalesce(v_offer_status, '')) <> 'pending' then
+    raise exception 'This application is not pending';
+  end if;
+
+  v_workers_needed := greatest(1, coalesce(v_workers_needed, 1));
+
+  select count(*)::int into v_accepted_before
+  from public.job_offers
+  where job_post_id = v_post_id and lower(status) = 'accepted';
+
+  if v_workers_needed < 999 then
+    if v_accepted_before >= v_workers_needed then
+      raise exception 'Hiring limit reached for this job';
+    end if;
+  end if;
+
+  if v_delivery_time is null then
+    v_deadline := null;
+  else
+    v_unit := lower(trim(coalesce(v_delivery_time_unit, 'days')));
+    if v_unit = 'hours' then
+      v_deadline := now() + make_interval(hours => greatest(1, v_delivery_time));
+    else
+      v_deadline := now() + make_interval(days => greatest(1, v_delivery_time));
+    end if;
+  end if;
 
   update public.job_offers set status = 'accepted' where id = p_offer_id;
 
-  update public.job_offers
-     set status = 'rejected'
-   where job_post_id = v_offer.job_post_id
-     and id <> p_offer_id
-     and status = 'pending';
+  select count(*)::int into v_accepted_after
+  from public.job_offers
+  where job_post_id = v_post_id and lower(status) = 'accepted';
 
-  update public.job_posts set status = 'closed' where id = v_offer.job_post_id;
+  if v_workers_needed < 999 and v_accepted_after >= v_workers_needed then
+    update public.job_posts set status = 'closed' where id = v_post_id;
+  end if;
 
   insert into public.orders
     (job_offer_id, client_id, seller_id, price, status, delivery_deadline)
   values
-    (p_offer_id, v_offer.job_client_id, v_offer.seller_id, v_offer.price,
-     'pending', v_deadline)
+    (p_offer_id, v_client, v_seller, v_price, 'pending', v_deadline)
   returning id into v_order_id;
 
   return v_order_id;

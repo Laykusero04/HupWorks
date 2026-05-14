@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 
+import '../../core/utils/job_offer_delivery.dart';
+import '../../services/job_posts_service.dart';
 import 'profile_model.dart';
 
 class JobOffer extends Equatable {
@@ -7,7 +9,9 @@ class JobOffer extends Equatable {
   final String jobPostId;
   final String sellerId;
   final double price;
-  final int deliveryTime;
+  final String priceBasis;
+  final int? deliveryTime;
+  final String? deliveryTimeUnit;
   final String? coverLetter;
   final String status;
   final DateTime createdAt;
@@ -20,7 +24,9 @@ class JobOffer extends Equatable {
     required this.jobPostId,
     required this.sellerId,
     required this.price,
-    required this.deliveryTime,
+    this.priceBasis = JobPostsService.budgetBasisFixed,
+    this.deliveryTime,
+    this.deliveryTimeUnit,
     this.coverLetter,
     this.status = 'pending',
     required this.createdAt,
@@ -35,7 +41,9 @@ class JobOffer extends Equatable {
       jobPostId: json['job_post_id'] as String,
       sellerId: json['seller_id'] as String,
       price: (json['price'] as num).toDouble(),
-      deliveryTime: json['delivery_time'] as int,
+      priceBasis: JobPostsService.normalizeBudgetBasis(json['price_basis']),
+      deliveryTime: json['delivery_time'] as int?,
+      deliveryTimeUnit: json['delivery_time'] == null ? null : JobOfferDelivery.normalizeUnit(json['delivery_time_unit']),
       coverLetter: json['cover_letter'] as String?,
       status: (json['status'] as String?) ?? 'pending',
       createdAt: DateTime.parse(json['created_at'] as String),
@@ -48,12 +56,14 @@ class JobOffer extends Equatable {
         'job_post_id': jobPostId,
         'seller_id': sellerId,
         'price': price,
+        'price_basis': priceBasis,
         'delivery_time': deliveryTime,
+        'delivery_time_unit': deliveryTimeUnit,
         'cover_letter': coverLetter,
         'status': status,
         'created_at': createdAt.toIso8601String(),
       };
 
   @override
-  List<Object?> get props => [id, jobPostId, sellerId, price, deliveryTime, coverLetter, status, createdAt, seller];
+  List<Object?> get props => [id, jobPostId, sellerId, price, priceBasis, deliveryTime, deliveryTimeUnit, coverLetter, status, createdAt, seller];
 }

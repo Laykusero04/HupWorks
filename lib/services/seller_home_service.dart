@@ -98,20 +98,27 @@ class SellerHomeService {
 
     final now = DateTime.now();
     final DateTime startDate;
+    final DateTime endDate;
 
     if (isLastMonth) {
       startDate = DateTime(now.year, now.month - 1, 1);
+      endDate = DateTime(now.year, now.month, 1);
     } else {
       startDate = DateTime(now.year, now.month, 1);
+      endDate = now;
     }
 
-    // Fetch earning transactions
+    final startIso = startDate.toIso8601String();
+    final endIso = endDate.toIso8601String();
+
+    // Fetch earning transactions (bounded interval so "Last month" is not open-ended)
     final earnings = await _client
         .from('transactions')
         .select('amount')
         .eq('user_id', user.id)
         .eq('type', 'earning')
-        .gte('created_at', startDate.toIso8601String());
+        .gte('created_at', startIso)
+        .lte('created_at', endIso);
 
     final earningList = List<Map<String, dynamic>>.from(earnings);
     final totalEarnings = earningList.fold<double>(0, (sum, e) => sum + (double.tryParse(e['amount'].toString()) ?? 0));
@@ -122,7 +129,8 @@ class SellerHomeService {
         .select('amount')
         .eq('user_id', user.id)
         .eq('type', 'withdrawal')
-        .gte('created_at', startDate.toIso8601String());
+        .gte('created_at', startIso)
+        .lte('created_at', endIso);
 
     final withdrawalList = List<Map<String, dynamic>>.from(withdrawals);
     final totalWithdrawals = withdrawalList.fold<double>(0, (sum, w) => sum + (double.tryParse(w['amount'].toString()) ?? 0));

@@ -59,4 +59,18 @@ class ClientHomeService {
         .limit(20);
     return List<Map<String, dynamic>>.from(data);
   }
+
+  /// First active service for a seller (for deep-linking from talent browse).
+  static Future<String?> getFirstActiveServiceIdForSeller(String sellerUserId) async {
+    final data = await _client
+        .from('services')
+        .select('id')
+        .eq('seller_id', sellerUserId)
+        .eq('status', 'active')
+        .order('rating', ascending: false)
+        .limit(1)
+        .maybeSingle();
+    if (data == null) return null;
+    return data['id'] as String?;
+  }
 }

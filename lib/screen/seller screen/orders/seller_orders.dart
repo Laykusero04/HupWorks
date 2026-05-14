@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/utils/order_contract_display.dart';
 import 'package:freelancer/services/seller_orders_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -210,7 +211,7 @@ class _SellerOrderListState extends State<SellerOrderList> {
     final status = _statusStyle(order['status'] as String?);
     final remaining = _getTimeRemaining(order);
     final isActive = (order['status'] as String?)?.toLowerCase() == 'active';
-    final title = service?['title'] as String? ?? 'Service';
+    final title = OrderContractDisplay.title(order, service);
     final price = order['price'] ?? 0;
 
     return Padding(
@@ -307,9 +308,13 @@ class _SellerOrderListState extends State<SellerOrderList> {
                           8.width,
                           Expanded(
                             child: Text(title,
-                                maxLines: 2,
+                                maxLines: 3,
                                 overflow: TextOverflow.ellipsis,
-                                style: kTextStyle.copyWith(color: kNeutralColor, fontSize: 13, height: 1.3)),
+                                style: kTextStyle.copyWith(
+                                    color: kNeutralColor,
+                                    fontSize: 13,
+                                    height: 1.3,
+                                    fontWeight: FontWeight.w600)),
                           ),
                         ],
                       ),

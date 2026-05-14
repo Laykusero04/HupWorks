@@ -34,6 +34,41 @@ class ChatService {
     return newConversation;
   }
 
+  /// Job-board applications: the **buyer** (job poster) is always `client_id`,
+  /// the **applicant** (current user) is always `seller_id`, regardless of
+  /// what `profiles.role` says. Fixes freelancers whose profile.role is still
+  /// `client` after signing up as a seller.
+  static Future<Map<String, dynamic>> getOrCreateJobApplicationConversation({
+    required String buyerUserId,
+  }) async {
+    final user = _client.auth.currentUser;
+    if (user == null) throw Exception('Not authenticated');
+    if (buyerUserId == user.id) {
+      throw Exception('Cannot start a job application conversation with yourself');
+    }
+
+    const clientIdField = 'client_id';
+    const sellerIdField = 'seller_id';
+    final clientId = buyerUserId;
+    final sellerId = user.id;
+
+    final existing = await _client
+        .from('conversations')
+        .select()
+        .or(
+          'and($clientIdField.eq.$clientId,$sellerIdField.eq.$sellerId),'
+          'and($clientIdField.eq.$sellerId,$sellerIdField.eq.$clientId)',
+        )
+        .maybeSingle();
+
+    if (existing != null) return existing;
+
+    return await _client.from('conversations').insert({
+      'client_id': clientId,
+      'seller_id': sellerId,
+    }).select().single();
+  }
+
   /// Fetch conversation list for the current user, joined with profile info
   static Future<List<Map<String, dynamic>>> getConversations() async {
     final user = _client.auth.currentUser;

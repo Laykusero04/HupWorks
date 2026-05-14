@@ -24,6 +24,9 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
   String? _selectedCategoryId;
   String _selectedJobType = 'gig';
   int _workersNeeded = 1;
+  String _budgetBasis = JobPostsService.budgetBasisFixed;
+  /// When false, post uses [JobPostsService.workersNeededNoLimitSentinel] (DB has no nullable column).
+  bool _limitHireCount = true;
   bool _isLoading = false;
   bool _isCategoriesLoading = true;
 
@@ -91,9 +94,12 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
         categoryId: _selectedCategoryId,
         budgetMin: double.tryParse(_budgetMinController.text.trim()),
         budgetMax: double.tryParse(_budgetMaxController.text.trim()),
+        budgetBasis: _budgetBasis,
         jobType: _selectedJobType,
         location: locationText.isEmpty ? null : locationText,
-        workersNeeded: _workersNeeded,
+        workersNeeded: _limitHireCount
+            ? _workersNeeded
+            : JobPostsService.workersNeededNoLimitSentinel,
       );
 
       if (mounted) {
@@ -158,7 +164,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
                   decoration: kInputDecoration.copyWith(
                     labelText: 'Job Title',
                     labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                    hintText: 'e.g. Logo for new SaaS product',
+                    hintText: 'Example: one clear line describing the work you need',
                     hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     border: const OutlineInputBorder(),
@@ -183,7 +189,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
                           child: DropdownButton<String>(
                             value: _selectedCategoryId,
                             isExpanded: true,
-                            hint: Text('Select category', style: kTextStyle.copyWith(color: kSubTitleColor)),
+                            hint: Text('Choose the category that best fits this job', style: kTextStyle.copyWith(color: kSubTitleColor)),
                             style: kTextStyle.copyWith(color: kNeutralColor),
                             items: _categories.map((cat) {
                               return DropdownMenuItem<String>(
@@ -224,49 +230,69 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
                 _sectionHeader(IconlyBold.user2, 'Hiring'),
                 const SizedBox(height: 12.0),
 
-                // Workers needed stepper
+                // Workers needed: optional cap (DB stores a sentinel when uncapped)
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8.0),
                     border: Border.all(color: kBorderColorTextField, width: 2),
                   ),
-                  child: Row(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Workers needed',
-                              style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Workers needed',
+                                  style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  _limitHireCount
+                                      ? 'How many freelancers will you hire?'
+                                      : 'No fixed cap — hire until you close the job. Turn the switch on to set a maximum.',
+                                  style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 2),
-                            Text(
-                              'How many freelancers will you hire?',
-                              style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
+                          ),
+                          Switch(
+                            value: _limitHireCount,
+                            onChanged: (v) => setState(() => _limitHireCount = v),
+                          ),
+                        ],
+                      ),
+                      if (_limitHireCount) ...[
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            const Spacer(),
+                            _stepperButton(
+                              icon: Icons.remove,
+                              enabled: _workersNeeded > 1,
+                              onTap: () => setState(() => _workersNeeded--),
+                            ),
+                            Container(
+                              width: 36,
+                              alignment: Alignment.center,
+                              child: Text(
+                                '$_workersNeeded',
+                                style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 16),
+                              ),
+                            ),
+                            _stepperButton(
+                              icon: Icons.add,
+                              enabled: _workersNeeded < 99,
+                              onTap: () => setState(() => _workersNeeded++),
                             ),
                           ],
                         ),
-                      ),
-                      _stepperButton(
-                        icon: Icons.remove,
-                        enabled: _workersNeeded > 1,
-                        onTap: () => setState(() => _workersNeeded--),
-                      ),
-                      Container(
-                        width: 36,
-                        alignment: Alignment.center,
-                        child: Text(
-                          '$_workersNeeded',
-                          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 16),
-                        ),
-                      ),
-                      _stepperButton(
-                        icon: Icons.add,
-                        enabled: _workersNeeded < 99,
-                        onTap: () => setState(() => _workersNeeded++),
-                      ),
+                      ],
                     ],
                   ),
                 ),
@@ -281,7 +307,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
                   decoration: kInputDecoration.copyWith(
                     labelText: 'Location (optional)',
                     labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                    hintText: 'e.g. Remote, Manila PH, Berlin',
+                    hintText: 'Example: Remote, hybrid, or general region (street address not required)',
                     hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     prefixIcon: const Icon(Icons.location_on_outlined, color: kLightNeutralColor),
@@ -306,7 +332,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
                         decoration: kInputDecoration.copyWith(
                           labelText: 'Min',
                           labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                          hintText: '${currencySign}5',
+                          hintText: 'Lowest budget (optional)',
                           hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
                           floatingLabelBehavior: FloatingLabelBehavior.always,
                           prefixText: '$currencySign ',
@@ -324,7 +350,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
                         decoration: kInputDecoration.copyWith(
                           labelText: 'Max',
                           labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                          hintText: '${currencySign}100',
+                          hintText: 'Highest budget (optional)',
                           hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
                           floatingLabelBehavior: FloatingLabelBehavior.always,
                           prefixText: '$currencySign ',
@@ -333,6 +359,44 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
                       ),
                     ),
                   ],
+                ),
+                const SizedBox(height: 16.0),
+                _label('Budget applies as'),
+                const SizedBox(height: 8.0),
+                InputDecorator(
+                  decoration: kInputDecoration.copyWith(
+                    enabledBorder: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                      borderSide: BorderSide(color: kBorderColorTextField, width: 2),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    labelText: 'Rate type',
+                    labelStyle: kTextStyle.copyWith(color: kNeutralColor),
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      isExpanded: true,
+                      value: _budgetBasis,
+                      style: kTextStyle.copyWith(color: kNeutralColor),
+                      items: [
+                        DropdownMenuItem(value: JobPostsService.budgetBasisFixed, child: Text('Fixed — total project', style: kTextStyle.copyWith(color: kNeutralColor))),
+                        DropdownMenuItem(value: JobPostsService.budgetBasisPerHour, child: Text('Per hour', style: kTextStyle.copyWith(color: kNeutralColor))),
+                        DropdownMenuItem(value: JobPostsService.budgetBasisPerDay, child: Text('Per day', style: kTextStyle.copyWith(color: kNeutralColor))),
+                        DropdownMenuItem(value: JobPostsService.budgetBasisPerMonth, child: Text('Per month', style: kTextStyle.copyWith(color: kNeutralColor))),
+                      ],
+                      onChanged: (v) {
+                        if (v != null) setState(() => _budgetBasis = v);
+                      },
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 6.0),
+                Text(
+                  _budgetBasis == JobPostsService.budgetBasisFixed
+                      ? 'Min and max describe the overall budget range for completing this job.'
+                      : 'Min and max are the rate range for each hour, day, or month (depending on your choice).',
+                  style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12, height: 1.35),
                 ),
 
                 const SizedBox(height: 28.0),
@@ -351,7 +415,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
                   decoration: kInputDecoration.copyWith(
                     labelText: 'Describe the job',
                     labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                    hintText: 'What does the freelancer need to deliver, deadlines, requirements...',
+                    hintText: 'Describe scope, expected deliverables, timeline, and skills or tools you need. Keep requests clear and work-related.',
                     hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     alignLabelWithHint: true,

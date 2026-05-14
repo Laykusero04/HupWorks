@@ -14,6 +14,7 @@ import '../screen/welcome screen/welcome_screen.dart';
 import '../screen/client screen/client_authentication/client_log_in.dart';
 import '../screen/client screen/client_authentication/client_sign_up.dart';
 import '../screen/client screen/client home/client_home_screen.dart';
+import '../screen/client screen/client home/top_seller.dart';
 import '../screen/client screen/client orders/client_orders.dart';
 import '../screen/client screen/client profile/client_profile.dart';
 import '../screen/client screen/client job post/client_job_post.dart';
@@ -91,6 +92,7 @@ GoRouter createRouter() {
             items: const [
               BottomNavigationBarItem(icon: Icon(IconlyBold.home), label: 'Home'),
               BottomNavigationBarItem(icon: Icon(IconlyBold.chat), label: 'Message'),
+              BottomNavigationBarItem(icon: Icon(IconlyBold.user3), label: 'Talent'),
               BottomNavigationBarItem(icon: Icon(IconlyBold.paperPlus), label: 'My Jobs'),
               BottomNavigationBarItem(icon: Icon(IconlyBold.document), label: 'Contracts'),
             ],
@@ -110,6 +112,12 @@ GoRouter createRouter() {
             GoRoute(
               path: '/client/chat',
               builder: (context, state) => const ChatScreen(),
+            ),
+          ]),
+          StatefulShellBranch(routes: [
+            GoRoute(
+              path: '/client/talent',
+              builder: (context, state) => const TopSeller(),
             ),
           ]),
           StatefulShellBranch(routes: [
@@ -189,9 +197,11 @@ GoRouter createRouter() {
   );
 }
 
-/// Shared bottom nav scaffold for both client and seller shells.
-/// Uses a floating capsule design: unselected tabs show only the icon,
-/// the selected tab expands into a primary-tinted pill with icon + label.
+/// Shared bottom nav for client and seller shells.
+///
+/// Uses a standard [BottomNavigationBar] with [extendBody] disabled so tab
+/// bodies reserve space above the bar and content is not covered (no manual
+/// “floating nav” padding hacks in every screen).
 class _ScaffoldWithNavBar extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
   final List<BottomNavigationBarItem> items;
@@ -207,124 +217,41 @@ class _ScaffoldWithNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final manyTabs = items.length > 4;
+
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: kWhite,
-      extendBody: true,
+      extendBody: false,
       drawer: drawer,
       body: navigationShell,
-      bottomNavigationBar: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-            decoration: BoxDecoration(
-              color: kWhite,
-              borderRadius: BorderRadius.circular(28),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.10),
-                  blurRadius: 22,
-                  offset: const Offset(0, 10),
-                ),
-                BoxShadow(
-                  color: kPrimaryColor.withOpacity(0.06),
-                  blurRadius: 18,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: List.generate(items.length, (i) {
-                final item = items[i];
-                final selected = i == navigationShell.currentIndex;
-                return _CapsuleNavItem(
-                  icon: item.icon,
-                  label: item.label ?? '',
-                  selected: selected,
-                  onTap: () => navigationShell.goBranch(
-                    i,
-                    initialLocation: i == navigationShell.currentIndex,
-                  ),
-                );
-              }),
-            ),
-          ),
+      bottomNavigationBar: Theme(
+        data: Theme.of(context).copyWith(
+          splashColor: kPrimaryColor.withOpacity(0.12),
+          highlightColor: Colors.transparent,
         ),
-      ),
-    );
-  }
-}
-
-class _CapsuleNavItem extends StatelessWidget {
-  final Widget icon;
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-
-  const _CapsuleNavItem({
-    required this.icon,
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    const duration = Duration(milliseconds: 280);
-    const curve = Curves.easeOutCubic;
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(24),
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: duration,
-          curve: curve,
-          padding: EdgeInsets.symmetric(
-            horizontal: selected ? 14 : 12,
-            vertical: 10,
-          ),
-          decoration: BoxDecoration(
-            color: selected
-                ? kPrimaryColor.withOpacity(0.12)
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(24),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconTheme(
-                data: IconThemeData(
-                  color: selected ? kPrimaryColor : kLightNeutralColor,
-                  size: 22,
-                ),
-                child: icon,
+        child: SafeArea(
+          top: false,
+          child: Material(
+            color: kWhite,
+            elevation: 10,
+            shadowColor: Colors.black26,
+            child: BottomNavigationBar(
+              type: BottomNavigationBarType.fixed,
+              backgroundColor: kWhite,
+              elevation: 0,
+              selectedItemColor: kPrimaryColor,
+              unselectedItemColor: kLightNeutralColor,
+              selectedFontSize: 12,
+              unselectedFontSize: 11,
+              showUnselectedLabels: !manyTabs,
+              currentIndex: navigationShell.currentIndex,
+              onTap: (i) => navigationShell.goBranch(
+                i,
+                initialLocation: i == navigationShell.currentIndex,
               ),
-              AnimatedSize(
-                duration: duration,
-                curve: curve,
-                child: selected
-                    ? Padding(
-                        padding: const EdgeInsets.only(left: 6),
-                        child: Text(
-                          label,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: kPrimaryColor,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 12,
-                            fontFamily: 'Display',
-                          ),
-                        ),
-                      )
-                    : const SizedBox.shrink(),
-              ),
-            ],
+              items: items,
+            ),
           ),
         ),
       ),

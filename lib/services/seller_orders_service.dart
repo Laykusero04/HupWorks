@@ -1,6 +1,7 @@
 import 'dart:io';
-import 'package:freelancer/core/constants/app_constants.dart';
+import 'package:freelancer/core/utils/job_offer_delivery.dart';
 import 'package:freelancer/services/chat_service.dart';
+import 'package:freelancer/services/job_posts_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SellerOrdersService {
@@ -13,7 +14,10 @@ class SellerOrdersService {
 
     var query = _client
         .from('orders')
-        .select('*, services!service_id(title, images), client:profiles!client_id(name)')
+        .select(
+          '*, services!service_id(title, images), client:profiles!client_id(name), '
+          'job_offers!job_offer_id(job_posts(title))',
+        )
         .eq('seller_id', user.id);
 
     if (status != null) {
@@ -28,7 +32,14 @@ class SellerOrdersService {
   static Future<Map<String, dynamic>> getOrderDetails(String orderId) async {
     final data = await _client
         .from('orders')
-        .select('*, services!service_id(title, description, images, delivery_time, revision_count, price), client:profiles!client_id(name, profile_image_url)')
+        .select(
+          '*, services!service_id(title, description, images, delivery_time, revision_count, price), '
+          'client:profiles!client_id(name, profile_image_url), '
+          'job_offers!job_offer_id('
+          'id, cover_letter, delivery_time, delivery_time_unit, price_basis, '
+          'job_posts(title, description, job_type, location, workers_needed)'
+          ')',
+        )
         .eq('id', orderId)
         .single();
     return data;
@@ -98,6 +109,17 @@ class SellerOrdersService {
         .eq('job_post_id', jobPostId);
 
     data['offer_count'] = (offers as List).length;
+
+    final uid = _client.auth.currentUser?.id;
+    if (uid != null) {
+      final mine = await _client
+          .from('job_offers')
+          .select('id, status')
+          .eq('job_post_id', jobPostId)
+          .eq('seller_id', uid)
+          .maybeSingle();
+      data['my_offer'] = mine;
+    }
     return data;
   }
 
@@ -107,36 +129,67 @@ class SellerOrdersService {
   static Future<void> createOffer({
     required String jobPostId,
     required double price,
-    required int deliveryTime,
+    String priceBasis = JobPostsService.budgetBasisFixed,
+    int? deliveryTime,
+    String? deliveryTimeUnit,
     String? coverLetter,
   }) async {
     final user = _client.auth.currentUser;
     if (user == null) throw Exception('Not logged in');
 
-    await _client.from('job_offers').insert({
+    final job = await _client
+        .from('job_posts')
+        .select('id, title, status, client_id')
+        .eq('id', jobPostId)
+        .single();
+
+    if ((job['status'] as String?)?.toLowerCase() != 'open') {
+      throw Exception('This job is closed and is not accepting new applications.');
+    }
+    if (job['client_id'] == user.id) {
+      throw Exception('You cannot apply to your own job post.');
+    }
+
+    final existingMine = await _client
+        .from('job_offers')
+        .select('id, status')
+        .eq('job_post_id', jobPostId)
+        .eq('seller_id', user.id)
+        .maybeSingle();
+    if (existingMine != null) {
+      final st = (existingMine['status'] as String?)?.toLowerCase();
+      if (st == 'pending' || st == 'accepted') {
+        throw Exception('You have already applied to this job.');
+      }
+    }
+
+    final insert = <String, dynamic>{
       'job_post_id': jobPostId,
       'seller_id': user.id,
       'price': price,
-      'delivery_time': deliveryTime,
+      'price_basis': JobPostsService.normalizeBudgetBasis(priceBasis),
       'cover_letter': coverLetter,
       'status': 'pending',
-    });
+    };
+    if (deliveryTime != null && deliveryTime > 0 && deliveryTimeUnit != null) {
+      insert['delivery_time'] = deliveryTime;
+      insert['delivery_time_unit'] = JobOfferDelivery.normalizeUnit(deliveryTimeUnit);
+    } else {
+      insert['delivery_time'] = null;
+      insert['delivery_time_unit'] = null;
+    }
+
+    await _client.from('job_offers').insert(insert);
 
     // Seed the chat — best-effort, never blocks the apply flow.
     try {
-      final job = await _client
-          .from('job_posts')
-          .select('title, client_id')
-          .eq('id', jobPostId)
-          .single();
-
-      final conversation =
-          await ChatService.getOrCreateConversation(job['client_id'] as String);
+      final conversation = await ChatService.getOrCreateJobApplicationConversation(
+        buyerUserId: job['client_id'] as String,
+      );
 
       final body = StringBuffer()
         ..writeln('📋 New bid for "${job['title']}"')
-        ..writeln(
-            'Amount: $currencySign${price.toStringAsFixed(0)} · Delivery: $deliveryTime days');
+        ..writeln('Amount: ${JobPostsService.formatOfferAmountLine(price, insert['price_basis'])}');
       if (coverLetter != null && coverLetter.trim().isNotEmpty) {
         body
           ..writeln()

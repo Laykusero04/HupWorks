@@ -15,6 +15,7 @@ class AppRoutes {
   static const clientHome = '/client';
   static const clientChat = '/client/chat';
   static const clientChatInbox = '/client/chat/:id';
+  static const clientTalent = '/client/talent';
   static const clientJobs = '/client/jobs';
   static const clientJobCreate = '/client/jobs/create';
   static const clientJobDetails = '/client/jobs/:id';

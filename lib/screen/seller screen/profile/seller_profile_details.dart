@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
-import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/services/profile_service.dart';
+import 'package:freelancer/services/seller_home_service.dart';
 import 'package:nb_utils/nb_utils.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../widgets/constant.dart';
+import '../../widgets/profile_detail_theme.dart';
+import '../../widgets/profile_rating_summary.dart';
+import '../../widgets/profile_skeleton.dart';
 import 'seller_edit_profile_details.dart';
 
 class SellerProfileDetails extends StatefulWidget {
@@ -16,90 +20,469 @@ class SellerProfileDetails extends StatefulWidget {
 
 class _SellerProfileDetailsState extends State<SellerProfileDetails> {
   Map<String, dynamic>? _profile;
+  List<Map<String, dynamic>> _reviews = [];
+  String? _sellerAbout;
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _loadProfile();
+    _load();
   }
 
-  Future<void> _loadProfile() async {
+  Future<void> _load() async {
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user == null) {
+      if (mounted) setState(() => _isLoading = false);
+      return;
+    }
     try {
-      final profile = await ProfileService.getProfile();
-      if (mounted) setState(() { _profile = profile; _isLoading = false; });
+      final results = await Future.wait([
+        ProfileService.getProfile(),
+        ProfileService.getReviewsReceived(user.id),
+        SellerHomeService.getSellerProfile(),
+      ]);
+      if (!mounted) return;
+      final home = results[2] as Map<String, dynamic>?;
+      setState(() {
+        _profile = results[0] as Map<String, dynamic>?;
+        _reviews = List<Map<String, dynamic>>.from(results[1] as List<dynamic>? ?? const []);
+        _sellerAbout = _parseSellerAbout(home);
+        _isLoading = false;
+      });
     } catch (e) {
       if (mounted) setState(() => _isLoading = false);
     }
   }
 
+  static String? _parseSellerAbout(Map<String, dynamic>? home) {
+    if (home == null) return null;
+    final sp = home['seller_profiles'];
+    if (sp is List && sp.isNotEmpty) {
+      final m = sp.first;
+      if (m is Map<String, dynamic>) {
+        final a = m['about'] as String?;
+        return a?.trim().isEmpty == true ? null : a?.trim();
+      }
+    }
+    if (sp is Map<String, dynamic>) {
+      final a = sp['about'] as String?;
+      return a?.trim().isEmpty == true ? null : a?.trim();
+    }
+    return null;
+  }
+
+  static String _formatReviewDate(String? iso) {
+    if (iso == null || iso.isEmpty) return '';
+    final d = DateTime.tryParse(iso);
+    if (d == null) return '';
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return '${months[d.month - 1]} ${d.day}, ${d.year}';
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) return const Scaffold(backgroundColor: kDarkWhite, body: Center(child: CircularProgressIndicator(color: kPrimaryColor)));
+    if (_isLoading) {
+      return const ProfileDetailsSkeleton(extraSection: true);
+    }
 
-    final name = _profile?['name'] ?? 'User';
-    final email = _profile?['email'] ?? '';
-    final phone = _profile?['phone'] ?? '';
-    final country = _profile?['country'] ?? '';
-    final city = _profile?['city'] ?? '';
-    final gender = _profile?['gender'] ?? '';
+    final name = _profile?['name'] ?? 'Seller';
+    final email = (_profile?['email'] as String?) ?? '';
+    final bio = _profile?['bio'] as String?;
+    final city = (_profile?['city'] as String?) ?? '';
+    final country = (_profile?['country'] as String?) ?? '';
+    final balance = _profile?['balance'] ?? 0;
     final profileImageUrl = _profile?['profile_image_url'];
-    final nameParts = name.split(' ');
+    final rating = (_profile?['rating'] as num?)?.toDouble() ?? 0;
+    final reviewCount = (_profile?['review_count'] as num?)?.toInt() ?? 0;
+    final phone = _profile?['phone'] as String? ?? '';
+    final gender = _profile?['gender'] as String? ?? '';
+
+    final locationParts = [city, country].where((s) => s.isNotEmpty).toList();
+    final locationStr = locationParts.join(', ');
+
+    final avgLabel = reviewCount > 0 ? rating.toStringAsFixed(1) : '—';
 
     return Scaffold(
-      backgroundColor: kDarkWhite,
-      appBar: AppBar(backgroundColor: kDarkWhite, elevation: 0, iconTheme: const IconThemeData(color: kNeutralColor),
-        title: Text('My Profile', style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)), centerTitle: true),
-      bottomNavigationBar: ButtonGlobalWithIcon(
-        buttontext: 'Edit Profile', buttonTextColor: kWhite, buttonIcon: IconlyBold.edit,
-        buttonDecoration: kButtonDecoration.copyWith(color: kPrimaryColor, borderRadius: BorderRadius.circular(30.0)),
-        onPressed: () async { await const SellerEditProfile().launch(context); _loadProfile(); },
+      backgroundColor: ProfileDetailTheme.scaffoldBg,
+      appBar: AppBar(
+        backgroundColor: ProfileDetailTheme.scaffoldBg,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: kNeutralColor),
+        title: Text(
+          'HupWorks',
+          style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.only(top: 30.0),
-        child: Container(
-          padding: const EdgeInsets.all(15.0), width: context.width(),
-          decoration: const BoxDecoration(color: kWhite, borderRadius: BorderRadius.only(topLeft: Radius.circular(30.0), topRight: Radius.circular(30.0))),
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Row(children: [
-                Container(height: 80, width: 80, decoration: BoxDecoration(shape: BoxShape.circle,
-                  image: DecorationImage(image: profileImageUrl != null ? NetworkImage(profileImageUrl) as ImageProvider : const AssetImage('images/profile3.png'), fit: BoxFit.cover))),
-                const SizedBox(width: 10.0),
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 18.0)),
-                  Text(email, maxLines: 1, overflow: TextOverflow.ellipsis, style: kTextStyle.copyWith(color: kLightNeutralColor)),
-                ]),
-              ]),
-              const SizedBox(height: 20.0),
-              Text('Seller Information', style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 15.0),
-              _row('First Name', nameParts.isNotEmpty ? nameParts.first : ''),
+      body: RefreshIndicator(
+        color: kPrimaryColor,
+        onRefresh: _load,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+          child: Column(
+            children: [
+              const SizedBox(height: 16.0),
+
+              Container(
+                height: 110,
+                width: 110,
+                decoration: ProfileDetailTheme.avatarDecoration(
+                  profileImageUrl != null
+                      ? NetworkImage(profileImageUrl) as ImageProvider
+                      : const AssetImage('images/profile3.png'),
+                ),
+              ),
               const SizedBox(height: 10.0),
-              _row('Last Name', nameParts.length > 1 ? nameParts.sublist(1).join(' ') : ''),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Text(
+                  name,
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: kTextStyle.copyWith(
+                    color: kNeutralColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  ),
+                ),
+              ),
+
+              if (locationStr.isNotEmpty) ...[
+                const SizedBox(height: 8.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.location_on_outlined, size: 14, color: kSecondaryColor),
+                    const SizedBox(width: 4),
+                    Text(locationStr, style: kTextStyle.copyWith(color: kLightNeutralColor)),
+                  ],
+                ),
+              ],
+
               const SizedBox(height: 10.0),
-              _row('Email', email),
-              const SizedBox(height: 10.0),
-              _row('Phone', phone),
-              const SizedBox(height: 10.0),
-              _row('Country', country),
-              const SizedBox(height: 10.0),
-              _row('City', city),
-              const SizedBox(height: 10.0),
-              _row('Gender', gender),
-            ]),
+              Center(
+                child: ProfileRatingSummary(
+                  rating: rating,
+                  reviewCount: reviewCount,
+                  compact: false,
+                ),
+              ),
+
+              const SizedBox(height: 18.0),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+                  decoration: ProfileDetailTheme.statsPanel(),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      _statTile('$reviewCount', 'Reviews'),
+                      _statDivider(),
+                      _statTile(avgLabel, 'Avg rating'),
+                      _statDivider(),
+                      _statTile('$currencySign$balance', 'Balance'),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 18.0),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () async {
+                      await const SellerEditProfile().launch(context);
+                      _load();
+                    },
+                    icon: const Icon(IconlyBold.edit, size: 18, color: kPrimaryColor),
+                    label: Text(
+                      'Edit profile',
+                      style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold),
+                    ),
+                    style: ProfileDetailTheme.editProfileOutlinedStyle(),
+                  ),
+                ),
+              ),
+
+              if (bio != null && bio.trim().isNotEmpty) ...[
+                const SizedBox(height: 16.0),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30),
+                  child: Text(
+                    bio.trim(),
+                    textAlign: TextAlign.center,
+                    style: kTextStyle.copyWith(color: kSubTitleColor),
+                  ),
+                ),
+              ],
+
+              if (_sellerAbout != null && _sellerAbout!.trim().isNotEmpty) ...[
+                const SizedBox(height: 16.0),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        'About',
+                        textAlign: TextAlign.center,
+                        style: kTextStyle.copyWith(
+                          color: kPrimaryColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        _sellerAbout!.trim(),
+                        textAlign: TextAlign.center,
+                        style: kTextStyle.copyWith(color: kSubTitleColor),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+
+              const SizedBox(height: 22.0),
+
+              ProfileDetailTheme.sectionDivider(),
+              const SizedBox(height: 16.0),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    Text(
+                      'Profile details',
+                      style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12.0),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: ProfileDetailTheme.cardOnPage(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _detailRow('Email', email),
+                      _detailRow('Phone', phone),
+                      _detailRow('Country', country),
+                      _detailRow('City', city),
+                      _detailRow('Gender', gender),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 22.0),
+
+              ProfileDetailTheme.sectionDivider(),
+              const SizedBox(height: 16.0),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    Text(
+                      'Reviews',
+                      style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold),
+                    ),
+                    const Spacer(),
+                    Text('$reviewCount total', style: kTextStyle.copyWith(color: kLightNeutralColor)),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12.0),
+
+              if (_reviews.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.all(30),
+                  child: Column(
+                    children: [
+                      Icon(IconlyBold.star, size: 48, color: kPrimaryColor.withValues(alpha: 0.45)),
+                      const SizedBox(height: 8),
+                      Text(
+                        'No reviews yet',
+                        style: kTextStyle.copyWith(color: kLightNeutralColor),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Reviews from clients appear here after completed orders.',
+                        textAlign: TextAlign.center,
+                        style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12, height: 1.35),
+                      ),
+                    ],
+                  ),
+                )
+              else
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: Column(
+                    children: _reviews.map(_reviewCard).toList(),
+                  ),
+                ),
+
+              const SizedBox(height: 36),
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget _row(String l, String v) => Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-    Expanded(flex: 2, child: Text(l, style: kTextStyle.copyWith(color: kSubTitleColor))),
-    Expanded(flex: 4, child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(':', style: kTextStyle.copyWith(color: kSubTitleColor)), const SizedBox(width: 10.0),
-      Flexible(child: Text(v.isEmpty ? '-' : v, style: kTextStyle.copyWith(color: kSubTitleColor), overflow: TextOverflow.ellipsis, maxLines: 2)),
-    ])),
-  ]);
+  Widget _statTile(String value, String label) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold, fontSize: 18),
+        ),
+        const SizedBox(height: 2),
+        Text(label, style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12)),
+      ],
+    );
+  }
+
+  Widget _statDivider() => Container(
+        width: 1,
+        height: 36,
+        color: kPrimaryColor.withValues(alpha: 0.22),
+        margin: const EdgeInsets.symmetric(horizontal: 24),
+      );
+
+  Widget _detailRow(String label, String value) {
+    final v = value.trim().isEmpty ? '—' : value;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            flex: 2,
+            child: Text(label, style: kTextStyle.copyWith(color: kSubTitleColor)),
+          ),
+          Expanded(
+            flex: 4,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(':', style: kTextStyle.copyWith(color: kSubTitleColor)),
+                const SizedBox(width: 10.0),
+                Flexible(
+                  child: Text(
+                    v,
+                    style: kTextStyle.copyWith(color: kSubTitleColor),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _reviewStarsRow(int ratingValue) {
+    final v = ratingValue.clamp(0, 5);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(5, (i) {
+        final filled = i < v;
+        return Icon(
+          filled ? Icons.star_rounded : Icons.star_outline_rounded,
+          size: 18,
+          color: filled ? ratingBarColor : kBorderColorTextField,
+        );
+      }),
+    );
+  }
+
+  Widget _reviewCard(Map<String, dynamic> row) {
+    final stars = (row['rating'] as num?)?.toInt() ?? 0;
+    final comment = (row['comment'] as String?)?.trim();
+    final created = row['created_at'] as String?;
+    final reviewer = row['reviewer'] as Map<String, dynamic>?;
+    final reviewerName = (reviewer?['name'] as String?)?.trim();
+    final imageUrl = (reviewer?['profile_image_url'] as String?)?.trim();
+    final who = (reviewerName != null && reviewerName.isNotEmpty) ? reviewerName : 'Client';
+    final dateStr = _formatReviewDate(created);
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(12),
+        decoration: ProfileDetailTheme.cardOnPage(),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CircleAvatar(
+              radius: 22,
+              backgroundColor: kDarkWhite,
+              backgroundImage: imageUrl != null && imageUrl.isNotEmpty
+                  ? NetworkImage(imageUrl) as ImageProvider
+                  : null,
+              child: imageUrl == null || imageUrl.isEmpty
+                  ? Icon(Icons.person_rounded, color: kPrimaryColor.withValues(alpha: 0.55), size: 24)
+                  : null,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          who,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      if (dateStr.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8),
+                          child: Text(
+                            dateStr,
+                            style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 11),
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  _reviewStarsRow(stars),
+                  if (comment != null && comment.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      comment,
+                      style: kTextStyle.copyWith(color: kSubTitleColor, height: 1.35),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

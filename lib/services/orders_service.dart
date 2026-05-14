@@ -3,6 +3,28 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class OrdersService {
   static final _client = Supabase.instance.client;
 
+  static String? _uuidString(dynamic value) {
+    if (value == null) return null;
+    final s = value.toString().trim();
+    if (s.isEmpty || s == 'null') return null;
+    return s;
+  }
+
+  /// `service_id` on the order (null for job-offer contracts).
+  static String? serviceIdFromOrderMap(Map<String, dynamic> order) =>
+      _uuidString(order['service_id']);
+
+  /// `job_offer_id` on the order row, or embedded `job_offers.id` from the select.
+  static String? jobOfferIdFromOrderMap(Map<String, dynamic> order) {
+    final direct = _uuidString(order['job_offer_id']);
+    if (direct != null) return direct;
+    final nested = order['job_offers'];
+    if (nested is Map<String, dynamic>) {
+      return _uuidString(nested['id']);
+    }
+    return null;
+  }
+
   /// Create a new order
   static Future<Map<String, dynamic>> createOrder({
     required String serviceId,
@@ -34,7 +56,11 @@ class OrdersService {
 
     var query = _client
         .from('orders')
-        .select('*, services!service_id(title, images), seller:profiles!seller_id(name)')
+        .select(
+          '*, services!service_id(title, images), seller:profiles!seller_id(id, name), '
+          'job_offers!job_offer_id(job_posts(title)), '
+          'reviews(id, reviewer_id, rating, comment, created_at)',
+        )
         .eq('client_id', user.id);
 
     if (status != null) {
@@ -49,10 +75,87 @@ class OrdersService {
   static Future<Map<String, dynamic>> getOrderDetails(String orderId) async {
     final data = await _client
         .from('orders')
-        .select('*, services!service_id(title, description, images, delivery_time, revision_count, price), seller:profiles!seller_id(name, profile_image_url)')
+        .select(
+          '*, services!service_id(title, description, images, delivery_time, revision_count, price), '
+          'seller:profiles!seller_id(id, name, profile_image_url), '
+          'job_offers!job_offer_id('
+          'id, cover_letter, delivery_time, delivery_time_unit, price_basis, '
+          'job_posts(title, description, job_type, location, workers_needed)'
+          '), '
+          'reviews(id, reviewer_id, rating, comment, created_at)',
+        )
         .eq('id', orderId)
         .single();
     return data;
+  }
+
+  /// True if the signed-in user already has a `reviews` row for this order.
+  static bool currentUserHasReviewedOrder(Map<String, dynamic> orderDetails) {
+    final uid = _client.auth.currentUser?.id;
+    if (uid == null) return false;
+    final raw = orderDetails['reviews'];
+    if (raw == null) return false;
+    if (raw is List) {
+      for (final r in raw) {
+        if (r is Map && r['reviewer_id'] == uid) return true;
+      }
+      return false;
+    }
+    if (raw is Map<String, dynamic>) {
+      return raw['reviewer_id'] == uid;
+    }
+    return false;
+  }
+
+  /// Client leaves a review for the seller on this order.
+  static Future<void> submitClientOrderReview({
+    required String orderId,
+    required String sellerId,
+    required int rating,
+    String? comment,
+    String? serviceId,
+    String? jobOfferId,
+  }) async {
+    final user = _client.auth.currentUser;
+    if (user == null) throw Exception('Not logged in');
+    if (rating < 1 || rating > 5) throw Exception('Invalid rating');
+
+    final row = <String, dynamic>{
+      'order_id': orderId,
+      'reviewer_id': user.id,
+      'reviewed_id': sellerId,
+      'rating': rating,
+    };
+    final sid = serviceId?.trim();
+    if (sid != null && sid.isNotEmpty) row['service_id'] = sid;
+    final jid = jobOfferId?.trim();
+    if (jid != null && jid.isNotEmpty) row['job_offer_id'] = jid;
+    final c = comment?.trim();
+    if (c != null && c.isNotEmpty) row['comment'] = c;
+
+    try {
+      await _client.from('reviews').insert(row).select('id').single();
+    } on PostgrestException catch (e) {
+      final msg = e.message;
+      final code = e.code;
+      if (code == '23502' && msg.toLowerCase().contains('service_id')) {
+        throw Exception(
+          'This order has no marketplace service. In Supabase → SQL Editor, run '
+          'migrations/0006_reviews_service_id_nullable.sql so reviews.service_id can be null.',
+        );
+      }
+      if (code == '23503') {
+        throw Exception(
+          'Review could not be saved (linked order, profile, or job offer was not found). $msg',
+        );
+      }
+      if (code == '42501' || msg.toLowerCase().contains('row-level security')) {
+        throw Exception(
+          'Review could not be saved (permission denied). You must be the client or seller on this order.',
+        );
+      }
+      throw Exception(msg.isNotEmpty ? msg : e.toString());
+    }
   }
 
   /// Update order status

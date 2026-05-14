@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
-import 'package:freelancer/screen/client%20screen/client%20home/top_seller.dart';
 import 'package:freelancer/screen/client%20screen/client%20job%20post/client_job_post.dart';
 import 'package:freelancer/screen/client%20screen/client%20job%20post/job_details.dart';
 import 'package:freelancer/services/client_home_service.dart';
 import 'package:freelancer/services/job_posts_service.dart';
+import 'package:go_router/go_router.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../../router/app_router.dart';
+import '../../../router/route_names.dart';
 import '../../widgets/constant.dart';
 import '../client notification/client_notification.dart';
 import '../search/search.dart';
@@ -141,6 +142,13 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
     return colors[i % colors.length];
   }
 
+  String _timeGreeting(String firstName) {
+    final h = DateTime.now().hour;
+    if (h < 12) return 'Good morning, $firstName';
+    if (h < 17) return 'Good afternoon, $firstName';
+    return 'Good evening, $firstName';
+  }
+
   @override
   Widget build(BuildContext context) {
     final userName = _profile?['name'] ?? 'User';
@@ -149,7 +157,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
     return Scaffold(
       backgroundColor: kDarkWhite,
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: kPrimaryColor))
+          ? const _ClientHomeLoading()
           : Column(
               children: [
                 // Pinned hero (appbar) — not affected by pull-to-refresh.
@@ -188,12 +196,12 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
                         SliverToBoxAdapter(
                           child: _buildSectionHeader(
                             'Top Freelancers',
-                            onViewAll: () => const TopSeller().launch(context),
+                            onViewAll: () => context.go(AppRoutes.clientTalent),
                           ),
                         ),
                         SliverToBoxAdapter(child: _buildTopFreelancers()),
-                        // Bottom padding so content clears the floating nav bar.
-                        const SliverToBoxAdapter(child: SizedBox(height: 110)),
+                        // Bottom padding so the last sliver clears comfortably above the tab bar.
+                        const SliverToBoxAdapter(child: SizedBox(height: 28)),
                       ],
                     ),
                   ),
@@ -259,7 +267,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Hello, $userName',
+                          _timeGreeting(userName),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: kTextStyle.copyWith(
@@ -270,7 +278,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'Let\'s find skilled talent today',
+                          'Find talent and run projects in one place',
                           style: kTextStyle.copyWith(
                             color: Colors.white.withOpacity(0.85),
                             fontSize: 12,
@@ -398,7 +406,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
         label: 'Find Talent',
         icon: Icons.people_alt_rounded,
         color: kSecondaryColor,
-        onTap: () => const TopSeller().launch(context),
+        onTap: () => context.go(AppRoutes.clientTalent),
       ),
       _QuickAction(
         label: 'Categories',
@@ -407,10 +415,10 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
         onTap: () => const ClientAllCategories().launch(context),
       ),
       _QuickAction(
-        label: 'Alerts',
-        icon: Icons.notifications_active_rounded,
+        label: 'Contracts',
+        icon: Icons.description_outlined,
         color: const Color(0xFF8B5CF6),
-        onTap: () => const ClientNotification().launch(context),
+        onTap: () => context.go('/client/orders'),
       ),
     ];
 
@@ -482,7 +490,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
         subtitle: 'Verified talent for every project',
         cta: 'Explore',
         gradient: const [Color(0xFF16A34A), Color(0xFF0EA5E9)],
-        onTap: () => const TopSeller().launch(context),
+        onTap: () => context.go(AppRoutes.clientTalent),
       ),
       _Promo(
         title: 'Post a job\nin seconds',
@@ -970,7 +978,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
           final isPro = ratingValue >= 4.5;
 
           return GestureDetector(
-            onTap: () => const TopSeller().launch(context),
+            onTap: () => context.go(AppRoutes.clientTalent),
             child: Container(
               width: 170,
               decoration: BoxDecoration(
@@ -1149,4 +1157,211 @@ class _Promo {
     required this.gradient,
     required this.onTap,
   });
+}
+
+/// Placeholder layout while home data loads (first paint stays fast).
+class _ClientHomeLoading extends StatelessWidget {
+  const _ClientHomeLoading();
+
+  static BoxDecoration _card(Color c) => BoxDecoration(
+        color: c,
+        borderRadius: BorderRadius.circular(20),
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    final bar = Colors.white.withOpacity(0.22);
+    final muted = kLightNeutralColor.withOpacity(0.35);
+
+    return Column(
+      children: [
+        Container(
+          width: double.infinity,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFF0E8C3D),
+                Color(0xFF16A34A),
+                Color(0xFF38C172),
+              ],
+            ),
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
+          ),
+          child: SafeArea(
+            bottom: false,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        height: 46,
+                        width: 46,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: bar,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              height: 14,
+                              width: 160,
+                              decoration: BoxDecoration(
+                                color: bar,
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Container(
+                              height: 10,
+                              width: 220,
+                              decoration: BoxDecoration(
+                                color: bar,
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        height: 40,
+                        width: 40,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: bar,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 28),
+                  Container(
+                    height: 22,
+                    width: 180,
+                    decoration: BoxDecoration(
+                      color: bar,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    height: 24,
+                    width: 220,
+                    decoration: BoxDecoration(
+                      color: bar,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  Container(
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.9),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  height: 96,
+                  decoration: _card(Colors.white),
+                ),
+                const SizedBox(height: 22),
+                Container(
+                  height: 150,
+                  decoration: _card(Colors.white),
+                ),
+                const SizedBox(height: 24),
+                Container(
+                  height: 16,
+                  width: 140,
+                  decoration: _card(muted),
+                ),
+                const SizedBox(height: 14),
+                GridView.count(
+                  crossAxisCount: 4,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  mainAxisSpacing: 12,
+                  crossAxisSpacing: 10,
+                  childAspectRatio: 0.85,
+                  children: List.generate(
+                    8,
+                    (_) => Column(
+                      children: [
+                        Container(
+                          height: 52,
+                          width: 52,
+                          decoration: _card(muted),
+                        ),
+                        const SizedBox(height: 8),
+                        Container(
+                          height: 10,
+                          width: 40,
+                          decoration: _card(muted),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(
+                    3,
+                    (i) => Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: SizedBox(
+                        width: i == 0 ? 22 : 6,
+                        height: 6,
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: i == 0 ? kPrimaryColor : kPrimaryColor.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 28),
+                Container(
+                  height: 14,
+                  width: 120,
+                  decoration: _card(muted),
+                ),
+                const SizedBox(height: 12),
+                ...List.generate(
+                  3,
+                  (_) => Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: Container(
+                      height: 72,
+                      decoration: _card(Colors.white),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/services/chat_service.dart';
+import 'package:freelancer/services/job_posts_service.dart';
 import 'package:freelancer/services/seller_orders_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -203,7 +204,7 @@ class _SellerApplicationsState extends State<SellerApplications> {
                                       ),
                                       const SizedBox(width: 10.0),
                                       Text(
-                                        '$currencySign${app['price'] ?? 0}',
+                                        JobPostsService.formatOfferAmountShort(app['price'], app['price_basis']),
                                         style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold),
                                       ),
                                       const Spacer(),

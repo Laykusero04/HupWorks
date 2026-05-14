@@ -22,6 +22,7 @@ class JobPostRepository {
     String? categoryId,
     double? budgetMin,
     double? budgetMax,
+    String budgetBasis = JobPostsService.budgetBasisFixed,
     DateTime? deadline,
   }) async {
     try {
@@ -31,6 +32,7 @@ class JobPostRepository {
         categoryId: categoryId,
         budgetMin: budgetMin,
         budgetMax: budgetMax,
+        budgetBasis: budgetBasis,
         deadline: deadline,
       );
       return JobPost.fromJson(data);
@@ -96,14 +98,18 @@ class JobPostRepository {
   Future<void> createOffer({
     required String jobPostId,
     required double price,
-    required int deliveryTime,
+    String priceBasis = JobPostsService.budgetBasisFixed,
+    int? deliveryTime,
+    String? deliveryTimeUnit,
     String? coverLetter,
   }) async {
     try {
       await SellerOrdersService.createOffer(
         jobPostId: jobPostId,
         price: price,
+        priceBasis: priceBasis,
         deliveryTime: deliveryTime,
+        deliveryTimeUnit: deliveryTimeUnit,
         coverLetter: coverLetter,
       );
     } catch (e) {

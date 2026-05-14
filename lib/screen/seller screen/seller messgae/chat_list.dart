@@ -258,7 +258,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return ListView.builder(
       physics: const AlwaysScrollableScrollPhysics(
           parent: BouncingScrollPhysics()),
-      padding: const EdgeInsets.fromLTRB(14, 4, 14, 110),
+      padding: const EdgeInsets.fromLTRB(14, 4, 14, 28),
       itemCount: filtered.length,
       itemBuilder: (context, index) {
         final conversation = filtered[index];
@@ -275,7 +275,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
       children: [
-        const SizedBox(height: 100),
+        const SizedBox(height: 28),
         Center(
           child: Container(
             padding: const EdgeInsets.all(22),
@@ -439,7 +439,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return _Shimmer(
       child: ListView.builder(
         physics: const NeverScrollableScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(14, 4, 14, 110),
+        padding: const EdgeInsets.fromLTRB(14, 4, 14, 28),
         itemCount: 8,
         itemBuilder: (_, __) => Padding(
           padding: const EdgeInsets.symmetric(vertical: 5),

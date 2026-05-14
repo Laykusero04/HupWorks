@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 
+import '../../services/job_posts_service.dart';
 import 'category_model.dart';
 import 'profile_model.dart';
 
@@ -11,6 +12,7 @@ class JobPost extends Equatable {
   final String? categoryId;
   final double? budgetMin;
   final double? budgetMax;
+  final String budgetBasis;
   final DateTime? deadline;
   final String status;
   final DateTime createdAt;
@@ -27,6 +29,7 @@ class JobPost extends Equatable {
     this.categoryId,
     this.budgetMin,
     this.budgetMax,
+    this.budgetBasis = JobPostsService.budgetBasisFixed,
     this.deadline,
     this.status = 'open',
     required this.createdAt,
@@ -46,6 +49,7 @@ class JobPost extends Equatable {
       categoryId: json['category_id'] as String?,
       budgetMin: (json['budget_min'] as num?)?.toDouble(),
       budgetMax: (json['budget_max'] as num?)?.toDouble(),
+      budgetBasis: JobPostsService.normalizeBudgetBasis(json['budget_basis']),
       deadline: json['deadline'] != null ? DateTime.parse(json['deadline'] as String) : null,
       status: (json['status'] as String?) ?? 'open',
       createdAt: DateTime.parse(json['created_at'] as String),
@@ -62,11 +66,12 @@ class JobPost extends Equatable {
         'category_id': categoryId,
         'budget_min': budgetMin,
         'budget_max': budgetMax,
+        'budget_basis': budgetBasis,
         if (deadline != null) 'deadline': deadline!.toIso8601String(),
         'status': status,
         'created_at': createdAt.toIso8601String(),
       };
 
   @override
-  List<Object?> get props => [id, clientId, title, description, categoryId, budgetMin, budgetMax, deadline, status, createdAt, category, client];
+  List<Object?> get props => [id, clientId, title, description, categoryId, budgetMin, budgetMax, budgetBasis, deadline, status, createdAt, category, client];
 }

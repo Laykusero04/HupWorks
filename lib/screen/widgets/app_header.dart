@@ -72,7 +72,7 @@ class AppHeaderIcon extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.12),
+        color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Icon(icon, color: color, size: 22),
@@ -100,6 +100,7 @@ class AppHeaderAvatar extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: kDarkWhite,
+        border: Border.all(color: kPrimaryColor.withValues(alpha: 0.35), width: 2),
         image: DecorationImage(
           image: imageUrl != null ? NetworkImage(imageUrl!) as ImageProvider : AssetImage(fallbackAsset),
           fit: BoxFit.cover,

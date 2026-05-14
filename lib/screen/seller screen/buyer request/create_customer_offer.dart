@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
+import 'package:freelancer/services/job_posts_service.dart';
 import 'package:freelancer/services/seller_orders_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -21,7 +22,7 @@ class CreateCustomerOffer extends StatefulWidget {
 class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
   final _amountController = TextEditingController();
   final _coverLetterController = TextEditingController();
-  String _selectedDeliveryTime = '3';
+  String _priceBasis = JobPostsService.budgetBasisFixed;
   bool _isSubmitting = false;
 
   @override
@@ -87,7 +88,7 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
   Future<void> _handleSubmit() async {
     final amount = double.tryParse(_amountController.text.trim());
     if (amount == null || amount <= 0) {
-      _showMessage('Please enter a valid bid amount', type: _MessageType.warning);
+      _showMessage('Please enter a valid offer amount', type: _MessageType.warning);
       return;
     }
 
@@ -97,12 +98,12 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
       await SellerOrdersService.createOffer(
         jobPostId: widget.jobPostId,
         price: amount,
-        deliveryTime: int.tryParse(_selectedDeliveryTime) ?? 3,
+        priceBasis: _priceBasis,
         coverLetter: _coverLetterController.text.trim().isNotEmpty ? _coverLetterController.text.trim() : null,
       );
 
       if (mounted) {
-        _showMessage('Your application has been submitted', type: _MessageType.success);
+        _showMessage('Your offer has been sent', type: _MessageType.success);
         await Future.delayed(const Duration(milliseconds: 600));
         if (mounted) Navigator.pop(context);
       }
@@ -115,19 +116,35 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
 
   @override
   Widget build(BuildContext context) {
+    final bottomLift = MediaQuery.paddingOf(context).bottom + 16;
+
     return Scaffold(
       backgroundColor: kDarkWhite,
       appBar: AppBar(
-        backgroundColor: kDarkWhite, elevation: 0, iconTheme: const IconThemeData(color: kNeutralColor),
-        title: Text('Submit Application', style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)), centerTitle: true,
+        backgroundColor: kDarkWhite,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: kNeutralColor),
+        title: Text(
+          'Submit offer',
+          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
       ),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(color: kWhite),
-        child: ButtonGlobalWithoutIcon(
-          buttontext: _isSubmitting ? 'Submitting...' : 'Submit Application',
-          buttonDecoration: kButtonDecoration.copyWith(color: _isSubmitting ? kLightNeutralColor : kPrimaryColor, borderRadius: BorderRadius.circular(30.0)),
-          onPressed: _isSubmitting ? null : _handleSubmit,
-          buttonTextColor: kWhite,
+      bottomNavigationBar: Material(
+        color: kWhite,
+        elevation: 12,
+        shadowColor: Colors.black26,
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(20, 8, 20, bottomLift),
+          child: ButtonGlobalWithoutIcon(
+            buttontext: _isSubmitting ? 'Sending…' : 'Submit offer',
+            buttonDecoration: kButtonDecoration.copyWith(
+              color: _isSubmitting ? kLightNeutralColor : kPrimaryColor,
+              borderRadius: BorderRadius.circular(30.0),
+            ),
+            onPressed: _isSubmitting ? null : _handleSubmit,
+            buttonTextColor: kWhite,
+          ),
         ),
       ),
       body: Padding(
@@ -135,15 +152,21 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
         child: Container(
           padding: const EdgeInsets.only(left: 20.0, right: 20.0),
           width: context.width(),
-          decoration: const BoxDecoration(color: kWhite, borderRadius: BorderRadius.only(topLeft: Radius.circular(30.0), topRight: Radius.circular(30.0))),
+          decoration: const BoxDecoration(
+            color: kWhite,
+            borderRadius: BorderRadius.only(topLeft: Radius.circular(30.0), topRight: Radius.circular(30.0)),
+          ),
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 20.0),
-
-                // Job title reference
+                Text(
+                  'Enter your amount and choose how you are quoting it (total, per hour, per day, or per month). The client sees this with your offer and in chat.',
+                  style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13, height: 1.35),
+                ),
+                const SizedBox(height: 20.0),
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), color: kDarkWhite),
@@ -151,62 +174,87 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
                     children: [
                       const Icon(Icons.work_outline, color: kPrimaryColor),
                       const SizedBox(width: 10),
-                      Expanded(child: Text(widget.jobTitle, style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold), maxLines: 2, overflow: TextOverflow.ellipsis)),
+                      Expanded(
+                        child: Text(
+                          widget.jobTitle,
+                          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 20.0),
-
-                // Amount
-                TextFormField(
-                  controller: _amountController,
-                  keyboardType: TextInputType.number,
-                  cursorColor: kNeutralColor,
-                  decoration: kInputDecoration.copyWith(
-                    labelText: 'Your Bid', labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                    hintText: 'Enter your bid amount', hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
-                    border: const OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 20.0),
-
-                // Delivery Time
-                FormField(
-                  builder: (FormFieldState<dynamic> field) {
-                    return InputDecorator(
-                      decoration: kInputDecoration.copyWith(
-                        enabledBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(8.0)), borderSide: BorderSide(color: kBorderColorTextField, width: 2)),
-                        contentPadding: const EdgeInsets.all(7.0),
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                        labelText: 'Delivery Time', labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                      ),
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton<String>(
-                          icon: const Icon(FeatherIcons.chevronDown),
-                          value: _selectedDeliveryTime,
-                          style: kTextStyle.copyWith(color: kSubTitleColor),
-                          items: ['3', '5', '7', '12', '15', '20'].map((d) => DropdownMenuItem(value: d, child: Text('$d days'))).toList(),
-                          onChanged: (v) => setState(() => _selectedDeliveryTime = v!),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: _amountController,
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        cursorColor: kNeutralColor,
+                        decoration: kInputDecoration.copyWith(
+                          labelText: 'Offer amount',
+                          labelStyle: kTextStyle.copyWith(color: kNeutralColor),
+                          hintText: 'Enter your bid',
+                          hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
+                          border: const OutlineInputBorder(),
                         ),
                       ),
-                    );
-                  },
+                    ),
+                    const SizedBox(width: 10),
+                    SizedBox(
+                      width: 118,
+                      child: InputDecorator(
+                        decoration: kInputDecoration.copyWith(
+                          enabledBorder: const OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                            borderSide: BorderSide(color: kBorderColorTextField, width: 2),
+                          ),
+                          contentPadding: const EdgeInsetsDirectional.only(start: 10, end: 4, top: 0, bottom: 0),
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          labelText: 'Bid as',
+                          labelStyle: kTextStyle.copyWith(color: kNeutralColor, fontSize: 12),
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            isExpanded: true,
+                            isDense: true,
+                            icon: const Icon(FeatherIcons.chevronDown, size: 18, color: kSubTitleColor),
+                            value: _priceBasis,
+                            style: kTextStyle.copyWith(color: kNeutralColor, fontSize: 13),
+                            items: [
+                              DropdownMenuItem(value: JobPostsService.budgetBasisFixed, child: Text('Total', style: kTextStyle.copyWith(fontSize: 13))),
+                              DropdownMenuItem(value: JobPostsService.budgetBasisPerHour, child: Text('/ hour', style: kTextStyle.copyWith(fontSize: 13))),
+                              DropdownMenuItem(value: JobPostsService.budgetBasisPerDay, child: Text('/ day', style: kTextStyle.copyWith(fontSize: 13))),
+                              DropdownMenuItem(value: JobPostsService.budgetBasisPerMonth, child: Text('/ month', style: kTextStyle.copyWith(fontSize: 13))),
+                            ],
+                            onChanged: (v) {
+                              if (v != null) setState(() => _priceBasis = v);
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 20.0),
-
-                // Cover letter
                 TextFormField(
                   controller: _coverLetterController,
                   keyboardType: TextInputType.multiline,
                   cursorColor: kNeutralColor,
                   maxLines: 5,
                   decoration: kInputDecoration.copyWith(
-                    labelText: 'Proposal (optional)', labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                    hintText: 'Describe why you are the best fit...', hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
-                    floatingLabelBehavior: FloatingLabelBehavior.always, border: const OutlineInputBorder(),
+                    labelText: 'Message (optional)',
+                    labelStyle: kTextStyle.copyWith(color: kNeutralColor),
+                    hintText: 'Optional note for the client…',
+                    hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    border: const OutlineInputBorder(),
                   ),
                 ),
-                const SizedBox(height: 20.0),
+                SizedBox(height: bottomLift + 32),
               ],
             ),
           ),

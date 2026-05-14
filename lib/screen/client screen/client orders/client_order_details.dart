@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:freelancer/core/utils/order_contract_display.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/services/orders_service.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -23,6 +24,8 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
   Map<String, dynamic>? _service;
   Map<String, dynamic>? _seller;
   bool _isLoading = true;
+  bool _isCompletingJob = false;
+  bool _clientHasReviewed = false;
 
   @override
   void initState() {
@@ -38,6 +41,7 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
           _order = data;
           _service = data['services'] as Map<String, dynamic>?;
           _seller = data['seller'] as Map<String, dynamic>?;
+          _clientHasReviewed = OrdersService.currentUserHasReviewedOrder(data);
           _isLoading = false;
         });
       }
@@ -87,6 +91,297 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
     }
   }
 
+  String _statusKey() => ((_order?['status'] as String?) ?? 'pending').toLowerCase();
+
+  String _statusLabelForUi(String status) {
+    switch (status.toLowerCase()) {
+      case 'delivered':
+        return 'Awaiting your approval';
+      case 'active':
+        return 'In progress';
+      case 'pending':
+        return 'Pending';
+      case 'completed':
+        return 'Completed';
+      case 'cancelled':
+        return 'Cancelled';
+      default:
+        if (status.isEmpty) return 'Unknown';
+        return '${status[0].toUpperCase()}${status.length > 1 ? status.substring(1) : ''}';
+    }
+  }
+
+  Future<void> _handleMarkJobComplete() async {
+    final sellerName = _seller?['name'] ?? 'the seller';
+    final deliverySubmitted = _statusKey() == 'delivered';
+    final confirmed = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Mark this job complete?',
+          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+        ),
+        content: Text(
+          deliverySubmitted
+              ? 'You are confirming you received the work from $sellerName through their delivery submission. The contract will close as completed and you can leave a review next.'
+              : 'You are about to close this contract as finished. Use this when you have received the deliverables from $sellerName (for example via chat or files), even if they have not pressed “Submit delivery” yet.',
+          style: kTextStyle.copyWith(color: kSubTitleColor, height: 1.35),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('Not yet', style: kTextStyle.copyWith(color: kLightNeutralColor)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text('Yes, complete job', style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.w700)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _isCompletingJob = true);
+    try {
+      await OrdersService.updateOrderStatus(widget.orderId, 'completed');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Job marked complete. Thank you!')),
+      );
+      await _loadOrder();
+      if (!mounted) return;
+      if (!_clientHasReviewed) {
+        final review = await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            title: Text(
+              'Leave a review?',
+              style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+            ),
+            content: Text(
+              'Reviews help other clients and reward great work.',
+              style: kTextStyle.copyWith(color: kSubTitleColor, height: 1.35),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: Text('Later', style: kTextStyle.copyWith(color: kLightNeutralColor)),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                child: Text('Write review', style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.w700)),
+              ),
+            ],
+          ),
+        );
+        if (review == true && mounted) {
+          await _openClientReviewScreen();
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not complete job: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isCompletingJob = false);
+    }
+  }
+
+  Future<void> _openClientReviewScreen() async {
+    final sid = _seller?['id'] as String?;
+    if (sid == null || sid.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not open review (missing seller).')),
+        );
+      }
+      return;
+    }
+    final order = _order;
+    await ClientOrderReview(
+      orderId: widget.orderId,
+      sellerId: sid,
+      serviceId: order != null ? OrdersService.serviceIdFromOrderMap(order) : null,
+      jobOfferId: order != null ? OrdersService.jobOfferIdFromOrderMap(order) : null,
+      sellerName: _seller?['name'] as String?,
+      sellerProfileImageUrl: _seller?['profile_image_url'] as String?,
+    ).launch(context);
+    if (mounted) await _loadOrder();
+  }
+
+  Widget _buildDeliveredCallout() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: kSecondaryColor.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: kSecondaryColor.withOpacity(0.35)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.inbox_rounded, color: kSecondaryColor, size: 26),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Seller submitted delivery',
+                  style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Review what they sent. When you are happy with the result, tap Mark job complete below to close the order. To chat with the seller, use the ⋮ menu at the top.',
+                  style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13, height: 1.35),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActiveWorkCallout() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: kPrimaryColor.withOpacity(0.06),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: kPrimaryColor.withOpacity(0.25)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.handshake_rounded, color: kPrimaryColor, size: 26),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Open contract',
+                  style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'When your freelancer has finished and you have the final result, tap Mark job complete below to close the contract. You can message the seller from the ⋮ menu at the top.',
+                  style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13, height: 1.35),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomBar({
+    required String status,
+    required bool isCompleted,
+    required bool isDelivered,
+    required bool isCancelled,
+  }) {
+    if (isCancelled) {
+      return Container(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+        decoration: const BoxDecoration(color: kWhite),
+        child: ButtonGlobalWithoutIcon(
+          buttontext: 'Close',
+          buttonDecoration: kButtonDecoration.copyWith(color: kPrimaryColor),
+          onPressed: () => Navigator.pop(context),
+          buttonTextColor: kWhite,
+        ),
+      );
+    }
+
+    if (isCompleted) {
+      if (_clientHasReviewed) {
+        return Container(
+          decoration: const BoxDecoration(color: kWhite),
+          padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.check_circle_outline, color: Colors.green.shade600, size: 22),
+              const SizedBox(width: 10),
+              Flexible(
+                child: Text(
+                  'You submitted a review for this order.',
+                  textAlign: TextAlign.center,
+                  style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 14, height: 1.35),
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+      return Container(
+        decoration: const BoxDecoration(color: kWhite),
+        padding: const EdgeInsets.fromLTRB(12, 10, 12, 16),
+        child: ButtonGlobalWithoutIcon(
+          buttontext: 'Write review',
+          buttonDecoration: kButtonDecoration.copyWith(color: kPrimaryColor),
+          onPressed: _openClientReviewScreen,
+          buttonTextColor: kWhite,
+        ),
+      );
+    }
+
+    if (isDelivered) {
+      return Container(
+        decoration: const BoxDecoration(color: kWhite),
+        padding: const EdgeInsets.fromLTRB(12, 10, 12, 16),
+        child: ButtonGlobalWithoutIcon(
+          buttontext: _isCompletingJob ? 'Completing…' : 'Mark job complete',
+          buttonDecoration: kButtonDecoration.copyWith(
+            color: _isCompletingJob ? kLightNeutralColor : kPrimaryColor,
+          ),
+          onPressed: _isCompletingJob ? () {} : _handleMarkJobComplete,
+          buttonTextColor: kWhite,
+        ),
+      );
+    }
+
+    final isOpenContract = status == 'active' || status == 'pending';
+
+    if (isOpenContract) {
+      return Container(
+        decoration: const BoxDecoration(color: kWhite),
+        padding: const EdgeInsets.fromLTRB(12, 10, 12, 16),
+        child: ButtonGlobalWithoutIcon(
+          buttontext: _isCompletingJob ? 'Completing…' : 'Mark job complete',
+          buttonDecoration: kButtonDecoration.copyWith(
+            color: _isCompletingJob ? kLightNeutralColor : kPrimaryColor,
+          ),
+          onPressed: _isCompletingJob ? () {} : _handleMarkJobComplete,
+          buttonTextColor: kWhite,
+        ),
+      );
+    }
+
+    return Container(
+      decoration: const BoxDecoration(color: kWhite),
+      padding: const EdgeInsets.fromLTRB(12, 10, 12, 16),
+      child: ButtonGlobalWithoutIcon(
+        buttontext: _isCompletingJob ? 'Completing…' : 'Mark job complete',
+        buttonDecoration: kButtonDecoration.copyWith(
+          color: _isCompletingJob ? kLightNeutralColor : kPrimaryColor,
+        ),
+        onPressed: _isCompletingJob ? () {} : _handleMarkJobComplete,
+        buttonTextColor: kWhite,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -96,15 +391,21 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
       );
     }
 
-    final status = _order?['status'] ?? 'pending';
+    final status = _statusKey();
     final isCompleted = status == 'completed';
-    final title = _service?['title'] ?? 'Service';
-    final description = _service?['description'] ?? '';
+    final isDelivered = status == 'delivered';
+    final isCancelled = status == 'cancelled';
+    /// New hires start as `pending` (see accept_job_offer); treat like an open job for client actions.
+    final isOpenContract = status == 'active' || status == 'pending';
+    final title = OrderContractDisplay.title(_order, _service);
+    final description = OrderContractDisplay.serviceInfo(_order, _service);
+    final durationText = OrderContractDisplay.durationLabel(_order, _service);
+    final revisionText = OrderContractDisplay.revisionsLabel(_order, _service);
     final price = _order?['price'] ?? 0;
-    final deliveryTime = _service?['delivery_time'] ?? 0;
-    final revisionCount = _service?['revision_count'] ?? 0;
     final sellerName = _seller?['name'] ?? 'Seller';
     final orderId = widget.orderId.substring(0, 8).toUpperCase();
+    /// Insets for home indicator; tab bar no longer overlaps the body.
+    final bottomInset = MediaQuery.paddingOf(context).bottom + 12;
 
     return Scaffold(
       backgroundColor: kDarkWhite,
@@ -131,6 +432,17 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
                   ],
                 ),
               ),
+              if (isOpenContract)
+                PopupMenuItem(
+                  child: Row(
+                    children: [
+                      const Icon(Icons.cancel_outlined, color: Colors.red),
+                      const SizedBox(width: 5.0),
+                      Text('Cancel order', style: kTextStyle.copyWith(color: Colors.red))
+                          .onTap(_handleCancelOrder),
+                    ],
+                  ),
+                ),
               PopupMenuItem(
                 child: Row(
                   children: [
@@ -149,38 +461,18 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
           ),
         ],
       ),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(color: kWhite),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Expanded(
-              child: ButtonGlobalWithoutIcon(
-                buttontext: isCompleted ? 'Re-Order' : 'Cancel',
-                buttonDecoration: kButtonDecoration.copyWith(
-                  color: isCompleted ? kPrimaryColor : kWhite,
-                  border: Border.all(color: isCompleted ? Colors.transparent : Colors.red),
-                ),
-                onPressed: () {
-                  if (!isCompleted) _handleCancelOrder();
-                },
-                buttonTextColor: isCompleted ? kWhite : Colors.red,
-              ),
-            ),
-            Expanded(
-              child: ButtonGlobalWithoutIcon(
-                buttontext: isCompleted ? 'Review' : 'Deliver Work',
-                buttonDecoration: kButtonDecoration.copyWith(
-                  color: isCompleted ? kWhite : kPrimaryColor,
-                  border: Border.all(color: isCompleted ? kPrimaryColor : Colors.transparent),
-                ),
-                onPressed: () {
-                  const ClientOrderReview().launch(context);
-                },
-                buttonTextColor: isCompleted ? kPrimaryColor : kWhite,
-              ),
-            ),
-          ],
+      bottomNavigationBar: Material(
+        color: kWhite,
+        elevation: 12,
+        shadowColor: Colors.black26,
+        child: Padding(
+          padding: EdgeInsets.only(bottom: bottomInset),
+          child: _buildBottomBar(
+            status: status,
+            isCompleted: isCompleted,
+            isDelivered: isDelivered,
+            isCancelled: isCancelled,
+          ),
         ),
       ),
       body: Padding(
@@ -197,10 +489,18 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
           ),
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            child: Column(
-              children: [
-                const SizedBox(height: 15.0),
-                Container(
+              child: Column(
+                children: [
+                  const SizedBox(height: 15.0),
+                  if (isDelivered) ...[
+                    _buildDeliveredCallout(),
+                    const SizedBox(height: 16),
+                  ],
+                  if (isOpenContract) ...[
+                    _buildActiveWorkCallout(),
+                    const SizedBox(height: 16),
+                  ],
+                  Container(
                   padding: const EdgeInsets.all(10.0),
                   width: context.width(),
                   decoration: BoxDecoration(
@@ -224,7 +524,9 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
                             separatorType: SeparatorType.symbol,
                             separatorStyle: kTextStyle.copyWith(color: Colors.transparent),
                             decoration: BoxDecoration(
-                              color: isCompleted ? const Color(0xFFBFBFBF) : kPrimaryColor,
+                              color: (isCompleted || isDelivered)
+                                  ? const Color(0xFFBFBFBF)
+                                  : kPrimaryColor,
                               borderRadius: BorderRadius.circular(3.0),
                             ),
                           ),
@@ -248,19 +550,19 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
                       const SizedBox(height: 8.0),
                       const Divider(thickness: 1.0, color: kBorderColorTextField, height: 1.0),
                       const SizedBox(height: 8.0),
-                      _buildRow('Title', title),
+                      _buildRow('Title', title, emphasizeValue: true),
                       const SizedBox(height: 8.0),
                       _buildRow('Service Info', description, isExpandable: true),
                       const SizedBox(height: 8.0),
-                      _buildRow('Duration', '$deliveryTime Days'),
+                      _buildRow('Duration', durationText),
                       const SizedBox(height: 8.0),
                       _buildRow('Amount', '$currencySign$price'),
                       const SizedBox(height: 8.0),
-                      _buildRow('Status', status.toString().substring(0, 1).toUpperCase() + status.toString().substring(1)),
+                      _buildRow('Status', _statusLabelForUi(status)),
                       const SizedBox(height: 15.0),
                       Text('Order Details', style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 8.0),
-                      _buildRow('Revisions', revisionCount == 0 ? 'Unlimited Revisions' : '$revisionCount Revisions'),
+                      _buildRow('Revisions', revisionText),
                       const SizedBox(height: 15.0),
                       Text('Order Summary', style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 8.0),
@@ -269,7 +571,7 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
                       _buildRow('Total', '$currencySign$price'),
                       const SizedBox(height: 8.0),
                       _buildRow('Delivery date', _formatDate(_order?['delivery_deadline'])),
-                      const SizedBox(height: 15.0),
+                      SizedBox(height: 15.0 + bottomInset),
                     ],
                   ),
                 ),
@@ -281,7 +583,11 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
     );
   }
 
-  Widget _buildRow(String label, String value, {bool isExpandable = false}) {
+  Widget _buildRow(String label, String value, {bool isExpandable = false, bool emphasizeValue = false}) {
+    final valueStyle = emphasizeValue
+        ? kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.w700, height: 1.35)
+        : kTextStyle.copyWith(color: kSubTitleColor, height: 1.35);
+    final maxLines = emphasizeValue ? 8 : 2;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -309,9 +615,9 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
                       )
                     : Text(
                         value,
-                        style: kTextStyle.copyWith(color: kSubTitleColor),
+                        style: valueStyle,
                         overflow: TextOverflow.ellipsis,
-                        maxLines: 2,
+                        maxLines: maxLines,
                       ),
               ),
             ],

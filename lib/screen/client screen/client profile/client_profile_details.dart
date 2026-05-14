@@ -5,6 +5,9 @@ import 'package:freelancer/services/profile_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../widgets/constant.dart';
+import '../../widgets/profile_detail_theme.dart';
+import '../../widgets/profile_rating_summary.dart';
+import '../../widgets/profile_skeleton.dart';
 import '../client job post/create_new_job_post.dart';
 import '../client job post/job_details.dart';
 import 'client_edit_profile_details.dart';
@@ -60,19 +63,17 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Scaffold(
-        backgroundColor: kWhite,
-        body: Center(child: CircularProgressIndicator(color: kPrimaryColor)),
-      );
+      return const ProfileDetailsSkeleton(extraSection: false);
     }
 
     final name = _profile?['name'] ?? 'User';
-    final email = (_profile?['email'] as String?) ?? '';
     final bio = _profile?['bio'] as String?;
     final city = (_profile?['city'] as String?) ?? '';
     final country = (_profile?['country'] as String?) ?? '';
     final balance = _profile?['balance'] ?? 0;
     final profileImageUrl = _profile?['profile_image_url'];
+    final rating = (_profile?['rating'] as num?)?.toDouble() ?? 0;
+    final reviewCount = (_profile?['review_count'] as num?)?.toInt() ?? 0;
 
     final totalJobs = _jobs.length;
     final openJobs = _jobs.where((j) => j['status'] == 'open').length;
@@ -81,14 +82,15 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
     final locationStr = locationParts.join(', ');
 
     return Scaffold(
-      backgroundColor: kWhite,
+      backgroundColor: ProfileDetailTheme.scaffoldBg,
       appBar: AppBar(
-        backgroundColor: kWhite,
+        backgroundColor: ProfileDetailTheme.scaffoldBg,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
-          name,
-          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+          'HupWorks',
+          style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),
@@ -105,51 +107,69 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
               Container(
                 height: 110,
                 width: 110,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: kBorderColorTextField, width: 2),
-                  image: DecorationImage(
-                    image: profileImageUrl != null
-                        ? NetworkImage(profileImageUrl) as ImageProvider
-                        : const AssetImage('images/profile3.png'),
-                    fit: BoxFit.cover,
-                  ),
+                decoration: ProfileDetailTheme.avatarDecoration(
+                  profileImageUrl != null
+                      ? NetworkImage(profileImageUrl) as ImageProvider
+                      : const AssetImage('images/profile3.png'),
                 ),
               ),
               const SizedBox(height: 10.0),
 
-              // @-style handle (uses email's local-part to mimic TikTok handles)
-              if (email.isNotEmpty)
-                Text(
-                  '@${email.split('@').first}',
-                  style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Text(
+                  name,
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: kTextStyle.copyWith(
+                    color: kNeutralColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  ),
                 ),
+              ),
 
               if (locationStr.isNotEmpty) ...[
-                const SizedBox(height: 4.0),
+                const SizedBox(height: 8.0),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.location_on_outlined, size: 14, color: kLightNeutralColor),
+                    const Icon(Icons.location_on_outlined, size: 14, color: kSecondaryColor),
                     const SizedBox(width: 4),
                     Text(locationStr, style: kTextStyle.copyWith(color: kLightNeutralColor)),
                   ],
                 ),
               ],
 
+              const SizedBox(height: 10.0),
+              Center(
+                child: ProfileRatingSummary(
+                  rating: rating,
+                  reviewCount: reviewCount,
+                  compact: false,
+                ),
+              ),
+
               const SizedBox(height: 18.0),
 
-              // Stats row (TikTok-style 3-column)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  _statTile('$totalJobs', 'Posted'),
-                  _statDivider(),
-                  _statTile('$openJobs', 'Open'),
-                  _statDivider(),
-                  _statTile('$currencySign$balance', 'Balance'),
-                ],
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+                  decoration: ProfileDetailTheme.statsPanel(),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      _statTile('$totalJobs', 'Posted'),
+                      _statDivider(),
+                      _statTile('$openJobs', 'Open'),
+                      _statDivider(),
+                      _statTile('$currencySign$balance', 'Balance'),
+                    ],
+                  ),
+                ),
               ),
 
               const SizedBox(height: 18.0),
@@ -164,17 +184,12 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
                       await const ClientEditProfile().launch(context);
                       _load();
                     },
-                    icon: const Icon(IconlyBold.edit, size: 16, color: kNeutralColor),
+                    icon: const Icon(IconlyBold.edit, size: 18, color: kPrimaryColor),
                     label: Text(
                       'Edit profile',
-                      style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+                      style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold),
                     ),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: kNeutralColor,
-                      side: const BorderSide(color: kBorderColorTextField),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                    ),
+                    style: ProfileDetailTheme.editProfileOutlinedStyle(),
                   ),
                 ),
               ),
@@ -194,12 +209,7 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
 
               const SizedBox(height: 22.0),
 
-              // Tab divider (TikTok-style underline)
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 80),
-                height: 2,
-                color: kNeutralColor,
-              ),
+              ProfileDetailTheme.sectionDivider(),
               const SizedBox(height: 16.0),
 
               // Section header
@@ -209,7 +219,7 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
                   children: [
                     Text(
                       'My Job Posts',
-                      style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+                      style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold),
                     ),
                     const Spacer(),
                     Text('$totalJobs total', style: kTextStyle.copyWith(color: kLightNeutralColor)),
@@ -224,7 +234,7 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
                   padding: const EdgeInsets.all(30),
                   child: Column(
                     children: [
-                      const Icon(IconlyLight.paper, size: 48, color: kLightNeutralColor),
+                      Icon(IconlyLight.paper, size: 48, color: kPrimaryColor.withValues(alpha: 0.45)),
                       const SizedBox(height: 8),
                       Text('No jobs posted yet', style: kTextStyle.copyWith(color: kLightNeutralColor)),
                       const SizedBox(height: 12),
@@ -233,8 +243,9 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
                           await const CreateNewJobPost().launch(context);
                           _load();
                         },
-                        icon: const Icon(Icons.add, size: 16),
-                        label: const Text('Post a job'),
+                        style: ProfileDetailTheme.editProfileOutlinedStyle(),
+                        icon: const Icon(Icons.add, size: 18, color: kPrimaryColor),
+                        label: Text('Post a job', style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.w600)),
                       ),
                     ],
                   ),
@@ -260,10 +271,10 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
       children: [
         Text(
           value,
-          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 18),
+          style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold, fontSize: 18),
         ),
         const SizedBox(height: 2),
-        Text(label, style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12)),
+        Text(label, style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12)),
       ],
     );
   }
@@ -271,7 +282,7 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
   Widget _statDivider() => Container(
         width: 1,
         height: 36,
-        color: kBorderColorTextField,
+        color: kPrimaryColor.withValues(alpha: 0.22),
         margin: const EdgeInsets.symmetric(horizontal: 24),
       );
 
@@ -289,11 +300,7 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
         },
         child: Container(
           padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: kWhite,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: kBorderColorTextField),
-          ),
+          decoration: ProfileDetailTheme.cardOnPage(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -312,7 +319,7 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
                     padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 8),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      color: kPrimaryColor.withOpacity(0.1),
+                      color: kPrimaryColor.withValues(alpha: 0.1),
                     ),
                     child: Text(
                       _jobTypeLabel(job['job_type'] as String?),
@@ -325,7 +332,7 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
                 const SizedBox(height: 6),
                 Row(
                   children: [
-                    const Icon(Icons.location_on_outlined, size: 14, color: kLightNeutralColor),
+                    const Icon(Icons.location_on_outlined, size: 14, color: kSecondaryColor),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
@@ -345,7 +352,7 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
                     padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      color: isOpen ? kPrimaryColor.withOpacity(0.1) : kDarkWhite,
+                      color: isOpen ? kPrimaryColor.withValues(alpha: 0.1) : kDarkWhite,
                     ),
                     child: Text(
                       isOpen ? 'Open' : 'Closed',

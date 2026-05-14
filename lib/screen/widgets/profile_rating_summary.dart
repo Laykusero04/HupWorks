@@ -41,7 +41,8 @@ class ProfileRatingSummary extends StatelessWidget {
       children: [
         Icon(Icons.star_rounded, size: starSize, color: ratingBarColor),
         const SizedBox(width: 2),
-        Text(rating.toStringAsFixed(1), style: valueStyle.copyWith(color: kPrimaryColor)),
+        Text(rating.toStringAsFixed(1),
+            style: valueStyle.copyWith(color: kPrimaryColor)),
         if (reviewCount > 0) ...[
           Text(' · ', style: metaStyle),
           Text(

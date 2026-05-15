@@ -4,8 +4,8 @@ import 'package:freelancer/services/client_home_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../../router/app_router.dart';
-import '../../widgets/app_header.dart';
 import '../../widgets/constant.dart';
+import '../../widgets/shell_tab_header.dart';
 import '../client service details/client_service_details.dart';
 
 class TopSeller extends StatefulWidget {
@@ -83,13 +83,19 @@ class _TopSellerState extends State<TopSeller> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kDarkWhite,
-      body: SafeArea(
-        bottom: false,
-        child: Column(
+      body: Column(
           children: [
-            AppHeader(
+            ShellTabHeader(
+              persona: ShellPersona.client,
               title: 'Talent',
-              leading: AppHeaderAction(
+              subtitle: Text(
+                'Browse verified freelancers',
+                style: kTextStyle.copyWith(
+                  color: Colors.white.withValues(alpha: 0.9),
+                  fontSize: 12,
+                ),
+              ),
+              leading: ShellTabIconButton(
                 icon: Icons.menu_rounded,
                 onPressed: () => clientShellScaffoldKey.currentState?.openDrawer(),
                 tooltip: 'Menu',
@@ -231,7 +237,6 @@ class _TopSellerState extends State<TopSeller> {
             ),
           ],
         ),
-      ),
     );
   }
 }

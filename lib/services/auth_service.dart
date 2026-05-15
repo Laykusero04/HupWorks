@@ -1,5 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'profile_service.dart';
+
 class AuthService {
   static final _client = Supabase.instance.client;
 
@@ -42,6 +44,7 @@ class AuthService {
 
   /// Sign out
   static Future<void> signOut() async {
+    ProfileService.clearProfileCache();
     await _client.auth.signOut();
   }
 

@@ -7,6 +7,7 @@ import 'package:freelancer/services/job_posts_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../widgets/constant.dart';
+import '../../widgets/job_location_map_preview.dart';
 
 class JobDetails extends StatefulWidget {
   final String jobPostId;
@@ -192,7 +193,6 @@ class _JobDetailsState extends State<JobDetails> {
     final status = _jobPost?['status'] ?? 'open';
     final budgetMin = _jobPost?['budget_min'];
     final budgetMax = _jobPost?['budget_max'];
-    final location = _jobPost?['location'] as String?;
     final isOpen = status == 'open';
 
     return Scaffold(
@@ -272,10 +272,7 @@ class _JobDetailsState extends State<JobDetails> {
                         _buildRow('Budget', JobPostsService.formatBudgetRange(budgetMin, budgetMax, _jobPost?['budget_basis'])),
                         const SizedBox(height: 8.0),
                       ],
-                    if (location != null && location.isNotEmpty) ...[
-                      _buildRow('Location', location),
-                      const SizedBox(height: 8.0),
-                    ],
+                    _buildLocationSection(_jobPost),
                     _buildRow('Workers needed', JobPostsService.workersNeededDetailLabel(_jobPost?['workers_needed'])),
                     const SizedBox(height: 8.0),
                     _buildRow('Status', status.toString().substring(0, 1).toUpperCase() + status.toString().substring(1)),
@@ -415,6 +412,64 @@ class _JobDetailsState extends State<JobDetails> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildLocationSection(Map<String, dynamic>? job) {
+    final location = (job?['location'] as String?)?.trim();
+    final locationType = (job?['location_type'] as String?)?.trim();
+    final coords = jobPostCoordinates(job);
+
+    if ((location == null || location.isEmpty) && coords == null && locationType == null) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (locationType != null && locationType.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Text('Location', style: kTextStyle.copyWith(color: kSubTitleColor)),
+              const SizedBox(width: 8),
+              Text(':', style: kTextStyle.copyWith(color: kSubTitleColor)),
+              const SizedBox(width: 10),
+              _locationTypeBadge(locationType),
+            ],
+          ),
+          const SizedBox(height: 8),
+        ],
+        if (coords != null) ...[
+          JobLocationSection(job: job),
+          const SizedBox(height: 8),
+        ] else if (location != null && location.isNotEmpty) ...[
+          _buildRow('Area', location),
+          const SizedBox(height: 8),
+        ],
+      ],
+    );
+  }
+
+  Widget _locationTypeBadge(String type) {
+    final (Color bg, Color fg, IconData icon) = switch (type) {
+      'On-site' => (const Color(0xFFE8F5E9), const Color(0xFF2E7D32), Icons.location_on_outlined),
+      _         => (const Color(0xFFE3F2FD), const Color(0xFF1565C0), Icons.laptop_outlined),
+    };
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: fg),
+          const SizedBox(width: 4),
+          Text(type, style: kTextStyle.copyWith(color: fg, fontSize: 12, fontWeight: FontWeight.bold)),
+        ],
       ),
     );
   }

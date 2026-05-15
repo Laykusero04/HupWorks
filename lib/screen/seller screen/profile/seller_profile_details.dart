@@ -103,21 +103,24 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
 
     final avgLabel = reviewCount > 0 ? rating.toStringAsFixed(1) : '—';
 
+    final brand = Theme.of(context).colorScheme.primary;
+    final pageBg = Theme.of(context).scaffoldBackgroundColor;
+
     return Scaffold(
-      backgroundColor: ProfileDetailTheme.scaffoldBg,
+      backgroundColor: pageBg,
       appBar: AppBar(
-        backgroundColor: ProfileDetailTheme.scaffoldBg,
+        backgroundColor: pageBg,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
           'HupWorks',
-          style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold),
+          style: kTextStyle.copyWith(color: brand, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),
       body: RefreshIndicator(
-        color: kPrimaryColor,
+        color: brand,
         onRefresh: _load,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
@@ -132,6 +135,7 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                   profileImageUrl != null
                       ? NetworkImage(profileImageUrl) as ImageProvider
                       : const AssetImage('images/profile3.png'),
+                  accent: brand,
                 ),
               ),
               const SizedBox(height: 10.0),
@@ -156,7 +160,7 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.location_on_outlined, size: 14, color: kSecondaryColor),
+                    const Icon(Icons.location_on_outlined, size: 14, color: kSellerAccent),
                     const SizedBox(width: 4),
                     Text(locationStr, style: kTextStyle.copyWith(color: kLightNeutralColor)),
                   ],
@@ -169,6 +173,7 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                   rating: rating,
                   reviewCount: reviewCount,
                   compact: false,
+                  accentColor: brand,
                 ),
               ),
 
@@ -178,16 +183,16 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-                  decoration: ProfileDetailTheme.statsPanel(),
+                  decoration: ProfileDetailTheme.statsPanel(accent: brand),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      _statTile('$reviewCount', 'Reviews'),
-                      _statDivider(),
-                      _statTile(avgLabel, 'Avg rating'),
-                      _statDivider(),
-                      _statTile('$currencySign$balance', 'Balance'),
+                      _statTile('$reviewCount', 'Reviews', brand),
+                      _statDivider(brand),
+                      _statTile(avgLabel, 'Avg rating', brand),
+                      _statDivider(brand),
+                      _statTile('$currencySign$balance', 'Balance', brand),
                     ],
                   ),
                 ),
@@ -204,12 +209,12 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                       await const SellerEditProfile().launch(context);
                       _load();
                     },
-                    icon: const Icon(IconlyBold.edit, size: 18, color: kPrimaryColor),
+                    icon: Icon(IconlyBold.edit, size: 18, color: brand),
                     label: Text(
                       'Edit profile',
-                      style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold),
+                      style: kTextStyle.copyWith(color: brand, fontWeight: FontWeight.bold),
                     ),
-                    style: ProfileDetailTheme.editProfileOutlinedStyle(),
+                    style: ProfileDetailTheme.editProfileOutlinedStyle(accent: brand),
                   ),
                 ),
               ),
@@ -237,7 +242,7 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                         'About',
                         textAlign: TextAlign.center,
                         style: kTextStyle.copyWith(
-                          color: kPrimaryColor,
+                          color: brand,
                           fontWeight: FontWeight.bold,
                           fontSize: 13,
                         ),
@@ -255,7 +260,10 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
 
               const SizedBox(height: 22.0),
 
-              ProfileDetailTheme.sectionDivider(),
+              ProfileDetailTheme.sectionDivider(
+                gradientStart: brand,
+                gradientEnd: kSellerAccent,
+              ),
               const SizedBox(height: 16.0),
 
               Padding(
@@ -264,7 +272,7 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                   children: [
                     Text(
                       'Profile details',
-                      style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold),
+                      style: kTextStyle.copyWith(color: brand, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -274,7 +282,7 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: Container(
                   padding: const EdgeInsets.all(14),
-                  decoration: ProfileDetailTheme.cardOnPage(),
+                  decoration: ProfileDetailTheme.cardOnPage(accent: brand),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -290,7 +298,10 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
 
               const SizedBox(height: 22.0),
 
-              ProfileDetailTheme.sectionDivider(),
+              ProfileDetailTheme.sectionDivider(
+                gradientStart: brand,
+                gradientEnd: kSellerAccent,
+              ),
               const SizedBox(height: 16.0),
 
               Padding(
@@ -299,7 +310,7 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                   children: [
                     Text(
                       'Reviews',
-                      style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold),
+                      style: kTextStyle.copyWith(color: brand, fontWeight: FontWeight.bold),
                     ),
                     const Spacer(),
                     Text('$reviewCount total', style: kTextStyle.copyWith(color: kLightNeutralColor)),
@@ -313,7 +324,7 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                   padding: const EdgeInsets.all(30),
                   child: Column(
                     children: [
-                      Icon(IconlyBold.star, size: 48, color: kPrimaryColor.withValues(alpha: 0.45)),
+                      Icon(IconlyBold.star, size: 48, color: brand.withValues(alpha: 0.45)),
                       const SizedBox(height: 8),
                       Text(
                         'No reviews yet',
@@ -332,7 +343,7 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: Column(
-                    children: _reviews.map(_reviewCard).toList(),
+                    children: _reviews.map((r) => _reviewCard(r, brand)).toList(),
                   ),
                 ),
 
@@ -344,12 +355,12 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
     );
   }
 
-  Widget _statTile(String value, String label) {
+  Widget _statTile(String value, String label, Color accent) {
     return Column(
       children: [
         Text(
           value,
-          style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold, fontSize: 18),
+          style: kTextStyle.copyWith(color: accent, fontWeight: FontWeight.bold, fontSize: 18),
         ),
         const SizedBox(height: 2),
         Text(label, style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12)),
@@ -357,10 +368,10 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
     );
   }
 
-  Widget _statDivider() => Container(
+  Widget _statDivider(Color accent) => Container(
         width: 1,
         height: 36,
-        color: kPrimaryColor.withValues(alpha: 0.22),
+        color: accent.withValues(alpha: 0.22),
         margin: const EdgeInsets.symmetric(horizontal: 24),
       );
 
@@ -413,7 +424,7 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
     );
   }
 
-  Widget _reviewCard(Map<String, dynamic> row) {
+  Widget _reviewCard(Map<String, dynamic> row, Color brand) {
     final stars = (row['rating'] as num?)?.toInt() ?? 0;
     final comment = (row['comment'] as String?)?.trim();
     final created = row['created_at'] as String?;
@@ -428,7 +439,7 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(12),
-        decoration: ProfileDetailTheme.cardOnPage(),
+        decoration: ProfileDetailTheme.cardOnPage(accent: brand),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -439,7 +450,7 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                   ? NetworkImage(imageUrl) as ImageProvider
                   : null,
               child: imageUrl == null || imageUrl.isEmpty
-                  ? Icon(Icons.person_rounded, color: kPrimaryColor.withValues(alpha: 0.55), size: 24)
+                  ? Icon(Icons.person_rounded, color: brand.withValues(alpha: 0.55), size: 24)
                   : null,
             ),
             const SizedBox(width: 12),

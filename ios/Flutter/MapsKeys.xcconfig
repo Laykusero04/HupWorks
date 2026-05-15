@@ -1,0 +1,2 @@
+// Set your iOS Google Maps API key (Maps SDK for iOS). Same key as Android is fine for dev.
+GMSApiKey = YOUR_GOOGLE_MAPS_API_KEY_HERE

@@ -35,6 +35,19 @@ final _sellerShellKey = GlobalKey<NavigatorState>();
 /// drawer (e.g. from a hamburger button in the AppHeader).
 final clientShellScaffoldKey = GlobalKey<ScaffoldState>();
 
+/// Key on the seller shell's Scaffold (drawer with [SellerProfile]).
+final sellerShellScaffoldKey = GlobalKey<ScaffoldState>();
+
+/// Opens the client or seller shell drawer based on the current shell route.
+void openRoleShellDrawer(BuildContext context) {
+  final path = GoRouterState.of(context).uri.path;
+  if (path.startsWith('/seller')) {
+    sellerShellScaffoldKey.currentState?.openDrawer();
+  } else if (path.startsWith('/client')) {
+    clientShellScaffoldKey.currentState?.openDrawer();
+  }
+}
+
 GoRouter createRouter() {
   final supabase = Supabase.instance.client;
 
@@ -61,6 +74,11 @@ GoRouter createRouter() {
       if (isSplash || isPublicAuthRoute) {
         final role = supabase.auth.currentUser?.userMetadata?['role'] as String?;
         return role == 'seller' ? '/seller' : '/client';
+      }
+
+      // Seller menu is the shell drawer (removed tab route).
+      if (loggedIn && location == '/seller/profile') {
+        return '/seller';
       }
 
       return null;
@@ -136,17 +154,45 @@ GoRouter createRouter() {
       ),
 
       // Seller shell with bottom nav
+      // Seller shell: blue primary, tinted scaffold (see [kSellerSurface]).
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
-          return _ScaffoldWithNavBar(
-            navigationShell: navigationShell,
-            items: const [
-              BottomNavigationBarItem(icon: Icon(IconlyBold.home), label: 'Home'),
-              BottomNavigationBarItem(icon: Icon(IconlyBold.chat), label: 'Message'),
-              BottomNavigationBarItem(icon: Icon(IconlyBold.search), label: 'Find Jobs'),
-              BottomNavigationBarItem(icon: Icon(IconlyBold.document), label: 'Contracts'),
-              BottomNavigationBarItem(icon: Icon(Icons.menu_rounded), label: 'Menu'),
-            ],
+          final base = Theme.of(context);
+          return Theme(
+            data: base.copyWith(
+              colorScheme: base.colorScheme.copyWith(
+                primary: kSellerPrimary,
+                secondary: kSellerAccent,
+                onPrimary: kWhite,
+              ),
+              primaryColor: kSellerPrimary,
+              scaffoldBackgroundColor: kSellerSurface,
+              elevatedButtonTheme: ElevatedButtonThemeData(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: kSellerPrimary,
+                  foregroundColor: kWhite,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                  ),
+                ),
+              ),
+              floatingActionButtonTheme: const FloatingActionButtonThemeData(
+                backgroundColor: kSellerPrimary,
+                foregroundColor: kWhite,
+              ),
+              progressIndicatorTheme: const ProgressIndicatorThemeData(color: kSellerPrimary),
+            ),
+            child: _ScaffoldWithNavBar(
+              scaffoldKey: sellerShellScaffoldKey,
+              drawer: const Drawer(child: SellerProfile()),
+              navigationShell: navigationShell,
+              items: const [
+                BottomNavigationBarItem(icon: Icon(IconlyBold.home), label: 'Home'),
+                BottomNavigationBarItem(icon: Icon(IconlyBold.chat), label: 'Message'),
+                BottomNavigationBarItem(icon: Icon(IconlyBold.search), label: 'Find Jobs'),
+                BottomNavigationBarItem(icon: Icon(IconlyBold.document), label: 'Contracts'),
+              ],
+            ),
           );
         },
         branches: [
@@ -175,12 +221,6 @@ GoRouter createRouter() {
             GoRoute(
               path: '/seller/orders',
               builder: (context, state) => const SellerOrderList(),
-            ),
-          ]),
-          StatefulShellBranch(routes: [
-            GoRoute(
-              path: '/seller/profile',
-              builder: (context, state) => const SellerProfile(),
             ),
           ]),
         ],
@@ -221,7 +261,7 @@ class _ScaffoldWithNavBar extends StatelessWidget {
 
     return Scaffold(
       key: scaffoldKey,
-      backgroundColor: kWhite,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       extendBody: false,
       drawer: drawer,
       body: navigationShell,
@@ -232,15 +272,15 @@ class _ScaffoldWithNavBar extends StatelessWidget {
         ),
         child: SafeArea(
           top: false,
-          child: Material(
-            color: kWhite,
+            child: Material(
+            color: Theme.of(context).scaffoldBackgroundColor,
             elevation: 10,
             shadowColor: Colors.black26,
             child: BottomNavigationBar(
               type: BottomNavigationBarType.fixed,
-              backgroundColor: kWhite,
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
               elevation: 0,
-              selectedItemColor: kPrimaryColor,
+              selectedItemColor: Theme.of(context).colorScheme.primary,
               unselectedItemColor: kLightNeutralColor,
               selectedFontSize: 12,
               unselectedFontSize: 11,

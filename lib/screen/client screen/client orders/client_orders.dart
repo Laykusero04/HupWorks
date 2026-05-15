@@ -4,8 +4,8 @@ import 'package:freelancer/services/orders_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../../router/app_router.dart';
-import '../../widgets/app_header.dart';
 import '../../widgets/constant.dart';
+import '../../widgets/shell_tab_header.dart';
 import 'client_order_details.dart';
 
 class ClientOrderList extends StatefulWidget {
@@ -103,31 +103,36 @@ class _ClientOrderListState extends State<ClientOrderList> {
     final activeCount = _orders.where((o) => (o['status'] as String?)?.toLowerCase() == 'active').length;
     return Scaffold(
       backgroundColor: kDarkWhite,
-      body: SafeArea(
-        bottom: false,
-        child: Column(
+      body: Column(
           children: [
-            AppHeader(
+            ShellTabHeader(
+              persona: ShellPersona.client,
               title: 'Contracts',
-              leading: AppHeaderAction(
+              leading: ShellTabIconButton(
                 icon: Icons.menu_rounded,
                 onPressed: () => clientShellScaffoldKey.currentState?.openDrawer(),
                 tooltip: 'Menu',
               ),
+              titleIcon: const ShellTabTitleBadge(icon: Icons.description_outlined),
               subtitle: RichText(
                 text: TextSpan(
-                  style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
+                  style: kTextStyle.copyWith(color: Colors.white.withValues(alpha: 0.88), fontSize: 12),
                   children: [
                     TextSpan(
-                        text: '$activeCount active',
-                        style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.w600, fontSize: 12)),
+                      text: '$activeCount active',
+                      style: kTextStyle.copyWith(
+                        color: const Color(0xFFB8F5D0),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                      ),
+                    ),
                     const TextSpan(text: '  ·  '),
                     TextSpan(text: '${_orders.length} total'),
                   ],
                 ),
               ),
               actions: [
-                AppHeaderAction(
+                ShellTabIconButton(
                   icon: Icons.refresh_rounded,
                   onPressed: _isLoading ? null : _loadOrders,
                   tooltip: 'Refresh',
@@ -204,7 +209,6 @@ class _ClientOrderListState extends State<ClientOrderList> {
             ),
           ],
         ),
-      ),
     );
   }
 

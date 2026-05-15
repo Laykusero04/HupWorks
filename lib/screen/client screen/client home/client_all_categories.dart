@@ -1,16 +1,56 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:freelancer/core/utils/category_icons.dart';
+import 'package:freelancer/services/client_home_service.dart';
 
 import '../../widgets/constant.dart';
 
 class ClientAllCategories extends StatefulWidget {
-  const ClientAllCategories({Key? key}) : super(key: key);
+  const ClientAllCategories({super.key});
 
   @override
   State<ClientAllCategories> createState() => _ClientAllCategoriesState();
 }
 
 class _ClientAllCategoriesState extends State<ClientAllCategories> {
+  final _searchController = TextEditingController();
+  List<Map<String, dynamic>> _categories = [];
+  String _query = '';
+  bool _loading = true;
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  List<Map<String, dynamic>> get _filtered {
+    final q = _query.trim().toLowerCase();
+    if (q.isEmpty) return _categories;
+    return _categories
+        .where((c) => ((c['name'] as String?) ?? '').toLowerCase().contains(q))
+        .toList();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    try {
+      final cats = await ClientHomeService.getCategories();
+      if (mounted) {
+        setState(() {
+          _categories = cats;
+          _loading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,157 +76,115 @@ class _ClientAllCategoriesState extends State<ClientAllCategories> {
               topRight: Radius.circular(30.0),
             ),
           ),
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Column(
-              children: [
-                const SizedBox(height: 15.0),
-                ListView.builder(
-                    itemCount: catName.length,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemBuilder: (_, i) {
-                      return Container(
-                        margin: const EdgeInsets.only(top: 10.0),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8.0),
-                          border: Border.all(color: kBorderColorTextField),
-                        ),
-                        child: Theme(
-                          data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-                          child: ExpansionTile(
-                            initiallyExpanded: i == 0 ? true : false,
-                            tilePadding: const EdgeInsets.only(left: 10.0, right: 10.0),
-                            childrenPadding: EdgeInsets.zero,
-                            leading: Container(
-                              height: 40,
-                              width: 40,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                image: DecorationImage(image: AssetImage(catIcon[i]), fit: BoxFit.cover),
-                              ),
+          child: _loading
+              ? const Center(child: CircularProgressIndicator(color: kPrimaryColor))
+              : _categories.isEmpty
+                  ? Center(
+                      child: Text(
+                        'No categories yet',
+                        style: kTextStyle.copyWith(color: kLightNeutralColor),
+                      ),
+                    )
+                  : Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 15, 0, 10),
+                          child: TextField(
+                            controller: _searchController,
+                            onChanged: (v) => setState(() => _query = v),
+                            cursorColor: kNeutralColor,
+                            decoration: kInputDecoration.copyWith(
+                              hintText: 'Search categories',
+                              hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
+                              prefixIcon: const Icon(Icons.search, color: kLightNeutralColor),
+                              suffixIcon: _query.isEmpty
+                                  ? null
+                                  : IconButton(
+                                      icon: const Icon(Icons.clear, color: kLightNeutralColor),
+                                      onPressed: () {
+                                        _searchController.clear();
+                                        setState(() => _query = '');
+                                      },
+                                    ),
+                              border: const OutlineInputBorder(),
                             ),
-                            title: Text(
-                              catName[i],
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
-                            ),
-                            subtitle: Text(
-                              'Related all categories',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: kTextStyle.copyWith(color: kLightNeutralColor),
-                            ),
-                            trailing: const Icon(
-                              FeatherIcons.chevronDown,
-                              color: kSubTitleColor,
-                            ),
-                            children: [
-                              Column(
-                                children: [
-                                  const Divider(
-                                    height: 1,
-                                    thickness: 1.0,
-                                    color: kBorderColorTextField,
-                                  ),
-                                  ListTile(
-                                    visualDensity: const VisualDensity(vertical: -4),
-                                    contentPadding: const EdgeInsets.only(left: 10.0, right: 10.0),
-                                    horizontalTitleGap: 10,
-                                    title: Text(
-                                      'Logo Design',
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: kTextStyle.copyWith(color: kSubTitleColor),
-                                    ),
-                                    trailing: GestureDetector(
-                                      // onTap: () => const SellerNotification().launch(context),
-                                      child: const Icon(
-                                        FeatherIcons.chevronRight,
-                                        color: kSubTitleColor,
-                                      ),
-                                    ),
-                                  ),
-                                  const Divider(
-                                    thickness: 1.0,
-                                    color: kBorderColorTextField,
-                                  ),
-                                  ListTile(
-                                    visualDensity: const VisualDensity(vertical: -4),
-                                    contentPadding: const EdgeInsets.only(left: 10.0, right: 10.0),
-                                    horizontalTitleGap: 10,
-                                    title: Text(
-                                      'Brand Style Guides',
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: kTextStyle.copyWith(color: kSubTitleColor),
-                                    ),
-                                    trailing: GestureDetector(
-                                      // onTap: () => const SellerNotification().launch(context),
-                                      child: const Icon(
-                                        FeatherIcons.chevronRight,
-                                        color: kSubTitleColor,
-                                      ),
-                                    ),
-                                  ),
-                                  const Divider(
-                                    thickness: 1.0,
-                                    color: kBorderColorTextField,
-                                  ),
-                                  ListTile(
-                                    visualDensity: const VisualDensity(vertical: -4),
-                                    contentPadding: const EdgeInsets.only(left: 10.0, right: 10.0),
-                                    horizontalTitleGap: 10,
-                                    title: Text(
-                                      'Fonts & Typography',
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: kTextStyle.copyWith(color: kSubTitleColor),
-                                    ),
-                                    trailing: GestureDetector(
-                                      // onTap: () => const SellerNotification().launch(context),
-                                      child: const Icon(
-                                        FeatherIcons.chevronRight,
-                                        color: kSubTitleColor,
-                                      ),
-                                    ),
-                                  ),
-                                  const Divider(
-                                    thickness: 1.0,
-                                    color: kBorderColorTextField,
-                                  ),
-                                  ListTile(
-                                    visualDensity: const VisualDensity(vertical: -4),
-                                    contentPadding: const EdgeInsets.only(left: 10.0, right: 10.0),
-                                    horizontalTitleGap: 10,
-                                    title: Text(
-                                      'Business Cards & Stationery',
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: kTextStyle.copyWith(color: kSubTitleColor),
-                                    ),
-                                    trailing: GestureDetector(
-                                      // onTap: () => const SellerNotification().launch(context),
-                                      child: const Icon(
-                                        FeatherIcons.chevronRight,
-                                        color: kSubTitleColor,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              )
-                            ],
                           ),
                         ),
-                      );
-                    }),
-                const SizedBox(
-                  height: 15,
-                ),
-              ],
-            ),
-          ),
+                        Expanded(
+                          child: _filtered.isEmpty
+                              ? Center(
+                                  child: Text(
+                                    'No categories match your search',
+                                    style: kTextStyle.copyWith(color: kLightNeutralColor),
+                                  ),
+                                )
+                              : ListView.separated(
+                      padding: const EdgeInsets.only(bottom: 24),
+                      itemCount: _filtered.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 10),
+                      itemBuilder: (_, i) {
+                        final cat = _filtered[i];
+                        final name = cat['name'] as String? ?? '';
+                        final desc = cat['description'] as String? ?? '';
+                        final icon = cat['icon'] as String?;
+                        final color = CategoryIcons.tintColor(i);
+
+                        return Container(
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: kBorderColorTextField),
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                height: 44,
+                                width: 44,
+                                decoration: BoxDecoration(
+                                  color: color.withValues(alpha: 0.12),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Icon(
+                                  CategoryIcons.iconData(icon),
+                                  color: color,
+                                  size: 24,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      name,
+                                      style: kTextStyle.copyWith(
+                                        color: kNeutralColor,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    if (desc.isNotEmpty) ...[
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        desc,
+                                        style: kTextStyle.copyWith(
+                                          color: kSubTitleColor,
+                                          fontSize: 12,
+                                          height: 1.35,
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                        ),
+                      ],
+                    ),
         ),
       ),
     );

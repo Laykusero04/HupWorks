@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../services/chat_service.dart';
+import '../../../router/app_router.dart';
 import '../../widgets/constant.dart';
+import '../../widgets/shell_tab_header.dart';
 import 'chat_inbox.dart';
 import 'model/chat_model.dart';
 
@@ -104,17 +107,18 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final primary = Theme.of(context).colorScheme.primary;
     return Scaffold(
-      backgroundColor: kDarkWhite,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Column(
         children: [
-          _buildHeader(),
+          _buildHeader(context),
           _buildSearchBar(),
           Expanded(
             child: _isLoading
                 ? _buildSkeleton()
                 : RefreshIndicator(
-                    color: kPrimaryColor,
+                    color: primary,
                     onRefresh: _loadConversations,
                     child: _buildBody(),
                   ),
@@ -124,55 +128,30 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget _buildHeader() {
-    return SafeArea(
-      bottom: false,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 14, 20, 6),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Messages',
-                    style: kTextStyle.copyWith(
-                      color: kNeutralColor,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 22,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    _conversations.isEmpty
-                        ? 'Stay connected with your network'
-                        : '${_conversations.length} '
-                            '${_conversations.length == 1 ? "conversation" : "conversations"}',
-                    style: kTextStyle.copyWith(
-                      color: kLightNeutralColor,
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              height: 42,
-              width: 42,
-              decoration: BoxDecoration(
-                color: kPrimaryColor.withOpacity(0.12),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: const Icon(
-                Icons.edit_rounded,
-                color: kPrimaryColor,
-                size: 20,
-              ),
-            ),
-          ],
+  Widget _buildHeader(BuildContext context) {
+    final path = GoRouterState.of(context).uri.path;
+    final persona = path.startsWith('/seller') ? ShellPersona.seller : ShellPersona.client;
+    final subtitleText = _conversations.isEmpty
+        ? 'Stay connected with your network'
+        : '${_conversations.length} '
+            '${_conversations.length == 1 ? "conversation" : "conversations"}';
+
+    return ShellTabHeader(
+      persona: persona,
+      title: 'Messages',
+      subtitle: Text(
+        subtitleText,
+        style: kTextStyle.copyWith(
+          color: Colors.white.withValues(alpha: 0.9),
+          fontSize: 12,
         ),
       ),
+      leading: ShellTabIconButton(
+        icon: Icons.menu_rounded,
+        onPressed: () => openRoleShellDrawer(context),
+        tooltip: 'Menu',
+      ),
+      titleIcon: const ShellTabTitleBadge(icon: Icons.chat_bubble_outline_rounded),
     );
   }
 

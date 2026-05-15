@@ -12,6 +12,25 @@ const kWhite = Color(0xFFFFFFFF);
 const kBorderColorTextField = Color(0xFFE3E3E3);
 const ratingBarColor = Color(0xFFFFB33E);
 
+// Seller shell — blue brand (matches seller home hero)
+const kSellerPrimary = Color(0xFF144BD6);
+const kSellerPrimaryDeep = Color(0xFF0F4AC9);
+const kSellerAccent = Color(0xFF06AEF3);
+/// Scaffold / chrome tint for seller bottom-nav shell
+const kSellerSurface = Color(0xFFF3F6FD);
+
+/// Gradients for tab headers (aligned with home heroes)
+const kClientShellGradient = [
+  Color(0xFF0E8C3D),
+  Color(0xFF16A34A),
+  Color(0xFF38C172),
+];
+const kSellerShellGradient = [
+  kSellerPrimaryDeep,
+  kSellerPrimary,
+  kSellerAccent,
+];
+
 List<Color> colorList = [
   kPrimaryColor,
   kSecondaryColor,

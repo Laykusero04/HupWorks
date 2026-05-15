@@ -3,7 +3,9 @@ import 'package:freelancer/services/job_posts_service.dart';
 import 'package:freelancer/services/seller_orders_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
+import '../../../router/app_router.dart';
 import '../../widgets/constant.dart';
+import '../../widgets/shell_tab_header.dart';
 import 'buyer_request_details.dart';
 
 class SellerBuyerRequest extends StatefulWidget {
@@ -42,30 +44,54 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
 
   @override
   Widget build(BuildContext context) {
+    final primary = Theme.of(context).colorScheme.primary;
     return Scaffold(
-      backgroundColor: kDarkWhite,
-      appBar: AppBar(
-        backgroundColor: kDarkWhite, elevation: 0, iconTheme: const IconThemeData(color: kNeutralColor),
-        title: Text('Find Jobs', style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)), centerTitle: true,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.only(top: 10.0),
-        child: Container(
-          width: context.width(),
-          padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-          decoration: const BoxDecoration(color: kWhite, borderRadius: BorderRadius.only(topLeft: Radius.circular(30.0), topRight: Radius.circular(30.0))),
-          child: _isLoading
-              ? const Center(child: CircularProgressIndicator(color: kPrimaryColor))
-              : _requests.isEmpty
-                  ? Center(child: Text('No open jobs right now', style: kTextStyle.copyWith(color: kLightNeutralColor)))
-                  : RefreshIndicator(
-                      color: kPrimaryColor,
-                      onRefresh: _loadRequests,
-                      child: ListView.builder(
-                        physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-                        padding: const EdgeInsets.only(top: 15.0, bottom: 15.0),
-                        itemCount: _requests.length,
-                        itemBuilder: (_, i) {
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+            ShellTabHeader(
+              persona: ShellPersona.seller,
+              title: 'Find Jobs',
+              subtitle: Text(
+                'Open roles from buyers',
+                style: kTextStyle.copyWith(
+                  color: Colors.white.withValues(alpha: 0.9),
+                  fontSize: 12,
+                ),
+              ),
+              leading: ShellTabIconButton(
+                icon: Icons.menu_rounded,
+                onPressed: () => sellerShellScaffoldKey.currentState?.openDrawer(),
+                tooltip: 'Menu',
+              ),
+              titleIcon: const ShellTabTitleBadge(icon: Icons.manage_search_rounded),
+            ),
+            Expanded(
+              child: Container(
+                width: context.width(),
+                padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+                decoration: const BoxDecoration(
+                  color: kWhite,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(30.0),
+                    topRight: Radius.circular(30.0),
+                  ),
+                ),
+                child: _isLoading
+                    ? Center(child: CircularProgressIndicator(color: primary))
+                    : _requests.isEmpty
+                        ? Center(child: Text('No open jobs right now', style: kTextStyle.copyWith(color: kLightNeutralColor)))
+                        : RefreshIndicator(
+                            color: primary,
+                            onRefresh: _loadRequests,
+                            child: ListView.builder(
+                              physics: const AlwaysScrollableScrollPhysics(
+                                parent: BouncingScrollPhysics(),
+                              ),
+                              padding: const EdgeInsets.only(top: 15.0, bottom: 15.0),
+                              itemCount: _requests.length,
+                              itemBuilder: (_, i) {
                           final req = _requests[i];
                           final buyer = req['profiles'] as Map<String, dynamic>?;
                           final category = req['categories'] as Map<String, dynamic>?;
@@ -156,7 +182,7 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
                                               req['budget_max'],
                                               req['budget_basis'],
                                             ),
-                                            style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold),
+                                            style: kTextStyle.copyWith(color: primary, fontWeight: FontWeight.bold),
                                           ),
                                       ],
                                     ),
@@ -168,8 +194,10 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
                         },
                       ),
                     ),
+              ),
+            ),
+          ],
         ),
-      ),
     );
   }
 }

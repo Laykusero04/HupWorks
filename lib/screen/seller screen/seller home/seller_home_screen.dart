@@ -10,6 +10,7 @@ import 'package:freelancer/services/seller_orders_service.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nb_utils/nb_utils.dart';
 
+import 'package:freelancer/router/app_router.dart';
 import '../../widgets/chart.dart';
 import '../notification/seller_notification.dart';
 
@@ -140,11 +141,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF0F4AC9),
-            Color(0xFF144BD6),
-            Color(0xFF06AEF3),
-          ],
+          colors: kSellerShellGradient,
         ),
         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(28)),
         boxShadow: [
@@ -168,7 +165,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               GestureDetector(
-                onTap: () => context.go('/seller/profile'),
+                onTap: () => sellerShellScaffoldKey.currentState?.openDrawer(),
                 child: Container(
                   height: 48,
                   width: 48,
@@ -222,6 +219,19 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
                   ],
                 ),
               ),
+              GestureDetector(
+                onTap: () => sellerShellScaffoldKey.currentState?.openDrawer(),
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.18),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white.withOpacity(0.35)),
+                  ),
+                  child: const Icon(Icons.menu_rounded, color: Colors.white, size: 22),
+                ),
+              ),
+              const SizedBox(width: 8),
               GestureDetector(
                 onTap: () => const SellerNotification().launch(context),
                 child: Stack(
@@ -307,7 +317,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        backgroundColor: kDarkWhite,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: AnnotatedRegion<SystemUiOverlayStyle>(
           value: _sellerHubSystemUi,
           child: const _SellerHomeLoading(),
@@ -332,7 +342,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
         : _statistics;
 
     return Scaffold(
-      backgroundColor: kDarkWhite,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: _sellerHubSystemUi,
         child: Column(

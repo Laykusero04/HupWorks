@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:freelancer/screen/seller%20screen/profile/seller_profile_details.dart';
+import 'package:freelancer/services/auth_service.dart';
 import 'package:freelancer/services/profile_service.dart';
 import 'package:nb_utils/nb_utils.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../widgets/app_header.dart';
 import '../../widgets/constant.dart';
+import '../../widgets/shell_tab_header.dart';
 import '../../widgets/profile_menu_list_tile.dart';
 import '../../widgets/profile_rating_summary.dart';
 import '../../widgets/profile_skeleton.dart';
@@ -35,12 +36,17 @@ class _SellerProfileState extends State<SellerProfile> {
   @override
   void initState() {
     super.initState();
+    final cached = ProfileService.peekCachedProfile();
+    if (cached != null) {
+      _profile = cached;
+      _isLoading = false;
+    }
     _loadProfile();
   }
 
-  Future<void> _loadProfile() async {
+  Future<void> _loadProfile({bool forceRefresh = false}) async {
     try {
-      final profile = await ProfileService.getProfile();
+      final profile = await ProfileService.getProfile(forceRefresh: forceRefresh);
       if (mounted) {
         setState(() {
           _profile = profile;
@@ -53,7 +59,7 @@ class _SellerProfileState extends State<SellerProfile> {
   }
 
   Future<void> _handleLogout() async {
-    await Supabase.instance.client.auth.signOut();
+    await AuthService.signOut();
   }
 
   @override
@@ -68,14 +74,23 @@ class _SellerProfileState extends State<SellerProfile> {
     final rating = (_profile?['rating'] as num?)?.toDouble() ?? 0;
     final reviewCount = (_profile?['review_count'] as num?)?.toInt() ?? 0;
 
+    final sheetTint = Theme.of(context).scaffoldBackgroundColor;
+    final brandGlow = Theme.of(context).colorScheme.primary.withValues(alpha: 0.08);
+    final primary = Theme.of(context).colorScheme.primary;
+
     return Scaffold(
-      backgroundColor: kDarkWhite,
-      body: SafeArea(
-        bottom: false,
-        child: Column(
-          children: [
-            AppHeader(
+      backgroundColor: sheetTint,
+      body: Column(
+        children: [
+            ShellTabHeader(
+              persona: ShellPersona.seller,
               title: name,
+              leading: AppHeaderAvatar(
+                imageUrl: profileImageUrl as String?,
+                fallbackAsset: 'images/profile1.png',
+                onBrandGradient: true,
+                size: 48,
+              ),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
@@ -83,12 +98,15 @@ class _SellerProfileState extends State<SellerProfile> {
                   RichText(
                     text: TextSpan(
                       text: 'Balance: ',
-                      style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
+                      style: kTextStyle.copyWith(
+                        color: Colors.white.withValues(alpha: 0.88),
+                        fontSize: 12,
+                      ),
                       children: [
                         TextSpan(
                           text: '$currencySign $balance',
                           style: kTextStyle.copyWith(
-                            color: kPrimaryColor,
+                            color: const Color(0xFFB8D4FF),
                             fontWeight: FontWeight.w700,
                             fontSize: 12,
                           ),
@@ -101,12 +119,9 @@ class _SellerProfileState extends State<SellerProfile> {
                     rating: rating,
                     reviewCount: reviewCount,
                     compact: true,
+                    onBrandGradient: true,
                   ),
                 ],
-              ),
-              leading: AppHeaderAvatar(
-                imageUrl: profileImageUrl as String?,
-                fallbackAsset: 'images/profile1.png',
               ),
             ),
             Expanded(
@@ -121,7 +136,7 @@ class _SellerProfileState extends State<SellerProfile> {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: kPrimaryColor.withValues(alpha: 0.08),
+                      color: brandGlow,
                       blurRadius: 24,
                       offset: const Offset(0, -6),
                     ),
@@ -138,7 +153,7 @@ class _SellerProfileState extends State<SellerProfile> {
                         accent: ProfileMenuAccent.primary,
                         onTap: () async {
                           await const SellerProfileDetails().launch(context);
-                          _loadProfile();
+                          _loadProfile(forceRefresh: true);
                         },
                       ),
                       ProfileMenuListTile(
@@ -160,13 +175,13 @@ class _SellerProfileState extends State<SellerProfile> {
                           decoration: BoxDecoration(
                             color: kDarkWhite,
                             borderRadius: BorderRadius.circular(14),
-                            border: Border.all(color: kPrimaryColor.withValues(alpha: 0.2)),
+                            border: Border.all(color: primary.withValues(alpha: 0.22)),
                           ),
                           child: ExpansionTile(
                             childrenPadding: EdgeInsets.zero,
                             tilePadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            collapsedIconColor: kPrimaryColor,
-                            iconColor: kPrimaryColor,
+                            collapsedIconColor: primary,
+                            iconColor: primary,
                             title: Text(
                               'Withdrawals',
                               style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.w600),
@@ -175,9 +190,9 @@ class _SellerProfileState extends State<SellerProfile> {
                               padding: const EdgeInsets.all(10.0),
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: kPrimaryColor.withValues(alpha: 0.14),
+                                color: primary.withValues(alpha: 0.14),
                               ),
-                              child: const Icon(IconlyBold.download, color: kPrimaryColor),
+                              child: Icon(IconlyBold.download, color: primary),
                             ),
                             trailing: const Icon(FeatherIcons.chevronDown, color: kLightNeutralColor),
                             children: [
@@ -249,7 +264,6 @@ class _SellerProfileState extends State<SellerProfile> {
             ),
           ],
         ),
-      ),
     );
   }
 }

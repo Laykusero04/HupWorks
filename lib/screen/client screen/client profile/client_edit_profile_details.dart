@@ -5,6 +5,7 @@ import 'package:freelancer/services/profile_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../widgets/constant.dart';
+import '../../widgets/profile_location_fields.dart';
 
 class ClientEditProfile extends StatefulWidget {
   const ClientEditProfile({Key? key}) : super(key: key);
@@ -196,34 +197,9 @@ class _ClientEditProfileState extends State<ClientEditProfile> {
                   ),
                 ),
                 const SizedBox(height: 20.0),
-                TextFormField(
-                  controller: _countryController,
-                  keyboardType: TextInputType.name,
-                  cursorColor: kNeutralColor,
-                  textInputAction: TextInputAction.next,
-                  decoration: kInputDecoration.copyWith(
-                    labelText: 'Country',
-                    labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                    hintText: 'Enter Country Name',
-                    hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
-                    focusColor: kNeutralColor,
-                    border: const OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 20.0),
-                TextFormField(
-                  controller: _cityController,
-                  keyboardType: TextInputType.name,
-                  cursorColor: kNeutralColor,
-                  textInputAction: TextInputAction.next,
-                  decoration: kInputDecoration.copyWith(
-                    labelText: 'City',
-                    labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                    hintText: 'Enter city',
-                    hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
-                    focusColor: kNeutralColor,
-                    border: const OutlineInputBorder(),
-                  ),
+                ProfileLocationFields(
+                  countryController: _countryController,
+                  cityController: _cityController,
                 ),
                 const SizedBox(height: 20.0),
                 FormField(

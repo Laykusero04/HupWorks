@@ -3,7 +3,9 @@ import 'package:freelancer/core/utils/order_contract_display.dart';
 import 'package:freelancer/services/seller_orders_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
+import '../../../router/app_router.dart';
 import '../../widgets/constant.dart';
+import '../../widgets/shell_tab_header.dart';
 import 'seller_order_details.dart';
 
 class SellerOrderList extends StatefulWidget {
@@ -61,10 +63,10 @@ class _SellerOrderListState extends State<SellerOrderList> {
     return '${d.inMinutes}m left';
   }
 
-  _StatusStyle _statusStyle(String? status) {
+  _StatusStyle _statusStyle(String? status, Color primary) {
     switch ((status ?? '').toLowerCase()) {
       case 'active':
-        return const _StatusStyle('Active', kPrimaryColor, Color(0xFFE8F7EE));
+        return _StatusStyle('Active', primary, const Color(0xFFE8EEF8));
       case 'pending':
         return const _StatusStyle('Pending', Color(0xFFD97706), Color(0xFFFEF3C7));
       case 'delivered':
@@ -72,7 +74,7 @@ class _SellerOrderListState extends State<SellerOrderList> {
       case 'completed':
         return const _StatusStyle('Completed', Color(0xFF059669), Color(0xFFD1FAE5));
       case 'cancelled':
-        return const _StatusStyle('Cancelled', Color(0xFFDC2626), Color(0xFFFEE2E2));
+        return _StatusStyle('Cancelled', const Color(0xFFDC2626), const Color(0xFFFEE2E2));
       default:
         return _StatusStyle(status?.capitalize ?? 'Unknown', kLightNeutralColor, kDarkWhite);
     }
@@ -80,13 +82,46 @@ class _SellerOrderListState extends State<SellerOrderList> {
 
   @override
   Widget build(BuildContext context) {
+    final primary = Theme.of(context).colorScheme.primary;
+    final activeCount = _orders.where((o) => (o['status'] as String?)?.toLowerCase() == 'active').length;
     return Scaffold(
-      backgroundColor: kDarkWhite,
-      body: SafeArea(
-        bottom: false,
-        child: Column(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: Column(
           children: [
-            _buildHeader(),
+            ShellTabHeader(
+              persona: ShellPersona.seller,
+              title: 'Contracts',
+              leading: ShellTabIconButton(
+                icon: Icons.menu_rounded,
+                onPressed: () => sellerShellScaffoldKey.currentState?.openDrawer(),
+                tooltip: 'Menu',
+              ),
+              titleIcon: const ShellTabTitleBadge(icon: Icons.description_outlined),
+              subtitle: RichText(
+                text: TextSpan(
+                  style: kTextStyle.copyWith(color: Colors.white.withValues(alpha: 0.88), fontSize: 12),
+                  children: [
+                    TextSpan(
+                      text: '$activeCount active',
+                      style: kTextStyle.copyWith(
+                        color: const Color(0xFFB8D4FF),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                      ),
+                    ),
+                    const TextSpan(text: '  ·  '),
+                    TextSpan(text: '${_orders.length} total'),
+                  ],
+                ),
+              ),
+              actions: [
+                ShellTabIconButton(
+                  icon: Icons.refresh_rounded,
+                  onPressed: _isLoading ? null : _loadOrders,
+                  tooltip: 'Refresh',
+                ),
+              ],
+            ),
             Expanded(
               child: Container(
                 width: context.width(),
@@ -104,8 +139,8 @@ class _SellerOrderListState extends State<SellerOrderList> {
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(30.0),
-                        color: selected ? kPrimaryColor : kDarkWhite,
-                        border: Border.all(color: selected ? kPrimaryColor : kBorderColorTextField),
+                        color: selected ? primary : kDarkWhite,
+                        border: Border.all(color: selected ? primary : kBorderColorTextField),
                       ),
                       child: Text(_statusTabs[i],
                           style: kTextStyle.copyWith(
@@ -119,14 +154,14 @@ class _SellerOrderListState extends State<SellerOrderList> {
               const SizedBox(height: 12.0),
               Expanded(
                 child: _isLoading
-                    ? const Center(child: CircularProgressIndicator(color: kPrimaryColor))
+                    ? Center(child: CircularProgressIndicator(color: primary))
                     : _orders.isEmpty
                         ? Center(child: Text(
                             _selectedStatus == 'All' ? 'No contracts yet' : 'No ${_selectedStatus.toLowerCase()} contracts',
                             style: kTextStyle.copyWith(color: kLightNeutralColor),
                           ))
                         : RefreshIndicator(
-                            color: kPrimaryColor, onRefresh: _loadOrders,
+                            color: primary, onRefresh: _loadOrders,
                             child: ListView.builder(
                               physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
                               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
@@ -141,74 +176,17 @@ class _SellerOrderListState extends State<SellerOrderList> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildHeader() {
-    final activeCount = _orders.where((o) => (o['status'] as String?)?.toLowerCase() == 'active').length;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 14),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: kPrimaryColor.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(Icons.description_outlined, color: kPrimaryColor, size: 22),
-          ),
-          12.width,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Contracts',
-                    style: kTextStyle.copyWith(
-                        color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 22, height: 1.1)),
-                2.height,
-                RichText(
-                  text: TextSpan(
-                    style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
-                    children: [
-                      TextSpan(
-                          text: '$activeCount active',
-                          style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.w600, fontSize: 12)),
-                      const TextSpan(text: '  ·  '),
-                      TextSpan(text: '${_orders.length} total'),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            decoration: BoxDecoration(
-              color: kWhite,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: kBorderColorTextField),
-            ),
-            child: IconButton(
-              onPressed: _isLoading ? null : _loadOrders,
-              icon: Icon(Icons.refresh_rounded,
-                  color: _isLoading ? kLightNeutralColor : kNeutralColor, size: 20),
-              tooltip: 'Refresh',
-              splashRadius: 22,
-            ),
-          ),
-        ],
-      ),
     );
   }
 
   Widget _buildContractCard(Map<String, dynamic> order) {
+    final primary = Theme.of(context).colorScheme.primary;
     final service = order['services'] as Map<String, dynamic>?;
     final client = order['client'] as Map<String, dynamic>?;
     final clientName = (client?['name'] as String?) ?? 'Unknown';
     final orderId = order['id'].toString();
     final idShort = orderId.length >= 8 ? orderId.substring(0, 8).toUpperCase() : orderId.toUpperCase();
-    final status = _statusStyle(order['status'] as String?);
+    final status = _statusStyle(order['status'] as String?, primary);
     final remaining = _getTimeRemaining(order);
     final isActive = (order['status'] as String?)?.toLowerCase() == 'active';
     final title = OrderContractDisplay.title(order, service);
@@ -263,10 +241,10 @@ class _SellerOrderListState extends State<SellerOrderList> {
                       children: [
                         CircleAvatar(
                           radius: 20,
-                          backgroundColor: kPrimaryColor.withOpacity(0.12),
+                          backgroundColor: primary.withValues(alpha: 0.12),
                           child: Text(
                             clientName.isNotEmpty ? clientName[0].toUpperCase() : '?',
-                            style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold, fontSize: 15),
+                            style: kTextStyle.copyWith(color: primary, fontWeight: FontWeight.bold, fontSize: 15),
                           ),
                         ),
                         10.width,
@@ -292,7 +270,7 @@ class _SellerOrderListState extends State<SellerOrderList> {
                                     color: kLightNeutralColor, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 0.5)),
                             2.height,
                             Text('$currencySign$price',
-                                style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold, fontSize: 18)),
+                                style: kTextStyle.copyWith(color: primary, fontWeight: FontWeight.bold, fontSize: 18)),
                           ],
                         ),
                       ],
@@ -304,7 +282,7 @@ class _SellerOrderListState extends State<SellerOrderList> {
                       decoration: BoxDecoration(color: kDarkWhite, borderRadius: BorderRadius.circular(10)),
                       child: Row(
                         children: [
-                          const Icon(Icons.work_outline, size: 16, color: kPrimaryColor),
+                          Icon(Icons.work_outline, size: 16, color: primary),
                           8.width,
                           Expanded(
                             child: Text(title,

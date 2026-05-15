@@ -42,6 +42,7 @@ class AppRoutes {
   static const sellerCreateService = '/seller/create-service';
   static const sellerOrders = '/seller/orders';
   static const sellerOrderDetails = '/seller/orders/:id';
+  /// Profile menu lives in the shell drawer (no tab route). Kept for naming consistency.
   static const sellerProfile = '/seller/profile';
   static const sellerProfileDetails = '/seller/profile/details';
   static const sellerProfileEdit = '/seller/profile/edit';

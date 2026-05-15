@@ -84,13 +84,21 @@ create table public.categories (
   name text not null,
   icon text,
   description text,
+  is_custom boolean not null default false,
+  created_by uuid references public.profiles(id) on delete set null,
   created_at timestamptz default now()
 );
+
+create unique index categories_name_lower_unique on public.categories (lower(trim(name)));
 
 alter table public.categories enable row level security;
 
 create policy "Categories are viewable by everyone"
   on categories for select using (true);
+
+create policy "Authenticated users can insert custom categories"
+  on public.categories for insert to authenticated
+  with check (is_custom = true and created_by = auth.uid());
 
 -- ==================
 -- 4. SUB-CATEGORIES
@@ -248,6 +256,9 @@ create table public.job_posts (
   status text default 'open' check (status in ('open', 'closed')),
   job_type text not null default 'gig' check (job_type in ('gig', 'full_time', 'part_time')),
   location text,
+  location_type text check (location_type in ('On-site', 'Remote')),
+  latitude double precision,
+  longitude double precision,
   workers_needed int not null default 1 check (workers_needed >= 1),
   created_at timestamptz default now()
 );
@@ -693,10 +704,11 @@ grant execute on function public.accept_job_offer(uuid) to authenticated;
 -- ============================================
 
 insert into public.categories (name, icon, description) values
-  ('Graphics Design', 'design', 'Logo design, illustrations, and more'),
-  ('Video Editing', 'video', 'Video production and editing services'),
-  ('Digital Marketing', 'marketing', 'SEO, social media, and ad campaigns'),
-  ('Business', 'business', 'Business plans, consulting, and strategy'),
-  ('Writing & Translation', 'writing', 'Content writing, copywriting, and translations'),
-  ('Programming', 'code', 'Web, mobile, and software development'),
-  ('Lifestyle', 'lifestyle', 'Coaching, fitness, and personal services');
+  ('Cleaning & Janitorial', 'cleaning', 'Janitors, cleaners, building maintenance'),
+  ('Factory & Warehouse', 'factory', 'Factory workers, packers, warehouse staff'),
+  ('Skilled Trades', 'trades', 'Craftsmen, carpenters, electricians, plumbers'),
+  ('Beauty & Salon', 'beauty', 'Hairdressers, barbers, nail techs, stylists'),
+  ('Food Service', 'food', 'Waiters, cooks, bakers, kitchen staff'),
+  ('Retail & Sales', 'retail', 'Cashiers, shop assistants, floor staff'),
+  ('Delivery & Driving', 'delivery', 'Drivers, couriers, delivery helpers'),
+  ('General Labor', 'labor', 'Construction helpers, movers, handyman, onsite helpers');

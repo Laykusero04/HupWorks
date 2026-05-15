@@ -178,6 +178,9 @@ class JobPostsService {
     DateTime? deadline,
     String jobType = 'gig',
     String? location,
+    String? locationType,
+    double? latitude,
+    double? longitude,
     int workersNeeded = 1,
   }) async {
     final user = _client.auth.currentUser;
@@ -195,7 +198,10 @@ class JobPostsService {
       'status': 'open',
       'job_type': jobType,
       'location': location,
-        'workers_needed': workersNeeded,
+      if (locationType != null) 'location_type': locationType,
+      if (latitude != null) 'latitude': latitude,
+      if (longitude != null) 'longitude': longitude,
+      'workers_needed': workersNeeded,
     }).select().single();
 
     return data;

@@ -13,6 +13,8 @@ import '../../../router/route_names.dart';
 import '../../widgets/constant.dart';
 import '../client notification/client_notification.dart';
 import '../search/search.dart';
+import 'package:freelancer/core/utils/category_icons.dart';
+
 import 'client_all_categories.dart';
 
 class ClientHomeScreen extends StatefulWidget {
@@ -88,28 +90,6 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
       case 'gig':
       default:
         return 'Gig';
-    }
-  }
-
-  // Map category name to local asset icon
-  String _getCategoryIcon(String? iconName) {
-    switch (iconName) {
-      case 'design':
-        return 'images/graphic.png';
-      case 'video':
-        return 'images/videoicon.png';
-      case 'marketing':
-        return 'images/dm.png';
-      case 'business':
-        return 'images/b.png';
-      case 'writing':
-        return 'images/t.png';
-      case 'code':
-        return 'images/p.png';
-      case 'lifestyle':
-        return 'images/l.png';
-      default:
-        return 'images/p.png';
     }
   }
 
@@ -218,11 +198,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF0E8C3D),
-            Color(0xFF16A34A),
-            Color(0xFF38C172),
-          ],
+          colors: kClientShellGradient,
         ),
         borderRadius: const BorderRadius.vertical(
           bottom: Radius.circular(28),
@@ -287,6 +263,19 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
                       ],
                     ),
                   ),
+                  GestureDetector(
+                    onTap: () => clientShellScaffoldKey.currentState?.openDrawer(),
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.18),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white.withOpacity(0.35)),
+                      ),
+                      child: const Icon(Icons.menu_rounded, color: Colors.white, size: 22),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
                   GestureDetector(
                     onTap: () => const ClientNotification().launch(context),
                     child: Stack(
@@ -732,12 +721,10 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
                       color: _categoryIconColor(i).withOpacity(0.15),
                     ),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Image.asset(
-                      _getCategoryIcon(cat['icon'] as String?),
-                      fit: BoxFit.contain,
-                    ),
+                  child: Icon(
+                    CategoryIcons.iconData(cat['icon'] as String?),
+                    size: 28,
+                    color: _categoryIconColor(i),
                   ),
                 ),
                 const SizedBox(height: 8),

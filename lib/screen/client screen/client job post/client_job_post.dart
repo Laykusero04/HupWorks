@@ -5,7 +5,7 @@ import 'package:freelancer/services/job_posts_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../../router/app_router.dart';
-import '../../widgets/app_header.dart';
+import '../../widgets/shell_tab_header.dart';
 import 'create_new_job_post.dart';
 import 'job_details.dart';
 
@@ -112,16 +112,21 @@ class _JobPostState extends State<JobPost> {
         child: const Icon(FeatherIcons.plus, color: kWhite),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      body: SafeArea(
-        bottom: false,
-        child: Column(
+      body: Column(
           children: [
-            AppHeader(
+            ShellTabHeader(
+              persona: ShellPersona.client,
               title: 'Job Posts',
-              leading: AppHeaderAction(
+              subtitle: Text(
+                'Create and manage your listings',
+                style: kTextStyle.copyWith(
+                  color: Colors.white.withValues(alpha: 0.9),
+                  fontSize: 12,
+                ),
+              ),
+              leading: ShellTabIconButton(
                 icon: Icons.menu_rounded,
-                onPressed: () =>
-                    clientShellScaffoldKey.currentState?.openDrawer(),
+                onPressed: () => clientShellScaffoldKey.currentState?.openDrawer(),
                 tooltip: 'Menu',
               ),
             ),
@@ -441,7 +446,6 @@ class _JobPostState extends State<JobPost> {
             ),
           ],
         ),
-      ),
     );
   }
 }

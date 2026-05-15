@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:freelancer/services/auth_service.dart';
 import 'package:freelancer/services/profile_service.dart';
 import 'package:nb_utils/nb_utils.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../widgets/app_header.dart';
 import '../../widgets/constant.dart';
+import '../../widgets/shell_tab_header.dart';
 import '../../widgets/profile_menu_list_tile.dart';
 import '../../widgets/profile_rating_summary.dart';
 import '../../widgets/profile_skeleton.dart';
@@ -34,12 +35,17 @@ class _ClientProfileState extends State<ClientProfile> {
   @override
   void initState() {
     super.initState();
+    final cached = ProfileService.peekCachedProfile();
+    if (cached != null) {
+      _profile = cached;
+      _isLoading = false;
+    }
     _loadProfile();
   }
 
-  Future<void> _loadProfile() async {
+  Future<void> _loadProfile({bool forceRefresh = false}) async {
     try {
-      final profile = await ProfileService.getProfile();
+      final profile = await ProfileService.getProfile(forceRefresh: forceRefresh);
       if (mounted) {
         setState(() {
           _profile = profile;
@@ -52,7 +58,7 @@ class _ClientProfileState extends State<ClientProfile> {
   }
 
   Future<void> _handleLogout() async {
-    await Supabase.instance.client.auth.signOut();
+    await AuthService.signOut();
   }
 
   @override
@@ -67,14 +73,21 @@ class _ClientProfileState extends State<ClientProfile> {
     final rating = (_profile?['rating'] as num?)?.toDouble() ?? 0;
     final reviewCount = (_profile?['review_count'] as num?)?.toInt() ?? 0;
 
+    final sheetTint = Theme.of(context).scaffoldBackgroundColor;
+    final brandGlow = Theme.of(context).colorScheme.primary.withValues(alpha: 0.08);
+
     return Scaffold(
-      backgroundColor: kDarkWhite,
-      body: SafeArea(
-        bottom: false,
-        child: Column(
-          children: [
-            AppHeader(
+      backgroundColor: sheetTint,
+      body: Column(
+        children: [
+            ShellTabHeader(
+              persona: ShellPersona.client,
               title: name,
+              leading: AppHeaderAvatar(
+                imageUrl: profileImageUrl as String?,
+                onBrandGradient: true,
+                size: 48,
+              ),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
@@ -82,11 +95,18 @@ class _ClientProfileState extends State<ClientProfile> {
                   RichText(
                     text: TextSpan(
                       text: 'Deposit Balance: ',
-                      style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
+                      style: kTextStyle.copyWith(
+                        color: Colors.white.withValues(alpha: 0.88),
+                        fontSize: 12,
+                      ),
                       children: [
                         TextSpan(
                           text: '$currencySign $balance',
-                          style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.w700, fontSize: 12),
+                          style: kTextStyle.copyWith(
+                            color: const Color(0xFFE8FFD9),
+                            fontWeight: FontWeight.w700,
+                            fontSize: 12,
+                          ),
                         ),
                       ],
                     ),
@@ -96,10 +116,10 @@ class _ClientProfileState extends State<ClientProfile> {
                     rating: rating,
                     reviewCount: reviewCount,
                     compact: true,
+                    onBrandGradient: true,
                   ),
                 ],
               ),
-              leading: AppHeaderAvatar(imageUrl: profileImageUrl as String?),
             ),
             Expanded(
               child: Container(
@@ -113,7 +133,7 @@ class _ClientProfileState extends State<ClientProfile> {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: kPrimaryColor.withValues(alpha: 0.08),
+                      color: brandGlow,
                       blurRadius: 24,
                       offset: const Offset(0, -6),
                     ),
@@ -130,7 +150,7 @@ class _ClientProfileState extends State<ClientProfile> {
                         accent: ProfileMenuAccent.primary,
                         onTap: () async {
                           await const ClientProfileDetails().launch(context);
-                          _loadProfile();
+                          _loadProfile(forceRefresh: true);
                         },
                       ),
                       ProfileMenuListTile(
@@ -232,7 +252,6 @@ class _ClientProfileState extends State<ClientProfile> {
             ),
           ],
         ),
-      ),
     );
   }
 }

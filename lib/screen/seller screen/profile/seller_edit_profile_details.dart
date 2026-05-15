@@ -5,6 +5,7 @@ import 'package:freelancer/services/profile_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../widgets/constant.dart';
+import '../../widgets/profile_location_fields.dart';
 
 class SellerEditProfile extends StatefulWidget {
   const SellerEditProfile({Key? key}) : super(key: key);
@@ -107,9 +108,11 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
               const SizedBox(height: 20.0),
               _field(_phoneController, 'Phone No.', 'Enter Phone No.', type: TextInputType.phone),
               const SizedBox(height: 20.0),
-              _field(_countryController, 'Country', 'Enter Country'),
-              const SizedBox(height: 20.0),
-              _field(_cityController, 'City', 'Enter City'),
+              ProfileLocationFields(
+                countryController: _countryController,
+                cityController: _cityController,
+                accentColor: Theme.of(context).colorScheme.primary,
+              ),
               const SizedBox(height: 20.0),
               FormField(
                 builder: (FormFieldState<dynamic> field) => InputDecorator(

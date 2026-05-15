@@ -10,8 +10,16 @@ const String currencySign = '€';
 const List<String> gender = ['Male', 'Female'];
 String selectedGender = 'Male';
 
-const List<String> catName = ['Graphics Design', 'Video Editing', 'Digital Marketing', 'Business', 'Writing & Translation', 'Programming', 'Lifestyle'];
-const List<String> catIcon = ['images/graphic.png', 'images/videoicon.png', 'images/dm.png', 'images/b.png', 'images/t.png', 'images/p.png', 'images/l.png'];
+const List<String> catName = [
+  'Cleaning & Janitorial',
+  'Factory & Warehouse',
+  'Skilled Trades',
+  'Beauty & Salon',
+  'Food Service',
+  'Retail & Sales',
+  'Delivery & Driving',
+  'General Labor',
+];
 
 //__________Language____________________________________________________
 const List<String> language = ['English', 'Bengali'];
@@ -41,7 +49,7 @@ Map<String, double> dataMap = {
 };
 
 //__________Category____________________________________________________
-const List<String> category = ['Digital Marketing', 'App Development', 'Graphics Design'];
+const List<String> category = ['Food Service', 'Skilled Trades', 'Cleaning & Janitorial'];
 String selectedCategory = 'App Development';
 
 const List<String> subcategory = ['Flutter', 'React Native', 'Java'];

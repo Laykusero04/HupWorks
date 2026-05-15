@@ -85,22 +85,28 @@ class AppHeaderAvatar extends StatelessWidget {
   final String? imageUrl;
   final String fallbackAsset;
   final double size;
+  /// White ring for avatars on green/blue shell gradients (e.g. drawer profile).
+  final bool onBrandGradient;
   const AppHeaderAvatar({
     super.key,
     this.imageUrl,
     this.fallbackAsset = 'images/profile1.png',
     this.size = 44,
+    this.onBrandGradient = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final ring = onBrandGradient
+        ? Colors.white
+        : Theme.of(context).colorScheme.primary.withValues(alpha: 0.35);
     return Container(
       height: size,
       width: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: kDarkWhite,
-        border: Border.all(color: kPrimaryColor.withValues(alpha: 0.35), width: 2),
+        border: Border.all(color: ring, width: 2),
         image: DecorationImage(
           image: imageUrl != null ? NetworkImage(imageUrl!) as ImageProvider : AssetImage(fallbackAsset),
           fit: BoxFit.cover,

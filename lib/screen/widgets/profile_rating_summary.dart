@@ -9,11 +9,17 @@ class ProfileRatingSummary extends StatelessWidget {
     required this.rating,
     required this.reviewCount,
     this.compact = false,
+    /// When true, text is tuned for green/blue [ShellTabHeader] gradients (drawer profile).
+    this.onBrandGradient = false,
+    /// When set (e.g. seller shell blue), used instead of [kPrimaryColor] for rating value / empty state.
+    this.accentColor,
   });
 
   final double rating;
   final int reviewCount;
   final bool compact;
+  final bool onBrandGradient;
+  final Color? accentColor;
 
   @override
   Widget build(BuildContext context) {
@@ -28,10 +34,42 @@ class ProfileRatingSummary extends StatelessWidget {
       fontSize: compact ? 11 : 12,
     );
 
+    if (onBrandGradient) {
+      final onSoft = Colors.white.withValues(alpha: 0.9);
+      final onMuted = Colors.white.withValues(alpha: 0.78);
+      if (reviewCount <= 0 && rating <= 0) {
+        return Text(
+          'No reviews yet',
+          style: metaStyle.copyWith(color: onMuted),
+        );
+      }
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.star_rounded, size: starSize, color: ratingBarColor),
+          const SizedBox(width: 2),
+          Text(
+            rating.toStringAsFixed(1),
+            style: valueStyle.copyWith(color: onSoft, fontSize: compact ? 12 : 14),
+          ),
+          if (reviewCount > 0) ...[
+            Text(' · ', style: metaStyle.copyWith(color: onMuted)),
+            Text(
+              '$reviewCount ${reviewCount == 1 ? 'review' : 'reviews'}',
+              style: metaStyle.copyWith(color: onMuted),
+            ),
+          ],
+        ],
+      );
+    }
+
+    final accent = accentColor ?? kPrimaryColor;
+
     if (reviewCount <= 0 && rating <= 0) {
       return Text(
         'No reviews yet',
-        style: metaStyle.copyWith(color: kPrimaryColor.withValues(alpha: 0.65)),
+        style: metaStyle.copyWith(color: accent.withValues(alpha: 0.65)),
       );
     }
 
@@ -42,7 +80,7 @@ class ProfileRatingSummary extends StatelessWidget {
         Icon(Icons.star_rounded, size: starSize, color: ratingBarColor),
         const SizedBox(width: 2),
         Text(rating.toStringAsFixed(1),
-            style: valueStyle.copyWith(color: kPrimaryColor)),
+            style: valueStyle.copyWith(color: accent)),
         if (reviewCount > 0) ...[
           Text(' · ', style: metaStyle),
           Text(

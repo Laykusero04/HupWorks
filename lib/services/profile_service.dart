@@ -4,6 +4,28 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class ProfileService {
   static final _client = Supabase.instance.client;
 
+  /// In-memory copy of the last [getProfile] result for the signed-in user.
+  ///
+  /// [Scaffold.drawer] disposes its child while closed on mobile, so the drawer
+  /// profile widget is recreated on each open; caching avoids a blank skeleton
+  /// and duplicate network calls.
+  static Map<String, dynamic>? _profileCache;
+  static String? _cacheUserId;
+
+  static void clearProfileCache() {
+    _profileCache = null;
+    _cacheUserId = null;
+  }
+
+  /// Synchronous read of cached profile for the current session (same user id).
+  static Map<String, dynamic>? peekCachedProfile() {
+    final user = _client.auth.currentUser;
+    if (user == null || _cacheUserId != user.id || _profileCache == null) {
+      return null;
+    }
+    return Map<String, dynamic>.from(_profileCache!);
+  }
+
   /// Loads `rating` values where this user is the person being reviewed.
   static Future<({double sum, int count})> _reviewStatsForProfile(String profileId) async {
     final rows = await _client.from('reviews').select('rating').eq('reviewed_id', profileId);
@@ -22,9 +44,16 @@ class ProfileService {
   /// Merges live [reviews] stats: when there is at least one review, `rating` is
   /// the average (1 decimal); otherwise the `profiles.rating` column is kept.
   /// Adds `review_count` (may be 0).
-  static Future<Map<String, dynamic>?> getProfile() async {
+  ///
+  /// When [forceRefresh] is false and a cache exists for the current user,
+  /// returns the cache without hitting the network.
+  static Future<Map<String, dynamic>?> getProfile({bool forceRefresh = false}) async {
     final user = _client.auth.currentUser;
     if (user == null) return null;
+
+    if (!forceRefresh && _cacheUserId == user.id && _profileCache != null) {
+      return Map<String, dynamic>.from(_profileCache!);
+    }
 
     final data = await _client.from('profiles').select().eq('id', user.id).single();
     final profile = Map<String, dynamic>.from(data);
@@ -39,6 +68,8 @@ class ProfileService {
       profile['rating'] = existing is num ? existing.toDouble() : 0.0;
     }
 
+    _profileCache = profile;
+    _cacheUserId = user.id;
     return profile;
   }
 
@@ -62,6 +93,9 @@ class ProfileService {
     if (user == null) throw Exception('Not logged in');
 
     await _client.from('profiles').update(updates).eq('id', user.id);
+    if (_profileCache != null && _cacheUserId == user.id) {
+      _profileCache!.addAll(updates);
+    }
   }
 
   /// Upload profile image and update profile_image_url
@@ -83,6 +117,10 @@ class ProfileService {
     await _client.from('profiles').update({
       'profile_image_url': imageUrl,
     }).eq('id', user.id);
+
+    if (_profileCache != null && _cacheUserId == user.id) {
+      _profileCache!['profile_image_url'] = imageUrl;
+    }
 
     return imageUrl;
   }

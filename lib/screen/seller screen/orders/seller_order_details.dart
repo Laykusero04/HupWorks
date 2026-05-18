@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/order_contract_display.dart';
+import 'package:freelancer/screen/attendance/attendance_scan_screen.dart';
+import 'package:freelancer/services/attendance_service.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/services/seller_orders_service.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -96,6 +98,8 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
     final clientName = _client?['name'] ?? 'Client';
     final orderId = widget.orderId.substring(0, 8).toUpperCase();
     final bottomInset = MediaQuery.paddingOf(context).bottom + 12;
+    final jobPost = OrderContractDisplay.jobPostFromOrder(_order);
+    final showAttendance = _canScanAttendance(status, jobPost);
 
     return Scaffold(
       backgroundColor: kDarkWhite,
@@ -192,6 +196,31 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
                       _row('Total', '$currencySign$price'),
                       const SizedBox(height: 8.0),
                       _row('Delivery date', _formatDate(_order?['delivery_deadline'])),
+                      if (showAttendance) ...[
+                        const SizedBox(height: 16),
+                        ButtonGlobalWithoutIcon(
+                          buttontext: 'Scan attendance QR',
+                          buttonDecoration: kButtonDecoration.copyWith(
+                            color: const Color(0xFF2E7D32),
+                          ),
+                          buttonTextColor: kWhite,
+                          onPressed: () async {
+                            final ok = await Navigator.of(context).push<bool>(
+                              MaterialPageRoute(
+                                builder: (_) => const AttendanceScanScreen(),
+                              ),
+                            );
+                            if (!mounted) return;
+                            if (ok == true) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Attendance updated'),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      ],
                       SizedBox(height: 15.0 + bottomInset),
                     ],
                   ),
@@ -202,6 +231,13 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
         ),
       ),
     );
+  }
+
+  bool _canScanAttendance(String status, Map<String, dynamic>? jobPost) {
+    if (jobPost == null) return false;
+    if (!AttendanceService.isOnsiteJob(jobPost)) return false;
+    final s = status.toLowerCase();
+    return s != 'cancelled' && s != 'completed';
   }
 
   Widget _row(String l, String v, {bool emphasizeValue = false}) => Row(crossAxisAlignment: CrossAxisAlignment.start, children: [

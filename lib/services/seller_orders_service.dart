@@ -37,7 +37,7 @@ class SellerOrdersService {
           'client:profiles!client_id(name, profile_image_url), '
           'job_offers!job_offer_id('
           'id, cover_letter, delivery_time, delivery_time_unit, price_basis, '
-          'job_posts(title, description, job_type, location, workers_needed)'
+          'job_posts(title, description, job_type, location, location_type, workers_needed)'
           ')',
         )
         .eq('id', orderId)

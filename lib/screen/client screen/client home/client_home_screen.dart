@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:freelancer/data/repositories/notification_repository.dart';
 import 'package:freelancer/screen/client%20screen/client%20job%20post/client_job_post.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:freelancer/screen/client%20screen/client%20job%20post/job_details.dart';
 import 'package:freelancer/services/client_home_service.dart';
 import 'package:freelancer/services/job_posts_service.dart';
@@ -15,6 +18,7 @@ import '../client notification/client_notification.dart';
 import '../search/search.dart';
 import 'package:freelancer/core/utils/category_icons.dart';
 
+import '../client talent/freelancer_public_profile.dart';
 import 'client_all_categories.dart';
 
 class ClientHomeScreen extends StatefulWidget {
@@ -30,6 +34,8 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
   List<Map<String, dynamic>> _myRecentJobs = [];
   List<Map<String, dynamic>> _topSellers = [];
   bool _isLoading = true;
+  int _unreadNotificationCount = 0;
+  RealtimeChannel? _notificationChannel;
 
   final PageController _bannerController =
       PageController(viewportFraction: 0.9);
@@ -43,13 +49,58 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       _loadData();
+      _loadUnreadNotificationCount();
+      _subscribeToNotifications();
     });
   }
 
   @override
   void dispose() {
+    context.read<NotificationRepository>().unsubscribe(_notificationChannel);
     _bannerController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadUnreadNotificationCount() async {
+    try {
+      final count = await context.read<NotificationRepository>().getUnreadCount();
+      if (mounted) setState(() => _unreadNotificationCount = count);
+    } catch (_) {}
+  }
+
+  void _subscribeToNotifications() {
+    try {
+      _notificationChannel = context.read<NotificationRepository>().subscribeToNotifications(
+            onChange: _loadUnreadNotificationCount,
+          );
+    } catch (_) {}
+  }
+
+  Widget _notificationCountBadge() {
+    if (_unreadNotificationCount <= 0) return const SizedBox.shrink();
+    final label = _unreadNotificationCount > 9 ? '9+' : '$_unreadNotificationCount';
+    return Positioned(
+      right: 2,
+      top: 2,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+        decoration: BoxDecoration(
+          color: kAccentColor,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: Colors.white, width: 1.5),
+        ),
+        constraints: const BoxConstraints(minWidth: 18),
+        child: Text(
+          label,
+          textAlign: TextAlign.center,
+          style: kTextStyle.copyWith(
+            color: Colors.white,
+            fontSize: 10,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+      ),
+    );
   }
 
   Future<void> _loadData() async {
@@ -277,7 +328,10 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
                   ),
                   const SizedBox(width: 8),
                   GestureDetector(
-                    onTap: () => const ClientNotification().launch(context),
+                    onTap: () async {
+                      await const ClientNotification().launch(context);
+                      if (mounted) _loadUnreadNotificationCount();
+                    },
                     child: Stack(
                       clipBehavior: Clip.none,
                       children: [
@@ -292,18 +346,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
                           child: const Icon(IconlyLight.notification,
                               color: Colors.white, size: 20),
                         ),
-                        Positioned(
-                          top: 6,
-                          right: 6,
-                          child: Container(
-                            width: 8,
-                            height: 8,
-                            decoration: const BoxDecoration(
-                              color: kAccentColor,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                        ),
+                        _notificationCountBadge(),
                       ],
                     ),
                   ),
@@ -964,8 +1007,17 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
               double.tryParse('${seller['rating'] ?? 0}') ?? 0;
           final isPro = ratingValue >= 4.5;
 
+          final sellerId = seller['id'] as String?;
+          final sellerName = seller['name'] as String?;
+
           return GestureDetector(
-            onTap: () => context.go(AppRoutes.clientTalent),
+            onTap: sellerId == null
+                ? null
+                : () => openFreelancerPublicProfile(
+                      context,
+                      sellerId: sellerId,
+                      name: sellerName,
+                    ),
             child: Container(
               width: 170,
               decoration: BoxDecoration(

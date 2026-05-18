@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/job_offer_delivery.dart';
 import 'package:freelancer/screen/seller%20screen/seller%20messgae/chat_inbox.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
+import 'package:freelancer/services/attendance_service.dart';
 import 'package:freelancer/services/chat_service.dart';
 import 'package:freelancer/services/job_posts_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
+import '../../attendance/attendance_punch_log_section.dart';
+import '../../attendance/attendance_qr_display_screen.dart';
 import '../../widgets/constant.dart';
 import '../../widgets/job_location_map_preview.dart';
 
@@ -282,6 +285,11 @@ class _JobDetailsState extends State<JobDetails> {
                 ),
               ),
 
+              if (_showAttendanceSection) ...[
+                const SizedBox(height: 20.0),
+                _buildAttendanceSection(title),
+              ],
+
               // Applications section
               const SizedBox(height: 20.0),
               Text(
@@ -412,6 +420,61 @@ class _JobDetailsState extends State<JobDetails> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  bool get _showAttendanceSection =>
+      AttendanceService.isOnsiteJob(_jobPost) &&
+      AttendanceService.jobHasAcceptedHire(_offers);
+
+  Widget _buildAttendanceSection(String jobTitle) {
+    return Container(
+      padding: const EdgeInsets.all(12.0),
+      width: context.width(),
+      decoration: BoxDecoration(
+        color: kWhite,
+        borderRadius: BorderRadius.circular(8.0),
+        border: Border.all(color: kBorderColorTextField),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Attendance',
+            style: kTextStyle.copyWith(
+              color: kNeutralColor,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Generate a QR code for workers to clock in and out at your site.',
+            style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13),
+          ),
+          const SizedBox(height: 12),
+          ButtonGlobalWithoutIcon(
+            buttontext: 'Open attendance QR',
+            buttonDecoration: kButtonDecoration.copyWith(color: kPrimaryColor),
+            buttonTextColor: kWhite,
+            onPressed: () {
+              AttendanceQrDisplayScreen(
+                jobPostId: widget.jobPostId,
+                jobTitle: jobTitle,
+              ).launch(context);
+            },
+          ),
+          const SizedBox(height: 16),
+          Text(
+            "Today's log",
+            style: kTextStyle.copyWith(
+              color: kNeutralColor,
+              fontWeight: FontWeight.w600,
+              fontSize: 13,
+            ),
+          ),
+          AttendancePunchLogSection(jobPostId: widget.jobPostId),
+        ],
       ),
     );
   }

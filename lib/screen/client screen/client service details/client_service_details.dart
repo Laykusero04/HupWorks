@@ -5,6 +5,7 @@ import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
 import 'package:freelancer/services/orders_service.dart';
 import 'package:freelancer/services/recently_viewed_service.dart';
+import 'package:freelancer/screen/client%20screen/client%20talent/freelancer_public_profile.dart';
 import 'package:freelancer/services/service_details_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
@@ -365,6 +366,15 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
                                     ListTile(
                                       contentPadding: EdgeInsets.zero,
                                       horizontalTitleGap: 10,
+                                      onTap: () {
+                                        final sid = _seller?['id'] as String?;
+                                        if (sid == null) return;
+                                        openFreelancerPublicProfile(
+                                          context,
+                                          sellerId: sid,
+                                          name: sellerName,
+                                        );
+                                      },
                                       leading: CircleAvatar(
                                         radius: 22.0,
                                         backgroundImage: sellerImage != null

@@ -26,6 +26,7 @@ import '../screen/seller screen/profile/seller_profile.dart';
 import '../screen/seller screen/applications/seller_applications.dart';
 import '../screen/seller screen/buyer request/seller_buyer_request.dart';
 import '../screen/seller screen/seller messgae/chat_list.dart';
+import '../screen/attendance/attendance_scan_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _clientShellKey = GlobalKey<NavigatorState>();
@@ -232,6 +233,11 @@ GoRouter createRouter() {
         path: '/seller/applications',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const SellerApplications(),
+      ),
+      GoRoute(
+        path: '/seller/attendance/scan',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const AttendanceScanScreen(),
       ),
     ],
   );

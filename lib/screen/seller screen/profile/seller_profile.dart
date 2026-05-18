@@ -41,7 +41,7 @@ class _SellerProfileState extends State<SellerProfile> {
       _profile = cached;
       _isLoading = false;
     }
-    _loadProfile();
+    _loadProfile(forceRefresh: true);
   }
 
   Future<void> _loadProfile({bool forceRefresh = false}) async {

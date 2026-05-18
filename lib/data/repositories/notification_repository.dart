@@ -1,3 +1,5 @@
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../../core/errors/failures.dart';
 import '../../services/notification_service.dart';
 import '../models/notification_model.dart';
@@ -10,6 +12,22 @@ class NotificationRepository {
     } catch (e) {
       throw ServerFailure(e.toString());
     }
+  }
+
+  Future<int> getUnreadCount() async {
+    try {
+      return await NotificationService.getUnreadCount();
+    } catch (e) {
+      throw ServerFailure(e.toString());
+    }
+  }
+
+  RealtimeChannel subscribeToNotifications({required void Function() onChange}) {
+    return NotificationService.subscribeToNotifications(onChange: onChange);
+  }
+
+  void unsubscribe(RealtimeChannel? channel) {
+    NotificationService.unsubscribe(channel);
   }
 
   Future<void> markAsRead(String notificationId) async {

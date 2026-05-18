@@ -1,3 +1,4 @@
+import 'package:freelancer/services/profile_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class OrdersService {
@@ -135,6 +136,8 @@ class OrdersService {
 
     try {
       await _client.from('reviews').insert(row).select('id').single();
+      ProfileService.clearProfileCache();
+      await ProfileService.syncReviewStatsToProfile(sellerId);
     } on PostgrestException catch (e) {
       final msg = e.message;
       final code = e.code;

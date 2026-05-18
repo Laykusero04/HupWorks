@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:freelancer/data/repositories/notification_repository.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:freelancer/core/utils/job_offer_delivery.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
@@ -37,6 +40,8 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
   Map<String, dynamic> _earnings = {};
   List<Map<String, dynamic>> _myApplications = [];
   int _pendingApplicationCount = 0;
+  int _unreadNotificationCount = 0;
+  RealtimeChannel? _notificationChannel;
   bool _isLoading = true;
 
   String _selectedPerformancePeriod = 'This Month';
@@ -48,7 +53,57 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       _loadData();
+      _loadUnreadNotificationCount();
+      _subscribeToNotifications();
     });
+  }
+
+  @override
+  void dispose() {
+    context.read<NotificationRepository>().unsubscribe(_notificationChannel);
+    super.dispose();
+  }
+
+  Future<void> _loadUnreadNotificationCount() async {
+    try {
+      final count = await context.read<NotificationRepository>().getUnreadCount();
+      if (mounted) setState(() => _unreadNotificationCount = count);
+    } catch (_) {}
+  }
+
+  void _subscribeToNotifications() {
+    try {
+      _notificationChannel = context.read<NotificationRepository>().subscribeToNotifications(
+            onChange: _loadUnreadNotificationCount,
+          );
+    } catch (_) {}
+  }
+
+  Widget _notificationCountBadge() {
+    if (_unreadNotificationCount <= 0) return const SizedBox.shrink();
+    final label = _unreadNotificationCount > 9 ? '9+' : '$_unreadNotificationCount';
+    return Positioned(
+      right: 2,
+      top: 2,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+        decoration: BoxDecoration(
+          color: kAccentColor,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: Colors.white, width: 1.5),
+        ),
+        constraints: const BoxConstraints(minWidth: 18),
+        child: Text(
+          label,
+          textAlign: TextAlign.center,
+          style: kTextStyle.copyWith(
+            color: Colors.white,
+            fontSize: 10,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+      ),
+    );
   }
 
   Future<void> _loadData() async {
@@ -233,7 +288,10 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
               ),
               const SizedBox(width: 8),
               GestureDetector(
-                onTap: () => const SellerNotification().launch(context),
+                onTap: () async {
+                  await const SellerNotification().launch(context);
+                  if (mounted) _loadUnreadNotificationCount();
+                },
                 child: Stack(
                   clipBehavior: Clip.none,
                   children: [
@@ -246,29 +304,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
                       ),
                       child: const Icon(IconlyLight.notification, color: Colors.white, size: 20),
                     ),
-                    if (_pendingApplicationCount > 0)
-                      Positioned(
-                        right: 2,
-                        top: 2,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: kAccentColor,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: Colors.white, width: 1.5),
-                          ),
-                          constraints: const BoxConstraints(minWidth: 18),
-                          child: Text(
-                            _pendingApplicationCount > 9 ? '9+' : '$_pendingApplicationCount',
-                            textAlign: TextAlign.center,
-                            style: kTextStyle.copyWith(
-                              color: Colors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                        ),
-                      ),
+                    _notificationCountBadge(),
                   ],
                 ),
               ),
@@ -703,6 +739,12 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
         icon: Icons.outgoing_mail,
         color: kPrimaryColor,
         onTap: () => context.push('/seller/applications'),
+      ),
+      (
+        label: 'Scan QR',
+        icon: Icons.qr_code_scanner_rounded,
+        color: const Color(0xFF2E7D32),
+        onTap: () => context.push('/seller/attendance/scan'),
       ),
     ];
 

@@ -7,10 +7,9 @@ import 'package:freelancer/screen/seller%20screen/seller%20authentication/verifi
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:nb_utils/nb_utils.dart';
 
-import '../../client screen/client_authentication/client_log_in.dart';
+import '../../widgets/auth/unified_log_in.dart';
 import '../../widgets/constant.dart';
 import '../../widgets/icons.dart';
-import '../seller authentication/seller_log_in.dart';
 
 class SellerAddLanguagePopUp extends StatefulWidget {
   const SellerAddLanguagePopUp({Key? key}) : super(key: key);
@@ -376,7 +375,7 @@ class _SaveProfilePopUpState extends State<SaveProfilePopUp> {
               onPressed: () {
                 setState(() {
                   finish(context);
-                  isFreelancer ? const SellerLogIn().launch(context) : const ClientLogIn().launch(context);
+                  const UnifiedLogIn().launch(context);
                 });
               },
             )

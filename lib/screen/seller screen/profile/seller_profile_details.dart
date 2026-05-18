@@ -93,8 +93,12 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
     final country = (_profile?['country'] as String?) ?? '';
     final balance = _profile?['balance'] ?? 0;
     final profileImageUrl = _profile?['profile_image_url'];
-    final rating = (_profile?['rating'] as num?)?.toDouble() ?? 0;
-    final reviewCount = (_profile?['review_count'] as num?)?.toInt() ?? 0;
+    final reviewStats = ProfileService.resolveReviewDisplay(
+      profile: _profile,
+      reviews: _reviews,
+    );
+    final rating = reviewStats.rating;
+    final reviewCount = reviewStats.count;
     final phone = _profile?['phone'] as String? ?? '';
     final gender = _profile?['gender'] as String? ?? '';
 
@@ -425,7 +429,7 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
   }
 
   Widget _reviewCard(Map<String, dynamic> row, Color brand) {
-    final stars = (row['rating'] as num?)?.toInt() ?? 0;
+    final stars = ProfileService.ratingAsStars(row['rating']);
     final comment = (row['comment'] as String?)?.trim();
     final created = row['created_at'] as String?;
     final reviewer = row['reviewer'] as Map<String, dynamic>?;

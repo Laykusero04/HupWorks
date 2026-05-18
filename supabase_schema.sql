@@ -479,6 +479,26 @@ create policy "Users can view their own notifications"
 create policy "Users can update their own notifications"
   on notifications for update using (auth.uid() = user_id);
 
+`1create or replace function public.create_notification(
+  p_user_id uuid,
+  p_title text,
+  p_body text default null,
+  p_type text default null,
+  p_reference_id uuid default null
+) returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if p_user_id is null then
+    return;
+  end if;
+  insert into public.notifications (user_id, title, body, type, reference_id)
+  values (p_user_id, p_title, p_body, p_type, p_reference_id);
+end;
+$$;
+
 -- ==================
 -- 16. TRANSACTIONS
 -- ==================
@@ -613,6 +633,7 @@ declare
   v_accepted_before int;
   v_accepted_after int;
   v_order_id uuid;
+  v_job_title text;
 begin
   select
     jo.job_post_id,
@@ -623,7 +644,8 @@ begin
     jp.client_id,
     jp.workers_needed,
     jo.status,
-    jp.status
+    jp.status,
+    jp.title
   into
     v_post_id,
     v_seller,
@@ -633,7 +655,8 @@ begin
     v_client,
     v_workers_needed,
     v_offer_status,
-    v_job_status
+    v_job_status,
+    v_job_title
   from public.job_offers jo
   join public.job_posts jp on jp.id = jo.job_post_id
   where jo.id = p_offer_id;
@@ -692,6 +715,14 @@ begin
   values
     (p_offer_id, v_client, v_seller, v_price, 'pending', v_deadline)
   returning id into v_order_id;
+
+  perform public.create_notification(
+    v_seller,
+    'Application accepted',
+    coalesce('Your application for "' || v_job_title || '" was accepted.', 'Your application was accepted.'),
+    'order',
+    v_order_id
+  );
 
   return v_order_id;
 end;

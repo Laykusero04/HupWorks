@@ -6,7 +6,7 @@ import 'package:nb_utils/nb_utils.dart';
 import '../../../router/app_router.dart';
 import '../../widgets/constant.dart';
 import '../../widgets/shell_tab_header.dart';
-import '../client service details/client_service_details.dart';
+import '../client talent/freelancer_public_profile.dart';
 
 class TopSeller extends StatefulWidget {
   const TopSeller({Key? key}) : super(key: key);
@@ -65,18 +65,14 @@ class _TopSellerState extends State<TopSeller> {
     return 'Verified freelancer';
   }
 
-  Future<void> _openSeller(Map<String, dynamic> seller) async {
+  void _openSeller(Map<String, dynamic> seller) {
     final id = seller['id'] as String?;
     if (id == null) return;
-    final serviceId = await ClientHomeService.getFirstActiveServiceIdForSeller(id);
-    if (!mounted) return;
-    if (serviceId != null) {
-      await ClientServiceDetails(serviceId: serviceId).launch(context);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('This freelancer has no active service listing yet.')),
-      );
-    }
+    openFreelancerPublicProfile(
+      context,
+      sellerId: id,
+      name: seller['name'] as String?,
+    );
   }
 
   @override

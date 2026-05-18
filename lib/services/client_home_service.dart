@@ -1,3 +1,4 @@
+import 'package:freelancer/services/profile_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ClientHomeService {
@@ -43,9 +44,11 @@ class ClientHomeService {
         .from('profiles')
         .select('*, seller_profiles!inner(*)')
         .eq('role', 'seller')
-        .order('rating', ascending: false)
-        .limit(limit);
-    return List<Map<String, dynamic>>.from(data);
+        .limit(limit * 3);
+    final list = List<Map<String, dynamic>>.from(data);
+    final enriched = await ProfileService.enrichProfilesWithReviewStats(list);
+    if (enriched.length <= limit) return enriched;
+    return enriched.sublist(0, limit);
   }
 
   /// Search services by query

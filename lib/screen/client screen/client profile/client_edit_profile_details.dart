@@ -19,6 +19,7 @@ class _ClientEditProfileState extends State<ClientEditProfile> {
   final _phoneController = TextEditingController();
   final _countryController = TextEditingController();
   final _cityController = TextEditingController();
+  final _bioController = TextEditingController();
 
   String _selectedGender = 'Male';
   bool _isLoading = true;
@@ -37,6 +38,7 @@ class _ClientEditProfileState extends State<ClientEditProfile> {
     _phoneController.dispose();
     _countryController.dispose();
     _cityController.dispose();
+    _bioController.dispose();
     super.dispose();
   }
 
@@ -49,6 +51,7 @@ class _ClientEditProfileState extends State<ClientEditProfile> {
           _phoneController.text = profile['phone'] ?? '';
           _countryController.text = profile['country'] ?? '';
           _cityController.text = profile['city'] ?? '';
+          _bioController.text = profile['bio'] ?? '';
           _selectedGender = profile['gender'] ?? 'Male';
           _profileImageUrl = profile['profile_image_url'];
           _isLoading = false;
@@ -70,6 +73,7 @@ class _ClientEditProfileState extends State<ClientEditProfile> {
         'phone': _phoneController.text.trim(),
         'country': _countryController.text.trim(),
         'city': _cityController.text.trim(),
+        'bio': _bioController.text.trim(),
         'gender': _selectedGender,
       });
 
@@ -200,6 +204,21 @@ class _ClientEditProfileState extends State<ClientEditProfile> {
                 ProfileLocationFields(
                   countryController: _countryController,
                   cityController: _cityController,
+                ),
+                const SizedBox(height: 20.0),
+                TextFormField(
+                  controller: _bioController,
+                  keyboardType: TextInputType.multiline,
+                  maxLines: 4,
+                  cursorColor: kNeutralColor,
+                  decoration: kInputDecoration.copyWith(
+                    labelText: 'About your company',
+                    labelStyle: kTextStyle.copyWith(color: kNeutralColor),
+                    hintText: 'Short intro for freelancers viewing your jobs…',
+                    hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
+                    alignLabelWithHint: true,
+                    border: const OutlineInputBorder(),
+                  ),
                 ),
                 const SizedBox(height: 20.0),
                 FormField(

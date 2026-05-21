@@ -9,11 +9,23 @@ import '../../widgets/constant.dart';
 
 enum _MessageType { success, error, warning }
 
+enum _OfferSubmitMode { agreePosted, customBid }
+
 class CreateCustomerOffer extends StatefulWidget {
   final String jobPostId;
   final String jobTitle;
+  final Object? budgetMin;
+  final Object? budgetMax;
+  final Object? budgetBasis;
 
-  const CreateCustomerOffer({Key? key, required this.jobPostId, required this.jobTitle}) : super(key: key);
+  const CreateCustomerOffer({
+    Key? key,
+    required this.jobPostId,
+    required this.jobTitle,
+    this.budgetMin,
+    this.budgetMax,
+    this.budgetBasis,
+  }) : super(key: key);
 
   @override
   State<CreateCustomerOffer> createState() => _CreateCustomerOfferState();
@@ -24,6 +36,26 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
   final _coverLetterController = TextEditingController();
   String _priceBasis = JobPostsService.budgetBasisFixed;
   bool _isSubmitting = false;
+
+  late final bool _hasPostedBudget;
+  late _OfferSubmitMode _mode;
+
+  Map<String, dynamic> get _jobPostBudgetMap => {
+        'budget_min': widget.budgetMin,
+        'budget_max': widget.budgetMax,
+        'budget_basis': widget.budgetBasis,
+      };
+
+  @override
+  void initState() {
+    super.initState();
+    _hasPostedBudget = JobPostsService.hasPostedBudget(_jobPostBudgetMap);
+    _mode = _hasPostedBudget ? _OfferSubmitMode.agreePosted : _OfferSubmitMode.customBid;
+    final agreed = JobPostsService.agreedOfferFromJobPost(_jobPostBudgetMap);
+    if (agreed != null) {
+      _priceBasis = agreed.basis;
+    }
+  }
 
   @override
   void dispose() {
@@ -73,9 +105,19 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: kTextStyle.copyWith(color: kWhite, fontWeight: FontWeight.bold, fontSize: 14)),
+                    Text(
+                      title,
+                      style: kTextStyle.copyWith(
+                        color: kWhite,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
                     const SizedBox(height: 2),
-                    Text(message, style: kTextStyle.copyWith(color: kWhite, fontSize: 13)),
+                    Text(
+                      message,
+                      style: kTextStyle.copyWith(color: kWhite, fontSize: 13),
+                    ),
                   ],
                 ),
               ),
@@ -86,10 +128,28 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
   }
 
   Future<void> _handleSubmit() async {
-    final amount = double.tryParse(_amountController.text.trim());
-    if (amount == null || amount <= 0) {
-      _showMessage('Please enter a valid offer amount', type: _MessageType.warning);
-      return;
+    final bool agreed = _mode == _OfferSubmitMode.agreePosted;
+    double? amount;
+    String basis = _priceBasis;
+
+    if (agreed) {
+      final posted = JobPostsService.agreedOfferFromJobPost(_jobPostBudgetMap);
+      if (posted == null) {
+        _showMessage(
+          'This job has no posted rate to agree to. Enter a custom amount instead.',
+          type: _MessageType.warning,
+        );
+        return;
+      }
+      amount = posted.price;
+      basis = posted.basis;
+    } else {
+      amount = double.tryParse(_amountController.text.trim());
+      if (amount == null || amount <= 0) {
+        _showMessage('Please enter a valid offer amount', type: _MessageType.warning);
+        return;
+      }
+      basis = _priceBasis;
     }
 
     setState(() => _isSubmitting = true);
@@ -98,12 +158,18 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
       await SellerOrdersService.createOffer(
         jobPostId: widget.jobPostId,
         price: amount,
-        priceBasis: _priceBasis,
-        coverLetter: _coverLetterController.text.trim().isNotEmpty ? _coverLetterController.text.trim() : null,
+        priceBasis: basis,
+        coverLetter: _coverLetterController.text.trim().isNotEmpty
+            ? _coverLetterController.text.trim()
+            : null,
+        agreedToPostedRate: agreed,
       );
 
       if (mounted) {
-        _showMessage('Your offer has been sent', type: _MessageType.success);
+        _showMessage(
+          agreed ? 'Application sent at client\'s posted rate' : 'Your offer has been sent',
+          type: _MessageType.success,
+        );
         await Future.delayed(const Duration(milliseconds: 600));
         if (mounted) Navigator.pop(context);
       }
@@ -114,9 +180,58 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
     }
   }
 
+  Widget _modeChip({
+    required String label,
+    required _OfferSubmitMode mode,
+    required IconData icon,
+  }) {
+    final selected = _mode == mode;
+    return Expanded(
+      child: Material(
+        color: selected ? kPrimaryColor.withValues(alpha: 0.1) : kWhite,
+        borderRadius: BorderRadius.circular(10),
+        child: InkWell(
+          onTap: _isSubmitting ? null : () => setState(() => _mode = mode),
+          borderRadius: BorderRadius.circular(10),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: selected ? kPrimaryColor : kBorderColorTextField,
+              ),
+            ),
+            child: Column(
+              children: [
+                Icon(icon, color: selected ? kPrimaryColor : kLightNeutralColor, size: 22),
+                const SizedBox(height: 6),
+                Text(
+                  label,
+                  textAlign: TextAlign.center,
+                  style: kTextStyle.copyWith(
+                    color: selected ? kPrimaryColor : kSubTitleColor,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final bottomLift = MediaQuery.paddingOf(context).bottom + 16;
+    final postedLabel = JobPostsService.formatBudgetRange(
+      widget.budgetMin,
+      widget.budgetMax,
+      widget.budgetBasis,
+    );
+    final agreed = JobPostsService.agreedOfferFromJobPost(_jobPostBudgetMap);
+    final isAgree = _mode == _OfferSubmitMode.agreePosted;
 
     return Scaffold(
       backgroundColor: kDarkWhite,
@@ -137,7 +252,11 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
         child: Padding(
           padding: EdgeInsets.fromLTRB(20, 8, 20, bottomLift),
           child: ButtonGlobalWithoutIcon(
-            buttontext: _isSubmitting ? 'Sending…' : 'Submit offer',
+            buttontext: _isSubmitting
+                ? 'Sending…'
+                : isAgree
+                    ? 'Apply at client\'s rate'
+                    : 'Submit offer',
             buttonDecoration: kButtonDecoration.copyWith(
               color: _isSubmitting ? kLightNeutralColor : kPrimaryColor,
               borderRadius: BorderRadius.circular(30.0),
@@ -154,7 +273,10 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
           width: context.width(),
           decoration: const BoxDecoration(
             color: kWhite,
-            borderRadius: BorderRadius.only(topLeft: Radius.circular(30.0), topRight: Radius.circular(30.0)),
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(30.0),
+              topRight: Radius.circular(30.0),
+            ),
           ),
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
@@ -162,14 +284,12 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 20.0),
-                Text(
-                  'Enter your amount and choose how you are quoting it (total, per hour, per day, or per month). The client sees this with your offer and in chat.',
-                  style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13, height: 1.35),
-                ),
-                const SizedBox(height: 20.0),
                 Container(
                   padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), color: kDarkWhite),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    color: kDarkWhite,
+                  ),
                   child: Row(
                     children: [
                       const Icon(Icons.work_outline, color: kPrimaryColor),
@@ -177,7 +297,10 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
                       Expanded(
                         child: Text(
                           widget.jobTitle,
-                          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+                          style: kTextStyle.copyWith(
+                            color: kNeutralColor,
+                            fontWeight: FontWeight.bold,
+                          ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -186,59 +309,183 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
                   ),
                 ),
                 const SizedBox(height: 20.0),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        controller: _amountController,
-                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                        cursorColor: kNeutralColor,
-                        decoration: kInputDecoration.copyWith(
-                          labelText: 'Offer amount',
-                          labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                          hintText: 'Enter your bid',
-                          hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
-                          border: const OutlineInputBorder(),
-                        ),
+                if (_hasPostedBudget) ...[
+                  Row(
+                    children: [
+                      _modeChip(
+                        label: 'Agree to\nclient\'s rate',
+                        mode: _OfferSubmitMode.agreePosted,
+                        icon: Icons.handshake_outlined,
                       ),
+                      const SizedBox(width: 10),
+                      _modeChip(
+                        label: 'Custom\nbid',
+                        mode: _OfferSubmitMode.customBid,
+                        icon: Icons.edit_outlined,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                ],
+                if (isAgree && postedLabel.isNotEmpty) ...[
+                  Text(
+                    'You are applying without a counter-offer. The client sees your application at their posted rate.',
+                    style: kTextStyle.copyWith(
+                      color: kSubTitleColor,
+                      fontSize: 13,
+                      height: 1.35,
                     ),
-                    const SizedBox(width: 10),
-                    SizedBox(
-                      width: 118,
-                      child: InputDecorator(
-                        decoration: kInputDecoration.copyWith(
-                          enabledBorder: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                            borderSide: BorderSide(color: kBorderColorTextField, width: 2),
-                          ),
-                          contentPadding: const EdgeInsetsDirectional.only(start: 10, end: 4, top: 0, bottom: 0),
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                          labelText: 'Bid as',
-                          labelStyle: kTextStyle.copyWith(color: kNeutralColor, fontSize: 12),
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            isExpanded: true,
-                            isDense: true,
-                            icon: const Icon(FeatherIcons.chevronDown, size: 18, color: kSubTitleColor),
-                            value: _priceBasis,
-                            style: kTextStyle.copyWith(color: kNeutralColor, fontSize: 13),
-                            items: [
-                              DropdownMenuItem(value: JobPostsService.budgetBasisFixed, child: Text('Total', style: kTextStyle.copyWith(fontSize: 13))),
-                              DropdownMenuItem(value: JobPostsService.budgetBasisPerHour, child: Text('/ hour', style: kTextStyle.copyWith(fontSize: 13))),
-                              DropdownMenuItem(value: JobPostsService.budgetBasisPerDay, child: Text('/ day', style: kTextStyle.copyWith(fontSize: 13))),
-                              DropdownMenuItem(value: JobPostsService.budgetBasisPerMonth, child: Text('/ month', style: kTextStyle.copyWith(fontSize: 13))),
-                            ],
-                            onChanged: (v) {
-                              if (v != null) setState(() => _priceBasis = v);
-                            },
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: kPrimaryColor.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: kPrimaryColor.withValues(alpha: 0.3)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Client\'s posted rate',
+                          style: kTextStyle.copyWith(
+                            color: kSubTitleColor,
+                            fontSize: 12,
                           ),
                         ),
+                        const SizedBox(height: 4),
+                        Text(
+                          postedLabel,
+                          style: kTextStyle.copyWith(
+                            color: kNeutralColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                        if (agreed != null) ...[
+                          const SizedBox(height: 6),
+                          Text(
+                            'Your application: ${JobPostsService.formatOfferAmountLine(agreed.price, agreed.basis)}',
+                            style: kTextStyle.copyWith(
+                              color: kPrimaryColor,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ] else ...[
+                  Text(
+                    _hasPostedBudget
+                        ? 'Enter your own amount if you want to bid differently from the client\'s budget.'
+                        : 'This job has no posted budget — enter the amount you are asking for.',
+                    style: kTextStyle.copyWith(
+                      color: kSubTitleColor,
+                      fontSize: 13,
+                      height: 1.35,
+                    ),
+                  ),
+                  if (_hasPostedBudget && postedLabel.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      'Client posted: $postedLabel',
+                      style: kTextStyle.copyWith(
+                        color: kLightNeutralColor,
+                        fontSize: 12,
                       ),
                     ),
                   ],
-                ),
+                  const SizedBox(height: 16),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: _amountController,
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
+                          cursorColor: kNeutralColor,
+                          decoration: kInputDecoration.copyWith(
+                            labelText: 'Your offer amount',
+                            labelStyle: kTextStyle.copyWith(color: kNeutralColor),
+                            hintText: 'Enter your bid',
+                            hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
+                            border: const OutlineInputBorder(),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      SizedBox(
+                        width: 118,
+                        child: InputDecorator(
+                          decoration: kInputDecoration.copyWith(
+                            enabledBorder: const OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                              borderSide: BorderSide(
+                                color: kBorderColorTextField,
+                                width: 2,
+                              ),
+                            ),
+                            contentPadding: const EdgeInsetsDirectional.only(
+                              start: 10,
+                              end: 4,
+                              top: 0,
+                              bottom: 0,
+                            ),
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            labelText: 'Quote as',
+                            labelStyle: kTextStyle.copyWith(
+                              color: kNeutralColor,
+                              fontSize: 12,
+                            ),
+                          ),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              isExpanded: true,
+                              isDense: true,
+                              icon: const Icon(
+                                FeatherIcons.chevronDown,
+                                size: 18,
+                                color: kSubTitleColor,
+                              ),
+                              value: _priceBasis,
+                              style: kTextStyle.copyWith(
+                                color: kNeutralColor,
+                                fontSize: 13,
+                              ),
+                              items: [
+                                DropdownMenuItem(
+                                  value: JobPostsService.budgetBasisFixed,
+                                  child: Text('Total', style: kTextStyle.copyWith(fontSize: 13)),
+                                ),
+                                DropdownMenuItem(
+                                  value: JobPostsService.budgetBasisPerHour,
+                                  child: Text('/ hour', style: kTextStyle.copyWith(fontSize: 13)),
+                                ),
+                                DropdownMenuItem(
+                                  value: JobPostsService.budgetBasisPerDay,
+                                  child: Text('/ day', style: kTextStyle.copyWith(fontSize: 13)),
+                                ),
+                                DropdownMenuItem(
+                                  value: JobPostsService.budgetBasisPerMonth,
+                                  child: Text('/ month', style: kTextStyle.copyWith(fontSize: 13)),
+                                ),
+                              ],
+                              onChanged: (v) {
+                                if (v != null) setState(() => _priceBasis = v);
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
                 const SizedBox(height: 20.0),
                 TextFormField(
                   controller: _coverLetterController,

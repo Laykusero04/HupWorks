@@ -22,8 +22,15 @@ class OrderContractDisplay {
     return _asMap(jo?['job_posts']);
   }
 
+  static String? jobPostIdFromOrder(Map<String, dynamic>? order) {
+    final id = jobPostFromOrder(order)?['id'];
+    if (id == null) return null;
+    return id.toString();
+  }
+
   /// Primary line for the contract (job post title or service title).
-  static String title(Map<String, dynamic>? order, Map<String, dynamic>? service) {
+  static String title(
+      Map<String, dynamic>? order, Map<String, dynamic>? service) {
     final jp = jobPostFromOrder(order);
     final jobTitle = (jp?['title'] as String?)?.trim();
     if (jobTitle != null && jobTitle.isNotEmpty) return jobTitle;
@@ -33,7 +40,8 @@ class OrderContractDisplay {
   }
 
   /// Longer context: job description, seller cover letter, or service description.
-  static String serviceInfo(Map<String, dynamic>? order, Map<String, dynamic>? service) {
+  static String serviceInfo(
+      Map<String, dynamic>? order, Map<String, dynamic>? service) {
     final jp = jobPostFromOrder(order);
     final postDesc = (jp?['description'] as String?)?.trim();
     if (postDesc != null && postDesc.isNotEmpty) return postDesc;
@@ -43,21 +51,27 @@ class OrderContractDisplay {
     return (service?['description'] as String?)?.trim() ?? '';
   }
 
-  static String durationLabel(Map<String, dynamic>? order, Map<String, dynamic>? service) {
+  static String durationLabel(
+      Map<String, dynamic>? order, Map<String, dynamic>? service) {
     final jo = jobOfferFromOrder(order);
     if (jo != null) {
-      return JobOfferDelivery.formatLabel(jo['delivery_time'], jo['delivery_time_unit']);
+      return JobOfferDelivery.formatLabel(
+          jo['delivery_time'], jo['delivery_time_unit']);
     }
     final days = service?['delivery_time'];
-    final d = days is int ? days : (days is num ? days.round() : int.tryParse('$days') ?? 0);
+    final d = days is int
+        ? days
+        : (days is num ? days.round() : int.tryParse('$days') ?? 0);
     if (d <= 0) return '—';
     return d == 1 ? '1 day' : '$d days';
   }
 
-  static String revisionsLabel(Map<String, dynamic>? order, Map<String, dynamic>? service) {
+  static String revisionsLabel(
+      Map<String, dynamic>? order, Map<String, dynamic>? service) {
     if (jobPostFromOrder(order) != null) return 'Per job agreement';
     final n = service?['revision_count'];
-    final count = n is int ? n : (n is num ? n.round() : int.tryParse('$n') ?? 0);
+    final count =
+        n is int ? n : (n is num ? n.round() : int.tryParse('$n') ?? 0);
     if (count == 0) return 'Unlimited Revisions';
     return count == 1 ? '1 Revision' : '$count Revisions';
   }

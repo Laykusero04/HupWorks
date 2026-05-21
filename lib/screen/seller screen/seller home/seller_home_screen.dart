@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:freelancer/data/repositories/notification_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:freelancer/core/utils/job_offer_delivery.dart';
@@ -14,8 +13,8 @@ import 'package:go_router/go_router.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import 'package:freelancer/router/app_router.dart';
-import '../../widgets/chart.dart';
 import '../notification/seller_notification.dart';
+import '../transaction/seller_transaction.dart';
 
 /// Light icons on the blue hero; transparent status bar so the gradient reaches the top.
 const _sellerHubSystemUi = SystemUiOverlayStyle(
@@ -35,17 +34,11 @@ class SellerHomeScreen extends StatefulWidget {
 
 class _SellerHomeScreenState extends State<SellerHomeScreen> {
   Map<String, dynamic>? _profile;
-  Map<String, dynamic> _performance = {};
-  Map<String, double> _statistics = {};
-  Map<String, dynamic> _earnings = {};
+  Map<String, dynamic> _overview = {};
   List<Map<String, dynamic>> _myApplications = [];
-  int _pendingApplicationCount = 0;
   int _unreadNotificationCount = 0;
   RealtimeChannel? _notificationChannel;
   bool _isLoading = true;
-
-  String _selectedPerformancePeriod = 'This Month';
-  String _selectedEarningPeriod = 'This Month';
 
   @override
   void initState() {
@@ -110,24 +103,15 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
     try {
       final results = await Future.wait([
         SellerHomeService.getSellerProfile(),
-        SellerHomeService.getPerformance(isLastMonth: _selectedPerformancePeriod == 'Last Month'),
-        SellerHomeService.getStatistics(),
-        SellerHomeService.getEarnings(isLastMonth: _selectedEarningPeriod == 'Last Month'),
+        SellerHomeService.getWorkOverview(),
         SellerOrdersService.getMyApplications(),
       ]);
 
       if (mounted) {
-        final apps = results[4] as List<Map<String, dynamic>>;
-        final pending = apps.where((a) {
-          final s = (a['status'] as String?) ?? 'pending';
-          return s == 'pending';
-        }).length;
+        final apps = results[2] as List<Map<String, dynamic>>;
         setState(() {
           _profile = results[0] as Map<String, dynamic>?;
-          _performance = results[1] as Map<String, dynamic>;
-          _statistics = results[2] as Map<String, double>;
-          _earnings = results[3] as Map<String, dynamic>;
-          _pendingApplicationCount = pending;
+          _overview = results[1] as Map<String, dynamic>;
           _myApplications = apps.take(5).toList();
           _isLoading = false;
         });
@@ -142,46 +126,24 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
     }
   }
 
-  Future<void> _reloadPerformance() async {
-    final perf = await SellerHomeService.getPerformance(
-      isLastMonth: _selectedPerformancePeriod == 'Last Month',
-    );
-    if (mounted) setState(() => _performance = perf);
-  }
+  int _ov(String key) => (_overview[key] as num?)?.toInt() ?? 0;
 
-  Future<void> _reloadEarnings() async {
-    final earn = await SellerHomeService.getEarnings(
-      isLastMonth: _selectedEarningPeriod == 'Last Month',
-    );
-    if (mounted) setState(() => _earnings = earn);
-  }
-
-  Widget _buildPeriodDropdown(String value, List<String> items, ValueChanged<String?> onChanged) {
-    return SizedBox(
-      height: 30,
-      child: Container(
-        padding: const EdgeInsets.all(5.0),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30.0),
-          border: Border.all(color: kLightNeutralColor),
-        ),
-        child: DropdownButtonHideUnderline(
-          child: DropdownButton<String>(
-            icon: const Icon(FeatherIcons.chevronDown),
-            value: value,
-            style: kTextStyle.copyWith(color: kSubTitleColor),
-            items: items.map((s) => DropdownMenuItem(value: s, child: Text(s, style: kTextStyle.copyWith(color: kSubTitleColor)))).toList(),
-            onChanged: onChanged,
-          ),
-        ),
-      ),
-    );
-  }
+  double _ovDouble(String key) => (_overview[key] as num?)?.toDouble() ?? 0;
 
   String _sellerTagline() {
-    final bio = (_profile?['bio'] as String?)?.trim();
-    if (bio != null && bio.isNotEmpty) return bio;
-    return 'Deliver great work, build your reputation, and grow your income.';
+    final active = _ov('active_contracts');
+    final pending = _ov('pending_applications');
+    final open = _ov('open_jobs_count');
+    if (active > 0) {
+      return '$active active contract${active == 1 ? '' : 's'} — stay on top of delivery and attendance.';
+    }
+    if (pending > 0) {
+      return '$pending application${pending == 1 ? '' : 's'} waiting for client decisions.';
+    }
+    if (open > 0) {
+      return '$open open job${open == 1 ? '' : 's'} on HupWorks — find your next contract.';
+    }
+    return 'Apply to jobs, win contracts, and track work in one place.';
   }
 
   Widget _buildSellerHero(
@@ -310,7 +272,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
               ),
             ],
           ),
-          if (_pendingApplicationCount > 0) ...[
+          if (_ov('pending_applications') > 0) ...[
             const SizedBox(height: 14),
             GestureDetector(
               onTap: () => context.push('/seller/applications'),
@@ -328,9 +290,9 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        _pendingApplicationCount == 1
-                            ? '1 application is still pending'
-                            : '$_pendingApplicationCount applications are still pending',
+                        _ov('pending_applications') == 1
+                            ? '1 application awaiting client reply'
+                            : '${_ov('pending_applications')} applications awaiting client reply',
                         style: kTextStyle.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,
@@ -364,19 +326,6 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
     final name = _profile?['name'] ?? 'Seller';
     final profileImageUrl = _profile?['profile_image_url'] as String?;
     final tagline = _sellerTagline();
-    final completedOrders = _performance['completed_orders'] ?? 0;
-    final avgRating = _performance['avg_rating'] ?? 0.0;
-    final totalServices = _performance['total_services'] ?? 0;
-    final totalEarnings = _earnings['total_earnings'] ?? 0.0;
-    final totalWithdrawals = _earnings['total_withdrawals'] ?? 0.0;
-    final currentBalance = _earnings['current_balance'] ?? 0.0;
-    final activeOrdersValue = _earnings['active_orders_value'] ?? 0.0;
-
-    // Ensure statistics has non-zero values for the pie chart
-    final statsForChart = _statistics.isEmpty || _statistics.values.every((v) => v == 0)
-        ? {'Impressions': 1.0, 'Interaction': 1.0, 'Reached-Out': 1.0}
-        : _statistics;
-
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: AnnotatedRegion<SystemUiOverlayStyle>(
@@ -476,100 +425,14 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
 
                     _buildQuickActions(context),
 
-                    const SizedBox(height: 20.0),
-
-                    // Performance Card
-                    _buildCard(
-                      title: 'Performance',
-                      dropdown: _buildPeriodDropdown(
-                        _selectedPerformancePeriod,
-                        ['Last Month', 'This Month'],
-                        (v) {
-                          setState(() => _selectedPerformancePeriod = v!);
-                          _reloadPerformance();
-                        },
-                      ),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(child: Summary(title: '$completedOrders Orders', subtitle: 'Order Completions')),
-                              const SizedBox(width: 10.0),
-                              Expanded(child: Summary2(title1: '${avgRating.toStringAsFixed(1)}/', title2: '5.0', subtitle: 'Positive Ratings')),
-                            ],
-                          ),
-                          const SizedBox(height: 10.0),
-                          Row(
-                            children: [
-                              Expanded(child: Summary(title: 'Services: $totalServices', subtitle: 'Total Services')),
-                              const SizedBox(width: 10.0),
-                              const Expanded(child: SizedBox()),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 20.0),
-
-                    // Statistics Card
-                    _buildCard(
-                      title: 'Statistics',
-                      dropdown: Text(
-                        'All time',
-                        style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: RecordStatistics(dataMap: statsForChart, colorList: colorList),
-                          ),
-                          Expanded(
-                            child: Column(
-                              children: [
-                                ChartLegend(iconColor: const Color(0xFF69B22A), title: 'Impressions', value: '${(_statistics['Impressions'] ?? 0).toInt()}'),
-                                ChartLegend(iconColor: const Color(0xFF144BD6), title: 'Interaction', value: '${(_statistics['Interaction'] ?? 0).toInt()}'),
-                                ChartLegend(iconColor: const Color(0xFFFF3B30), title: 'Reached-Out', value: '${(_statistics['Reached-Out'] ?? 0).toInt()}'),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 20.0),
-
-                    // Earnings Card
-                    _buildCard(
-                      title: 'Earnings',
-                      dropdown: _buildPeriodDropdown(
-                        _selectedEarningPeriod,
-                        ['Last Month', 'This Month'],
-                        (v) {
-                          setState(() => _selectedEarningPeriod = v!);
-                          _reloadEarnings();
-                        },
-                      ),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(child: Summary(title: '$currencySign${totalEarnings.toStringAsFixed(2)}', subtitle: 'Total Earnings')),
-                              const SizedBox(width: 10.0),
-                              Expanded(child: Summary(title: '$currencySign${totalWithdrawals.toStringAsFixed(2)}', subtitle: 'Withdraw Earnings')),
-                            ],
-                          ),
-                          const SizedBox(height: 10.0),
-                          Row(
-                            children: [
-                              Expanded(child: Summary(title: '$currencySign${currentBalance.toStringAsFixed(2)}', subtitle: 'Current Balance')),
-                              const SizedBox(width: 10.0),
-                              Expanded(child: Summary(title: '$currencySign${activeOrdersValue.toStringAsFixed(2)}', subtitle: 'Active Orders')),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
+                    const SizedBox(height: 16.0),
+                    _buildWorkOverviewCard(context),
+                    const SizedBox(height: 12.0),
+                    _buildWalletCard(context),
+                    if (_buildNeedsAttention(context) != null) ...[
+                      const SizedBox(height: 12.0),
+                      _buildNeedsAttention(context)!,
+                    ],
                     const SizedBox(height: 20.0),
 
                     // My Applications
@@ -714,94 +577,226 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
     );
   }
 
+  Widget _buildWorkOverviewCard(BuildContext context) {
+    final rating = _ovDouble('avg_rating');
+    final reviews = _ov('review_count');
+    final ratingLabel = reviews > 0 ? rating.toStringAsFixed(1) : '—';
+
+    return _buildCard(
+      title: 'Your work',
+      dropdown: Text(
+        'Live',
+        style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: _DashboardMetricCell(
+                  label: 'Active contracts',
+                  value: '${_ov('active_contracts')}',
+                  icon: Icons.description_outlined,
+                  color: kSecondaryColor,
+                  onTap: () => context.go('/seller/orders'),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _DashboardMetricCell(
+                  label: 'Pending applications',
+                  value: '${_ov('pending_applications')}',
+                  icon: Icons.outgoing_mail,
+                  color: kPrimaryColor,
+                  onTap: () => context.push('/seller/applications'),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: _DashboardMetricCell(
+                  label: 'Completed this month',
+                  value: '${_ov('completed_this_month')}',
+                  icon: Icons.check_circle_outline,
+                  color: const Color(0xFF2E7D32),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _DashboardMetricCell(
+                  label: 'Your rating',
+                  value: ratingLabel,
+                  icon: Icons.star_outline_rounded,
+                  color: const Color(0xFFFFB300),
+                  subtitle: reviews > 0 ? '$reviews reviews' : 'No reviews yet',
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          GestureDetector(
+            onTap: () => context.go('/seller/find-jobs'),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: kDarkWhite,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: kBorderColorTextField),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.work_outline, size: 20, color: kSecondaryColor),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      '${_ov('open_jobs_count')} open jobs to browse',
+                      style: kTextStyle.copyWith(
+                        color: kNeutralColor,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
+                  const Icon(Icons.chevron_right, color: kSecondaryColor, size: 22),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWalletCard(BuildContext context) {
+    final balance = _ovDouble('balance');
+    final earned = _ovDouble('earned_this_month');
+
+    return _buildCard(
+      title: 'Wallet',
+      dropdown: Text(
+        'This month',
+        style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
+      ),
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: _DashboardMetricCell(
+                label: 'Available balance',
+                value: '$currencySign${balance.toStringAsFixed(2)}',
+                icon: Icons.account_balance_wallet_outlined,
+                color: kPrimaryColor,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _DashboardMetricCell(
+                label: 'Earned this month',
+                value: '$currencySign${earned.toStringAsFixed(2)}',
+                icon: Icons.payments_outlined,
+                color: const Color(0xFF06AEF3),
+                onTap: () => const SellerTransaction().launch(context),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget? _buildNeedsAttention(BuildContext context) {
+    final delivered = _ov('delivered_awaiting_approval');
+    final onsite = _ov('onsite_attendance_jobs');
+    if (delivered <= 0 && onsite <= 0) return null;
+
+    return _buildCard(
+      title: 'Needs attention',
+      dropdown: const SizedBox.shrink(),
+      child: Column(
+        children: [
+          if (delivered > 0)
+            _AttentionRow(
+              icon: Icons.inbox_outlined,
+              text: delivered == 1
+                  ? '1 contract delivered — waiting for client approval'
+                  : '$delivered contracts delivered — waiting for client approval',
+              onTap: () => context.go('/seller/orders'),
+            ),
+          if (delivered > 0 && onsite > 0) const SizedBox(height: 8),
+          if (onsite > 0)
+            _AttentionRow(
+              icon: Icons.qr_code_scanner,
+              text: onsite == 1
+                  ? '1 on-site contract — clock in via Attendance'
+                  : '$onsite on-site contracts — use Attendance',
+              onTap: () => context.push('/seller/attendance'),
+            ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildQuickActions(BuildContext context) {
-    final actions = <({String label, IconData icon, Color color, VoidCallback onTap})>[
+    final shortcuts = [
       (
-        label: 'Find Jobs',
+        title: 'Find jobs',
+        subtitle: 'Browse open posts and send offers',
         icon: Icons.work_outline_rounded,
         color: kSecondaryColor,
         onTap: () => context.go('/seller/find-jobs'),
       ),
       (
-        label: 'Messages',
+        title: 'Messages',
+        subtitle: 'Chat with clients',
         icon: Icons.chat_bubble_outline_rounded,
         color: const Color(0xFF144BD6),
         onTap: () => context.go('/seller/chat'),
       ),
       (
-        label: 'Contracts',
+        title: 'Contracts',
+        subtitle: 'Active work and delivery',
         icon: Icons.description_outlined,
         color: const Color(0xFF06AEF3),
         onTap: () => context.go('/seller/orders'),
       ),
       (
-        label: 'Applications',
+        title: 'Applications',
+        subtitle: 'Track offers you submitted',
         icon: Icons.outgoing_mail,
         color: kPrimaryColor,
         onTap: () => context.push('/seller/applications'),
       ),
       (
-        label: 'Scan QR',
+        title: 'Attendance',
+        subtitle: 'Clock in on site with QR',
         icon: Icons.qr_code_scanner_rounded,
         color: const Color(0xFF2E7D32),
-        onTap: () => context.push('/seller/attendance/scan'),
+        onTap: () => context.push('/seller/attendance'),
       ),
     ];
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: kBorderColorTextField),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
-          ),
+    return _buildCard(
+      title: 'Shortcuts',
+      dropdown: const SizedBox.shrink(),
+      child: Column(
+        children: [
+          for (var i = 0; i < shortcuts.length; i++) ...[
+            if (i > 0)
+              const Divider(height: 1, thickness: 1, color: kBorderColorTextField),
+            _ShortcutRow(
+              title: shortcuts[i].title,
+              subtitle: shortcuts[i].subtitle,
+              icon: shortcuts[i].icon,
+              color: shortcuts[i].color,
+              onTap: shortcuts[i].onTap,
+            ),
+          ],
         ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: actions
-            .map(
-              (a) => Expanded(
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(14),
-                  onTap: a.onTap,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Column(
-                      children: [
-                        Container(
-                          height: 46,
-                          width: 46,
-                          decoration: BoxDecoration(
-                            color: a.color.withOpacity(0.12),
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          child: Icon(a.icon, color: a.color, size: 22),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          a.label,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.center,
-                          style: kTextStyle.copyWith(
-                            fontSize: 11.5,
-                            fontWeight: FontWeight.w600,
-                            color: kNeutralColor,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            )
-            .toList(),
       ),
     );
   }
@@ -918,8 +913,12 @@ class _SellerHomeLoading extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   Container(
-                    height: 96,
-                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(22), border: Border.all(color: kBorderColorTextField)),
+                    height: 220,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: kBorderColorTextField),
+                    ),
                   ),
                   const SizedBox(height: 18),
                   Container(
@@ -932,7 +931,7 @@ class _SellerHomeLoading extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   Container(
-                    height: 140,
+                    height: 168,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(16),
@@ -941,7 +940,7 @@ class _SellerHomeLoading extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   Container(
-                    height: 120,
+                    height: 88,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(16),
@@ -958,34 +957,178 @@ class _SellerHomeLoading extends StatelessWidget {
   }
 }
 
-class ChartLegend extends StatelessWidget {
-  const ChartLegend({
-    Key? key,
-    required this.iconColor,
-    required this.title,
-    required this.value,
-  }) : super(key: key);
-
-  final Color iconColor;
+class _ShortcutRow extends StatelessWidget {
   final String title;
-  final String value;
+  final String subtitle;
+  final IconData icon;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _ShortcutRow({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.color,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(Icons.circle, size: 16.0, color: iconColor),
-        const SizedBox(width: 10.0),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, style: kTextStyle.copyWith(color: kSubTitleColor)),
-            const SizedBox(height: 5.0),
-            Text(value, style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)),
-          ],
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(10),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+          child: Row(
+            children: [
+              Container(
+                height: 44,
+                width: 44,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: color, size: 22),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: kTextStyle.copyWith(
+                        color: kNeutralColor,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: kTextStyle.copyWith(
+                        color: kSubTitleColor,
+                        fontSize: 12,
+                        height: 1.25,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(Icons.chevron_right_rounded, color: kLightNeutralColor, size: 22),
+            ],
+          ),
         ),
-      ],
+      ),
+    );
+  }
+}
+
+class _DashboardMetricCell extends StatelessWidget {
+  final String label;
+  final String value;
+  final IconData icon;
+  final Color color;
+  final String? subtitle;
+  final VoidCallback? onTap;
+
+  const _DashboardMetricCell({
+    required this.label,
+    required this.value,
+    required this.icon,
+    required this.color,
+    this.subtitle,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: color.withValues(alpha: 0.06),
+      borderRadius: BorderRadius.circular(10),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(10),
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: color.withValues(alpha: 0.2)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(icon, size: 18, color: color),
+              const SizedBox(height: 6),
+              Text(
+                value,
+                style: kTextStyle.copyWith(
+                  color: kNeutralColor,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 18,
+                ),
+              ),
+              Text(
+                label,
+                style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 11),
+              ),
+              if (subtitle != null) ...[
+                const SizedBox(height: 2),
+                Text(
+                  subtitle!,
+                  style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 10),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _AttentionRow extends StatelessWidget {
+  final IconData icon;
+  final String text;
+  final VoidCallback onTap;
+
+  const _AttentionRow({
+    required this.icon,
+    required this.text,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: const Color(0xFFFFF8E1),
+      borderRadius: BorderRadius.circular(10),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(10),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          child: Row(
+            children: [
+              Icon(icon, color: const Color(0xFFF59E0B), size: 20),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  text,
+                  style: kTextStyle.copyWith(
+                    color: kNeutralColor,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              const Icon(Icons.chevron_right, color: Color(0xFFF59E0B), size: 20),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

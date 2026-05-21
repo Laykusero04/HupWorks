@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-
 import 'core/theme/app_theme.dart';
 import 'data/repositories/auth_repository.dart';
 import 'data/repositories/category_repository.dart';
@@ -32,7 +31,8 @@ class _HupWorksAppState extends State<HupWorksApp> {
   void initState() {
     super.initState();
     _authRepository = AuthRepository();
-    _authBloc = AuthBloc(authRepository: _authRepository)..add(AuthCheckRequested());
+    _authBloc = AuthBloc(authRepository: _authRepository)
+      ..add(AuthCheckRequested());
     _router = createRouter();
   }
 

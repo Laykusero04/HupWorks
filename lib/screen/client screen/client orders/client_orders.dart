@@ -38,6 +38,7 @@ class _ClientOrderListState extends State<ClientOrderList> {
   Future<void> _loadOrders() async {
     setState(() => _isLoading = true);
     try {
+      await OrdersService.expireStaleCancellationRequests();
       final orders = await OrdersService.getClientOrders(
         status: _selectedStatus == 'All' ? null : _selectedStatus.toLowerCase(),
       );
@@ -93,6 +94,12 @@ class _ClientOrderListState extends State<ClientOrderList> {
         return const _StatusStyle('Completed', Color(0xFF059669), Color(0xFFD1FAE5));
       case 'cancelled':
         return const _StatusStyle('Cancelled', Color(0xFFDC2626), Color(0xFFFEE2E2));
+      case 'cancellation_requested':
+        return const _StatusStyle(
+          'Cancel pending',
+          Color(0xFFD97706),
+          Color(0xFFFFF8E1),
+        );
       default:
         return _StatusStyle(status?.capitalize ?? 'Unknown', kLightNeutralColor, kDarkWhite);
     }
@@ -100,7 +107,10 @@ class _ClientOrderListState extends State<ClientOrderList> {
 
   @override
   Widget build(BuildContext context) {
-    final activeCount = _orders.where((o) => (o['status'] as String?)?.toLowerCase() == 'active').length;
+    final activeCount = _orders.where((o) {
+      final s = (o['status'] as String?)?.toLowerCase();
+      return s == 'active' || s == 'cancellation_requested';
+    }).length;
     return Scaffold(
       backgroundColor: kDarkWhite,
       body: Column(

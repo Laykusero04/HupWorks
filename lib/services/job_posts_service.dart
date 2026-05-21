@@ -76,6 +76,28 @@ class JobPostsService {
     }
   }
 
+  /// Whether the job post has a budget the freelancer can accept without bidding.
+  static bool hasPostedBudget(Map<String, dynamic>? jobPost) {
+    if (jobPost == null) return false;
+    return _parseMoney(jobPost['budget_min']) != null ||
+        _parseMoney(jobPost['budget_max']) != null;
+  }
+
+  /// Price + basis when the seller agrees to the client's posted rate (no custom bid).
+  /// Uses [budget_min] when set, otherwise [budget_max].
+  static ({double price, String basis})? agreedOfferFromJobPost(
+    Map<String, dynamic>? jobPost,
+  ) {
+    if (jobPost == null) return null;
+    final price = _parseMoney(jobPost['budget_min']) ??
+        _parseMoney(jobPost['budget_max']);
+    if (price == null || price <= 0) return null;
+    return (
+      price: price,
+      basis: normalizeBudgetBasis(jobPost['budget_basis']),
+    );
+  }
+
   /// Single seller offer amount (`job_offers.price` + `price_basis`).
   static String formatOfferAmountLine(Object? priceRaw, Object? basis) {
     final p = _parseMoney(priceRaw) ?? 0;
@@ -182,6 +204,7 @@ class JobPostsService {
     double? latitude,
     double? longitude,
     int workersNeeded = 1,
+    String? attendanceMode,
   }) async {
     final user = _client.auth.currentUser;
     if (user == null) throw Exception('Not logged in');
@@ -202,6 +225,7 @@ class JobPostsService {
       if (latitude != null) 'latitude': latitude,
       if (longitude != null) 'longitude': longitude,
       'workers_needed': workersNeeded,
+      if (attendanceMode != null) 'attendance_mode': attendanceMode,
     }).select().single();
 
     return data;

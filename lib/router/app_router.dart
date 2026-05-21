@@ -22,11 +22,13 @@ import '../screen/seller screen/seller authentication/seller_log_in.dart';
 import '../screen/seller screen/seller authentication/seller_sign_up.dart';
 import '../screen/seller screen/seller home/seller_home_screen.dart';
 import '../screen/seller screen/orders/seller_orders.dart';
+import '../screen/seller screen/orders/seller_order_details.dart';
 import '../screen/seller screen/profile/seller_profile.dart';
 import '../screen/seller screen/applications/seller_applications.dart';
 import '../screen/seller screen/buyer request/seller_buyer_request.dart';
 import '../screen/seller screen/seller messgae/chat_list.dart';
 import '../screen/attendance/attendance_scan_screen.dart';
+import '../screen/attendance/seller_attendance_hub_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _clientShellKey = GlobalKey<NavigatorState>();
@@ -235,9 +237,25 @@ GoRouter createRouter() {
         builder: (context, state) => const SellerApplications(),
       ),
       GoRoute(
+        path: '/seller/orders/:id',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => SellerOrderDetails(
+          orderId: state.pathParameters['id']!,
+        ),
+      ),
+      GoRoute(
+        path: '/seller/attendance',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => SellerAttendanceHubScreen(
+          highlightJobPostId: state.uri.queryParameters['jobPostId'],
+        ),
+      ),
+      GoRoute(
         path: '/seller/attendance/scan',
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => const AttendanceScanScreen(),
+        builder: (context, state) => AttendanceScanScreen(
+          hintJobPostId: state.uri.queryParameters['jobPostId'],
+        ),
       ),
     ],
   );

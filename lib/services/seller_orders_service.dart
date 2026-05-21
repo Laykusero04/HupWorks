@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:freelancer/core/utils/job_offer_delivery.dart';
 import 'package:freelancer/services/chat_service.dart';
 import 'package:freelancer/services/job_posts_service.dart';
+import 'package:freelancer/services/profile_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SellerOrdersService {
@@ -21,7 +22,12 @@ class SellerOrdersService {
         .eq('seller_id', user.id);
 
     if (status != null) {
-      query = query.eq('status', status.toLowerCase());
+      final s = status.toLowerCase();
+      if (s == 'active') {
+        query = query.inFilter('status', ['active', 'cancellation_requested']);
+      } else {
+        query = query.eq('status', s);
+      }
     }
 
     final data = await query.order('created_at', ascending: false);
@@ -37,7 +43,7 @@ class SellerOrdersService {
           'client:profiles!client_id(name, profile_image_url), '
           'job_offers!job_offer_id('
           'id, cover_letter, delivery_time, delivery_time_unit, price_basis, '
-          'job_posts(title, description, job_type, location, location_type, workers_needed)'
+          'job_posts(id, title, description, job_type, location, location_type, attendance_mode, workers_needed)'
           ')',
         )
         .eq('id', orderId)
@@ -51,6 +57,70 @@ class SellerOrdersService {
       'status': status,
       if (status == 'completed') 'completed_at': DateTime.now().toIso8601String(),
     }).eq('id', orderId);
+  }
+
+  /// Freelancer requests contract cancellation (client must approve within 48h).
+  static Future<void> requestCancellation({
+    required String orderId,
+    required String reasonCode,
+    required String reasonNote,
+  }) async {
+    await _client.rpc(
+      'request_order_cancellation',
+      params: {
+        'p_order_id': orderId,
+        'p_reason_code': reasonCode,
+        'p_reason_note': reasonNote.trim(),
+      },
+    );
+  }
+
+  /// Freelancer withdraws a pending cancellation request.
+  static Future<void> withdrawCancellation(String orderId) async {
+    await _client.rpc(
+      'withdraw_order_cancellation',
+      params: {'p_order_id': orderId},
+    );
+  }
+
+  /// Best-effort chat message to client when cancellation is requested.
+  static Future<void> notifyClientCancellationRequest({
+    required String orderId,
+    required String clientId,
+    required String reasonCode,
+    required String reasonNote,
+  }) async {
+    try {
+      final conversation = await ChatService.getOrCreateJobApplicationConversation(
+        buyerUserId: clientId,
+      );
+      final label = _cancellationReasonLabel(reasonCode);
+      await ChatService.sendMessage(
+        conversationId: conversation['id'] as String,
+        content:
+            '📋 Cancellation requested for contract #${orderId.substring(0, 8).toUpperCase()}\n'
+            'Reason: $label\n'
+            '${reasonNote.trim()}\n\n'
+            'Please open Contracts to approve or keep the contract active (48h to respond).',
+      );
+    } catch (_) {}
+  }
+
+  static String _cancellationReasonLabel(String code) {
+    switch (code) {
+      case 'schedule_conflict':
+        return 'Schedule conflict';
+      case 'scope_mismatch':
+        return 'Scope does not match agreement';
+      case 'site_or_safety':
+        return 'Site or safety concern';
+      case 'personal_emergency':
+        return 'Personal emergency';
+      case 'client_issue':
+        return 'Issue with client / communication';
+      default:
+        return 'Other';
+    }
   }
 
   /// Deliver order with message and optional attachment
@@ -88,17 +158,23 @@ class SellerOrdersService {
   static Future<List<Map<String, dynamic>>> getBuyerRequests() async {
     final data = await _client
         .from('job_posts')
-        .select('*, categories(name), profiles:client_id(name, profile_image_url)')
+        .select(
+          '*, categories(name), '
+          'profiles:client_id(id, name, profile_image_url, rating, created_at, country, city)',
+        )
         .eq('status', 'open')
         .order('created_at', ascending: false);
     return List<Map<String, dynamic>>.from(data);
   }
 
-  /// Fetch single job post details with offer count
+  /// Fetch single job post details with offer count + client public stats.
   static Future<Map<String, dynamic>> getBuyerRequestDetails(String jobPostId) async {
     final data = await _client
         .from('job_posts')
-        .select('*, categories(name), profiles:client_id(name, profile_image_url)')
+        .select(
+          '*, categories(name), '
+          'profiles:client_id(id, name, profile_image_url, rating, created_at, country, city, bio)',
+        )
         .eq('id', jobPostId)
         .single();
 
@@ -120,6 +196,32 @@ class SellerOrdersService {
           .maybeSingle();
       data['my_offer'] = mine;
     }
+
+    final clientId = data['client_id'] as String?;
+    if (clientId != null) {
+      final jobs = await _client
+          .from('job_posts')
+          .select('id')
+          .eq('client_id', clientId);
+      data['client_job_posts_count'] = (jobs as List).length;
+
+      final reviewStats = await ProfileService.getReviewStats(clientId);
+      data['client_review_count'] = reviewStats.reviewCount;
+      data['client_rating'] = reviewStats.reviewCount > 0
+          ? reviewStats.rating
+          : ProfileService.parseRatingValue(
+              (data['profiles'] as Map<String, dynamic>?)?['rating'],
+            ) ??
+              0.0;
+
+      final embedded = data['profiles'];
+      if (embedded is Map<String, dynamic>) {
+        embedded['review_count'] = reviewStats.reviewCount;
+        embedded['rating'] = data['client_rating'];
+        embedded['job_posts_count'] = data['client_job_posts_count'];
+      }
+    }
+
     return data;
   }
 
@@ -133,6 +235,7 @@ class SellerOrdersService {
     int? deliveryTime,
     String? deliveryTimeUnit,
     String? coverLetter,
+    bool agreedToPostedRate = false,
   }) async {
     final user = _client.auth.currentUser;
     if (user == null) throw Exception('Not logged in');
@@ -187,9 +290,20 @@ class SellerOrdersService {
         buyerUserId: job['client_id'] as String,
       );
 
-      final body = StringBuffer()
-        ..writeln('📋 New bid for "${job['title']}"')
-        ..writeln('Amount: ${JobPostsService.formatOfferAmountLine(price, insert['price_basis'])}');
+      final body = StringBuffer();
+      if (agreedToPostedRate) {
+        body
+          ..writeln('📋 Application for "${job['title']}"')
+          ..writeln(
+            'Agreed to client\'s posted rate: ${JobPostsService.formatOfferAmountLine(price, insert['price_basis'])}',
+          );
+      } else {
+        body
+          ..writeln('📋 New bid for "${job['title']}"')
+          ..writeln(
+            'Amount: ${JobPostsService.formatOfferAmountLine(price, insert['price_basis'])}',
+          );
+      }
       if (coverLetter != null && coverLetter.trim().isNotEmpty) {
         body
           ..writeln()

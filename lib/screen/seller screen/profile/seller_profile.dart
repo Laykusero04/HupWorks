@@ -13,7 +13,7 @@ import '../../widgets/profile_menu_list_tile.dart';
 import '../../widgets/profile_rating_summary.dart';
 import '../../widgets/profile_skeleton.dart';
 import '../add payment method/seller_add_payment_method.dart';
-import '../applications/seller_applications.dart';
+import 'package:go_router/go_router.dart';
 import '../favourite/seller_favourite_list.dart';
 import '../report/seller_report.dart';
 import '../setting/seller_invite.dart';
@@ -157,10 +157,22 @@ class _SellerProfileState extends State<SellerProfile> {
                         },
                       ),
                       ProfileMenuListTile(
+                        icon: Icons.schedule_rounded,
+                        title: 'Attendance',
+                        accent: ProfileMenuAccent.secondary,
+                        onTap: () {
+                          Navigator.pop(context);
+                          context.push('/seller/attendance');
+                        },
+                      ),
+                      ProfileMenuListTile(
                         icon: IconlyBold.paper,
                         title: 'My Applications',
                         accent: ProfileMenuAccent.secondary,
-                        onTap: () => const SellerApplications().launch(context),
+                        onTap: () {
+                          Navigator.pop(context);
+                          context.push('/seller/applications');
+                        },
                       ),
                       ProfileMenuListTile(
                         icon: IconlyBold.wallet,

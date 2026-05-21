@@ -1,23 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/services/attendance_service.dart';
+import 'package:freelancer/services/job_posts_service.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../widgets/constant.dart';
 import 'attendance_confirm_screen.dart';
 
 class AttendanceScanScreen extends StatefulWidget {
-  const AttendanceScanScreen({super.key});
+  final String? hintJobPostId;
+
+  const AttendanceScanScreen({super.key, this.hintJobPostId});
 
   @override
   State<AttendanceScanScreen> createState() => _AttendanceScanScreenState();
 }
 
 class _AttendanceScanScreenState extends State<AttendanceScanScreen> {
+  String? _hintTitle;
   final MobileScannerController _controller = MobileScannerController(
     detectionSpeed: DetectionSpeed.noDuplicates,
     facing: CameraFacing.back,
   );
   bool _isProcessing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadHint();
+  }
+
+  Future<void> _loadHint() async {
+    final id = widget.hintJobPostId;
+    if (id == null || id.isEmpty) return;
+    try {
+      final post = await JobPostsService.getJobPostDetails(id);
+      if (mounted) {
+        setState(() => _hintTitle = post['title'] as String?);
+      }
+    } catch (_) {}
+  }
 
   @override
   void dispose() {
@@ -96,12 +118,42 @@ class _AttendanceScanScreenState extends State<AttendanceScanScreen> {
                 color: Colors.black54,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Text(
-                _isProcessing
-                    ? 'Loading job details…'
-                    : 'Point your camera at the attendance QR posted at the job site.',
-                textAlign: TextAlign.center,
-                style: kTextStyle.copyWith(color: kWhite, fontSize: 14),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (_hintTitle != null) ...[
+                    Text(
+                      'Scanning for: $_hintTitle',
+                      textAlign: TextAlign.center,
+                      style: kTextStyle.copyWith(
+                        color: kWhite,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                  Text(
+                    _isProcessing
+                        ? 'Loading job details…'
+                        : 'Point your camera at the attendance QR posted at the job site.',
+                    textAlign: TextAlign.center,
+                    style: kTextStyle.copyWith(color: kWhite, fontSize: 14),
+                  ),
+                  const SizedBox(height: 12),
+                  TextButton(
+                    onPressed: _isProcessing
+                        ? null
+                        : () => context.push('/seller/attendance'),
+                    child: Text(
+                      'View my on-site jobs',
+                      style: kTextStyle.copyWith(
+                        color: kWhite,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

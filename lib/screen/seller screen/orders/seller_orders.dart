@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/order_contract_display.dart';
+import 'package:go_router/go_router.dart';
+import 'package:freelancer/services/orders_service.dart';
 import 'package:freelancer/services/seller_orders_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../../router/app_router.dart';
 import '../../widgets/constant.dart';
 import '../../widgets/shell_tab_header.dart';
-import 'seller_order_details.dart';
 
 class SellerOrderList extends StatefulWidget {
   const SellerOrderList({Key? key}) : super(key: key);
@@ -30,6 +31,7 @@ class _SellerOrderListState extends State<SellerOrderList> {
   Future<void> _loadOrders() async {
     setState(() => _isLoading = true);
     try {
+      await OrdersService.expireStaleCancellationRequests();
       final orders = await SellerOrdersService.getSellerOrders(
         status: _selectedStatus == 'All' ? null : _selectedStatus.toLowerCase(),
       );
@@ -75,6 +77,12 @@ class _SellerOrderListState extends State<SellerOrderList> {
         return const _StatusStyle('Completed', Color(0xFF059669), Color(0xFFD1FAE5));
       case 'cancelled':
         return _StatusStyle('Cancelled', const Color(0xFFDC2626), const Color(0xFFFEE2E2));
+      case 'cancellation_requested':
+        return const _StatusStyle(
+          'Cancel pending',
+          Color(0xFFD97706),
+          Color(0xFFFFF8E1),
+        );
       default:
         return _StatusStyle(status?.capitalize ?? 'Unknown', kLightNeutralColor, kDarkWhite);
     }
@@ -83,7 +91,10 @@ class _SellerOrderListState extends State<SellerOrderList> {
   @override
   Widget build(BuildContext context) {
     final primary = Theme.of(context).colorScheme.primary;
-    final activeCount = _orders.where((o) => (o['status'] as String?)?.toLowerCase() == 'active').length;
+    final activeCount = _orders.where((o) {
+      final s = (o['status'] as String?)?.toLowerCase();
+      return s == 'active' || s == 'cancellation_requested';
+    }).length;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Column(
@@ -195,7 +206,14 @@ class _SellerOrderListState extends State<SellerOrderList> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: GestureDetector(
-        onTap: () async { await SellerOrderDetails(orderId: order['id']).launch(context); _loadOrders(); },
+        onTap: () {
+          final id = order['id'] as String?;
+          if (id != null) {
+            context.push('/seller/orders/$id').then((_) {
+              if (mounted) _loadOrders();
+            });
+          }
+        },
         child: Container(
           decoration: BoxDecoration(
             color: kWhite,

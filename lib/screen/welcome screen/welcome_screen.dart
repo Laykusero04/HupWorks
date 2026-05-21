@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:freelancer/screen/widgets/auth/unified_log_in.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
+import 'package:go_router/go_router.dart';
 
 import '../app_config/app_config.dart';
-import '../client screen/client_authentication/client_sign_up.dart';
-import '../seller screen/seller authentication/seller_sign_up.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -15,20 +13,15 @@ class WelcomeScreen extends StatefulWidget {
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
   void _goToSignUp() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) =>
-            isFreelancer ? const SellerSignUp() : const ClientSignUp(),
-      ),
-    );
+    if (isFreelancer) {
+      context.push('/auth/seller/signup');
+    } else {
+      context.push('/auth/client/signup');
+    }
   }
 
   void _goToLogin() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const UnifiedLogIn()),
-    );
+    context.push('/auth/seller/login');
   }
 
   @override

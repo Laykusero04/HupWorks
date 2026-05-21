@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/auth_navigation.dart';
 import 'package:freelancer/screen/client%20screen/client_authentication/client_forgot_password.dart';
 import 'package:freelancer/screen/welcome%20screen/welcome_screen.dart';
 import 'package:freelancer/screen/widgets/auth/auth_ui.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
 import 'package:freelancer/services/auth_service.dart';
+import 'package:go_router/go_router.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../app_config/app_config.dart';
@@ -45,6 +47,9 @@ class _UnifiedLogInState extends State<UnifiedLogIn> {
 
     try {
       await AuthService.signIn(email: email, password: password);
+      if (mounted) {
+        await AuthNavigation.goToHomeAfterAuth(context);
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -63,7 +68,7 @@ class _UnifiedLogInState extends State<UnifiedLogIn> {
       subtitle: 'Sign in to continue to HupWorks.',
       accentColor: kPrimaryColor,
       heroImage: AppInfo.onBoard1,
-      onBack: () => Navigator.pop(context),
+      onBack: () => Navigator.of(context).maybePop(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

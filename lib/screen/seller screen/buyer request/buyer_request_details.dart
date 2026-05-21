@@ -6,6 +6,7 @@ import 'package:nb_utils/nb_utils.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../widgets/constant.dart';
+import '../../widgets/job_client_info_card.dart';
 import '../../widgets/job_location_map_preview.dart';
 import 'create_customer_offer.dart';
 
@@ -53,7 +54,6 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
   Widget build(BuildContext context) {
     if (_isLoading) return const Scaffold(backgroundColor: kDarkWhite, body: Center(child: CircularProgressIndicator(color: kPrimaryColor)));
 
-    final buyer = _jobPost?['profiles'] as Map<String, dynamic>?;
     final category = (_jobPost?['categories'] as Map<String, dynamic>?)?['name'] ?? 'General';
     final title = _jobPost?['title'] ?? 'Job Post';
     final description = _jobPost?['description'] ?? '';
@@ -121,7 +121,13 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(applyBlock)));
                       }
                     : () async {
-                        await CreateCustomerOffer(jobPostId: widget.jobPostId, jobTitle: title).launch(context);
+                        await CreateCustomerOffer(
+                          jobPostId: widget.jobPostId,
+                          jobTitle: title,
+                          budgetMin: budgetMin,
+                          budgetMax: budgetMax,
+                          budgetBasis: _jobPost?['budget_basis'],
+                        ).launch(context);
                         _loadDetails();
                       },
                 buttonTextColor: kWhite,
@@ -142,25 +148,7 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 15.0),
-                // Buyer info
-                Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 25,
-                      backgroundImage: buyer?['profile_image_url'] != null
-                          ? NetworkImage(buyer!['profile_image_url'])
-                          : const AssetImage('images/profile1.png') as ImageProvider,
-                    ),
-                    const SizedBox(width: 10),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(buyer?['name'] ?? 'Buyer', style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)),
-                        Text(_formatDate(_jobPost?['created_at']), style: kTextStyle.copyWith(color: kLightNeutralColor)),
-                      ],
-                    ),
-                  ],
-                ),
+                JobClientInfoCard.fromJobPost(_jobPost),
                 const SizedBox(height: 15.0),
 
                 // Title
@@ -188,7 +176,7 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
                 const SizedBox(height: 8.0),
                 _row('Offers Sent', '$offerCount'),
                 const SizedBox(height: 8.0),
-                _row('Date', _formatDate(_jobPost?['created_at'])),
+                _row('Job posted', _formatDate(_jobPost?['created_at'])),
                 SizedBox(height: bottomLift + 24),
               ],
             ),

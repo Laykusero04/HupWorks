@@ -65,8 +65,10 @@ class AttendanceResolveResult extends Equatable {
   final double? latitude;
   final double? longitude;
   final String clientName;
+  final String attendanceMode;
   final String suggestedAction;
   final bool isClockedIn;
+  final bool checkedInToday;
   final String? lastPunchType;
   final DateTime? lastPunchedAt;
   final List<AttendancePunchSummary> todayPunches;
@@ -80,8 +82,10 @@ class AttendanceResolveResult extends Equatable {
     this.latitude,
     this.longitude,
     required this.clientName,
+    this.attendanceMode = 'qr_in_out',
     required this.suggestedAction,
     required this.isClockedIn,
+    this.checkedInToday = false,
     this.lastPunchType,
     this.lastPunchedAt,
     this.todayPunches = const [],
@@ -108,7 +112,9 @@ class AttendanceResolveResult extends Equatable {
       latitude: (json['latitude'] as num?)?.toDouble(),
       longitude: (json['longitude'] as num?)?.toDouble(),
       clientName: json['client_name'] as String? ?? 'Client',
+      attendanceMode: json['attendance_mode'] as String? ?? 'qr_in_out',
       suggestedAction: json['suggested_action'] as String? ?? 'in',
+      checkedInToday: (json['checked_in_today'] as bool?) ?? false,
       isClockedIn: (json['is_clocked_in'] as bool?) ?? false,
       lastPunchType: json['last_punch_type'] as String?,
       lastPunchedAt: json['last_punched_at'] != null
@@ -130,7 +136,9 @@ class AttendanceResolveResult extends Equatable {
         latitude,
         longitude,
         clientName,
+        attendanceMode,
         suggestedAction,
+        checkedInToday,
         isClockedIn,
         lastPunchType,
         lastPunchedAt,

@@ -194,6 +194,51 @@ class ProfileService {
     return Map<String, dynamic>.from(profile);
   }
 
+  /// Live review stats for any profile (client or seller).
+  static Future<({double rating, int reviewCount})> getReviewStats(
+    String profileId,
+  ) async {
+    final stats = await _reviewStatsForProfile(profileId);
+    if (stats.count <= 0) {
+      return (rating: 0.0, reviewCount: 0);
+    }
+    return (
+      rating: double.parse((stats.sum / stats.count).toStringAsFixed(1)),
+      reviewCount: stats.count,
+    );
+  }
+
+  /// Public client profile for sellers (find jobs, job details).
+  static Future<Map<String, dynamic>?> getPublicClientProfile(
+    String clientId,
+  ) async {
+    final data = await _client
+        .from('profiles')
+        .select(
+          'id, role, name, email, phone, country, city, gender, '
+          'profile_image_url, bio, rating, created_at',
+        )
+        .eq('id', clientId)
+        .eq('role', 'client')
+        .maybeSingle();
+    if (data == null) return null;
+
+    final profile = Map<String, dynamic>.from(data);
+    final reviewStats = await getReviewStats(clientId);
+    profile['review_count'] = reviewStats.reviewCount;
+    profile['rating'] = reviewStats.reviewCount > 0
+        ? reviewStats.rating
+        : (parseRatingValue(profile['rating']) ?? 0.0);
+
+    final jobs = await _client
+        .from('job_posts')
+        .select('id')
+        .eq('client_id', clientId);
+    profile['job_posts_count'] = (jobs as List).length;
+
+    return profile;
+  }
+
   /// Public seller profile for clients (Talent browse, service details).
   static Future<Map<String, dynamic>?> getPublicSellerProfile(String sellerId) async {
     final data = await _client

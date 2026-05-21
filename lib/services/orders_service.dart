@@ -38,20 +38,25 @@ class OrdersService {
 
     final deadline = DateTime.now().add(Duration(days: deliveryDays));
 
-    final data = await _client.from('orders').insert({
-      'service_id': serviceId,
-      'client_id': user.id,
-      'seller_id': sellerId,
-      'price': price,
-      'status': 'pending',
-      'delivery_deadline': deadline.toIso8601String(),
-    }).select().single();
+    final data = await _client
+        .from('orders')
+        .insert({
+          'service_id': serviceId,
+          'client_id': user.id,
+          'seller_id': sellerId,
+          'price': price,
+          'status': 'pending',
+          'delivery_deadline': deadline.toIso8601String(),
+        })
+        .select()
+        .single();
 
     return data;
   }
 
   /// Fetch client orders, optionally filtered by status
-  static Future<List<Map<String, dynamic>>> getClientOrders({String? status}) async {
+  static Future<List<Map<String, dynamic>>> getClientOrders(
+      {String? status}) async {
     final user = _client.auth.currentUser;
     if (user == null) return [];
 
@@ -65,7 +70,12 @@ class OrdersService {
         .eq('client_id', user.id);
 
     if (status != null) {
-      query = query.eq('status', status.toLowerCase());
+      final s = status.toLowerCase();
+      if (s == 'active') {
+        query = query.inFilter('status', ['active', 'cancellation_requested']);
+      } else {
+        query = query.eq('status', s);
+      }
     }
 
     final data = await query.order('created_at', ascending: false);
@@ -81,7 +91,7 @@ class OrdersService {
           'seller:profiles!seller_id(id, name, profile_image_url), '
           'job_offers!job_offer_id('
           'id, cover_letter, delivery_time, delivery_time_unit, price_basis, '
-          'job_posts(title, description, job_type, location, workers_needed)'
+          'job_posts(id, title, description, job_type, location, location_type, attendance_mode, workers_needed)'
           '), '
           'reviews(id, reviewer_id, rating, comment, created_at)',
         )
@@ -165,7 +175,29 @@ class OrdersService {
   static Future<void> updateOrderStatus(String orderId, String status) async {
     await _client.from('orders').update({
       'status': status,
-      if (status == 'completed') 'completed_at': DateTime.now().toIso8601String(),
+      if (status == 'completed')
+        'completed_at': DateTime.now().toIso8601String(),
     }).eq('id', orderId);
+  }
+
+  /// Client approves or declines a freelancer cancellation request.
+  static Future<void> respondToCancellation({
+    required String orderId,
+    required bool approve,
+  }) async {
+    await _client.rpc(
+      'respond_order_cancellation',
+      params: {
+        'p_order_id': orderId,
+        'p_approve': approve,
+      },
+    );
+  }
+
+  /// Expire cancellation requests older than 48h (call on order list/details load).
+  static Future<void> expireStaleCancellationRequests() async {
+    try {
+      await _client.rpc('expire_stale_cancellation_requests');
+    } catch (_) {}
   }
 }

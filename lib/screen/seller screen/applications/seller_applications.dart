@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/services/chat_service.dart';
+import 'package:freelancer/services/attendance_service.dart';
+import 'package:freelancer/services/hire_onboarding_service.dart';
 import 'package:freelancer/services/job_posts_service.dart';
 import 'package:freelancer/services/seller_orders_service.dart';
+import 'package:go_router/go_router.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../widgets/constant.dart';
@@ -27,6 +30,20 @@ class _SellerApplicationsState extends State<SellerApplications> {
   Future<void> _load() async {
     try {
       final apps = await SellerOrdersService.getMyApplications();
+      for (final app in apps) {
+        if ((app['status'] as String?)?.toLowerCase() != 'accepted') continue;
+        final offerId = app['id'] as String?;
+        if (offerId == null) continue;
+        final orderId = await HireOnboardingService.getOrderIdForJobOffer(offerId);
+        if (orderId == null) continue;
+        app['order_id'] = orderId;
+        final packet = await HireOnboardingService.getPacketForOrder(
+          orderId,
+          sellerView: true,
+        );
+        app['instructions_pending'] =
+            packet != null && packet.isPublished && !packet.acknowledged;
+      }
       if (mounted) {
         setState(() {
           _applications = apps;
@@ -221,6 +238,70 @@ class _SellerApplicationsState extends State<SellerApplications> {
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
                                       style: kTextStyle.copyWith(color: kSubTitleColor),
+                                    ),
+                                  ],
+                                  if ((app['status'] as String?)?.toLowerCase() ==
+                                          'accepted' &&
+                                      AttendanceService.isOnsiteJob(
+                                        jobPost,
+                                      )) ...[
+                                    const SizedBox(height: 8),
+                                    InkWell(
+                                      onTap: () => context.push(
+                                        '/seller/attendance?jobPostId=${jobPost?['id']}',
+                                      ),
+                                      child: Container(
+                                        width: double.infinity,
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 10,
+                                          vertical: 8,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: kDarkWhite,
+                                          borderRadius: BorderRadius.circular(8),
+                                          border: Border.all(
+                                            color: kBorderColorTextField,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          'Open attendance',
+                                          style: kTextStyle.copyWith(
+                                            color: kPrimaryColor,
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                  if (app['instructions_pending'] == true) ...[
+                                    const SizedBox(height: 8.0),
+                                    InkWell(
+                                      onTap: () async {
+                                        final orderId = app['order_id'] as String?;
+                                        if (orderId == null) return;
+                                        context.push('/seller/orders/$orderId');
+                                        if (mounted) _load();
+                                      },
+                                      child: Container(
+                                        width: double.infinity,
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 10,
+                                          vertical: 8,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFE8F5E9),
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                        child: Text(
+                                          'Instructions ready — tap to read',
+                                          style: kTextStyle.copyWith(
+                                            color: const Color(0xFF2E7D32),
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
                                     ),
                                   ],
                                 ],

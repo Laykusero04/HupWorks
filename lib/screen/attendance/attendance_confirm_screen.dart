@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/attendance_format.dart';
+import 'package:freelancer/core/utils/attendance_mode.dart';
 import 'package:freelancer/data/models/attendance_punch_model.dart';
 import 'package:freelancer/services/attendance_service.dart';
 
@@ -60,11 +61,19 @@ class _AttendanceConfirmScreenState extends State<AttendanceConfirmScreen> {
 
   String get _statusText {
     final r = widget.resolve;
+    if (AttendanceMode.normalize(r.attendanceMode) == AttendanceMode.qrOnce) {
+      if (r.checkedInToday) return 'Already checked in today';
+      return 'Ready for daily check-in';
+    }
     if (r.isClockedIn && r.lastPunchedAt != null) {
       return 'Clocked in at ${AttendanceFormat.timeOfDay(r.lastPunchedAt!)}';
     }
     return 'Not clocked in today';
   }
+
+  bool get _isQrOnceMode =>
+      AttendanceMode.normalize(widget.resolve.attendanceMode) ==
+      AttendanceMode.qrOnce;
 
   @override
   Widget build(BuildContext context) {
@@ -195,40 +204,56 @@ class _AttendanceConfirmScreenState extends State<AttendanceConfirmScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: _PunchTypeChip(
-                    label: 'Clock in',
-                    selected: primaryIsIn,
-                    color: const Color(0xFF2E7D32),
-                    onTap: () => setState(() => _selectedPunchType = 'in'),
-                  ),
+            if (_isQrOnceMode) ...[
+              if (r.checkedInToday)
+                Text(
+                  'You have already checked in today for this job.',
+                  style: kTextStyle.copyWith(color: kSubTitleColor, height: 1.35),
+                )
+              else
+                Text(
+                  'This job uses one check-in scan per day (no clock-out scan).',
+                  style: kTextStyle.copyWith(color: kSubTitleColor, height: 1.35),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _PunchTypeChip(
-                    label: 'Clock out',
-                    selected: !primaryIsIn,
-                    color: Colors.orange,
-                    onTap: () => setState(() => _selectedPunchType = 'out'),
+            ] else ...[
+              Row(
+                children: [
+                  Expanded(
+                    child: _PunchTypeChip(
+                      label: 'Clock in',
+                      selected: primaryIsIn,
+                      color: const Color(0xFF2E7D32),
+                      onTap: () => setState(() => _selectedPunchType = 'in'),
+                    ),
                   ),
-                ),
-              ],
-            ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _PunchTypeChip(
+                      label: 'Clock out',
+                      selected: !primaryIsIn,
+                      color: Colors.orange,
+                      onTap: () => setState(() => _selectedPunchType = 'out'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
             const SizedBox(height: 24),
             if (_isSubmitting)
               const Center(child: CircularProgressIndicator(color: kPrimaryColor))
             else
               ButtonGlobalWithoutIcon(
-                buttontext: AttendanceFormat.punchLabel(_selectedPunchType),
+                buttontext: _isQrOnceMode
+                    ? 'Check in for today'
+                    : AttendanceFormat.punchLabel(_selectedPunchType),
                 buttonDecoration: kButtonDecoration.copyWith(
                   color: primaryIsIn ? const Color(0xFF2E7D32) : Colors.orange,
                 ),
                 buttonTextColor: kWhite,
-                onPressed: _submit,
+                onPressed: (r.checkedInToday && _isQrOnceMode) ? () {} : _submit,
               ),
-            if (r.suggestClockIn != (_selectedPunchType == 'in')) ...[
+            if (!_isQrOnceMode &&
+                r.suggestClockIn != (_selectedPunchType == 'in')) ...[
               const SizedBox(height: 12),
               Center(
                 child: TextButton(

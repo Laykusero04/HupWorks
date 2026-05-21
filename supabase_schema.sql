@@ -257,6 +257,8 @@ create table public.job_posts (
   job_type text not null default 'gig' check (job_type in ('gig', 'full_time', 'part_time')),
   location text,
   location_type text check (location_type in ('On-site', 'Remote')),
+  attendance_mode text not null default 'qr_in_out'
+    check (attendance_mode in ('qr_in_out', 'qr_once', 'self_report', 'disabled')),
   latitude double precision,
   longitude double precision,
   workers_needed int not null default 1 check (workers_needed >= 1),
@@ -604,6 +606,150 @@ create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
 
+-- ==================
+-- HIRE ONBOARDING (per-order first-day instructions)
+-- ==================
+
+create or replace function public._hire_onboarding_default_sections()
+returns jsonb
+language sql
+immutable
+as $$
+  select jsonb_build_array(
+    jsonb_build_object('key', 'where', 'title', 'Where to go', 'body', ''),
+    jsonb_build_object('key', 'when', 'title', 'When to arrive', 'body', ''),
+    jsonb_build_object('key', 'who', 'title', 'Who to contact', 'body', ''),
+    jsonb_build_object('key', 'access', 'title', 'Building access', 'body', ''),
+    jsonb_build_object('key', 'rules', 'title', 'Site rules', 'body', ''),
+    jsonb_build_object('key', 'attendance', 'title', 'Attendance', 'body', ''),
+    jsonb_build_object('key', 'emergency', 'title', 'Emergency', 'body', '')
+  );
+$$;
+
+create table public.hire_onboarding_packets (
+  id uuid primary key default gen_random_uuid(),
+  order_id uuid not null unique references public.orders(id) on delete cascade,
+  client_id uuid not null references public.profiles(id) on delete cascade,
+  seller_id uuid not null references public.profiles(id) on delete cascade,
+  status text not null default 'draft' check (status in ('draft', 'published')),
+  required_ack boolean not null default true,
+  sections jsonb not null default public._hire_onboarding_default_sections(),
+  published_at timestamptz,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+alter table public.hire_onboarding_packets enable row level security;
+
+create policy "Clients manage own hire onboarding packets"
+  on public.hire_onboarding_packets for all
+  using (auth.uid() = client_id) with check (auth.uid() = client_id);
+
+create policy "Sellers view published hire onboarding packets"
+  on public.hire_onboarding_packets for select
+  using (auth.uid() = seller_id and status = 'published');
+
+create table public.hire_onboarding_acknowledgments (
+  id uuid primary key default gen_random_uuid(),
+  order_id uuid not null references public.orders(id) on delete cascade,
+  seller_id uuid not null references public.profiles(id) on delete cascade,
+  acknowledged_at timestamptz not null default now(),
+  unique (order_id, seller_id)
+);
+
+alter table public.hire_onboarding_acknowledgments enable row level security;
+
+create policy "Order participants view hire onboarding acks"
+  on public.hire_onboarding_acknowledgments for select
+  using (
+    auth.uid() in (
+      select client_id from public.orders where id = order_id
+      union
+      select seller_id from public.orders where id = order_id
+    )
+  );
+
+create or replace function public.create_hire_onboarding_draft(p_order_id uuid)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_client uuid;
+  v_seller uuid;
+  v_packet_id uuid;
+begin
+  select client_id, seller_id into v_client, v_seller from public.orders where id = p_order_id;
+  if not found then raise exception 'Order not found'; end if;
+  if v_client is distinct from auth.uid() then raise exception 'Not authorized'; end if;
+  select id into v_packet_id from public.hire_onboarding_packets where order_id = p_order_id;
+  if found then return v_packet_id; end if;
+  insert into public.hire_onboarding_packets (order_id, client_id, seller_id, sections)
+  values (p_order_id, v_client, v_seller, public._hire_onboarding_default_sections())
+  returning id into v_packet_id;
+  return v_packet_id;
+end;
+$$;
+
+grant execute on function public.create_hire_onboarding_draft(uuid) to authenticated;
+
+create or replace function public.publish_hire_onboarding(p_packet_id uuid)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_packet record;
+  v_job_title text;
+begin
+  select p.id, p.order_id, p.client_id, p.seller_id, p.status into v_packet
+  from public.hire_onboarding_packets p where p.id = p_packet_id;
+  if not found then raise exception 'Onboarding packet not found'; end if;
+  if v_packet.client_id is distinct from auth.uid() then raise exception 'Not authorized'; end if;
+  update public.hire_onboarding_packets
+  set status = 'published', published_at = now(), updated_at = now() where id = p_packet_id;
+  select coalesce(jp.title, 'your contract') into v_job_title
+  from public.orders o
+  left join public.job_offers jo on jo.id = o.job_offer_id
+  left join public.job_posts jp on jp.id = jo.job_post_id
+  where o.id = v_packet.order_id;
+  perform public.create_notification(
+    v_packet.seller_id, 'First-day instructions',
+    coalesce('Read site instructions for "' || v_job_title || '".', 'Your client published first-day instructions.'),
+    'hire_onboarding', v_packet.order_id
+  );
+end;
+$$;
+
+grant execute on function public.publish_hire_onboarding(uuid) to authenticated;
+
+create or replace function public.acknowledge_hire_onboarding(p_order_id uuid)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_seller uuid;
+  v_status text;
+begin
+  select seller_id into v_seller from public.orders where id = p_order_id;
+  if not found then raise exception 'Order not found'; end if;
+  if v_seller is distinct from auth.uid() then raise exception 'Not authorized'; end if;
+  select status into v_status from public.hire_onboarding_packets where order_id = p_order_id;
+  if not found or v_status <> 'published' then
+    raise exception 'No published instructions for this contract';
+  end if;
+  insert into public.hire_onboarding_acknowledgments (order_id, seller_id)
+  values (p_order_id, v_seller)
+  on conflict (order_id, seller_id) do update set acknowledged_at = now();
+end;
+$$;
+
+grant execute on function public.acknowledge_hire_onboarding(uuid) to authenticated;
+
 -- ============================================
 -- ACCEPT JOB OFFER RPC
 -- ============================================
@@ -723,6 +869,8 @@ begin
     'order',
     v_order_id
   );
+
+  perform public.create_hire_onboarding_draft(v_order_id);
 
   return v_order_id;
 end;

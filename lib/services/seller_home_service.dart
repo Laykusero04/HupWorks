@@ -1,3 +1,4 @@
+import 'package:freelancer/services/attendance_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SellerHomeService {
@@ -14,6 +15,113 @@ class SellerHomeService {
         .eq('id', user.id)
         .single();
     return data;
+  }
+
+  /// Job-focused dashboard metrics for the freelancer home screen.
+  static Future<Map<String, dynamic>> getWorkOverview() async {
+    final user = _client.auth.currentUser;
+    if (user == null) return {};
+
+    final now = DateTime.now();
+    final monthStart = DateTime(now.year, now.month, 1);
+
+    final orders = await _client
+        .from('orders')
+        .select('id, status, price, created_at')
+        .eq('seller_id', user.id);
+
+    final orderList = List<Map<String, dynamic>>.from(orders);
+    int activeContracts = 0;
+    int deliveredAwaiting = 0;
+    int completedThisMonth = 0;
+
+    for (final o in orderList) {
+      final st = (o['status'] as String?)?.toLowerCase() ?? '';
+      if (st == 'pending' || st == 'active') activeContracts++;
+      if (st == 'delivered') {
+        activeContracts++;
+        deliveredAwaiting++;
+      }
+      if (st == 'completed') {
+        final created = DateTime.tryParse(o['created_at'] as String? ?? '');
+        if (created != null && !created.isBefore(monthStart)) {
+          completedThisMonth++;
+        }
+      }
+    }
+
+    final offers = await _client
+        .from('job_offers')
+        .select('id, status')
+        .eq('seller_id', user.id);
+
+    final offerList = List<Map<String, dynamic>>.from(offers);
+    var pendingApplications = 0;
+    var acceptedApplications = 0;
+    for (final o in offerList) {
+      final st = (o['status'] as String?)?.toLowerCase() ?? '';
+      if (st == 'pending') pendingApplications++;
+      if (st == 'accepted') acceptedApplications++;
+    }
+
+    final openJobs = await _client
+        .from('job_posts')
+        .select('id')
+        .eq('status', 'open');
+    final openJobsCount = (openJobs as List).length;
+
+    final reviews = await _client
+        .from('reviews')
+        .select('rating')
+        .eq('reviewed_id', user.id);
+    final reviewList = List<Map<String, dynamic>>.from(reviews);
+    double avgRating = 0;
+    if (reviewList.isNotEmpty) {
+      avgRating = reviewList.fold<double>(
+            0,
+            (sum, r) => sum + (r['rating'] as num).toDouble(),
+          ) /
+          reviewList.length;
+    }
+
+    final profile = await _client
+        .from('profiles')
+        .select('balance')
+        .eq('id', user.id)
+        .maybeSingle();
+
+    final earnings = await _client
+        .from('transactions')
+        .select('amount')
+        .eq('user_id', user.id)
+        .eq('type', 'earning')
+        .gte('created_at', monthStart.toIso8601String());
+
+    final earnedThisMonth = List<Map<String, dynamic>>.from(earnings).fold<double>(
+      0,
+      (sum, e) => sum + (double.tryParse(e['amount'].toString()) ?? 0),
+    );
+
+    var onsiteAttendanceCount = 0;
+    try {
+      final attJobs = await AttendanceService.getMyOnsiteAttendanceJobs();
+      onsiteAttendanceCount = attJobs.length;
+    } catch (_) {}
+
+    return {
+      'active_contracts': activeContracts,
+      'delivered_awaiting_approval': deliveredAwaiting,
+      'completed_this_month': completedThisMonth,
+      'pending_applications': pendingApplications,
+      'accepted_applications': acceptedApplications,
+      'total_applications': offerList.length,
+      'open_jobs_count': openJobsCount,
+      'avg_rating': avgRating,
+      'review_count': reviewList.length,
+      'balance': (profile?['balance'] as num?)?.toDouble() ?? 0,
+      'earned_this_month': earnedThisMonth,
+      'onsite_attendance_jobs': onsiteAttendanceCount,
+    };
   }
 
   /// Fetch performance metrics for a given period

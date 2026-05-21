@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:freelancer/core/utils/attendance_mode.dart';
 import 'package:freelancer/core/utils/category_name.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/services/category_service.dart';
@@ -9,6 +10,7 @@ import 'package:nb_utils/nb_utils.dart';
 
 import '../../widgets/category_picker_field.dart';
 import '../../widgets/constant.dart';
+import '../../widgets/attendance_mode_picker.dart';
 import '../../widgets/job_location_fields.dart';
 
 class CreateNewJobPost extends StatefulWidget {
@@ -27,6 +29,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
   final _customCategoryController = TextEditingController();
   LatLng? _locationPin;
   JobLocationType _locationType = JobLocationType.onsite;
+  String _attendanceMode = AttendanceMode.qrInOut;
 
   List<Map<String, dynamic>> _categories = [];
   String? _selectedCategoryId;
@@ -197,6 +200,9 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
         workersNeeded: _limitHireCount
             ? _workersNeeded
             : JobPostsService.workersNeededNoLimitSentinel,
+        attendanceMode: _locationType == JobLocationType.onsite
+            ? _attendanceMode
+            : AttendanceMode.disabled,
       );
 
       if (mounted) {
@@ -548,8 +554,22 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
           pin: _locationPin,
           onPinChanged: (p) => setState(() => _locationPin = p),
           locationType: _locationType,
-          onLocationTypeChanged: (t) => setState(() => _locationType = t),
+          onLocationTypeChanged: (t) => setState(() {
+            _locationType = t;
+            if (t == JobLocationType.remote) {
+              _attendanceMode = AttendanceMode.disabled;
+            } else if (_attendanceMode == AttendanceMode.disabled) {
+              _attendanceMode = AttendanceMode.qrInOut;
+            }
+          }),
         ),
+        if (_locationType == JobLocationType.onsite) ...[
+          const SizedBox(height: 20),
+          AttendanceModePicker(
+            value: _attendanceMode,
+            onChanged: (m) => setState(() => _attendanceMode = m),
+          ),
+        ],
         const SizedBox(height: 8),
       ],
     );

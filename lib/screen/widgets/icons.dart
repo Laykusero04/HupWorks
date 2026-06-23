@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'constant.dart';
 
@@ -10,7 +11,7 @@ class SocialIcon extends StatelessWidget {
     required this.icon,
     required this.borderColor,
   }) : super(key: key);
-  final IconData icon;
+  final FaIconData icon;
   final Color bgColor;
   final Color iconColor;
   final Color borderColor;
@@ -25,7 +26,7 @@ class SocialIcon extends StatelessWidget {
         border: Border.all(color: borderColor),
         color: bgColor,
       ),
-      child: Icon(
+      child: FaIcon(
         icon,
         color: iconColor,
       ),

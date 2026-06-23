@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freelancer/data/repositories/notification_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:freelancer/core/utils/job_offer_delivery.dart';
-import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
 import 'package:freelancer/services/job_posts_service.dart';
 import 'package:freelancer/services/seller_home_service.dart';
@@ -12,18 +10,10 @@ import 'package:freelancer/services/seller_orders_service.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nb_utils/nb_utils.dart';
 
-import 'package:freelancer/router/app_router.dart';
+import '../../widgets/client_shell_app_bar.dart';
+import '../../widgets/shell_tab_header.dart';
 import '../notification/seller_notification.dart';
 import '../transaction/seller_transaction.dart';
-
-/// Light icons on the blue hero; transparent status bar so the gradient reaches the top.
-const _sellerHubSystemUi = SystemUiOverlayStyle(
-  statusBarColor: Colors.transparent,
-  statusBarIconBrightness: Brightness.light,
-  statusBarBrightness: Brightness.dark,
-  systemNavigationBarColor: kWhite,
-  systemNavigationBarIconBrightness: Brightness.dark,
-);
 
 class SellerHomeScreen extends StatefulWidget {
   const SellerHomeScreen({Key? key}) : super(key: key);
@@ -33,11 +23,11 @@ class SellerHomeScreen extends StatefulWidget {
 }
 
 class _SellerHomeScreenState extends State<SellerHomeScreen> {
-  Map<String, dynamic>? _profile;
   Map<String, dynamic> _overview = {};
   List<Map<String, dynamic>> _myApplications = [];
   int _unreadNotificationCount = 0;
   RealtimeChannel? _notificationChannel;
+  NotificationRepository? _notificationRepository;
   bool _isLoading = true;
 
   @override
@@ -52,8 +42,14 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _notificationRepository ??= context.read<NotificationRepository>();
+  }
+
+  @override
   void dispose() {
-    context.read<NotificationRepository>().unsubscribe(_notificationChannel);
+    _notificationRepository?.unsubscribe(_notificationChannel);
     super.dispose();
   }
 
@@ -72,46 +68,38 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
     } catch (_) {}
   }
 
-  Widget _notificationCountBadge() {
-    if (_unreadNotificationCount <= 0) return const SizedBox.shrink();
-    final label = _unreadNotificationCount > 9 ? '9+' : '$_unreadNotificationCount';
-    return Positioned(
-      right: 2,
-      top: 2,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-        decoration: BoxDecoration(
-          color: kAccentColor,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.white, width: 1.5),
-        ),
-        constraints: const BoxConstraints(minWidth: 18),
-        child: Text(
-          label,
-          textAlign: TextAlign.center,
-          style: kTextStyle.copyWith(
-            color: Colors.white,
-            fontSize: 10,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
+  List<Widget> _homeAppBarActions() {
+    return [
+      IconButton(
+        tooltip: 'Notifications',
+        onPressed: () async {
+          await const SellerNotification().launch(context);
+          if (mounted) _loadUnreadNotificationCount();
+        },
+        icon: _unreadNotificationCount > 0
+            ? Badge(
+                label: Text(
+                  _unreadNotificationCount > 9 ? '9+' : '$_unreadNotificationCount',
+                  style: const TextStyle(fontSize: 10),
+                ),
+                child: const Icon(Icons.notifications_outlined),
+              )
+            : const Icon(Icons.notifications_outlined),
       ),
-    );
+    ];
   }
 
   Future<void> _loadData() async {
     try {
       final results = await Future.wait([
-        SellerHomeService.getSellerProfile(),
         SellerHomeService.getWorkOverview(),
         SellerOrdersService.getMyApplications(),
       ]);
 
       if (mounted) {
-        final apps = results[2] as List<Map<String, dynamic>>;
+        final apps = results[1] as List<Map<String, dynamic>>;
         setState(() {
-          _profile = results[0] as Map<String, dynamic>?;
-          _overview = results[1] as Map<String, dynamic>;
+          _overview = results[0] as Map<String, dynamic>;
           _myApplications = apps.take(5).toList();
           _isLoading = false;
         });
@@ -130,237 +118,30 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
 
   double _ovDouble(String key) => (_overview[key] as num?)?.toDouble() ?? 0;
 
-  String _sellerTagline() {
-    final active = _ov('active_contracts');
-    final pending = _ov('pending_applications');
-    final open = _ov('open_jobs_count');
-    if (active > 0) {
-      return '$active active contract${active == 1 ? '' : 's'} — stay on top of delivery and attendance.';
-    }
-    if (pending > 0) {
-      return '$pending application${pending == 1 ? '' : 's'} waiting for client decisions.';
-    }
-    if (open > 0) {
-      return '$open open job${open == 1 ? '' : 's'} on HupWorks — find your next contract.';
-    }
-    return 'Apply to jobs, win contracts, and track work in one place.';
-  }
-
-  Widget _buildSellerHero(
-    BuildContext context, {
-    required String name,
-    required String? profileImageUrl,
-    required String tagline,
-  }) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: kSellerShellGradient,
-        ),
-        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(28)),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF144BD6).withOpacity(0.22),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
-          ),
-        ],
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: kDarkWhite,
+      appBar: ClientShellAppBar(
+        title: 'Home',
+        persona: ShellPersona.seller,
+        actions: _isLoading ? null : _homeAppBarActions(),
       ),
-      padding: EdgeInsets.fromLTRB(
-        16,
-        6 + MediaQuery.viewPaddingOf(context).top,
-        16,
-        18,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              GestureDetector(
-                onTap: () => sellerShellScaffoldKey.currentState?.openDrawer(),
-                child: Container(
-                  height: 48,
-                  width: 48,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 2),
-                    image: DecorationImage(
-                      image: profileImageUrl != null
-                          ? NetworkImage(profileImageUrl) as ImageProvider
-                          : const AssetImage('images/profilepic.png'),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
+      body: _isLoading
+          ? const _SellerHomeLoading()
+          : RefreshIndicator(
+              color: kSellerPrimary,
+              onRefresh: _loadData,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(
+                    parent: BouncingScrollPhysics()),
+                padding: const EdgeInsets.fromLTRB(15, 14, 15, 28),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Seller hub',
-                      style: kTextStyle.copyWith(
-                        color: Colors.white.withOpacity(0.88),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: kTextStyle.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w800,
-                        fontSize: 20,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      tagline,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: kTextStyle.copyWith(
-                        color: Colors.white.withOpacity(0.9),
-                        fontSize: 12,
-                        height: 1.35,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              GestureDetector(
-                onTap: () => sellerShellScaffoldKey.currentState?.openDrawer(),
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.18),
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white.withOpacity(0.35)),
-                  ),
-                  child: const Icon(Icons.menu_rounded, color: Colors.white, size: 22),
-                ),
-              ),
-              const SizedBox(width: 8),
-              GestureDetector(
-                onTap: () async {
-                  await const SellerNotification().launch(context);
-                  if (mounted) _loadUnreadNotificationCount();
-                },
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.18),
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white.withOpacity(0.35)),
-                      ),
-                      child: const Icon(IconlyLight.notification, color: Colors.white, size: 20),
-                    ),
-                    _notificationCountBadge(),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          if (_ov('pending_applications') > 0) ...[
-            const SizedBox(height: 14),
-            GestureDetector(
-              onTap: () => context.push('/seller/applications'),
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.16),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: Colors.white.withOpacity(0.28)),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.hourglass_top_rounded, color: Colors.white, size: 18),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        _ov('pending_applications') == 1
-                            ? '1 application awaiting client reply'
-                            : '${_ov('pending_applications')} applications awaiting client reply',
-                        style: kTextStyle.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
-                    const Icon(Icons.chevron_right_rounded, color: Colors.white, size: 22),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_isLoading) {
-      return Scaffold(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        body: AnnotatedRegion<SystemUiOverlayStyle>(
-          value: _sellerHubSystemUi,
-          child: const _SellerHomeLoading(),
-        ),
-      );
-    }
-
-    final name = _profile?['name'] ?? 'Seller';
-    final profileImageUrl = _profile?['profile_image_url'] as String?;
-    final tagline = _sellerTagline();
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: _sellerHubSystemUi,
-        child: Column(
-          children: [
-            _buildSellerHero(
-              context,
-              name: name,
-              profileImageUrl: profileImageUrl,
-              tagline: tagline,
-            ),
-            Expanded(
-              child: Container(
-                width: context.width(),
-                padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-                decoration: const BoxDecoration(
-                  color: kWhite,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(28.0),
-                    topRight: Radius.circular(28.0),
-                  ),
-                ),
-                child: RefreshIndicator(
-                  color: kPrimaryColor,
-                  onRefresh: _loadData,
-                  child: SingleChildScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 14.0),
-                        GestureDetector(
-                          onTap: () => context.go('/seller/find-jobs'),
-                          child: Container(
+                    GestureDetector(
+                      onTap: () => context.go('/seller/find-jobs'),
+                      child: Container(
                             width: double.infinity,
                             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
                             decoration: BoxDecoration(
@@ -569,11 +350,6 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
                 ),
               ),
             ),
-          ),
-        ),
-        ],
-        ),
-      ),
     );
   }
 
@@ -833,126 +609,53 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
 class _SellerHomeLoading extends StatelessWidget {
   const _SellerHomeLoading();
 
+  static BoxDecoration _card(Color c) => BoxDecoration(
+        color: c,
+        borderRadius: BorderRadius.circular(20),
+      );
+
   @override
   Widget build(BuildContext context) {
-    final bar = Colors.white.withOpacity(0.22);
     final muted = kLightNeutralColor.withOpacity(0.35);
 
-    return Column(
-      children: [
-        Container(
-          width: double.infinity,
-          padding: EdgeInsets.fromLTRB(
-            16,
-            6 + MediaQuery.viewPaddingOf(context).top,
-            16,
-            22,
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(15, 14, 15, 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            height: 72,
+            decoration: _card(muted),
           ),
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color(0xFF0F4AC9),
-                Color(0xFF144BD6),
-                Color(0xFF06AEF3),
-              ],
-            ),
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    height: 48,
-                    width: 48,
-                    decoration: BoxDecoration(shape: BoxShape.circle, color: bar),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(height: 10, width: 72, decoration: BoxDecoration(color: bar, borderRadius: BorderRadius.circular(5))),
-                        const SizedBox(height: 8),
-                        Container(height: 18, width: 160, decoration: BoxDecoration(color: bar, borderRadius: BorderRadius.circular(6))),
-                        const SizedBox(height: 8),
-                        Container(height: 10, width: double.infinity, decoration: BoxDecoration(color: bar, borderRadius: BorderRadius.circular(5))),
-                        const SizedBox(height: 4),
-                        Container(height: 10, width: 200, decoration: BoxDecoration(color: bar, borderRadius: BorderRadius.circular(5))),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    height: 40,
-                    width: 40,
-                    decoration: BoxDecoration(shape: BoxShape.circle, color: bar),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        Expanded(
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(15, 18, 15, 16),
-            decoration: const BoxDecoration(
-              color: kWhite,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    height: 72,
-                    decoration: BoxDecoration(color: muted.withOpacity(0.5), borderRadius: BorderRadius.circular(18)),
-                  ),
-                  const SizedBox(height: 16),
-                  Container(
-                    height: 220,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: kBorderColorTextField),
-                    ),
-                  ),
-                  const SizedBox(height: 18),
-                  Container(
-                    height: 140,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: kBorderColorTextField),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Container(
-                    height: 168,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: kBorderColorTextField),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Container(
-                    height: 88,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: kBorderColorTextField),
-                    ),
-                  ),
-                ],
-              ),
+          const SizedBox(height: 16),
+          Container(
+            height: 220,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: kBorderColorTextField),
             ),
           ),
-        ),
-      ],
+          const SizedBox(height: 18),
+          Container(
+            height: 140,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: kBorderColorTextField),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Container(
+            height: 168,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: kBorderColorTextField),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

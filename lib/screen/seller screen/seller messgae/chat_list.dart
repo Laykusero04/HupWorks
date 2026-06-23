@@ -4,7 +4,7 @@ import 'package:nb_utils/nb_utils.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../services/chat_service.dart';
-import '../../../router/app_router.dart';
+import '../../widgets/client_shell_app_bar.dart';
 import '../../widgets/constant.dart';
 import '../../widgets/shell_tab_header.dart';
 import 'chat_inbox.dart';
@@ -108,11 +108,17 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     final primary = Theme.of(context).colorScheme.primary;
+    final path = GoRouterState.of(context).uri.path;
+    final isClient = path.startsWith('/client');
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: ClientShellAppBar(
+        title: 'Messages',
+        persona: isClient ? ShellPersona.client : ShellPersona.seller,
+      ),
       body: Column(
         children: [
-          _buildHeader(context),
           _buildSearchBar(),
           Expanded(
             child: _isLoading
@@ -125,33 +131,6 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildHeader(BuildContext context) {
-    final path = GoRouterState.of(context).uri.path;
-    final persona = path.startsWith('/seller') ? ShellPersona.seller : ShellPersona.client;
-    final subtitleText = _conversations.isEmpty
-        ? 'Stay connected with your network'
-        : '${_conversations.length} '
-            '${_conversations.length == 1 ? "conversation" : "conversations"}';
-
-    return ShellTabHeader(
-      persona: persona,
-      title: 'Messages',
-      subtitle: Text(
-        subtitleText,
-        style: kTextStyle.copyWith(
-          color: Colors.white.withValues(alpha: 0.9),
-          fontSize: 12,
-        ),
-      ),
-      leading: ShellTabIconButton(
-        icon: Icons.menu_rounded,
-        onPressed: () => openRoleShellDrawer(context),
-        tooltip: 'Menu',
-      ),
-      titleIcon: const ShellTabTitleBadge(icon: Icons.chat_bubble_outline_rounded),
     );
   }
 

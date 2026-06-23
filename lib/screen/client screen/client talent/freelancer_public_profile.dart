@@ -7,6 +7,7 @@ import '../../widgets/constant.dart';
 import '../../widgets/profile_detail_theme.dart';
 import '../../widgets/profile_rating_summary.dart';
 import '../../widgets/profile_skeleton.dart';
+import '../../widgets/seller_skills_display.dart';
 import '../client service details/client_service_details.dart';
 
 /// Client-facing view of a freelancer's public profile.
@@ -103,10 +104,11 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
 
     final name = _profile!['name'] as String? ?? widget.initialName ?? 'Freelancer';
     final bio = _profile!['bio'] as String?;
-    final city = (_profile!['city'] as String?) ?? '';
-    final country = (_profile!['country'] as String?) ?? '';
     final profileImageUrl = _profile!['profile_image_url'] as String?;
+    final jobTitle = ProfileService.sellerJobTitleFromProfile(_profile!);
     final about = ProfileService.sellerAboutFromProfile(_profile!);
+    final address = ProfileService.sellerAddressFromProfile(_profile!);
+    final age = ProfileService.sellerAgeFromProfile(_profile!);
     final skills = ProfileService.sellerSkillsFromProfile(_profile!);
     final reviewStats = ProfileService.resolveReviewDisplay(
       profile: _profile,
@@ -115,9 +117,6 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
     final rating = reviewStats.rating;
     final reviewCount = reviewStats.count;
     final avgLabel = reviewCount > 0 ? rating.toStringAsFixed(1) : '—';
-
-    final locationParts = [city, country].where((s) => s.isNotEmpty).toList();
-    final locationStr = locationParts.join(', ');
 
     return Scaffold(
       backgroundColor: kDarkWhite,
@@ -171,17 +170,35 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
                   ),
                 ),
               ),
-              if (locationStr.isNotEmpty) ...[
+              if (jobTitle != null && jobTitle.isNotEmpty) ...[
+                const SizedBox(height: 6),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Text(
+                    jobTitle,
+                    textAlign: TextAlign.center,
+                    style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 14),
+                  ),
+                ),
+              ],
+              if (address != null && address.isNotEmpty) ...[
                 const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.location_on_outlined,
-                        size: 14, color: kPrimaryColor),
-                    const SizedBox(width: 4),
-                    Text(locationStr,
-                        style: kTextStyle.copyWith(color: kLightNeutralColor)),
-                  ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.location_on_outlined, size: 14, color: kPrimaryColor),
+                      const SizedBox(width: 4),
+                      Flexible(
+                        child: Text(
+                          address,
+                          textAlign: TextAlign.center,
+                          style: kTextStyle.copyWith(color: kLightNeutralColor),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
               const SizedBox(height: 10),
@@ -267,20 +284,7 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
                 const SizedBox(height: 16),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: skills
-                        .map(
-                          (s) => Chip(
-                            label: Text(s, style: kTextStyle.copyWith(fontSize: 12)),
-                            backgroundColor: kPrimaryColor.withValues(alpha: 0.1),
-                            side: BorderSide.none,
-                            padding: EdgeInsets.zero,
-                          ),
-                        )
-                        .toList(),
-                  ),
+                  child: SellerSkillsDisplay(skills: skills, accentColor: kPrimaryColor),
                 ),
               ],
               const SizedBox(height: 24),

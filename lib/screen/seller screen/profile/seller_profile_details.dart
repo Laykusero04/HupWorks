@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:freelancer/data/models/seller_skill_model.dart';
 import 'package:freelancer/services/profile_service.dart';
-import 'package:freelancer/services/seller_home_service.dart';
 import 'package:nb_utils/nb_utils.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../widgets/constant.dart';
 import '../../widgets/profile_detail_theme.dart';
 import '../../widgets/profile_rating_summary.dart';
 import '../../widgets/profile_skeleton.dart';
+import '../../widgets/seller_skills_display.dart';
 import 'seller_edit_profile_details.dart';
 
 class SellerProfileDetails extends StatefulWidget {
@@ -21,7 +21,7 @@ class SellerProfileDetails extends StatefulWidget {
 class _SellerProfileDetailsState extends State<SellerProfileDetails> {
   Map<String, dynamic>? _profile;
   List<Map<String, dynamic>> _reviews = [];
-  String? _sellerAbout;
+  List<SellerSkill> _skills = const [];
   bool _isLoading = true;
 
   @override
@@ -31,45 +31,23 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
   }
 
   Future<void> _load() async {
-    final user = Supabase.instance.client.auth.currentUser;
-    if (user == null) {
-      if (mounted) setState(() => _isLoading = false);
-      return;
-    }
     try {
-      final results = await Future.wait([
-        ProfileService.getProfile(),
-        ProfileService.getReviewsReceived(user.id),
-        SellerHomeService.getSellerProfile(),
-      ]);
+      final profile = await ProfileService.getSellerProfileForEdit();
       if (!mounted) return;
-      final home = results[2] as Map<String, dynamic>?;
+      final userId = profile?['id'] as String?;
+      final reviews = userId != null
+          ? await ProfileService.getReviewsReceived(userId)
+          : <Map<String, dynamic>>[];
+      if (!mounted) return;
       setState(() {
-        _profile = results[0] as Map<String, dynamic>?;
-        _reviews = List<Map<String, dynamic>>.from(results[1] as List<dynamic>? ?? const []);
-        _sellerAbout = _parseSellerAbout(home);
+        _profile = profile;
+        _reviews = reviews;
+        _skills = profile != null ? ProfileService.sellerSkillsFromProfile(profile) : const [];
         _isLoading = false;
       });
     } catch (e) {
       if (mounted) setState(() => _isLoading = false);
     }
-  }
-
-  static String? _parseSellerAbout(Map<String, dynamic>? home) {
-    if (home == null) return null;
-    final sp = home['seller_profiles'];
-    if (sp is List && sp.isNotEmpty) {
-      final m = sp.first;
-      if (m is Map<String, dynamic>) {
-        final a = m['about'] as String?;
-        return a?.trim().isEmpty == true ? null : a?.trim();
-      }
-    }
-    if (sp is Map<String, dynamic>) {
-      final a = sp['about'] as String?;
-      return a?.trim().isEmpty == true ? null : a?.trim();
-    }
-    return null;
   }
 
   static String _formatReviewDate(String? iso) {
@@ -89,10 +67,12 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
     final name = _profile?['name'] ?? 'Seller';
     final email = (_profile?['email'] as String?) ?? '';
     final bio = _profile?['bio'] as String?;
-    final city = (_profile?['city'] as String?) ?? '';
-    final country = (_profile?['country'] as String?) ?? '';
     final balance = _profile?['balance'] ?? 0;
     final profileImageUrl = _profile?['profile_image_url'];
+    final jobTitle = _profile != null ? ProfileService.sellerJobTitleFromProfile(_profile!) : null;
+    final about = _profile != null ? ProfileService.sellerAboutFromProfile(_profile!) : null;
+    final address = _profile != null ? ProfileService.sellerAddressFromProfile(_profile!) : null;
+    final age = _profile != null ? ProfileService.sellerAgeFromProfile(_profile!) : null;
     final reviewStats = ProfileService.resolveReviewDisplay(
       profile: _profile,
       reviews: _reviews,
@@ -101,9 +81,6 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
     final reviewCount = reviewStats.count;
     final phone = _profile?['phone'] as String? ?? '';
     final gender = _profile?['gender'] as String? ?? '';
-
-    final locationParts = [city, country].where((s) => s.isNotEmpty).toList();
-    final locationStr = locationParts.join(', ');
 
     final avgLabel = reviewCount > 0 ? rating.toStringAsFixed(1) : '—';
 
@@ -159,15 +136,36 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                 ),
               ),
 
-              if (locationStr.isNotEmpty) ...[
+              if (jobTitle != null && jobTitle.isNotEmpty) ...[
+                const SizedBox(height: 6.0),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Text(
+                    jobTitle,
+                    textAlign: TextAlign.center,
+                    style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 14),
+                  ),
+                ),
+              ],
+
+              if (address != null && address.isNotEmpty) ...[
                 const SizedBox(height: 8.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.location_on_outlined, size: 14, color: kSellerAccent),
-                    const SizedBox(width: 4),
-                    Text(locationStr, style: kTextStyle.copyWith(color: kLightNeutralColor)),
-                  ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.location_on_outlined, size: 14, color: kSellerAccent),
+                      const SizedBox(width: 4),
+                      Flexible(
+                        child: Text(
+                          address,
+                          textAlign: TextAlign.center,
+                          style: kTextStyle.copyWith(color: kLightNeutralColor),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
 
@@ -235,7 +233,7 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                 ),
               ],
 
-              if (_sellerAbout != null && _sellerAbout!.trim().isNotEmpty) ...[
+              if (about != null && about.isNotEmpty) ...[
                 const SizedBox(height: 16.0),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -253,12 +251,20 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        _sellerAbout!.trim(),
+                        about,
                         textAlign: TextAlign.center,
                         style: kTextStyle.copyWith(color: kSubTitleColor),
                       ),
                     ],
                   ),
+                ),
+              ],
+
+              if (_skills.isNotEmpty) ...[
+                const SizedBox(height: 16.0),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30),
+                  child: SellerSkillsDisplay(skills: _skills, accentColor: brand),
                 ),
               ],
 
@@ -292,9 +298,9 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                     children: [
                       _detailRow('Email', email),
                       _detailRow('Phone', phone),
-                      _detailRow('Country', country),
-                      _detailRow('City', city),
                       _detailRow('Gender', gender),
+                      if (age != null) _detailRow('Age', '$age years old'),
+                      if (address != null && address.isNotEmpty) _detailRow('Address', address),
                     ],
                   ),
                 ),

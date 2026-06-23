@@ -42,7 +42,10 @@ class ClientHomeService {
   static Future<List<Map<String, dynamic>>> getTopSellers({int limit = 10}) async {
     final data = await _client
         .from('profiles')
-        .select('*, seller_profiles!inner(*)')
+        .select(
+          'id, name, profile_image_url, country, city, rating, '
+          'seller_profiles!inner(job_title, about, skills)',
+        )
         .eq('role', 'seller')
         .limit(limit * 3);
     final list = List<Map<String, dynamic>>.from(data);

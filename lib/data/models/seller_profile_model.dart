@@ -1,10 +1,11 @@
 import 'package:equatable/equatable.dart';
+import 'package:freelancer/data/models/seller_skill_model.dart';
 
 class SellerProfile extends Equatable {
   final String id;
   final String userId;
-  final List<String> skills;
-  final String? skillLevel;
+  final List<SellerSkill> skills;
+  final String? jobTitle;
   final List<String> languages;
   final String? languageLevel;
   final String? education;
@@ -19,7 +20,7 @@ class SellerProfile extends Equatable {
     required this.id,
     required this.userId,
     this.skills = const [],
-    this.skillLevel,
+    this.jobTitle,
     this.languages = const [],
     this.languageLevel,
     this.education,
@@ -31,12 +32,29 @@ class SellerProfile extends Equatable {
     required this.createdAt,
   });
 
+  static List<SellerSkill> _parseSkills(dynamic raw) {
+    if (raw is! List) return const [];
+    final result = <SellerSkill>[];
+    for (final item in raw) {
+      if (item is Map<String, dynamic>) {
+        final skill = SellerSkill.fromJson(item);
+        if (skill.name.isNotEmpty) result.add(skill);
+      } else if (item is Map) {
+        final skill = SellerSkill.fromJson(Map<String, dynamic>.from(item));
+        if (skill.name.isNotEmpty) result.add(skill);
+      } else if (item is String && item.trim().isNotEmpty) {
+        result.add(SellerSkill(name: item.trim(), stars: 5));
+      }
+    }
+    return result;
+  }
+
   factory SellerProfile.fromJson(Map<String, dynamic> json) {
     return SellerProfile(
       id: json['id'] as String,
       userId: json['user_id'] as String,
-      skills: (json['skills'] as List?)?.cast<String>() ?? [],
-      skillLevel: json['skill_level'] as String?,
+      skills: _parseSkills(json['skills']),
+      jobTitle: json['job_title'] as String?,
       languages: (json['languages'] as List?)?.cast<String>() ?? [],
       languageLevel: json['language_level'] as String?,
       education: json['education'] as String?,
@@ -52,8 +70,8 @@ class SellerProfile extends Equatable {
   Map<String, dynamic> toJson() => {
         'id': id,
         'user_id': userId,
-        'skills': skills,
-        'skill_level': skillLevel,
+        'skills': skills.map((s) => s.toJson()).toList(),
+        'job_title': jobTitle,
         'languages': languages,
         'language_level': languageLevel,
         'education': education,
@@ -66,5 +84,19 @@ class SellerProfile extends Equatable {
       };
 
   @override
-  List<Object?> get props => [id, userId, skills, skillLevel, languages, languageLevel, education, experience, about, impressionsCount, interactionsCount, reachCount, createdAt];
+  List<Object?> get props => [
+        id,
+        userId,
+        skills,
+        jobTitle,
+        languages,
+        languageLevel,
+        education,
+        experience,
+        about,
+        impressionsCount,
+        interactionsCount,
+        reachCount,
+        createdAt,
+      ];
 }

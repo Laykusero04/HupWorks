@@ -41,7 +41,7 @@ dependencies:
   smooth_page_indicator: ^2.0.1
   flutter_feather_icons: ^2.0.0+1
   flutter_iconly: ^1.0.2
-  font_awesome_flutter: ^10.8.0
+  font_awesome_flutter: ^11.0.0
   pinput: ^6.0.2
   step_progress_indicator: ^1.0.2
   pie_chart: ^5.4.0
@@ -86,6 +86,12 @@ icons_launcher:
         enable: true
       ios:
         enable: true
+
+dependency_overrides:
+  flutter_feather_icons:
+    path: packages/flutter_feather_icons
+  flutter_iconly:
+    path: packages/flutter_iconly
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

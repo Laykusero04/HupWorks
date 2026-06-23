@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:freelancer/data/models/seller_skill_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProfileService {
@@ -243,7 +244,10 @@ class ProfileService {
   static Future<Map<String, dynamic>?> getPublicSellerProfile(String sellerId) async {
     final data = await _client
         .from('profiles')
-        .select('*, seller_profiles(*)')
+        .select(
+          'id, name, profile_image_url, bio, rating, created_at, '
+          'seller_profiles(job_title, about, skills, address, birth_year, birth_month, birth_day, languages, education, experience)',
+        )
         .eq('id', sellerId)
         .eq('role', 'seller')
         .maybeSingle();
@@ -260,33 +264,201 @@ class ProfileService {
     return profile;
   }
 
-  static String? sellerAboutFromProfile(Map<String, dynamic> profile) {
+  static Map<String, dynamic>? _sellerProfileRow(Map<String, dynamic> profile) {
     final sp = profile['seller_profiles'];
-    if (sp is Map<String, dynamic>) {
-      final a = sp['about'] as String?;
-      return a?.trim().isEmpty == true ? null : a?.trim();
-    }
+    if (sp is Map<String, dynamic>) return sp;
     if (sp is List && sp.isNotEmpty && sp.first is Map<String, dynamic>) {
-      final a = (sp.first as Map<String, dynamic>)['about'] as String?;
-      return a?.trim().isEmpty == true ? null : a?.trim();
+      return sp.first as Map<String, dynamic>;
     }
     return null;
   }
 
-  static List<String> sellerSkillsFromProfile(Map<String, dynamic> profile) {
-    final sp = profile['seller_profiles'];
-    Map<String, dynamic>? row;
-    if (sp is Map<String, dynamic>) {
-      row = sp;
-    } else if (sp is List && sp.isNotEmpty && sp.first is Map<String, dynamic>) {
-      row = sp.first as Map<String, dynamic>;
+  static Map<String, dynamic>? sellerPrivateDetailsFromProfile(Map<String, dynamic> profile) {
+    return _privateDetailsRow(profile);
+  }
+
+  static Map<String, dynamic>? _privateDetailsRow(Map<String, dynamic> profile) {
+    final pd = profile['seller_private_details'];
+    if (pd is Map<String, dynamic>) return pd;
+    if (pd is List && pd.isNotEmpty && pd.first is Map<String, dynamic>) {
+      return pd.first as Map<String, dynamic>;
     }
+    return null;
+  }
+
+  /// Full seller profile for edit screen (includes private details).
+  static Future<Map<String, dynamic>?> getSellerProfileForEdit() async {
+    final user = _client.auth.currentUser;
+    if (user == null) return null;
+
+    final data = await _client
+        .from('profiles')
+        .select(
+          'id, role, name, email, phone, gender, '
+          'profile_image_url, bio, rating, balance, created_at, '
+          'seller_profiles(id, job_title, about, skills, address, birth_year, birth_month, birth_day, languages, education, experience), '
+          'seller_private_details(date_of_birth, street_address, state, postal_code)',
+        )
+        .eq('id', user.id)
+        .eq('role', 'seller')
+        .maybeSingle();
+
+    if (data == null) return null;
+    return Map<String, dynamic>.from(data);
+  }
+
+  /// Persist seller extended + private profile fields.
+  static Future<void> updateSellerProfile({
+    required String? jobTitle,
+    required String? about,
+    required List<SellerSkill> skills,
+    DateTime? dateOfBirth,
+    String? address,
+  }) async {
+    final user = _client.auth.currentUser;
+    if (user == null) throw Exception('Not logged in');
+
+    await _client.from('seller_profiles').update({
+      'job_title': jobTitle?.trim().isEmpty == true ? null : jobTitle?.trim(),
+      'about': about?.trim().isEmpty == true ? null : about?.trim(),
+      'skills': skills.map((s) => s.toJson()).toList(),
+      'address': address?.trim().isEmpty == true ? null : address?.trim(),
+      'birth_year': dateOfBirth?.year,
+      'birth_month': dateOfBirth?.month,
+      'birth_day': dateOfBirth?.day,
+    }).eq('user_id', user.id);
+
+    await _client.from('seller_private_details').upsert({
+      'user_id': user.id,
+      'date_of_birth': dateOfBirth != null
+          ? '${dateOfBirth.year.toString().padLeft(4, '0')}-'
+              '${dateOfBirth.month.toString().padLeft(2, '0')}-'
+              '${dateOfBirth.day.toString().padLeft(2, '0')}'
+          : null,
+      'street_address': null,
+      'state': null,
+      'postal_code': null,
+      'updated_at': DateTime.now().toUtc().toIso8601String(),
+    });
+
+    await _client.from('profiles').update({
+      'country': null,
+      'city': null,
+    }).eq('id', user.id);
+
+    if (_profileCache != null && _cacheUserId == user.id) {
+      _profileCache!['country'] = null;
+      _profileCache!['city'] = null;
+    }
+  }
+
+  static String? sellerJobTitleFromProfile(Map<String, dynamic> profile) {
+    final row = _sellerProfileRow(profile);
+    final title = row?['job_title'] as String?;
+    return title?.trim().isEmpty == true ? null : title?.trim();
+  }
+
+  static String? sellerAboutFromProfile(Map<String, dynamic> profile) {
+    final row = _sellerProfileRow(profile);
+    final a = row?['about'] as String?;
+    return a?.trim().isEmpty == true ? null : a?.trim();
+  }
+
+  static List<SellerSkill> sellerSkillsFromProfile(Map<String, dynamic> profile) {
+    final row = _sellerProfileRow(profile);
     if (row == null) return const [];
     final skills = row['skills'];
-    if (skills is List) {
-      return skills.map((e) => e.toString()).where((s) => s.isNotEmpty).toList();
+    if (skills is! List) return const [];
+
+    final result = <SellerSkill>[];
+    for (final item in skills) {
+      if (item is Map<String, dynamic>) {
+        final skill = SellerSkill.fromJson(item);
+        if (skill.name.isNotEmpty) result.add(skill);
+      } else if (item is Map) {
+        final skill = SellerSkill.fromJson(Map<String, dynamic>.from(item));
+        if (skill.name.isNotEmpty) result.add(skill);
+      } else if (item is String && item.trim().isNotEmpty) {
+        result.add(SellerSkill(name: item.trim(), stars: 5));
+      }
     }
-    return const [];
+    return result;
+  }
+
+  static Map<int, List<SellerSkill>> sellerSkillsByTier(Map<String, dynamic> profile) {
+    final skills = sellerSkillsFromProfile(profile);
+    return {
+      5: skills.where((s) => s.stars == 5).toList(),
+      4: skills.where((s) => s.stars == 4).toList(),
+      3: skills.where((s) => s.stars >= 1 && s.stars <= 3).toList(),
+    };
+  }
+
+  static int? ageFromDateOfBirth(String? isoDate) {
+    if (isoDate == null || isoDate.isEmpty) return null;
+    final dob = DateTime.tryParse(isoDate);
+    if (dob == null) return null;
+    final now = DateTime.now();
+    var age = now.year - dob.year;
+    if (now.month < dob.month || (now.month == dob.month && now.day < dob.day)) {
+      age--;
+    }
+    return age >= 0 ? age : null;
+  }
+
+  /// Public address on seller_profiles.address.
+  static String? sellerAddressFromProfile(Map<String, dynamic> profile) {
+    final sp = _sellerProfileRow(profile);
+    final publicAddress = (sp?['address'] as String?)?.trim();
+    if (publicAddress != null && publicAddress.isNotEmpty) return publicAddress;
+
+    final private = sellerPrivateDetailsFromProfile(profile);
+    final street = (private?['street_address'] as String?)?.trim();
+    if (street != null && street.isNotEmpty) return street;
+
+    final legacyParts = [
+      profile['city'] as String?,
+      profile['country'] as String?,
+    ]
+        .map((s) => s?.trim())
+        .whereType<String>()
+        .where((s) => s.isNotEmpty)
+        .toList();
+    if (legacyParts.isEmpty) return null;
+    return legacyParts.join(', ');
+  }
+
+  /// Age from birth parts on seller_profiles (public) or private DOB for edit load.
+  static int? sellerAgeFromProfile(Map<String, dynamic> profile) {
+    final dob = sellerDateOfBirthFromProfile(profile);
+    if (dob == null) return null;
+    return ageFromDateOfBirth(dob.toIso8601String());
+  }
+
+  /// Full DOB for edit form only — not shown in public UI.
+  static DateTime? sellerDateOfBirthFromProfile(Map<String, dynamic> profile) {
+    final private = sellerPrivateDetailsFromProfile(profile);
+    final fromPrivate = parseDateOfBirth(private?['date_of_birth']);
+    if (fromPrivate != null) return fromPrivate;
+
+    final sp = _sellerProfileRow(profile);
+    if (sp == null) return null;
+    final y = sp['birth_year'];
+    final m = sp['birth_month'];
+    final d = sp['birth_day'];
+    if (y is num && m is num && d is num) {
+      return DateTime(y.toInt(), m.toInt(), d.toInt());
+    }
+    return null;
+  }
+
+  static DateTime? parseDateOfBirth(dynamic value) {
+    if (value == null) return null;
+    if (value is DateTime) return value;
+    if (value is String && value.isNotEmpty) {
+      return DateTime.tryParse(value);
+    }
+    return null;
   }
 
   /// Reviews written about [profileId], newest first (includes reviewer display name).

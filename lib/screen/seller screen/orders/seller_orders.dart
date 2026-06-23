@@ -5,7 +5,7 @@ import 'package:freelancer/services/orders_service.dart';
 import 'package:freelancer/services/seller_orders_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
-import '../../../router/app_router.dart';
+import '../../widgets/client_shell_app_bar.dart';
 import '../../widgets/constant.dart';
 import '../../widgets/shell_tab_header.dart';
 
@@ -91,55 +91,22 @@ class _SellerOrderListState extends State<SellerOrderList> {
   @override
   Widget build(BuildContext context) {
     final primary = Theme.of(context).colorScheme.primary;
-    final activeCount = _orders.where((o) {
-      final s = (o['status'] as String?)?.toLowerCase();
-      return s == 'active' || s == 'cancellation_requested';
-    }).length;
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: kWhite,
+      appBar: ClientShellAppBar(
+        title: 'Contracts',
+        persona: ShellPersona.seller,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Refresh',
+            onPressed: _isLoading ? null : _loadOrders,
+          ),
+        ],
+      ),
       body: Column(
-          children: [
-            ShellTabHeader(
-              persona: ShellPersona.seller,
-              title: 'Contracts',
-              leading: ShellTabIconButton(
-                icon: Icons.menu_rounded,
-                onPressed: () => sellerShellScaffoldKey.currentState?.openDrawer(),
-                tooltip: 'Menu',
-              ),
-              titleIcon: const ShellTabTitleBadge(icon: Icons.description_outlined),
-              subtitle: RichText(
-                text: TextSpan(
-                  style: kTextStyle.copyWith(color: Colors.white.withValues(alpha: 0.88), fontSize: 12),
-                  children: [
-                    TextSpan(
-                      text: '$activeCount active',
-                      style: kTextStyle.copyWith(
-                        color: const Color(0xFFB8D4FF),
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                      ),
-                    ),
-                    const TextSpan(text: '  ·  '),
-                    TextSpan(text: '${_orders.length} total'),
-                  ],
-                ),
-              ),
-              actions: [
-                ShellTabIconButton(
-                  icon: Icons.refresh_rounded,
-                  onPressed: _isLoading ? null : _loadOrders,
-                  tooltip: 'Refresh',
-                ),
-              ],
-            ),
-            Expanded(
-              child: Container(
-                width: context.width(),
-                decoration: const BoxDecoration(color: kWhite, borderRadius: BorderRadius.only(topLeft: Radius.circular(30.0), topRight: Radius.circular(30.0))),
-                child: Column(
-                  children: [
-                    HorizontalList(
+        children: [
+          HorizontalList(
                 padding: const EdgeInsets.only(left: 15.0, top: 15.0),
                 itemCount: _statusTabs.length,
                 itemBuilder: (_, i) {
@@ -180,13 +147,9 @@ class _SellerOrderListState extends State<SellerOrderList> {
                               itemBuilder: (_, i) => _buildContractCard(_orders[i]),
                             ),
                           ),
-                    ),
-                  ],
-                ),
               ),
-            ),
-          ],
-        ),
+        ],
+      ),
     );
   }
 

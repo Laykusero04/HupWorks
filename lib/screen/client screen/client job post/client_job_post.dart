@@ -4,8 +4,7 @@ import 'package:freelancer/screen/widgets/constant.dart';
 import 'package:freelancer/services/job_posts_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
-import '../../../router/app_router.dart';
-import '../../widgets/shell_tab_header.dart';
+import '../../widgets/client_shell_app_bar.dart';
 import 'create_new_job_post.dart';
 import 'job_details.dart';
 
@@ -23,6 +22,7 @@ class _JobPostState extends State<JobPost> {
 
   /// Tail padding for scroll content above the tab bar + FAB.
   static const double _scrollEndPadding = 24;
+  static const double _horizontalPadding = 16;
 
   static const _filterOptions = <Map<String, String?>>[
     {'value': null, 'label': 'All'},
@@ -100,7 +100,8 @@ class _JobPostState extends State<JobPost> {
     final scrollBottomGap = safeBottom + _scrollEndPadding;
 
     return Scaffold(
-      backgroundColor: kDarkWhite,
+      backgroundColor: kWhite,
+      appBar: const ClientShellAppBar(title: 'My Jobs'),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           await Navigator.of(context).push(
@@ -112,73 +113,51 @@ class _JobPostState extends State<JobPost> {
         child: const Icon(FeatherIcons.plus, color: kWhite),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      body: Column(
-          children: [
-            ShellTabHeader(
-              persona: ShellPersona.client,
-              title: 'Job Posts',
-              subtitle: Text(
-                'Create and manage your listings',
-                style: kTextStyle.copyWith(
-                  color: Colors.white.withValues(alpha: 0.9),
-                  fontSize: 12,
-                ),
-              ),
-              leading: ShellTabIconButton(
-                icon: Icons.menu_rounded,
-                onPressed: () => clientShellScaffoldKey.currentState?.openDrawer(),
-                tooltip: 'Menu',
-              ),
-            ),
-            Expanded(
-              child: Container(
-                width: context.width(),
-                padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-                decoration: const BoxDecoration(
-                  color: kWhite,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(30.0),
-                    topRight: Radius.circular(30.0),
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(color: kPrimaryColor),
+            )
+          : _jobPosts.isEmpty
+              ? Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: _horizontalPadding),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        height: 213,
+                        width: 269,
+                        decoration: const BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage('images/emptyservice.png'),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20.0),
+                      Text(
+                        'No Job Posts Yet',
+                        style: kTextStyle.copyWith(
+                          color: kNeutralColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24.0,
+                        ),
+                      ),
+                      SizedBox(height: scrollBottomGap),
+                    ],
                   ),
-                ),
-                child: _isLoading
-                    ? const Center(
-                        child: CircularProgressIndicator(color: kPrimaryColor))
-                    : _jobPosts.isEmpty
-                        ? Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                height: 213,
-                                width: 269,
-                                decoration: const BoxDecoration(
-                                  image: DecorationImage(
-                                      image:
-                                          AssetImage('images/emptyservice.png'),
-                                      fit: BoxFit.cover),
-                                ),
-                              ),
-                              const SizedBox(height: 20.0),
-                              Text(
-                                'No Job Posts Yet',
-                                style: kTextStyle.copyWith(
-                                    color: kNeutralColor,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 24.0),
-                              ),
-                              SizedBox(height: scrollBottomGap),
-                            ],
-                          )
-                        : RefreshIndicator(
-                            color: kPrimaryColor,
-                            onRefresh: _loadJobPosts,
-                            child: SingleChildScrollView(
-                              physics: const AlwaysScrollableScrollPhysics(
-                                  parent: BouncingScrollPhysics()),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const SizedBox(height: 15.0),
+                )
+              : RefreshIndicator(
+                  color: kPrimaryColor,
+                  onRefresh: _loadJobPosts,
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(
+                      parent: BouncingScrollPhysics(),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: _horizontalPadding),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 15.0),
                                   // Job-type filter chips
                                   SingleChildScrollView(
                                     scrollDirection: Axis.horizontal,
@@ -247,8 +226,8 @@ class _JobPostState extends State<JobPost> {
                                             _loadJobPosts();
                                           },
                                           child: Container(
-                                            width: context.width(),
-                                            padding: const EdgeInsets.all(10.0),
+                                            width: double.infinity,
+                                            padding: const EdgeInsets.all(12.0),
                                             decoration: BoxDecoration(
                                               borderRadius:
                                                   BorderRadius.circular(10.0),
@@ -442,10 +421,6 @@ class _JobPostState extends State<JobPost> {
                               ),
                             ),
                           ),
-              ),
-            ),
-          ],
-        ),
     );
   }
 }

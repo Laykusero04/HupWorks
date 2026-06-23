@@ -93,7 +93,7 @@ class _UploadRequirementsPopUpState extends State<UploadRequirementsPopUp> {
               children: [
                 Column(
                   children: [
-                    const Icon(
+                    FaIcon(
                       FontAwesomeIcons.images,
                       color: kPrimaryColor,
                       size: 40,

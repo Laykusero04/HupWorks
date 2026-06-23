@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'constant.dart';
 import 'profile_detail_theme.dart';
+import 'shell_tab_header.dart';
 
 /// Single animated “bone” for profile skeletons (subtle shimmer on brand-neutral grays).
 class ProfileSkeletonBone extends StatelessWidget {
@@ -94,72 +95,66 @@ class _ProfileSkeletonHostState extends State<ProfileSkeletonHost> with SingleTi
   }
 }
 
-/// Client / seller **tab** profile: header strip + menu rows.
+/// Client / seller drawer profile loading placeholder.
 class ProfileTabSkeleton extends StatelessWidget {
-  const ProfileTabSkeleton({super.key});
+  const ProfileTabSkeleton({
+    super.key,
+    this.persona = ShellPersona.client,
+  });
+
+  final ShellPersona persona;
+
+  Color get _headerColor =>
+      persona == ShellPersona.client ? kPrimaryColor : kSellerPrimary;
 
   @override
   Widget build(BuildContext context) {
     return ProfileSkeletonHost(
       child: (context, shimmer) {
-        return Scaffold(
-          backgroundColor: kDarkWhite,
-          body: SafeArea(
-            bottom: false,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
-                  child: Row(
-                    children: [
-                      ProfileSkeletonBone(listenable: shimmer, width: 44, height: 44, circular: true),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ProfileSkeletonBone(listenable: shimmer, width: 160, height: 20, borderRadius: 8),
-                            const SizedBox(height: 8),
-                            ProfileSkeletonBone(listenable: shimmer, width: 120, height: 14, borderRadius: 6),
-                            const SizedBox(height: 6),
-                            ProfileSkeletonBone(listenable: shimmer, width: 100, height: 12, borderRadius: 6),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                    decoration: BoxDecoration(
-                      color: kWhite,
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: kPrimaryColor.withValues(alpha: 0.08),
-                          blurRadius: 24,
-                          offset: const Offset(0, -6),
+        return ColoredBox(
+          color: kWhite,
+          child: Column(
+            children: [
+              ColoredBox(
+                color: _headerColor,
+                child: SafeArea(
+                  bottom: false,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
+                    child: Row(
+                      children: [
+                        ProfileSkeletonBone(listenable: shimmer, width: 56, height: 56, circular: true),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ProfileSkeletonBone(listenable: shimmer, width: 140, height: 18, borderRadius: 6),
+                              const SizedBox(height: 8),
+                              ProfileSkeletonBone(listenable: shimmer, width: 100, height: 14, borderRadius: 6),
+                            ],
+                          ),
                         ),
                       ],
                     ),
-                    child: ListView.separated(
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: 9,
-                      separatorBuilder: (_, __) => const SizedBox(height: 4),
-                      itemBuilder: (_, i) => ProfileSkeletonBone(
-                        listenable: shimmer,
-                        width: double.infinity,
-                        height: 52,
-                        borderRadius: 14,
-                      ),
-                    ),
                   ),
                 ),
-              ],
-            ),
+              ),
+              const Divider(height: 1),
+              Expanded(
+                child: ListView.separated(
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                  itemCount: 8,
+                  separatorBuilder: (_, __) => const SizedBox(height: 4),
+                  itemBuilder: (_, __) => ProfileSkeletonBone(
+                    listenable: shimmer,
+                    width: double.infinity,
+                    height: 48,
+                    borderRadius: 8,
+                  ),
+                ),
+              ),
+            ],
           ),
         );
       },

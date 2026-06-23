@@ -4,7 +4,6 @@ import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:freelancer/core/notification_navigation.dart';
 import 'package:freelancer/data/models/notification_model.dart';
 import 'package:freelancer/data/repositories/notification_repository.dart';
-import 'package:nb_utils/nb_utils.dart';
 
 import 'constant.dart';
 
@@ -112,16 +111,17 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.only(top: 15.0),
-        child: Container(
-          padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-          width: context.width(),
-          decoration: const BoxDecoration(
-            color: kWhite,
+        child: Material(
+          color: kWhite,
+          shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(30.0),
               topRight: Radius.circular(30.0),
             ),
           ),
+          clipBehavior: Clip.antiAlias,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 15.0, right: 15.0),
           child: _isLoading
               ? const Center(child: CircularProgressIndicator(color: kPrimaryColor))
               : _notifications.isEmpty
@@ -187,6 +187,7 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
                         },
                       ),
                     ),
+          ),
         ),
       ),
     );

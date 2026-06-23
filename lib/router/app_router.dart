@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -29,6 +28,7 @@ import '../screen/seller screen/buyer request/seller_buyer_request.dart';
 import '../screen/seller screen/seller messgae/chat_list.dart';
 import '../screen/attendance/attendance_scan_screen.dart';
 import '../screen/attendance/seller_attendance_hub_screen.dart';
+import '../screen/widgets/shell_tab_header.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _clientShellKey = GlobalKey<NavigatorState>();
@@ -107,16 +107,11 @@ GoRouter createRouter() {
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return _ScaffoldWithNavBar(
+            persona: ShellPersona.client,
             scaffoldKey: clientShellScaffoldKey,
             drawer: const Drawer(child: ClientProfile()),
             navigationShell: navigationShell,
-            items: const [
-              BottomNavigationBarItem(icon: Icon(IconlyBold.home), label: 'Home'),
-              BottomNavigationBarItem(icon: Icon(IconlyBold.chat), label: 'Message'),
-              BottomNavigationBarItem(icon: Icon(IconlyBold.user3), label: 'Talent'),
-              BottomNavigationBarItem(icon: Icon(IconlyBold.paperPlus), label: 'My Jobs'),
-              BottomNavigationBarItem(icon: Icon(IconlyBold.document), label: 'Contracts'),
-            ],
+            items: _clientNavItems,
           );
         },
         branches: [
@@ -186,15 +181,11 @@ GoRouter createRouter() {
               progressIndicatorTheme: const ProgressIndicatorThemeData(color: kSellerPrimary),
             ),
             child: _ScaffoldWithNavBar(
+              persona: ShellPersona.seller,
               scaffoldKey: sellerShellScaffoldKey,
               drawer: const Drawer(child: SellerProfile()),
               navigationShell: navigationShell,
-              items: const [
-                BottomNavigationBarItem(icon: Icon(IconlyBold.home), label: 'Home'),
-                BottomNavigationBarItem(icon: Icon(IconlyBold.chat), label: 'Message'),
-                BottomNavigationBarItem(icon: Icon(IconlyBold.search), label: 'Find Jobs'),
-                BottomNavigationBarItem(icon: Icon(IconlyBold.document), label: 'Contracts'),
-              ],
+              items: _sellerNavItems,
             ),
           );
         },
@@ -261,62 +252,104 @@ GoRouter createRouter() {
   );
 }
 
+const _clientNavItems = [
+  BottomNavigationBarItem(
+    icon: Icon(Icons.home_outlined),
+    activeIcon: Icon(Icons.home),
+    label: 'Home',
+  ),
+  BottomNavigationBarItem(
+    icon: Icon(Icons.chat_bubble_outline),
+    activeIcon: Icon(Icons.chat_bubble),
+    label: 'Message',
+  ),
+  BottomNavigationBarItem(
+    icon: Icon(Icons.people_outline),
+    activeIcon: Icon(Icons.people),
+    label: 'Talent',
+  ),
+  BottomNavigationBarItem(
+    icon: Icon(Icons.work_outline),
+    activeIcon: Icon(Icons.work),
+    label: 'My Jobs',
+  ),
+  BottomNavigationBarItem(
+    icon: Icon(Icons.description_outlined),
+    activeIcon: Icon(Icons.description),
+    label: 'Contracts',
+  ),
+];
+
+const _sellerNavItems = [
+  BottomNavigationBarItem(
+    icon: Icon(Icons.home_outlined),
+    activeIcon: Icon(Icons.home),
+    label: 'Home',
+  ),
+  BottomNavigationBarItem(
+    icon: Icon(Icons.chat_bubble_outline),
+    activeIcon: Icon(Icons.chat_bubble),
+    label: 'Message',
+  ),
+  BottomNavigationBarItem(
+    icon: Icon(Icons.search),
+    activeIcon: Icon(Icons.search),
+    label: 'Find Jobs',
+  ),
+  BottomNavigationBarItem(
+    icon: Icon(Icons.description_outlined),
+    activeIcon: Icon(Icons.description),
+    label: 'Contracts',
+  ),
+];
+
 /// Shared bottom nav for client and seller shells.
-///
-/// Uses a standard [BottomNavigationBar] with [extendBody] disabled so tab
-/// bodies reserve space above the bar and content is not covered (no manual
-/// “floating nav” padding hacks in every screen).
 class _ScaffoldWithNavBar extends StatelessWidget {
+  final ShellPersona persona;
   final StatefulNavigationShell navigationShell;
   final List<BottomNavigationBarItem> items;
   final Widget? drawer;
   final GlobalKey<ScaffoldState>? scaffoldKey;
 
   const _ScaffoldWithNavBar({
+    required this.persona,
     required this.navigationShell,
     required this.items,
     this.drawer,
     this.scaffoldKey,
   });
 
+  Color get _accentColor =>
+      persona == ShellPersona.client ? kPrimaryColor : kSellerPrimary;
+
   @override
   Widget build(BuildContext context) {
-    final manyTabs = items.length > 4;
-
     return Scaffold(
       key: scaffoldKey,
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: kWhite,
       extendBody: false,
       drawer: drawer,
       body: navigationShell,
-      bottomNavigationBar: Theme(
-        data: Theme.of(context).copyWith(
-          splashColor: kPrimaryColor.withOpacity(0.12),
-          highlightColor: Colors.transparent,
+      bottomNavigationBar: DecoratedBox(
+        decoration: const BoxDecoration(
+          color: kWhite,
+          border: Border(top: BorderSide(color: kBorderColorTextField)),
         ),
-        child: SafeArea(
-          top: false,
-            child: Material(
-            color: Theme.of(context).scaffoldBackgroundColor,
-            elevation: 10,
-            shadowColor: Colors.black26,
-            child: BottomNavigationBar(
-              type: BottomNavigationBarType.fixed,
-              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-              elevation: 0,
-              selectedItemColor: Theme.of(context).colorScheme.primary,
-              unselectedItemColor: kLightNeutralColor,
-              selectedFontSize: 12,
-              unselectedFontSize: 11,
-              showUnselectedLabels: !manyTabs,
-              currentIndex: navigationShell.currentIndex,
-              onTap: (i) => navigationShell.goBranch(
-                i,
-                initialLocation: i == navigationShell.currentIndex,
-              ),
-              items: items,
-            ),
+        child: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: kWhite,
+          elevation: 0,
+          selectedItemColor: _accentColor,
+          unselectedItemColor: kLightNeutralColor,
+          selectedFontSize: 12,
+          unselectedFontSize: 12,
+          showUnselectedLabels: true,
+          currentIndex: navigationShell.currentIndex,
+          onTap: (i) => navigationShell.goBranch(
+            i,
+            initialLocation: i == navigationShell.currentIndex,
           ),
+          items: items,
         ),
       ),
     );

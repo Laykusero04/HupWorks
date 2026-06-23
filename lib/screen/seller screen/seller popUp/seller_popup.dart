@@ -292,7 +292,7 @@ class _ImportImagePopUpState extends State<ImportImagePopUp> {
               children: [
                 Column(
                   children: [
-                    const Icon(
+                    FaIcon(
                       FontAwesomeIcons.images,
                       color: kPrimaryColor,
                       size: 40,
@@ -307,7 +307,7 @@ class _ImportImagePopUpState extends State<ImportImagePopUp> {
                 const SizedBox(width: 20.0),
                 Column(
                   children: [
-                    const Icon(
+                    FaIcon(
                       FontAwesomeIcons.camera,
                       color: kLightNeutralColor,
                       size: 40,
@@ -493,7 +493,7 @@ class _ImportDocumentPopUpState extends State<ImportDocumentPopUp> {
               children: [
                 Column(
                   children: [
-                    const Icon(
+                    FaIcon(
                       FontAwesomeIcons.images,
                       color: kPrimaryColor,
                       size: 40,

@@ -3,9 +3,8 @@ import 'package:freelancer/core/utils/order_contract_display.dart';
 import 'package:freelancer/services/orders_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
-import '../../../router/app_router.dart';
+import '../../widgets/client_shell_app_bar.dart';
 import '../../widgets/constant.dart';
-import '../../widgets/shell_tab_header.dart';
 import 'client_order_details.dart';
 
 class ClientOrderList extends StatefulWidget {
@@ -107,58 +106,20 @@ class _ClientOrderListState extends State<ClientOrderList> {
 
   @override
   Widget build(BuildContext context) {
-    final activeCount = _orders.where((o) {
-      final s = (o['status'] as String?)?.toLowerCase();
-      return s == 'active' || s == 'cancellation_requested';
-    }).length;
     return Scaffold(
-      backgroundColor: kDarkWhite,
-      body: Column(
-          children: [
-            ShellTabHeader(
-              persona: ShellPersona.client,
-              title: 'Contracts',
-              leading: ShellTabIconButton(
-                icon: Icons.menu_rounded,
-                onPressed: () => clientShellScaffoldKey.currentState?.openDrawer(),
-                tooltip: 'Menu',
-              ),
-              titleIcon: const ShellTabTitleBadge(icon: Icons.description_outlined),
-              subtitle: RichText(
-                text: TextSpan(
-                  style: kTextStyle.copyWith(color: Colors.white.withValues(alpha: 0.88), fontSize: 12),
-                  children: [
-                    TextSpan(
-                      text: '$activeCount active',
-                      style: kTextStyle.copyWith(
-                        color: const Color(0xFFB8F5D0),
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                      ),
-                    ),
-                    const TextSpan(text: '  ·  '),
-                    TextSpan(text: '${_orders.length} total'),
-                  ],
-                ),
-              ),
-              actions: [
-                ShellTabIconButton(
-                  icon: Icons.refresh_rounded,
-                  onPressed: _isLoading ? null : _loadOrders,
-                  tooltip: 'Refresh',
-                ),
-              ],
-            ),
-            Expanded(
-              child: Container(
-          width: context.width(),
-          decoration: const BoxDecoration(
-            color: kWhite,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(30.0),
-              topRight: Radius.circular(30.0),
-            ),
+      backgroundColor: kWhite,
+      appBar: ClientShellAppBar(
+        title: 'Contracts',
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Refresh',
+            onPressed: _isLoading ? null : _loadOrders,
           ),
+        ],
+      ),
+      body: Container(
+          width: context.width(),
           child: Column(
             children: [
               HorizontalList(
@@ -215,9 +176,6 @@ class _ClientOrderListState extends State<ClientOrderList> {
               ),
             ],
           ),
-        ),
-            ),
-          ],
         ),
     );
   }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:freelancer/data/repositories/notification_repository.dart';
 import 'package:freelancer/screen/client%20screen/client%20job%20post/client_job_post.dart';
@@ -11,8 +10,8 @@ import 'package:freelancer/services/job_posts_service.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nb_utils/nb_utils.dart';
 
-import '../../../router/app_router.dart';
 import '../../../router/route_names.dart';
+import '../../widgets/client_shell_app_bar.dart';
 import '../../widgets/constant.dart';
 import '../client notification/client_notification.dart';
 import '../search/search.dart';
@@ -29,13 +28,13 @@ class ClientHomeScreen extends StatefulWidget {
 }
 
 class _ClientHomeScreenState extends State<ClientHomeScreen> {
-  Map<String, dynamic>? _profile;
   List<Map<String, dynamic>> _categories = [];
   List<Map<String, dynamic>> _myRecentJobs = [];
   List<Map<String, dynamic>> _topSellers = [];
   bool _isLoading = true;
   int _unreadNotificationCount = 0;
   RealtimeChannel? _notificationChannel;
+  NotificationRepository? _notificationRepository;
 
   final PageController _bannerController =
       PageController(viewportFraction: 0.9);
@@ -55,8 +54,14 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _notificationRepository ??= context.read<NotificationRepository>();
+  }
+
+  @override
   void dispose() {
-    context.read<NotificationRepository>().unsubscribe(_notificationChannel);
+    _notificationRepository?.unsubscribe(_notificationChannel);
     _bannerController.dispose();
     super.dispose();
   }
@@ -76,49 +81,20 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
     } catch (_) {}
   }
 
-  Widget _notificationCountBadge() {
-    if (_unreadNotificationCount <= 0) return const SizedBox.shrink();
-    final label = _unreadNotificationCount > 9 ? '9+' : '$_unreadNotificationCount';
-    return Positioned(
-      right: 2,
-      top: 2,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-        decoration: BoxDecoration(
-          color: kAccentColor,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.white, width: 1.5),
-        ),
-        constraints: const BoxConstraints(minWidth: 18),
-        child: Text(
-          label,
-          textAlign: TextAlign.center,
-          style: kTextStyle.copyWith(
-            color: Colors.white,
-            fontSize: 10,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
-      ),
-    );
-  }
-
   Future<void> _loadData() async {
     try {
       final results = await Future.wait([
-        ClientHomeService.getUserProfile(),
         ClientHomeService.getCategories(),
         JobPostsService.getClientJobPosts(),
         ClientHomeService.getTopSellers(),
       ]);
 
       if (mounted) {
-        final myJobs = results[2] as List<Map<String, dynamic>>;
+        final myJobs = results[1] as List<Map<String, dynamic>>;
         setState(() {
-          _profile = results[0] as Map<String, dynamic>?;
-          _categories = results[1] as List<Map<String, dynamic>>;
+          _categories = results[0] as List<Map<String, dynamic>>;
           _myRecentJobs = myJobs.take(3).toList();
-          _topSellers = results[3] as List<Map<String, dynamic>>;
+          _topSellers = results[2] as List<Map<String, dynamic>>;
           _isLoading = false;
         });
       }
@@ -173,249 +149,107 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
     return colors[i % colors.length];
   }
 
-  String _timeGreeting(String firstName) {
-    final h = DateTime.now().hour;
-    if (h < 12) return 'Good morning, $firstName';
-    if (h < 17) return 'Good afternoon, $firstName';
-    return 'Good evening, $firstName';
-  }
 
   @override
   Widget build(BuildContext context) {
-    final userName = _profile?['name'] ?? 'User';
-    final profileImageUrl = _profile?['profile_image_url'] as String?;
-
     return Scaffold(
       backgroundColor: kDarkWhite,
+      appBar: ClientShellAppBar(
+        title: 'Home',
+        actions: _isLoading ? null : _homeAppBarActions(),
+      ),
       body: _isLoading
           ? const _ClientHomeLoading()
-          : Column(
-              children: [
-                // Pinned hero (appbar) — not affected by pull-to-refresh.
-                _buildHero(userName, profileImageUrl),
-                // Refreshable body content below the hero.
-                Expanded(
-                  child: RefreshIndicator(
-                    color: kPrimaryColor,
-                    onRefresh: _loadData,
-                    child: CustomScrollView(
-                      physics: const AlwaysScrollableScrollPhysics(
-                          parent: BouncingScrollPhysics()),
-                      slivers: [
-                        const SliverToBoxAdapter(child: SizedBox(height: 16)),
-                        SliverToBoxAdapter(child: _buildQuickActions()),
-                        const SliverToBoxAdapter(child: SizedBox(height: 22)),
-                        SliverToBoxAdapter(child: _buildPromoCarousel()),
-                        const SliverToBoxAdapter(child: SizedBox(height: 24)),
-                        SliverToBoxAdapter(
-                          child: _buildSectionHeader(
-                            'Browse Categories',
-                            onViewAll: () =>
-                                const ClientAllCategories().launch(context),
-                          ),
-                        ),
-                        SliverToBoxAdapter(child: _buildCategoriesGrid()),
-                        const SliverToBoxAdapter(child: SizedBox(height: 18)),
-                        SliverToBoxAdapter(
-                          child: _buildSectionHeader(
-                            'Your Recent Jobs',
-                            onViewAll: () => const JobPost().launch(context),
-                          ),
-                        ),
-                        SliverToBoxAdapter(child: _buildRecentJobs()),
-                        const SliverToBoxAdapter(child: SizedBox(height: 18)),
-                        SliverToBoxAdapter(
-                          child: _buildSectionHeader(
-                            'Top Freelancers',
-                            onViewAll: () => context.go(AppRoutes.clientTalent),
-                          ),
-                        ),
-                        SliverToBoxAdapter(child: _buildTopFreelancers()),
-                        // Bottom padding so the last sliver clears comfortably above the tab bar.
-                        const SliverToBoxAdapter(child: SizedBox(height: 28)),
-                      ],
+          : RefreshIndicator(
+              color: kPrimaryColor,
+              onRefresh: _loadData,
+              child: CustomScrollView(
+                physics: const AlwaysScrollableScrollPhysics(
+                    parent: BouncingScrollPhysics()),
+                slivers: [
+                  SliverToBoxAdapter(child: _buildSearchBar()),
+                  const SliverToBoxAdapter(child: SizedBox(height: 16)),
+                  SliverToBoxAdapter(child: _buildQuickActions()),
+                  const SliverToBoxAdapter(child: SizedBox(height: 22)),
+                  SliverToBoxAdapter(child: _buildPromoCarousel()),
+                  const SliverToBoxAdapter(child: SizedBox(height: 24)),
+                  SliverToBoxAdapter(
+                    child: _buildSectionHeader(
+                      'Browse Categories',
+                      onViewAll: () =>
+                          const ClientAllCategories().launch(context),
                     ),
                   ),
-                ),
-              ],
+                  SliverToBoxAdapter(child: _buildCategoriesGrid()),
+                  const SliverToBoxAdapter(child: SizedBox(height: 18)),
+                  SliverToBoxAdapter(
+                    child: _buildSectionHeader(
+                      'Your Recent Jobs',
+                      onViewAll: () => const JobPost().launch(context),
+                    ),
+                  ),
+                  SliverToBoxAdapter(child: _buildRecentJobs()),
+                  const SliverToBoxAdapter(child: SizedBox(height: 18)),
+                  SliverToBoxAdapter(
+                    child: _buildSectionHeader(
+                      'Top Freelancers',
+                      onViewAll: () => context.go(AppRoutes.clientTalent),
+                    ),
+                  ),
+                  SliverToBoxAdapter(child: _buildTopFreelancers()),
+                  const SliverToBoxAdapter(child: SizedBox(height: 28)),
+                ],
+              ),
             ),
     );
   }
 
-  // ------------------------- Hero header -------------------------
-  Widget _buildHero(String userName, String? profileImageUrl) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: kClientShellGradient,
-        ),
-        borderRadius: const BorderRadius.vertical(
-          bottom: Radius.circular(28),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: kPrimaryColor.withOpacity(0.18),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
-          ),
-        ],
+  List<Widget> _homeAppBarActions() {
+    return [
+      IconButton(
+        tooltip: 'Notifications',
+        onPressed: () async {
+          await const ClientNotification().launch(context);
+          if (mounted) _loadUnreadNotificationCount();
+        },
+        icon: _unreadNotificationCount > 0
+            ? Badge(
+                label: Text(
+                  _unreadNotificationCount > 9 ? '9+' : '$_unreadNotificationCount',
+                  style: const TextStyle(fontSize: 10),
+                ),
+                child: const Icon(Icons.notifications_outlined),
+              )
+            : const Icon(Icons.notifications_outlined),
       ),
-      child: SafeArea(
-        bottom: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    ];
+  }
+
+  Widget _buildSearchBar() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      child: GestureDetector(
+        onTap: () {
+          showSearch(
+            context: context,
+            delegate: CustomSearchDelegate(),
+          );
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          decoration: BoxDecoration(
+            color: kWhite,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: kBorderColorTextField),
+          ),
+          child: Row(
             children: [
-              Row(
-                children: [
-                  GestureDetector(
-                    onTap: () => clientShellScaffoldKey.currentState?.openDrawer(),
-                    child: Container(
-                      height: 46,
-                      width: 46,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 2),
-                        image: DecorationImage(
-                          image: profileImageUrl != null
-                              ? NetworkImage(profileImageUrl) as ImageProvider
-                              : const AssetImage('images/profile3.png'),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          _timeGreeting(userName),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: kTextStyle.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 16,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          'Find talent and run projects in one place',
-                          style: kTextStyle.copyWith(
-                            color: Colors.white.withOpacity(0.85),
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () => clientShellScaffoldKey.currentState?.openDrawer(),
-                    child: Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.18),
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white.withOpacity(0.35)),
-                      ),
-                      child: const Icon(Icons.menu_rounded, color: Colors.white, size: 22),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  GestureDetector(
-                    onTap: () async {
-                      await const ClientNotification().launch(context);
-                      if (mounted) _loadUnreadNotificationCount();
-                    },
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.18),
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                                color: Colors.white.withOpacity(0.35)),
-                          ),
-                          child: const Icon(IconlyLight.notification,
-                              color: Colors.white, size: 20),
-                        ),
-                        _notificationCountBadge(),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 22),
-              Text(
-                'What service do',
-                style: kTextStyle.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 22,
-                  height: 1.1,
-                ),
-              ),
-              Text(
-                'you need today?',
-                style: kTextStyle.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w800,
-                  fontSize: 24,
-                  height: 1.2,
-                ),
-              ),
-              const SizedBox(height: 18),
-              GestureDetector(
-                onTap: () {
-                  showSearch(
-                    context: context,
-                    delegate: CustomSearchDelegate(),
-                  );
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 14, vertical: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
-                        blurRadius: 14,
-                        offset: const Offset(0, 6),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(FeatherIcons.search,
-                          color: kPrimaryColor, size: 20),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          'Search services, freelancers...',
-                          style: kTextStyle.copyWith(
-                              color: kLightNeutralColor, fontSize: 13),
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(7),
-                        decoration: BoxDecoration(
-                          color: kPrimaryColor,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: const Icon(Icons.tune_rounded,
-                            color: Colors.white, size: 16),
-                      ),
-                    ],
-                  ),
+              const Icon(Icons.search, color: kLightNeutralColor, size: 22),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'Search services, freelancers...',
+                  style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 14),
                 ),
               ),
             ],
@@ -1209,198 +1043,62 @@ class _ClientHomeLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bar = Colors.white.withOpacity(0.22);
     final muted = kLightNeutralColor.withOpacity(0.35);
 
-    return Column(
-      children: [
-        Container(
-          width: double.infinity,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color(0xFF0E8C3D),
-                Color(0xFF16A34A),
-                Color(0xFF38C172),
-              ],
-            ),
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            height: 48,
+            decoration: _card(muted),
           ),
-          child: SafeArea(
-            bottom: false,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+          const SizedBox(height: 22),
+          Container(
+            height: 96,
+            decoration: _card(Colors.white),
+          ),
+          const SizedBox(height: 22),
+          Container(
+            height: 150,
+            decoration: _card(Colors.white),
+          ),
+          const SizedBox(height: 24),
+          Container(
+            height: 16,
+            width: 140,
+            decoration: _card(muted),
+          ),
+          const SizedBox(height: 14),
+          GridView.count(
+            crossAxisCount: 4,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            mainAxisSpacing: 12,
+            crossAxisSpacing: 10,
+            childAspectRatio: 0.85,
+            children: List.generate(
+              8,
+              (_) => Column(
                 children: [
-                  Row(
-                    children: [
-                      Container(
-                        height: 46,
-                        width: 46,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: bar,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              height: 14,
-                              width: 160,
-                              decoration: BoxDecoration(
-                                color: bar,
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Container(
-                              height: 10,
-                              width: 220,
-                              decoration: BoxDecoration(
-                                color: bar,
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        height: 40,
-                        width: 40,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: bar,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 28),
                   Container(
-                    height: 22,
-                    width: 180,
-                    decoration: BoxDecoration(
-                      color: bar,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
+                    height: 52,
+                    width: 52,
+                    decoration: _card(muted),
                   ),
                   const SizedBox(height: 8),
                   Container(
-                    height: 24,
-                    width: 220,
-                    decoration: BoxDecoration(
-                      color: bar,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                  ),
-                  const SizedBox(height: 18),
-                  Container(
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.9),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
+                    height: 10,
+                    width: 40,
+                    decoration: _card(muted),
                   ),
                 ],
               ),
             ),
           ),
-        ),
-        Expanded(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  height: 96,
-                  decoration: _card(Colors.white),
-                ),
-                const SizedBox(height: 22),
-                Container(
-                  height: 150,
-                  decoration: _card(Colors.white),
-                ),
-                const SizedBox(height: 24),
-                Container(
-                  height: 16,
-                  width: 140,
-                  decoration: _card(muted),
-                ),
-                const SizedBox(height: 14),
-                GridView.count(
-                  crossAxisCount: 4,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  mainAxisSpacing: 12,
-                  crossAxisSpacing: 10,
-                  childAspectRatio: 0.85,
-                  children: List.generate(
-                    8,
-                    (_) => Column(
-                      children: [
-                        Container(
-                          height: 52,
-                          width: 52,
-                          decoration: _card(muted),
-                        ),
-                        const SizedBox(height: 8),
-                        Container(
-                          height: 10,
-                          width: 40,
-                          decoration: _card(muted),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(
-                    3,
-                    (i) => Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: SizedBox(
-                        width: i == 0 ? 22 : 6,
-                        height: 6,
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: i == 0 ? kPrimaryColor : kPrimaryColor.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 28),
-                Container(
-                  height: 14,
-                  width: 120,
-                  decoration: _card(muted),
-                ),
-                const SizedBox(height: 12),
-                ...List.generate(
-                  3,
-                  (_) => Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: Container(
-                      height: 72,
-                      decoration: _card(Colors.white),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

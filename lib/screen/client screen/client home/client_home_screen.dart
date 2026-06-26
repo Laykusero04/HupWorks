@@ -579,7 +579,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
           crossAxisCount: 4,
           mainAxisSpacing: 14,
           crossAxisSpacing: 10,
-          childAspectRatio: 0.82,
+          childAspectRatio: 0.75,
         ),
         itemCount: visible.length,
         itemBuilder: (_, i) {
@@ -588,32 +588,53 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
             onTap: () => const ClientAllCategories().launch(context),
             child: Column(
               children: [
-                Container(
-                  height: 56,
-                  width: 56,
-                  decoration: BoxDecoration(
-                    color: _categoryTint(i),
-                    borderRadius: BorderRadius.circular(18),
-                    border: Border.all(
-                      color: _categoryIconColor(i).withOpacity(0.15),
+                Expanded(
+                  flex: 5,
+                  child: Center(
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final size = constraints.biggest.shortestSide
+                            .clamp(40.0, 56.0);
+                        return SizedBox(
+                          width: size,
+                          height: size,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: _categoryTint(i),
+                              borderRadius: BorderRadius.circular(18),
+                              border: Border.all(
+                                color:
+                                    _categoryIconColor(i).withOpacity(0.15),
+                              ),
+                            ),
+                            child: Icon(
+                              CategoryIcons.iconData(
+                                  cat['icon'] as String?),
+                              size: size * 0.5,
+                              color: _categoryIconColor(i),
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
-                  child: Icon(
-                    CategoryIcons.iconData(cat['icon'] as String?),
-                    size: 28,
-                    color: _categoryIconColor(i),
-                  ),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  cat['name'] ?? '',
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: kTextStyle.copyWith(
-                    color: kNeutralColor,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
+                Expanded(
+                  flex: 3,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(
+                      cat['name'] ?? '',
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: kTextStyle.copyWith(
+                        color: kNeutralColor,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        height: 1.2,
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -1077,21 +1098,31 @@ class _ClientHomeLoading extends StatelessWidget {
             physics: const NeverScrollableScrollPhysics(),
             mainAxisSpacing: 12,
             crossAxisSpacing: 10,
-            childAspectRatio: 0.85,
+            childAspectRatio: 0.75,
             children: List.generate(
               8,
               (_) => Column(
                 children: [
-                  Container(
-                    height: 52,
-                    width: 52,
-                    decoration: _card(muted),
+                  Expanded(
+                    flex: 5,
+                    child: Center(
+                      child: Container(
+                        height: 52,
+                        width: 52,
+                        decoration: _card(muted),
+                      ),
+                    ),
                   ),
-                  const SizedBox(height: 8),
-                  Container(
-                    height: 10,
-                    width: 40,
-                    decoration: _card(muted),
+                  Expanded(
+                    flex: 3,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Container(
+                        height: 10,
+                        width: 40,
+                        decoration: _card(muted),
+                      ),
+                    ),
                   ),
                 ],
               ),

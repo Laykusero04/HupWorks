@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/utils/support_chat_navigation.dart';
 import 'package:freelancer/screen/seller%20screen/profile/seller_profile_details.dart';
 import 'package:freelancer/services/auth_service.dart';
 import 'package:freelancer/services/profile_service.dart';
@@ -160,7 +161,10 @@ class _SellerProfileState extends State<SellerProfile> {
                 ProfileMenuListTile(
                   icon: Icons.help_outline,
                   title: 'Help & Support',
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.pop(context);
+                    openSupportChat(context);
+                  },
                 ),
                 ProfileMenuListTile(
                   icon: Icons.logout,

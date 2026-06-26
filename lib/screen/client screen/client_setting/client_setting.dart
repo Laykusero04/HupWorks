@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:freelancer/core/utils/support_chat_navigation.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../widgets/constant.dart';
@@ -150,6 +151,29 @@ class _ClientSettingState extends State<ClientSetting> {
                 ),
                 title: Text(
                   'Terms of Service',
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: kTextStyle.copyWith(color: kNeutralColor),
+                ),
+              ),
+              ListTile(
+                onTap: () => openSupportChat(context),
+                visualDensity: const VisualDensity(vertical: -3),
+                horizontalTitleGap: 10,
+                contentPadding: const EdgeInsets.only(bottom: 15),
+                leading: Container(
+                  padding: const EdgeInsets.all(10.0),
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Color(0xFFE7F5FF),
+                  ),
+                  child: const Icon(
+                    Icons.support_agent_outlined,
+                    color: Color(0xFF0B7DD6),
+                  ),
+                ),
+                title: Text(
+                  'Contact Support',
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                   style: kTextStyle.copyWith(color: kNeutralColor),

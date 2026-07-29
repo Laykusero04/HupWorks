@@ -585,7 +585,9 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
         itemBuilder: (_, i) {
           final cat = visible[i];
           return GestureDetector(
-            onTap: () => const ClientAllCategories().launch(context),
+            onTap: () => ClientAllCategories(
+              initialQuery: cat['name'] as String?,
+            ).launch(context),
             child: Column(
               children: [
                 Expanded(

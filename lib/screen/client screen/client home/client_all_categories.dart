@@ -5,7 +5,10 @@ import 'package:freelancer/services/client_home_service.dart';
 import '../../widgets/constant.dart';
 
 class ClientAllCategories extends StatefulWidget {
-  const ClientAllCategories({super.key});
+  /// Pre-fills the search field (e.g. when opening from a category on home).
+  final String? initialQuery;
+
+  const ClientAllCategories({super.key, this.initialQuery});
 
   @override
   State<ClientAllCategories> createState() => _ClientAllCategoriesState();
@@ -34,6 +37,11 @@ class _ClientAllCategoriesState extends State<ClientAllCategories> {
   @override
   void initState() {
     super.initState();
+    final initial = widget.initialQuery?.trim();
+    if (initial != null && initial.isNotEmpty) {
+      _query = initial;
+      _searchController.text = initial;
+    }
     _load();
   }
 

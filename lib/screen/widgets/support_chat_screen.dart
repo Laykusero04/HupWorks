@@ -18,11 +18,23 @@ class SupportChatScreen extends StatefulWidget {
 class _SupportChatScreenState extends State<SupportChatScreen>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
+  Map<String, dynamic>? _profile;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _profile = ProfileService.peekCachedProfile();
+    _loadProfile();
+  }
+
+  Future<void> _loadProfile() async {
+    try {
+      final profile = await ProfileService.getProfile();
+      if (mounted && profile != null) {
+        setState(() => _profile = profile);
+      }
+    } catch (_) {}
   }
 
   @override
@@ -35,7 +47,7 @@ class _SupportChatScreenState extends State<SupportChatScreen>
     final user = AuthService.currentUser;
     if (user == null) return null;
 
-    final profile = ProfileService.peekCachedProfile();
+    final profile = _profile ?? ProfileService.peekCachedProfile();
     final rawName = (profile?['name'] as String?)?.trim() ??
         (user.userMetadata?['name'] as String?)?.trim();
     final role = (user.userMetadata?['role'] as String?)?.trim();

@@ -26,18 +26,14 @@ class CustomSearchDelegate extends SearchDelegate {
 
   @override
   Widget? buildLeading(BuildContext context) {
-    IconButton(
+    return IconButton(
       color: kNeutralColor,
-      onPressed: () {
-        close(context, null);
-      },
+      onPressed: () => close(context, null),
       icon: const Icon(
         Icons.arrow_back,
         color: kNeutralColor,
       ),
     );
-
-    return null;
   }
 
   @override
@@ -82,7 +78,10 @@ class CustomSearchDelegate extends SearchDelegate {
               ),
               const Spacer(),
               IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  query = '';
+                  showSuggestions(context);
+                },
                 icon: const Icon(Icons.clear, color: kNeutralColor),
               )
             ],

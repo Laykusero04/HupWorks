@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 
 import 'constant.dart';
@@ -39,6 +40,7 @@ class ProfileLocationFields extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final accent = accentColor ?? kPrimaryColor;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -47,7 +49,7 @@ class ProfileLocationFields extends StatelessWidget {
           onPressed: () => _openMap(context),
           icon: Icon(FeatherIcons.mapPin, size: 18, color: accent),
           label: Text(
-            'Pick location on map',
+            context.l10n.pickLocationOnMap,
             style: kTextStyle.copyWith(color: accent, fontWeight: FontWeight.w600),
           ),
           style: OutlinedButton.styleFrom(
@@ -59,7 +61,7 @@ class ProfileLocationFields extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Text(
-          'Center the pin on your spot, then confirm.',
+          context.l10n.mapPinConfirmHint,
           style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12, height: 1.3),
         ),
         const SizedBox(height: 16),
@@ -69,9 +71,9 @@ class ProfileLocationFields extends StatelessWidget {
           cursorColor: kNeutralColor,
           textInputAction: TextInputAction.next,
           decoration: kInputDecoration.copyWith(
-            labelText: 'Country',
+            labelText: context.l10n.country,
             labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-            hintText: 'Map or type',
+            hintText: context.l10n.mapOrType,
             hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
             border: const OutlineInputBorder(),
           ),
@@ -83,9 +85,9 @@ class ProfileLocationFields extends StatelessWidget {
           cursorColor: kNeutralColor,
           textInputAction: TextInputAction.next,
           decoration: kInputDecoration.copyWith(
-            labelText: 'City',
+            labelText: context.l10n.city,
             labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-            hintText: 'Map or type',
+            hintText: context.l10n.mapOrType,
             hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
             border: const OutlineInputBorder(),
           ),

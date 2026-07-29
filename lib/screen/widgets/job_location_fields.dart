@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -68,6 +69,7 @@ class _JobLocationFieldsState extends State<JobLocationFields> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final accent = widget.accentColor ?? kPrimaryColor;
     final isOnsite = widget.locationType == JobLocationType.onsite;
 
@@ -85,7 +87,7 @@ class _JobLocationFieldsState extends State<JobLocationFields> {
                   color: kNeutralColor, fontWeight: FontWeight.bold),
             ),
             const SizedBox(width: 4),
-            Text('*',
+            Text(l10n.requiredFieldMark,
                 style: kTextStyle.copyWith(
                     color: Colors.red, fontWeight: FontWeight.bold)),
           ],

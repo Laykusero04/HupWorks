@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:latlong2/latlong.dart';
@@ -37,7 +38,7 @@ class MapLocationPickerScreen extends StatefulWidget {
     this.initialLocation,
     this.initialPosition,
     this.accentColor,
-    this.title = 'Pick location',
+    this.title,
   });
 
   final MapLocationPickerPurpose purpose;
@@ -47,7 +48,7 @@ class MapLocationPickerScreen extends StatefulWidget {
   final String? initialLocation;
   final LatLng? initialPosition;
   final Color? accentColor;
-  final String title;
+  final String? title;
 
   @override
   State<MapLocationPickerScreen> createState() => _MapLocationPickerScreenState();
@@ -118,7 +119,7 @@ class _MapLocationPickerScreenState extends State<MapLocationPickerScreen> {
       if (!mounted) return;
       if (marks.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not read an address for this point. Try moving the map.')),
+          SnackBar(content: Text(context.l10n.mapNoAddressForPoint)),
         );
         return;
       }
@@ -130,7 +131,7 @@ class _MapLocationPickerScreenState extends State<MapLocationPickerScreen> {
       if (widget.purpose == MapLocationPickerPurpose.profile) {
         if (city.isEmpty && country.isEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('No city or country found. Try zooming in closer.')),
+            SnackBar(content: Text(context.l10n.mapNoCityCountryFound)),
           );
           return;
         }
@@ -168,7 +169,7 @@ class _MapLocationPickerScreenState extends State<MapLocationPickerScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Address lookup failed: $e')),
+          SnackBar(content: Text(context.l10n.mapAddressLookupFailed('$e'))),
         );
       }
     } finally {
@@ -178,12 +179,13 @@ class _MapLocationPickerScreenState extends State<MapLocationPickerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final start = widget.initialPosition ?? _center;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title, style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)),
+        title: Text(widget.title ?? context.l10n.mapPickLocation, style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)),
         backgroundColor: kDarkWhite,
         elevation: 0,
         iconTheme: const IconThemeData(color: kNeutralColor),
@@ -194,8 +196,8 @@ class _MapLocationPickerScreenState extends State<MapLocationPickerScreen> {
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
             child: Text(
               widget.purpose == MapLocationPickerPurpose.job
-                  ? 'Move the map so the pin marks the job site.'
-                  : 'Move the map so the pin marks your spot.',
+                  ? context.l10n.mapMovePinJob
+                  : context.l10n.mapMovePinProfile,
               style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13, height: 1.35),
             ),
           ),
@@ -284,7 +286,7 @@ class _MapLocationPickerScreenState extends State<MapLocationPickerScreen> {
                         width: 22,
                         child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                       )
-                    : const Text('Use this location'),
+                    : Text(context.l10n.mapUseThisLocation),
               ),
             ),
           ),

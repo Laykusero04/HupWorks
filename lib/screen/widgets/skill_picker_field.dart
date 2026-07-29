@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/services/skill_service.dart';
 
 import 'constant.dart';
@@ -44,7 +45,7 @@ Future<String?> showCustomSkillNameDialog(
   if (excludedNames.contains(result.toLowerCase())) {
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('You already added "$result"')),
+        SnackBar(content: Text(context.l10n.skillAlreadyAdded(result))),
       );
     }
     return null;
@@ -84,8 +85,9 @@ class _CustomSkillNameDialogState extends State<_CustomSkillNameDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return AlertDialog(
-      title: Text('Add custom skill', style: kTextStyle.copyWith(fontWeight: FontWeight.bold)),
+      title: Text(l10n.addCustomSkill, style: kTextStyle.copyWith(fontWeight: FontWeight.bold)),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -108,8 +110,8 @@ class _CustomSkillNameDialogState extends State<_CustomSkillNameDialog> {
         ],
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-        FilledButton(onPressed: _submit, child: const Text('Add')),
+        TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
+        FilledButton(onPressed: _submit, child: Text(l10n.add)),
       ],
     );
   }
@@ -304,7 +306,7 @@ class _SkillPickerSheetState extends State<_SkillPickerSheet> {
                   child: OutlinedButton.icon(
                     onPressed: () => _addCustom(prefilled: query.isNotEmpty ? query : null),
                     icon: const Icon(Icons.edit_outlined, size: 18),
-                    label: const Text('Add custom skill'),
+                    label: Text(context.l10n.addCustomSkill),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: kPrimaryColor,
                       minimumSize: const Size(double.infinity, 44),

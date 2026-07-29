@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/services/chat_service.dart';
 import 'package:freelancer/services/attendance_service.dart';
 import 'package:freelancer/services/hire_onboarding_service.dart';
@@ -8,7 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../widgets/constant.dart';
-import '../seller messgae/chat_inbox.dart';
+import '../seller message/chat_inbox.dart';
 
 class SellerApplications extends StatefulWidget {
   const SellerApplications({super.key});
@@ -54,7 +55,7 @@ class _SellerApplicationsState extends State<SellerApplications> {
       if (mounted) {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading applications: $e')),
+          SnackBar(content: Text(context.l10n.errorLoadingApplications('$e'))),
         );
       }
     }
@@ -92,11 +93,12 @@ class _SellerApplicationsState extends State<SellerApplications> {
         conversationId: conversation['id'] as String,
         otherUserName: client?['name'] ?? 'Client',
         otherUserImage: client?['profile_image_url'] ?? '',
+        otherUserId: clientId,
       ).launch(context);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not open chat: $e')),
+          SnackBar(content: Text(context.l10n.couldNotOpenChatWithDetail('$e'))),
         );
       }
     }

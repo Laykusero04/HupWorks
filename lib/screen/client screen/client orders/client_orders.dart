@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/utils/order_cancellation.dart';
 import 'package:freelancer/core/utils/order_contract_display.dart';
+import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/services/orders_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -17,15 +20,15 @@ class ClientOrderList extends StatefulWidget {
 class _ClientOrderListState extends State<ClientOrderList> {
   List<Map<String, dynamic>> _orders = [];
   bool _isLoading = true;
-  String _selectedStatus = 'All';
+  String _selectedStatus = 'all';
 
-  final List<String> _statusTabs = [
-    'All',
-    'Active',
-    'Pending',
-    'Delivered',
-    'Completed',
-    'Cancelled',
+  static const _statusTabs = [
+    'all',
+    'active',
+    'pending',
+    'delivered',
+    'completed',
+    'cancelled',
   ];
 
   @override
@@ -39,7 +42,7 @@ class _ClientOrderListState extends State<ClientOrderList> {
     try {
       await OrdersService.expireStaleCancellationRequests();
       final orders = await OrdersService.getClientOrders(
-        status: _selectedStatus == 'All' ? null : _selectedStatus.toLowerCase(),
+        status: _selectedStatus == 'all' ? null : _selectedStatus,
       );
       if (mounted) {
         setState(() {
@@ -51,7 +54,9 @@ class _ClientOrderListState extends State<ClientOrderList> {
       if (mounted) {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading orders: $e')),
+          SnackBar(
+            content: Text(context.l10n.errorLoadingOrders('$e')),
+          ),
         );
       }
     }
@@ -70,50 +75,79 @@ class _ClientOrderListState extends State<ClientOrderList> {
     if (dateStr == null) return '';
     final date = DateTime.tryParse(dateStr);
     if (date == null) return '';
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
+    ];
     return '${date.day} ${months[date.month - 1]} ${date.year}';
   }
 
-  String _formatRemaining(Duration d) {
-    if (d.inSeconds <= 0) return 'Overdue';
-    if (d.inDays > 0) return '${d.inDays}d ${d.inHours.remainder(24)}h left';
-    if (d.inHours > 0) return '${d.inHours}h ${d.inMinutes.remainder(60)}m left';
-    return '${d.inMinutes}m left';
-  }
-
   _StatusStyle _statusStyle(String? status) {
+    final l10n = context.l10n;
+    final label = OrderCancellationReason.statusLabel(status, l10n);
     switch ((status ?? '').toLowerCase()) {
       case 'active':
-        return const _StatusStyle('Active', kPrimaryColor, Color(0xFFE8F7EE));
+        return _StatusStyle(label, kPrimaryColor, const Color(0xFFE8F7EE));
       case 'pending':
-        return const _StatusStyle('Pending', Color(0xFFD97706), Color(0xFFFEF3C7));
+        return _StatusStyle(
+          label,
+          const Color(0xFFD97706),
+          const Color(0xFFFEF3C7),
+        );
       case 'delivered':
-        return const _StatusStyle('Delivered', kSecondaryColor, Color(0xFFDBEAFE));
+        return _StatusStyle(
+          label,
+          kSecondaryColor,
+          const Color(0xFFDBEAFE),
+        );
       case 'completed':
-        return const _StatusStyle('Completed', Color(0xFF059669), Color(0xFFD1FAE5));
+        return _StatusStyle(
+          label,
+          const Color(0xFF059669),
+          const Color(0xFFD1FAE5),
+        );
       case 'cancelled':
-        return const _StatusStyle('Cancelled', Color(0xFFDC2626), Color(0xFFFEE2E2));
+        return _StatusStyle(
+          label,
+          const Color(0xFFDC2626),
+          const Color(0xFFFEE2E2),
+        );
       case 'cancellation_requested':
-        return const _StatusStyle(
-          'Cancel pending',
-          Color(0xFFD97706),
-          Color(0xFFFFF8E1),
+        return _StatusStyle(
+          l10n.orderStatusCancellationPending,
+          const Color(0xFFD97706),
+          const Color(0xFFFFF8E1),
         );
       default:
-        return _StatusStyle(status?.capitalize ?? 'Unknown', kLightNeutralColor, kDarkWhite);
+        return _StatusStyle(
+          label,
+          kLightNeutralColor,
+          kDarkWhite,
+        );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Scaffold(
       backgroundColor: kWhite,
       appBar: ClientShellAppBar(
-        title: 'Contracts',
+        title: l10n.contracts,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            tooltip: 'Refresh',
+            tooltip: l10n.refreshTooltip,
             onPressed: _isLoading ? null : _loadOrders,
           ),
         ],
@@ -126,24 +160,30 @@ class _ClientOrderListState extends State<ClientOrderList> {
                 padding: const EdgeInsets.only(left: 15.0, top: 15.0),
                 itemCount: _statusTabs.length,
                 itemBuilder: (_, i) {
-                  final selected = _selectedStatus == _statusTabs[i];
+                  final tab = _statusTabs[i];
+                  final selected = _selectedStatus == tab;
                   return GestureDetector(
                     onTap: () {
-                      setState(() => _selectedStatus = _statusTabs[i]);
+                      setState(() => _selectedStatus = tab);
                       _loadOrders();
                     },
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 9),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(30.0),
                         color: selected ? kPrimaryColor : kDarkWhite,
-                        border: Border.all(color: selected ? kPrimaryColor : kBorderColorTextField),
+                        border: Border.all(
+                            color: selected
+                                ? kPrimaryColor
+                                : kBorderColorTextField),
                       ),
                       child: Text(
-                        _statusTabs[i],
+                        L10nLabels.orderFilterTabLabel(l10n, tab),
                         style: kTextStyle.copyWith(
                             color: selected ? kWhite : kNeutralColor,
-                            fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
+                            fontWeight:
+                                selected ? FontWeight.w600 : FontWeight.normal,
                             fontSize: 13),
                       ),
                     ),
@@ -153,24 +193,34 @@ class _ClientOrderListState extends State<ClientOrderList> {
               const SizedBox(height: 12.0),
               Expanded(
                 child: _isLoading
-                    ? const Center(child: CircularProgressIndicator(color: kPrimaryColor))
+                    ? const Center(
+                        child: CircularProgressIndicator(color: kPrimaryColor))
                     : _orders.isEmpty
                         ? Center(
                             child: Text(
-                              _selectedStatus == 'All'
-                                  ? 'No contracts yet'
-                                  : 'No ${_selectedStatus.toLowerCase()} contracts',
-                              style: kTextStyle.copyWith(color: kLightNeutralColor),
+                              _selectedStatus == 'all'
+                                  ? l10n.noContractsYet
+                                  : l10n.noFilteredContracts(
+                                      L10nLabels.orderFilterTabLabel(
+                                        l10n,
+                                        _selectedStatus,
+                                      ).toLowerCase(),
+                                    ),
+                              style: kTextStyle.copyWith(
+                                  color: kLightNeutralColor),
                             ),
                           )
                         : RefreshIndicator(
                             color: kPrimaryColor,
                             onRefresh: _loadOrders,
                             child: ListView.builder(
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                              physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 14, vertical: 6),
+                              physics: const AlwaysScrollableScrollPhysics(
+                                  parent: BouncingScrollPhysics()),
                               itemCount: _orders.length,
-                              itemBuilder: (_, i) => _buildContractCard(_orders[i]),
+                              itemBuilder: (_, i) =>
+                                  _buildContractCard(_orders[i]),
                             ),
                           ),
               ),
@@ -181,11 +231,14 @@ class _ClientOrderListState extends State<ClientOrderList> {
   }
 
   Widget _buildContractCard(Map<String, dynamic> order) {
+    final l10n = context.l10n;
     final service = order['services'] as Map<String, dynamic>?;
     final seller = order['seller'] as Map<String, dynamic>?;
-    final sellerName = (seller?['name'] as String?) ?? 'Unknown';
+    final sellerName = (seller?['name'] as String?) ?? l10n.unknown;
     final orderId = order['id'].toString();
-    final idShort = orderId.length >= 8 ? orderId.substring(0, 8).toUpperCase() : orderId.toUpperCase();
+    final idShort = orderId.length >= 8
+        ? orderId.substring(0, 8).toUpperCase()
+        : orderId.toUpperCase();
     final status = _statusStyle(order['status'] as String?);
     final remaining = _getTimeRemaining(order);
     final isActive = (order['status'] as String?)?.toLowerCase() == 'active';
@@ -204,7 +257,10 @@ class _ClientOrderListState extends State<ClientOrderList> {
             borderRadius: BorderRadius.circular(14),
             border: Border.all(color: kBorderColorTextField),
             boxShadow: [
-              BoxShadow(color: kNeutralColor.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, 4)),
+              BoxShadow(
+                  color: kNeutralColor.withOpacity(0.04),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4)),
             ],
           ),
           clipBehavior: Clip.antiAlias,
@@ -212,22 +268,34 @@ class _ClientOrderListState extends State<ClientOrderList> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                 color: status.bg,
                 child: Row(
                   children: [
-                    Icon(Icons.description_outlined, size: 16, color: status.fg),
+                    Icon(Icons.description_outlined,
+                        size: 16, color: status.fg),
                     8.width,
                     Expanded(
                       child: Text('#$idShort',
                           style: kTextStyle.copyWith(
-                              color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 13, letterSpacing: 0.5)),
+                              color: kNeutralColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                              letterSpacing: 0.5)),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(color: status.fg, borderRadius: BorderRadius.circular(20)),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                          color: status.fg,
+                          borderRadius: BorderRadius.circular(20)),
                       child: Text(status.label,
-                          style: kTextStyle.copyWith(color: kWhite, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.3)),
+                          style: kTextStyle.copyWith(
+                              color: kWhite,
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.3)),
                     ),
                   ],
                 ),
@@ -243,8 +311,13 @@ class _ClientOrderListState extends State<ClientOrderList> {
                           radius: 20,
                           backgroundColor: kPrimaryColor.withOpacity(0.12),
                           child: Text(
-                            sellerName.isNotEmpty ? sellerName[0].toUpperCase() : '?',
-                            style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold, fontSize: 15),
+                            sellerName.isNotEmpty
+                                ? sellerName[0].toUpperCase()
+                                : '?',
+                            style: kTextStyle.copyWith(
+                                color: kPrimaryColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15),
                           ),
                         ),
                         10.width,
@@ -253,24 +326,36 @@ class _ClientOrderListState extends State<ClientOrderList> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(sellerName,
-                                  style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.w600, fontSize: 14),
+                                  style: kTextStyle.copyWith(
+                                      color: kNeutralColor,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 14),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis),
                               2.height,
-                              Text('Started ${_formatDate(order['created_at'] as String?)}',
-                                  style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12)),
+                              Text(
+                                  l10n.contractStartedOn(_formatDate(
+                                      order['created_at'] as String?)),
+                                  style: kTextStyle.copyWith(
+                                      color: kLightNeutralColor, fontSize: 12)),
                             ],
                           ),
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Text('AMOUNT',
+                            Text(l10n.amountCaps,
                                 style: kTextStyle.copyWith(
-                                    color: kLightNeutralColor, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 0.5)),
+                                    color: kLightNeutralColor,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: 0.5)),
                             2.height,
                             Text('$currencySign$price',
-                                style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold, fontSize: 18)),
+                                style: kTextStyle.copyWith(
+                                    color: kPrimaryColor,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18)),
                           ],
                         ),
                       ],
@@ -279,10 +364,13 @@ class _ClientOrderListState extends State<ClientOrderList> {
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(color: kDarkWhite, borderRadius: BorderRadius.circular(10)),
+                      decoration: BoxDecoration(
+                          color: kDarkWhite,
+                          borderRadius: BorderRadius.circular(10)),
                       child: Row(
                         children: [
-                          const Icon(Icons.work_outline, size: 16, color: kPrimaryColor),
+                          const Icon(Icons.work_outline,
+                              size: 16, color: kPrimaryColor),
                           8.width,
                           Expanded(
                             child: Text(title,
@@ -303,10 +391,16 @@ class _ClientOrderListState extends State<ClientOrderList> {
                         children: [
                           Icon(Icons.alarm, size: 14, color: status.fg),
                           6.width,
-                          Text(_formatRemaining(remaining),
-                              style: kTextStyle.copyWith(color: status.fg, fontWeight: FontWeight.w600, fontSize: 12)),
+                          Text(
+                              L10nLabels.formatContractDeadlineRemaining(
+                                  l10n, remaining),
+                              style: kTextStyle.copyWith(
+                                  color: status.fg,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 12)),
                           const Spacer(),
-                          const Icon(Icons.chevron_right, color: kLightNeutralColor, size: 20),
+                          const Icon(Icons.chevron_right,
+                              color: kLightNeutralColor, size: 20),
                         ],
                       ),
                     ] else ...[
@@ -314,7 +408,8 @@ class _ClientOrderListState extends State<ClientOrderList> {
                       Row(
                         children: const [
                           Spacer(),
-                          Icon(Icons.chevron_right, color: kLightNeutralColor, size: 20),
+                          Icon(Icons.chevron_right,
+                              color: kLightNeutralColor, size: 20),
                         ],
                       ),
                     ],
@@ -334,8 +429,4 @@ class _StatusStyle {
   final Color fg;
   final Color bg;
   const _StatusStyle(this.label, this.fg, this.bg);
-}
-
-extension StringCapitalize on String {
-  String get capitalize => isEmpty ? '' : '${this[0].toUpperCase()}${substring(1)}';
 }

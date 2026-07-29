@@ -4,6 +4,8 @@ import '../../core/errors/failures.dart';
 import '../../services/auth_service.dart';
 import '../models/profile_model.dart';
 
+/// PARKED — only referenced by unused [AuthBloc].
+/// App auth flows use [AuthService] directly for now.
 class AuthRepository {
   Future<AuthResponse> signUp({
     required String email,

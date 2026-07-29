@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/screen/widgets/interactive_star_rating.dart';
 import 'package:image_picker/image_picker.dart';
@@ -48,6 +49,7 @@ class _SellerOrderReviewState extends State<SellerOrderReview> {
   }
 
   Future<void> _openImagePicker() async {
+    final l10n = context.l10n;
     final action = await showModalBottomSheet<String>(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -59,18 +61,18 @@ class _SellerOrderReviewState extends State<SellerOrderReview> {
           children: [
             ListTile(
               leading: const Icon(Icons.photo_library_outlined),
-              title: const Text('Choose from gallery'),
+              title: Text(l10n.chooseFromGallery),
               onTap: () => Navigator.pop(ctx, 'gallery'),
             ),
             ListTile(
               leading: const Icon(Icons.photo_camera_outlined),
-              title: const Text('Take a photo'),
+              title: Text(l10n.takePhoto),
               onTap: () => Navigator.pop(ctx, 'camera'),
             ),
             if (_pickedImage != null)
               ListTile(
                 leading: const Icon(Icons.delete_outline, color: Colors.red),
-                title: Text('Remove photo', style: kTextStyle.copyWith(color: Colors.red)),
+                title: Text(l10n.removePhoto, style: kTextStyle.copyWith(color: Colors.red)),
                 onTap: () => Navigator.pop(ctx, 'remove'),
               ),
           ],
@@ -92,7 +94,7 @@ class _SellerOrderReviewState extends State<SellerOrderReview> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not open picker: $e')),
+          SnackBar(content: Text(context.l10n.couldNotOpenPicker('$e'))),
         );
       }
     }
@@ -158,7 +160,7 @@ class _SellerOrderReviewState extends State<SellerOrderReview> {
               onPressed: () async {
                 if (_stars <= 0) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Please choose a star rating first.')),
+                    SnackBar(content: Text(context.l10n.pleaseChooseStarRating)),
                   );
                   return;
                 }

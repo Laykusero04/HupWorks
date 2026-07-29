@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -62,7 +63,7 @@ class _ChatScreenState extends State<ChatScreen> {
       if (mounted) {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load conversations: $e')),
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
     }
@@ -74,24 +75,23 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  String _formatTime(DateTime dateTime) {
+  String _formatTime(BuildContext context, DateTime dateTime) {
     final now = DateTime.now();
     final diff = now.difference(dateTime);
+    final l10n = context.l10n;
 
     if (diff.inDays > 0) {
-      if (diff.inDays == 1) return 'Yesterday';
+      if (diff.inDays == 1) return l10n.calendarYesterday;
       if (diff.inDays < 7) {
-        const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-        return days[dateTime.weekday - 1];
+        return MaterialLocalizations.of(context).formatMediumDate(dateTime);
       }
-      return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
+      return MaterialLocalizations.of(context).formatShortDate(dateTime);
     }
 
-    final hour = dateTime.hour;
-    final minute = dateTime.minute.toString().padLeft(2, '0');
-    final period = hour >= 12 ? 'PM' : 'AM';
-    final displayHour = hour == 0 ? 12 : (hour > 12 ? hour - 12 : hour);
-    return '$displayHour:$minute $period';
+    return MaterialLocalizations.of(context).formatTimeOfDay(
+      TimeOfDay.fromDateTime(dateTime),
+      alwaysUse24HourFormat: MediaQuery.alwaysUse24HourFormatOf(context),
+    );
   }
 
   List<Conversation> get _filteredConversations {
@@ -107,6 +107,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final primary = Theme.of(context).colorScheme.primary;
     final path = GoRouterState.of(context).uri.path;
     final isClient = path.startsWith('/client');
@@ -114,7 +115,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: ClientShellAppBar(
-        title: 'Messages',
+        title: l10n.messages,
         persona: isClient ? ShellPersona.client : ShellPersona.seller,
       ),
       body: Column(
@@ -135,6 +136,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildSearchBar() {
+    final l10n = context.l10n;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
       child: Container(
@@ -166,7 +168,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   isCollapsed: true,
                   contentPadding:
                       const EdgeInsets.symmetric(vertical: 14),
-                  hintText: 'Search conversations',
+                  hintText: l10n.searchChats,
                   hintStyle: kTextStyle.copyWith(
                       color: kLightNeutralColor, fontSize: 14),
                 ),
@@ -195,21 +197,22 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildBody() {
+    final l10n = context.l10n;
     final filtered = _filteredConversations;
 
     if (_conversations.isEmpty) {
       return _emptyState(
         icon: Icons.chat_bubble_outline_rounded,
-        title: 'No conversations yet',
-        subtitle: 'Start a chat from a freelancer or client profile',
+        title: l10n.noConversationsYet,
+        subtitle: l10n.noConversationsHint,
       );
     }
 
     if (filtered.isEmpty) {
       return _emptyState(
         icon: Icons.search_off_rounded,
-        title: 'No matches found',
-        subtitle: 'Try a different name or keyword',
+        title: l10n.noChatMatches,
+        subtitle: l10n.tryDifferentSearch,
       );
     }
 
@@ -272,8 +275,9 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _conversationCard(Conversation conversation) {
+    final l10n = context.l10n;
     final otherUser = conversation.getOtherUser(_currentUserId);
-    final name = otherUser['name'] as String? ?? 'Unknown';
+    final name = otherUser['name'] as String? ?? l10n.unknown;
     final imageUrl = otherUser['profile_image_url'] as String? ?? '';
     final lastMessage = conversation.lastMessage?.trim();
     final hasLast = lastMessage != null && lastMessage.isNotEmpty;
@@ -285,11 +289,18 @@ class _ChatScreenState extends State<ChatScreen> {
         child: InkWell(
           borderRadius: BorderRadius.circular(18),
           onTap: () {
-            ChatInbox(
-              conversationId: conversation.id,
-              otherUserName: name,
-              otherUserImage: imageUrl,
-            ).launch(context);
+            try {
+              ChatInbox(
+                conversationId: conversation.id,
+                otherUserName: name,
+                otherUserImage: imageUrl,
+                otherUserId: conversation.getOtherUserId(_currentUserId),
+              ).launch(context);
+            } catch (_) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(l10n.couldNotOpenChat)),
+              );
+            }
           },
           child: Container(
             padding: const EdgeInsets.symmetric(
@@ -329,7 +340,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            _formatTime(conversation.lastMessageAt),
+                            _formatTime(context, conversation.lastMessageAt),
                             style: kTextStyle.copyWith(
                               color: kLightNeutralColor,
                               fontSize: 11,
@@ -340,7 +351,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        hasLast ? lastMessage : 'Start a conversation',
+                        hasLast ? lastMessage : l10n.noMessagesYet,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: kTextStyle.copyWith(

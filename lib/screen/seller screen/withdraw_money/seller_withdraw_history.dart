@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -35,7 +36,7 @@ class _SellerWithDrawHistoryState extends State<SellerWithDrawHistory> {
 
       if (mounted) setState(() { _withdrawals = List<Map<String, dynamic>>.from(data); _isLoading = false; });
     } catch (e) {
-      if (mounted) { setState(() => _isLoading = false); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'))); }
+      if (mounted) { setState(() => _isLoading = false); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.errorWithDetail('$e')))); }
     }
   }
 
@@ -49,10 +50,11 @@ class _SellerWithDrawHistoryState extends State<SellerWithDrawHistory> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Scaffold(
       backgroundColor: kDarkWhite,
       appBar: AppBar(backgroundColor: kDarkWhite, elevation: 0, iconTheme: const IconThemeData(color: kNeutralColor),
-        title: Text('Withdraw History', style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)), centerTitle: true),
+        title: Text(l10n.withdrawHistory, style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)), centerTitle: true),
       body: Padding(
         padding: const EdgeInsets.only(top: 20.0),
         child: Container(
@@ -61,7 +63,7 @@ class _SellerWithDrawHistoryState extends State<SellerWithDrawHistory> {
           child: _isLoading
               ? const Center(child: CircularProgressIndicator(color: kPrimaryColor))
               : _withdrawals.isEmpty
-                  ? Center(child: Text('No withdrawal history', style: kTextStyle.copyWith(color: kLightNeutralColor)))
+                  ? Center(child: Text(l10n.noWithdrawalHistory, style: kTextStyle.copyWith(color: kLightNeutralColor)))
                   : RefreshIndicator(
                       color: kPrimaryColor, onRefresh: _loadHistory,
                       child: ListView.builder(

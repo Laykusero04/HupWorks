@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/l10n/l10n.dart';
 
 import 'constant.dart';
 
@@ -23,6 +24,7 @@ class ProfileRatingSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final starSize = compact ? 15.0 : 18.0;
     final valueStyle = kTextStyle.copyWith(
       color: kNeutralColor,
@@ -39,7 +41,7 @@ class ProfileRatingSummary extends StatelessWidget {
       final onMuted = Colors.white.withValues(alpha: 0.78);
       if (reviewCount <= 0 && rating <= 0) {
         return Text(
-          'No reviews yet',
+          l10n.noReviewsYet,
           style: metaStyle.copyWith(color: onMuted),
         );
       }
@@ -56,7 +58,7 @@ class ProfileRatingSummary extends StatelessWidget {
           if (reviewCount > 0) ...[
             Text(' · ', style: metaStyle.copyWith(color: onMuted)),
             Text(
-              '$reviewCount ${reviewCount == 1 ? 'review' : 'reviews'}',
+              l10n.reviewCount(reviewCount),
               style: metaStyle.copyWith(color: onMuted),
             ),
           ],
@@ -68,7 +70,7 @@ class ProfileRatingSummary extends StatelessWidget {
 
     if (reviewCount <= 0 && rating <= 0) {
       return Text(
-        'No reviews yet',
+        l10n.noReviewsYet,
         style: metaStyle.copyWith(color: accent.withValues(alpha: 0.65)),
       );
     }
@@ -84,7 +86,7 @@ class ProfileRatingSummary extends StatelessWidget {
         if (reviewCount > 0) ...[
           Text(' · ', style: metaStyle),
           Text(
-            '$reviewCount ${reviewCount == 1 ? 'review' : 'reviews'}',
+            l10n.reviewCount(reviewCount),
             style: metaStyle,
           ),
         ],

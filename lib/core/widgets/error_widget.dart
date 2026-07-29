@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/l10n/l10n.dart';
 
 import '../constants/colors.dart';
 import '../constants/text_styles.dart';
@@ -32,7 +33,7 @@ class AppErrorWidget extends StatelessWidget {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: onRetry,
-                child: const Text('Retry'),
+                child: Text(context.l10n.retry),
               ),
             ],
           ],

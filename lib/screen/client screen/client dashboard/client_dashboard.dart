@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/services/dashboard_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -35,7 +36,7 @@ class _ClientDashBoardState extends State<ClientDashBoard> {
       if (mounted) {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
     }
@@ -158,7 +159,7 @@ class _ClientDashBoardState extends State<ClientDashBoard> {
                     ? Padding(
                         padding: const EdgeInsets.all(20.0),
                         child: Center(
-                          child: Text('No transactions yet', style: kTextStyle.copyWith(color: kLightNeutralColor)),
+                          child: Text(context.l10n.noTransactionsYet, style: kTextStyle.copyWith(color: kLightNeutralColor)),
                         ),
                       )
                     : ListView.builder(
@@ -209,7 +210,7 @@ class _ClientDashBoardState extends State<ClientDashBoard> {
           flex: 4,
           child: Row(
             children: [
-              Text(':', style: kTextStyle.copyWith(color: kSubTitleColor)),
+              Text(context.l10n.labelColon, style: kTextStyle.copyWith(color: kSubTitleColor)),
               const SizedBox(width: 20),
               Text(value, style: kTextStyle.copyWith(color: kSubTitleColor)),
             ],

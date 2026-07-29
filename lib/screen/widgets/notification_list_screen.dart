@@ -1,11 +1,17 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:freelancer/core/notifications/notification_scope.dart';
 import 'package:freelancer/core/notification_navigation.dart';
 import 'package:freelancer/data/models/notification_model.dart';
 import 'package:freelancer/data/repositories/notification_repository.dart';
+import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/services/notification_service.dart';
 
 import 'constant.dart';
+import 'notification_list_skeleton.dart';
 
 class NotificationListScreen extends StatefulWidget {
   final NotificationUserRole role;
@@ -17,42 +23,101 @@ class NotificationListScreen extends StatefulWidget {
 }
 
 class _NotificationListScreenState extends State<NotificationListScreen> {
-  List<AppNotification> _notifications = [];
+  final List<AppNotification> _notifications = [];
+  final ScrollController _scrollController = ScrollController();
+
   bool _isLoading = true;
+  bool _isLoadingMore = false;
+  bool _hasMore = true;
+  int _nextOffset = 0;
   late final NotificationRepository _repository;
 
   @override
   void initState() {
     super.initState();
     _repository = context.read<NotificationRepository>();
-    _loadNotifications();
+    _scrollController.addListener(_onScroll);
+    _loadInitial();
   }
 
-  Future<void> _loadNotifications() async {
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (!_hasMore || _isLoadingMore || _isLoading) return;
+    if (_scrollController.position.pixels <
+        _scrollController.position.maxScrollExtent - 280) {
+      return;
+    }
+    unawaited(_loadMore());
+  }
+
+  Future<void> _loadInitial() async {
+    setState(() {
+      _isLoading = true;
+      _hasMore = true;
+      _nextOffset = 0;
+    });
     try {
-      final notifs = await _repository.getNotifications();
-      if (mounted) {
-        setState(() {
-          _notifications = notifs;
-          _isLoading = false;
-        });
-      }
+      final notifs = await _repository.getNotifications(
+        limit: NotificationService.pageSize,
+        offset: 0,
+      );
+      if (!mounted) return;
+      setState(() {
+        _notifications
+          ..clear()
+          ..addAll(notifs);
+        _nextOffset = notifs.length;
+        _hasMore = notifs.length >= NotificationService.pageSize;
+        _isLoading = false;
+      });
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+        );
+      }
+    }
+  }
+
+  Future<void> _loadMore() async {
+    if (!_hasMore || _isLoadingMore) return;
+    setState(() => _isLoadingMore = true);
+    try {
+      final notifs = await _repository.getNotifications(
+        limit: NotificationService.pageSize,
+        offset: _nextOffset,
+      );
+      if (!mounted) return;
+      setState(() {
+        _notifications.addAll(notifs);
+        _nextOffset += notifs.length;
+        _hasMore = notifs.length >= NotificationService.pageSize;
+        _isLoadingMore = false;
+      });
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoadingMore = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
     }
   }
 
   String _timeAgo(DateTime date) {
+    final l10n = context.l10n;
     final diff = DateTime.now().difference(date);
-    if (diff.inMinutes < 1) return 'Just now';
-    if (diff.inMinutes < 60) return '${diff.inMinutes} min ago';
-    if (diff.inHours < 24) return '${diff.inHours} hours ago';
-    if (diff.inDays < 7) return '${diff.inDays} days ago';
+    if (diff.inMinutes < 1) return l10n.justNow;
+    if (diff.inMinutes < 60) return l10n.minutesAgo(diff.inMinutes);
+    if (diff.inHours < 24) return l10n.hoursAgo(diff.inHours);
+    if (diff.inDays < 7) return l10n.daysAgo(diff.inDays);
     return '${date.day}/${date.month}/${date.year}';
   }
 
@@ -73,6 +138,7 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
             createdAt: notif.createdAt,
           );
         });
+        await NotificationScope.of(context).refreshUnreadCount();
       }
     }
     if (!mounted) return;
@@ -85,6 +151,7 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final hasUnread = _notifications.any((n) => !n.read);
 
     return Scaffold(
@@ -94,7 +161,7 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
         elevation: 0,
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
-          'Notifications',
+          l10n.notifications,
           style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -103,9 +170,10 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
             TextButton(
               onPressed: () async {
                 await _repository.markAllAsRead();
-                _loadNotifications();
+                await _loadInitial();
+                if (mounted) await NotificationScope.of(context).refreshUnreadCount();
               },
-              child: Text('Read All', style: kTextStyle.copyWith(color: kPrimaryColor)),
+              child: Text(l10n.readAll, style: kTextStyle.copyWith(color: kPrimaryColor)),
             ),
         ],
       ),
@@ -122,71 +190,76 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
           clipBehavior: Clip.antiAlias,
           child: Padding(
             padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-          child: _isLoading
-              ? const Center(child: CircularProgressIndicator(color: kPrimaryColor))
-              : _notifications.isEmpty
-                  ? Center(
-                      child: Text(
-                        'No notifications',
-                        style: kTextStyle.copyWith(color: kLightNeutralColor),
-                      ),
-                    )
-                  : RefreshIndicator(
-                      color: kPrimaryColor,
-                      onRefresh: _loadNotifications,
-                      child: ListView.builder(
-                        physics: const AlwaysScrollableScrollPhysics(
-                          parent: BouncingScrollPhysics(),
+            child: _isLoading
+                ? const NotificationListSkeleton()
+                : _notifications.isEmpty
+                    ? Center(
+                        child: Text(
+                          l10n.noNotifications,
+                          style: kTextStyle.copyWith(color: kLightNeutralColor),
                         ),
-                        padding: const EdgeInsets.only(top: 15.0, bottom: 15.0),
-                        itemCount: _notifications.length,
-                        itemBuilder: (_, i) {
-                          final notif = _notifications[i];
-                          final isRead = notif.read;
+                      )
+                    : RefreshIndicator(
+                        color: kPrimaryColor,
+                        onRefresh: _loadInitial,
+                        child: ListView.builder(
+                          controller: _scrollController,
+                          physics: const AlwaysScrollableScrollPhysics(
+                            parent: BouncingScrollPhysics(),
+                          ),
+                          padding: const EdgeInsets.only(top: 15.0, bottom: 15.0),
+                          itemCount: _notifications.length + (_isLoadingMore ? 1 : 0),
+                          itemBuilder: (_, i) {
+                            if (i >= _notifications.length) {
+                              return const NotificationListLoadMoreSkeleton();
+                            }
 
-                          return ListTile(
-                            onTap: () => _onTapNotification(i),
-                            contentPadding: EdgeInsets.zero,
-                            leading: Container(
-                              padding: const EdgeInsets.all(10.0),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: isRead ? kDarkWhite : kPrimaryColor.withOpacity(0.1),
-                              ),
-                              child: Icon(
-                                FeatherIcons.bell,
-                                color: isRead ? kLightNeutralColor : kPrimaryColor,
-                              ),
-                            ),
-                            title: Text(
-                              notif.title,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 2,
-                              style: kTextStyle.copyWith(
-                                color: kNeutralColor,
-                                fontWeight: isRead ? FontWeight.normal : FontWeight.bold,
-                              ),
-                            ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (notif.body != null && notif.body!.isNotEmpty)
-                                  Text(
-                                    notif.body!,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 2,
-                                    style: kTextStyle.copyWith(color: kSubTitleColor),
-                                  ),
-                                Text(
-                                  _timeAgo(notif.createdAt),
-                                  style: kTextStyle.copyWith(color: kLightNeutralColor),
+                            final notif = _notifications[i];
+                            final isRead = notif.read;
+
+                            return ListTile(
+                              onTap: () => _onTapNotification(i),
+                              contentPadding: EdgeInsets.zero,
+                              leading: Container(
+                                padding: const EdgeInsets.all(10.0),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: isRead ? kDarkWhite : kPrimaryColor.withOpacity(0.1),
                                 ),
-                              ],
-                            ),
-                          );
-                        },
+                                child: Icon(
+                                  FeatherIcons.bell,
+                                  color: isRead ? kLightNeutralColor : kPrimaryColor,
+                                ),
+                              ),
+                              title: Text(
+                                notif.title,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
+                                style: kTextStyle.copyWith(
+                                  color: kNeutralColor,
+                                  fontWeight: isRead ? FontWeight.normal : FontWeight.bold,
+                                ),
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (notif.body != null && notif.body!.isNotEmpty)
+                                    Text(
+                                      notif.body!,
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 2,
+                                      style: kTextStyle.copyWith(color: kSubTitleColor),
+                                    ),
+                                  Text(
+                                    _timeAgo(notif.createdAt),
+                                    style: kTextStyle.copyWith(color: kLightNeutralColor),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
                       ),
-                    ),
           ),
         ),
       ),

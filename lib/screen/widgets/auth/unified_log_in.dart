@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/auth_navigation.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/client%20screen/client_authentication/client_forgot_password.dart';
 import 'package:freelancer/screen/welcome%20screen/welcome_screen.dart';
 import 'package:freelancer/screen/widgets/auth/auth_ui.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
 import 'package:freelancer/services/auth_service.dart';
-import 'package:go_router/go_router.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../app_config/app_config.dart';
@@ -33,12 +33,13 @@ class _UnifiedLogInState extends State<UnifiedLogIn> {
   }
 
   Future<void> _handleLogin() async {
+    final l10n = context.l10n;
     final email = _emailController.text.trim();
     final password = _passwordController.text;
 
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in all fields')),
+        SnackBar(content: Text(l10n.pleaseFillAllFields)),
       );
       return;
     }
@@ -53,7 +54,7 @@ class _UnifiedLogInState extends State<UnifiedLogIn> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString())),
+          SnackBar(content: Text(l10n.errorWithDetail(e.toString()))),
         );
       }
     } finally {
@@ -63,9 +64,10 @@ class _UnifiedLogInState extends State<UnifiedLogIn> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return AuthScaffold(
-      title: 'Welcome back',
-      subtitle: 'Sign in to continue to HupWorks.',
+      title: l10n.authWelcomeBack,
+      subtitle: l10n.authSignInSubtitle,
       accentColor: kPrimaryColor,
       heroImage: AppInfo.onBoard1,
       onBack: () => Navigator.of(context).maybePop(),
@@ -74,16 +76,16 @@ class _UnifiedLogInState extends State<UnifiedLogIn> {
         children: [
           AuthTextField(
             controller: _emailController,
-            label: 'Email',
-            hint: 'you@email.com',
+            label: l10n.authEmail,
+            hint: l10n.authEmailHint,
             keyboardType: TextInputType.emailAddress,
             textInputAction: TextInputAction.next,
           ),
           const SizedBox(height: 16),
           AuthTextField(
             controller: _passwordController,
-            label: 'Password',
-            hint: 'Enter your password',
+            label: l10n.authPassword,
+            hint: l10n.authPasswordHint,
             obscureText: _hidePassword,
             textInputAction: TextInputAction.done,
             suffixIcon: IconButton(
@@ -102,7 +104,7 @@ class _UnifiedLogInState extends State<UnifiedLogIn> {
             child: TextButton(
               onPressed: () => const ClientForgotPassword().launch(context),
               child: Text(
-                'Forgot password?',
+                l10n.authForgotPassword,
                 style: kTextStyle.copyWith(
                   color: kPrimaryColor,
                   fontWeight: FontWeight.w600,
@@ -113,7 +115,7 @@ class _UnifiedLogInState extends State<UnifiedLogIn> {
           ),
           const SizedBox(height: 8),
           AuthPrimaryButton(
-            label: 'Log In',
+            label: l10n.authLogIn,
             accentColor: kPrimaryColor,
             isLoading: _isLoading,
             onPressed: _handleLogin,
@@ -122,8 +124,8 @@ class _UnifiedLogInState extends State<UnifiedLogIn> {
           const AuthSocialSection(),
           const SizedBox(height: 24),
           AuthFooterLink(
-            prefix: "Don't have an account? ",
-            action: 'Sign up',
+            prefix: '${l10n.authDontHaveAccount} ',
+            action: l10n.authSignUp,
             accentColor: kPrimaryColor,
             onTap: () => const WelcomeScreen().launch(context),
           ),

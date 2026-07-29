@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:freelancer/core/utils/app_logger.dart';
 import 'package:freelancer/core/utils/job_offer_delivery.dart';
 import 'package:freelancer/services/chat_service.dart';
 import 'package:freelancer/services/job_posts_service.dart';
@@ -103,7 +104,9 @@ class SellerOrdersService {
             '${reasonNote.trim()}\n\n'
             'Please open Contracts to approve or keep the contract active (48h to respond).',
       );
-    } catch (_) {}
+    } catch (e, st) {
+      AppLogger.error('SellerOrdersService.notifyCancellationChat', e, st);
+    }
   }
 
   static String _cancellationReasonLabel(String code) {
@@ -314,8 +317,9 @@ class SellerOrdersService {
         conversationId: conversation['id'] as String,
         content: body.toString().trim(),
       );
-    } catch (_) {
+    } catch (e, st) {
       // Bid is already saved; chat seeding is best-effort.
+      AppLogger.error('SellerOrdersService.seedApplicationChat', e, st);
     }
   }
 

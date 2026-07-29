@@ -1,6 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
 import 'package:freelancer/services/orders_service.dart';
@@ -86,7 +87,7 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
       if (mounted) {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading service: $e')),
+          SnackBar(content: Text(context.l10n.errorLoadingService('$e'))),
         );
       }
     }
@@ -105,7 +106,7 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
     }
@@ -177,14 +178,14 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
                 );
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Order placed successfully!')),
+                    SnackBar(content: Text(context.l10n.orderPlacedSuccess)),
                   );
                   Navigator.pop(context);
                 }
               } catch (e) {
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error placing order: $e')),
+                    SnackBar(content: Text(context.l10n.errorPlacingOrder('$e'))),
                   );
                 }
               }
@@ -439,9 +440,9 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
                                             children: [
                                               const Icon(IconlyLight.timeCircle, color: kPrimaryColor, size: 18.0),
                                               const SizedBox(width: 5.0),
-                                              Text('Delivery days', style: kTextStyle.copyWith(color: kSubTitleColor)),
+                                              Text(context.l10n.deliveryDays, style: kTextStyle.copyWith(color: kSubTitleColor)),
                                               const Spacer(),
-                                              Text('$deliveryTime Days', style: kTextStyle.copyWith(color: kNeutralColor)),
+                                              Text(context.l10n.deliveryDaysCount(deliveryTime), style: kTextStyle.copyWith(color: kNeutralColor)),
                                             ],
                                           ),
                                           const SizedBox(height: 10.0),
@@ -449,7 +450,7 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
                                             children: [
                                               const Icon(Icons.loop, color: kPrimaryColor, size: 18.0),
                                               const SizedBox(width: 5.0),
-                                              Text('Revisions', style: kTextStyle.copyWith(color: kSubTitleColor)),
+                                              Text(context.l10n.revisions, style: kTextStyle.copyWith(color: kSubTitleColor)),
                                               const Spacer(),
                                               Text(
                                                 revisionCount == 0 ? 'Unlimited' : '$revisionCount',
@@ -506,7 +507,7 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
                                     ] else
                                       Padding(
                                         padding: const EdgeInsets.all(10.0),
-                                        child: Text('No reviews yet', style: kTextStyle.copyWith(color: kLightNeutralColor)),
+                                        child: Text(context.l10n.noReviewsYet, style: kTextStyle.copyWith(color: kLightNeutralColor)),
                                       ),
                                   ],
                                 ),
@@ -552,7 +553,7 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
                 ),
               ),
               const SizedBox(height: 10),
-              Text('Total $total Reviews', style: kTextStyle.copyWith(color: kNeutralColor)),
+              Text(context.l10n.totalReviewsCount(total), style: kTextStyle.copyWith(color: kNeutralColor)),
             ],
           ),
           Positioned(

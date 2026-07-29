@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/attendance_format.dart';
 import 'package:freelancer/core/utils/attendance_mode.dart';
 import 'package:freelancer/data/models/attendance_punch_model.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/services/attendance_service.dart';
 
 import '../widgets/button_global.dart';
@@ -33,6 +34,7 @@ class _AttendanceConfirmScreenState extends State<AttendanceConfirmScreen> {
   }
 
   Future<void> _submit() async {
+    final l10n = context.l10n;
     setState(() => _isSubmitting = true);
     try {
       final result = await AttendanceService.recordAttendancePunch(
@@ -43,8 +45,10 @@ class _AttendanceConfirmScreenState extends State<AttendanceConfirmScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            '${AttendanceFormat.punchLabel(result.punchType)} recorded. '
-            'Today: ${AttendanceFormat.minutesLabel(result.minutesWorkedToday)} worked.',
+            l10n.attendancePunchRecorded(
+              AttendanceFormat.punchLabel(result.punchType, l10n),
+              AttendanceFormat.minutesLabel(result.minutesWorkedToday, l10n),
+            ),
           ),
         ),
       );
@@ -53,22 +57,24 @@ class _AttendanceConfirmScreenState extends State<AttendanceConfirmScreen> {
       if (mounted) {
         setState(() => _isSubmitting = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$e')),
+          SnackBar(content: Text(l10n.errorWithDetail('$e'))),
         );
       }
     }
   }
 
-  String get _statusText {
+  String _statusText(AppLocalizations l10n, String locale) {
     final r = widget.resolve;
     if (AttendanceMode.normalize(r.attendanceMode) == AttendanceMode.qrOnce) {
-      if (r.checkedInToday) return 'Already checked in today';
-      return 'Ready for daily check-in';
+      if (r.checkedInToday) return l10n.alreadyCheckedInToday;
+      return l10n.readyForDailyCheckIn;
     }
     if (r.isClockedIn && r.lastPunchedAt != null) {
-      return 'Clocked in at ${AttendanceFormat.timeOfDay(r.lastPunchedAt!)}';
+      return l10n.clockedInAt(
+        AttendanceFormat.timeOfDay(r.lastPunchedAt!, locale),
+      );
     }
-    return 'Not clocked in today';
+    return l10n.notClockedInToday;
   }
 
   bool get _isQrOnceMode =>
@@ -77,6 +83,8 @@ class _AttendanceConfirmScreenState extends State<AttendanceConfirmScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final locale = Localizations.localeOf(context).toString();
     final r = widget.resolve;
     final primaryIsIn = _selectedPunchType == 'in';
 
@@ -87,7 +95,7 @@ class _AttendanceConfirmScreenState extends State<AttendanceConfirmScreen> {
         elevation: 0,
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
-          'Confirm attendance',
+          l10n.confirmAttendance,
           style: kTextStyle.copyWith(
             color: kNeutralColor,
             fontWeight: FontWeight.bold,
@@ -150,7 +158,7 @@ class _AttendanceConfirmScreenState extends State<AttendanceConfirmScreen> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      _statusText,
+                      _statusText(l10n, locale),
                       style: kTextStyle.copyWith(
                         fontWeight: FontWeight.w600,
                         color: r.isClockedIn
@@ -165,7 +173,7 @@ class _AttendanceConfirmScreenState extends State<AttendanceConfirmScreen> {
             if (r.todayPunches.isNotEmpty) ...[
               const SizedBox(height: 20),
               Text(
-                'Today',
+                l10n.calendarToday,
                 style: kTextStyle.copyWith(
                   fontWeight: FontWeight.bold,
                   color: kNeutralColor,
@@ -185,7 +193,7 @@ class _AttendanceConfirmScreenState extends State<AttendanceConfirmScreen> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          '${AttendanceFormat.punchLabel(p.punchType)} • ${AttendanceFormat.timeOfDay(p.punchedAt)}',
+                          '${AttendanceFormat.punchLabel(p.punchType, l10n)} • ${AttendanceFormat.timeOfDay(p.punchedAt, locale)}',
                           style: kTextStyle.copyWith(
                             color: kSubTitleColor,
                             fontSize: 13,
@@ -197,7 +205,7 @@ class _AttendanceConfirmScreenState extends State<AttendanceConfirmScreen> {
             ],
             const SizedBox(height: 24),
             Text(
-              'Record',
+              l10n.recordLabel,
               style: kTextStyle.copyWith(
                 fontWeight: FontWeight.bold,
                 color: kNeutralColor,
@@ -207,12 +215,12 @@ class _AttendanceConfirmScreenState extends State<AttendanceConfirmScreen> {
             if (_isQrOnceMode) ...[
               if (r.checkedInToday)
                 Text(
-                  'You have already checked in today for this job.',
+                  l10n.alreadyCheckedInTodayMessage,
                   style: kTextStyle.copyWith(color: kSubTitleColor, height: 1.35),
                 )
               else
                 Text(
-                  'This job uses one check-in scan per day (no clock-out scan).',
+                  l10n.attendanceQrOnceDailyHint,
                   style: kTextStyle.copyWith(color: kSubTitleColor, height: 1.35),
                 ),
             ] else ...[
@@ -220,7 +228,7 @@ class _AttendanceConfirmScreenState extends State<AttendanceConfirmScreen> {
                 children: [
                   Expanded(
                     child: _PunchTypeChip(
-                      label: 'Clock in',
+                      label: l10n.clockIn,
                       selected: primaryIsIn,
                       color: const Color(0xFF2E7D32),
                       onTap: () => setState(() => _selectedPunchType = 'in'),
@@ -229,7 +237,7 @@ class _AttendanceConfirmScreenState extends State<AttendanceConfirmScreen> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: _PunchTypeChip(
-                      label: 'Clock out',
+                      label: l10n.clockOut,
                       selected: !primaryIsIn,
                       color: Colors.orange,
                       onTap: () => setState(() => _selectedPunchType = 'out'),
@@ -244,8 +252,8 @@ class _AttendanceConfirmScreenState extends State<AttendanceConfirmScreen> {
             else
               ButtonGlobalWithoutIcon(
                 buttontext: _isQrOnceMode
-                    ? 'Check in for today'
-                    : AttendanceFormat.punchLabel(_selectedPunchType),
+                    ? l10n.checkInForToday
+                    : AttendanceFormat.punchLabel(_selectedPunchType, l10n),
                 buttonDecoration: kButtonDecoration.copyWith(
                   color: primaryIsIn ? const Color(0xFF2E7D32) : Colors.orange,
                 ),
@@ -261,7 +269,9 @@ class _AttendanceConfirmScreenState extends State<AttendanceConfirmScreen> {
                     _selectedPunchType = r.suggestedAction;
                   }),
                   child: Text(
-                    'Use suggested: ${AttendanceFormat.punchLabel(r.suggestedAction)}',
+                    l10n.useSuggestedPunch(
+                      AttendanceFormat.punchLabel(r.suggestedAction, l10n),
+                    ),
                     style: kTextStyle.copyWith(color: kPrimaryColor),
                   ),
                 ),

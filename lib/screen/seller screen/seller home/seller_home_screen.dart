@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:freelancer/data/repositories/notification_repository.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:freelancer/core/notifications/notification_scope.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/core/utils/job_offer_delivery.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
 import 'package:freelancer/services/job_posts_service.dart';
@@ -25,9 +24,6 @@ class SellerHomeScreen extends StatefulWidget {
 class _SellerHomeScreenState extends State<SellerHomeScreen> {
   Map<String, dynamic> _overview = {};
   List<Map<String, dynamic>> _myApplications = [];
-  int _unreadNotificationCount = 0;
-  RealtimeChannel? _notificationChannel;
-  NotificationRepository? _notificationRepository;
   bool _isLoading = true;
 
   @override
@@ -36,55 +32,33 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       _loadData();
-      _loadUnreadNotificationCount();
-      _subscribeToNotifications();
     });
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _notificationRepository ??= context.read<NotificationRepository>();
-  }
-
-  @override
-  void dispose() {
-    _notificationRepository?.unsubscribe(_notificationChannel);
-    super.dispose();
-  }
-
-  Future<void> _loadUnreadNotificationCount() async {
-    try {
-      final count = await context.read<NotificationRepository>().getUnreadCount();
-      if (mounted) setState(() => _unreadNotificationCount = count);
-    } catch (_) {}
-  }
-
-  void _subscribeToNotifications() {
-    try {
-      _notificationChannel = context.read<NotificationRepository>().subscribeToNotifications(
-            onChange: _loadUnreadNotificationCount,
-          );
-    } catch (_) {}
-  }
-
   List<Widget> _homeAppBarActions() {
+    final notifications = NotificationScope.of(context);
     return [
-      IconButton(
-        tooltip: 'Notifications',
-        onPressed: () async {
-          await const SellerNotification().launch(context);
-          if (mounted) _loadUnreadNotificationCount();
+      ListenableBuilder(
+        listenable: notifications,
+        builder: (context, _) {
+          final count = notifications.unreadCount;
+          return IconButton(
+            tooltip: context.l10n.notifications,
+            onPressed: () async {
+              await const SellerNotification().launch(context);
+              if (mounted) await notifications.refreshUnreadCount();
+            },
+            icon: count > 0
+                ? Badge(
+                    label: Text(
+                      count > 9 ? '9+' : '$count',
+                      style: const TextStyle(fontSize: 10),
+                    ),
+                    child: const Icon(Icons.notifications_outlined),
+                  )
+                : const Icon(Icons.notifications_outlined),
+          );
         },
-        icon: _unreadNotificationCount > 0
-            ? Badge(
-                label: Text(
-                  _unreadNotificationCount > 9 ? '9+' : '$_unreadNotificationCount',
-                  style: const TextStyle(fontSize: 10),
-                ),
-                child: const Icon(Icons.notifications_outlined),
-              )
-            : const Icon(Icons.notifications_outlined),
       ),
     ];
   }
@@ -108,7 +82,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
       if (mounted) {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
     }
@@ -120,10 +94,11 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Scaffold(
       backgroundColor: kDarkWhite,
       appBar: ClientShellAppBar(
-        title: 'Home',
+        title: l10n.home,
         persona: ShellPersona.seller,
         actions: _isLoading ? null : _homeAppBarActions(),
       ),
@@ -178,7 +153,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'Find your next job',
+                                        l10n.findYourNextJob,
                                         style: kTextStyle.copyWith(
                                           color: Colors.white,
                                           fontWeight: FontWeight.w800,
@@ -187,7 +162,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
                                       ),
                                       const SizedBox(height: 2),
                                       Text(
-                                        'Browse open posts and send tailored offers',
+                                        l10n.findYourNextJobSubtitle,
                                         style: kTextStyle.copyWith(
                                           color: Colors.white.withOpacity(0.9),
                                           fontSize: 11.5,
@@ -222,12 +197,12 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
                           child: Row(
                             children: [
                               Text(
-                                'My Applications',
+                                l10n.myApplications,
                                 style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
                               ),
                               const Spacer(),
                               Text(
-                                'View all',
+                                l10n.viewAll,
                                 style: kTextStyle.copyWith(
                                   color: kPrimaryColor,
                                   fontWeight: FontWeight.w600,
@@ -253,7 +228,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
                                 Icon(Icons.outgoing_mail, size: 44, color: kLightNeutralColor.withOpacity(0.85)),
                                 const SizedBox(height: 12),
                                 Text(
-                                  'No applications yet',
+                                  l10n.noApplicationsYet,
                                   textAlign: TextAlign.center,
                                   style: kTextStyle.copyWith(
                                     color: kNeutralColor,
@@ -263,7 +238,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
                                 ),
                                 const SizedBox(height: 6),
                                 Text(
-                                  'Browse open jobs and send a clear offer to stand out.',
+                                  l10n.noApplicationsYetHint,
                                   textAlign: TextAlign.center,
                                   style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12.5, height: 1.35),
                                 ),
@@ -276,7 +251,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                                   ),
                                   onPressed: () => context.go('/seller/find-jobs'),
-                                  child: Text('Browse jobs', style: kTextStyle.copyWith(fontWeight: FontWeight.w700)),
+                                  child: Text(l10n.browseJobs, style: kTextStyle.copyWith(fontWeight: FontWeight.w700)),
                                 ),
                               ],
                             ),
@@ -286,9 +261,9 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
                               final jobPost = app['job_posts'] as Map<String, dynamic>?;
                               final status = (app['status'] as String?) ?? 'pending';
                               final (Color statusBg, Color statusFg, String statusLabel) = switch (status) {
-                                'accepted' => (kPrimaryColor.withOpacity(0.1), kPrimaryColor, 'Accepted'),
-                                'rejected' => (const Color(0xFFFFE5E3), const Color(0xFFFF3B30), 'Rejected'),
-                                _          => (const Color(0xFFFFEFE0), const Color(0xFFFF7A00), 'Pending'),
+                                'accepted' => (kPrimaryColor.withOpacity(0.1), kPrimaryColor, l10n.statusAccepted),
+                                'rejected' => (const Color(0xFFFFE5E3), const Color(0xFFFF3B30), l10n.statusRejected),
+                                _          => (const Color(0xFFFFEFE0), const Color(0xFFFF7A00), l10n.statusPending),
                               };
 
                               return Padding(
@@ -312,7 +287,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
                                             children: [
                                               Expanded(
                                                 child: Text(
-                                                  jobPost?['title'] ?? 'Untitled job',
+                                                  jobPost?['title'] ?? l10n.untitledJob,
                                                   maxLines: 1,
                                                   overflow: TextOverflow.ellipsis,
                                                   style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
@@ -354,14 +329,15 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
   }
 
   Widget _buildWorkOverviewCard(BuildContext context) {
+    final l10n = context.l10n;
     final rating = _ovDouble('avg_rating');
     final reviews = _ov('review_count');
     final ratingLabel = reviews > 0 ? rating.toStringAsFixed(1) : '—';
 
     return _buildCard(
-      title: 'Your work',
+      title: l10n.yourWork,
       dropdown: Text(
-        'Live',
+        l10n.periodLive,
         style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
       ),
       child: Column(
@@ -370,7 +346,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
             children: [
               Expanded(
                 child: _DashboardMetricCell(
-                  label: 'Active contracts',
+                  label: l10n.activeContracts,
                   value: '${_ov('active_contracts')}',
                   icon: Icons.description_outlined,
                   color: kSecondaryColor,
@@ -380,7 +356,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
               const SizedBox(width: 8),
               Expanded(
                 child: _DashboardMetricCell(
-                  label: 'Pending applications',
+                  label: l10n.pendingApplications,
                   value: '${_ov('pending_applications')}',
                   icon: Icons.outgoing_mail,
                   color: kPrimaryColor,
@@ -394,7 +370,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
             children: [
               Expanded(
                 child: _DashboardMetricCell(
-                  label: 'Completed this month',
+                  label: l10n.completedThisMonth,
                   value: '${_ov('completed_this_month')}',
                   icon: Icons.check_circle_outline,
                   color: const Color(0xFF2E7D32),
@@ -403,11 +379,11 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
               const SizedBox(width: 8),
               Expanded(
                 child: _DashboardMetricCell(
-                  label: 'Your rating',
+                  label: l10n.yourRating,
                   value: ratingLabel,
                   icon: Icons.star_outline_rounded,
                   color: const Color(0xFFFFB300),
-                  subtitle: reviews > 0 ? '$reviews reviews' : 'No reviews yet',
+                  subtitle: reviews > 0 ? l10n.reviewCount(reviews) : l10n.noReviewsYet,
                 ),
               ),
             ],
@@ -429,7 +405,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      '${_ov('open_jobs_count')} open jobs to browse',
+                      l10n.openJobsToBrowse(_ov('open_jobs_count')),
                       style: kTextStyle.copyWith(
                         color: kNeutralColor,
                         fontWeight: FontWeight.w600,
@@ -448,13 +424,14 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
   }
 
   Widget _buildWalletCard(BuildContext context) {
+    final l10n = context.l10n;
     final balance = _ovDouble('balance');
     final earned = _ovDouble('earned_this_month');
 
     return _buildCard(
-      title: 'Wallet',
+      title: l10n.wallet,
       dropdown: Text(
-        'This month',
+        l10n.periodThisMonth,
         style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
       ),
       child: IntrinsicHeight(
@@ -463,7 +440,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
           children: [
             Expanded(
               child: _DashboardMetricCell(
-                label: 'Available balance',
+                label: l10n.balance,
                 value: '$currencySign${balance.toStringAsFixed(2)}',
                 icon: Icons.account_balance_wallet_outlined,
                 color: kPrimaryColor,
@@ -472,7 +449,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
             const SizedBox(width: 8),
             Expanded(
               child: _DashboardMetricCell(
-                label: 'Earned this month',
+                label: l10n.earned,
                 value: '$currencySign${earned.toStringAsFixed(2)}',
                 icon: Icons.payments_outlined,
                 color: const Color(0xFF06AEF3),
@@ -486,21 +463,27 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
   }
 
   Widget? _buildNeedsAttention(BuildContext context) {
+    final l10n = context.l10n;
     final delivered = _ov('delivered_awaiting_approval');
     final onsite = _ov('onsite_attendance_jobs');
     if (delivered <= 0 && onsite <= 0) return null;
 
+    final attentionCount = delivered + onsite;
+
     return _buildCard(
-      title: 'Needs attention',
-      dropdown: const SizedBox.shrink(),
+      title: l10n.needsAttention,
+      dropdown: Text(
+        l10n.attentionItems(attentionCount),
+        style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
+      ),
       child: Column(
         children: [
           if (delivered > 0)
             _AttentionRow(
               icon: Icons.inbox_outlined,
               text: delivered == 1
-                  ? '1 contract delivered — waiting for client approval'
-                  : '$delivered contracts delivered — waiting for client approval',
+                  ? l10n.attentionContractDeliveredOne
+                  : l10n.attentionContractDeliveredMany(delivered),
               onTap: () => context.go('/seller/orders'),
             ),
           if (delivered > 0 && onsite > 0) const SizedBox(height: 8),
@@ -508,8 +491,8 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
             _AttentionRow(
               icon: Icons.qr_code_scanner,
               text: onsite == 1
-                  ? '1 on-site contract — clock in via Attendance'
-                  : '$onsite on-site contracts — use Attendance',
+                  ? l10n.attentionOnsiteOne
+                  : l10n.attentionOnsiteMany(onsite),
               onTap: () => context.push('/seller/attendance'),
             ),
         ],
@@ -518,38 +501,39 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
   }
 
   Widget _buildQuickActions(BuildContext context) {
+    final l10n = context.l10n;
     final shortcuts = [
       (
-        title: 'Find jobs',
-        subtitle: 'Browse open posts and send offers',
+        title: l10n.shortcutFindJobs,
+        subtitle: l10n.shortcutFindJobsSub,
         icon: Icons.work_outline_rounded,
         color: kSecondaryColor,
         onTap: () => context.go('/seller/find-jobs'),
       ),
       (
-        title: 'Messages',
-        subtitle: 'Chat with clients',
+        title: l10n.shortcutMessages,
+        subtitle: l10n.shortcutMessagesSub,
         icon: Icons.chat_bubble_outline_rounded,
         color: const Color(0xFF144BD6),
         onTap: () => context.go('/seller/chat'),
       ),
       (
-        title: 'Contracts',
-        subtitle: 'Active work and delivery',
+        title: l10n.shortcutContracts,
+        subtitle: l10n.shortcutContractsSub,
         icon: Icons.description_outlined,
         color: const Color(0xFF06AEF3),
         onTap: () => context.go('/seller/orders'),
       ),
       (
-        title: 'Applications',
-        subtitle: 'Track offers you submitted',
+        title: l10n.shortcutApplications,
+        subtitle: l10n.shortcutApplicationsSub,
         icon: Icons.outgoing_mail,
         color: kPrimaryColor,
         onTap: () => context.push('/seller/applications'),
       ),
       (
-        title: 'Attendance',
-        subtitle: 'Clock in on site with QR',
+        title: l10n.shortcutAttendance,
+        subtitle: l10n.shortcutAttendanceSub,
         icon: Icons.qr_code_scanner_rounded,
         color: const Color(0xFF2E7D32),
         onTap: () => context.push('/seller/attendance'),
@@ -557,7 +541,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
     ];
 
     return _buildCard(
-      title: 'Shortcuts',
+      title: l10n.shortcuts,
       dropdown: const SizedBox.shrink(),
       child: Column(
         children: [

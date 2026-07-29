@@ -5,6 +5,11 @@ import '../../../data/repositories/auth_repository.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
 
+/// PARKED — not wired into the app UI.
+///
+/// Login / signup / logout currently call [AuthService] directly.
+/// Re-enable via `BlocProvider` in `app.dart` when screens migrate off
+/// imperative auth calls.
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository _authRepository;
 
@@ -31,9 +36,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         return;
       }
       emit(Authenticated(profile: profile, role: profile.role));
-    } on Failure catch (e) {
+    } on Failure {
       emit(Unauthenticated());
-    } catch (e) {
+    } catch (_) {
       emit(Unauthenticated());
     }
   }

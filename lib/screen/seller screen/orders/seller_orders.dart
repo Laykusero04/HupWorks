@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/utils/order_cancellation.dart';
 import 'package:freelancer/core/utils/order_contract_display.dart';
 import 'package:go_router/go_router.dart';
 import 'package:freelancer/services/orders_service.dart';
+import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/services/seller_orders_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -19,8 +22,14 @@ class SellerOrderList extends StatefulWidget {
 class _SellerOrderListState extends State<SellerOrderList> {
   List<Map<String, dynamic>> _orders = [];
   bool _isLoading = true;
-  String _selectedStatus = 'All';
-  final List<String> _statusTabs = ['All', 'Active', 'Pending', 'Completed', 'Delivered'];
+  String _selectedStatus = 'all';
+  static const _statusTabs = [
+    'all',
+    'active',
+    'pending',
+    'completed',
+    'delivered',
+  ];
 
   @override
   void initState() {
@@ -33,11 +42,11 @@ class _SellerOrderListState extends State<SellerOrderList> {
     try {
       await OrdersService.expireStaleCancellationRequests();
       final orders = await SellerOrdersService.getSellerOrders(
-        status: _selectedStatus == 'All' ? null : _selectedStatus.toLowerCase(),
+        status: _selectedStatus == 'all' ? null : _selectedStatus,
       );
       if (mounted) setState(() { _orders = orders; _isLoading = false; });
     } catch (e) {
-      if (mounted) { setState(() => _isLoading = false); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'))); }
+      if (mounted) { setState(() => _isLoading = false); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.errorWithDetail('$e')))); }
     }
   }
 
@@ -58,48 +67,63 @@ class _SellerOrderListState extends State<SellerOrderList> {
     return '${d.day} ${m[d.month-1]} ${d.year}';
   }
 
-  String _formatRemaining(Duration d) {
-    if (d.inSeconds <= 0) return 'Overdue';
-    if (d.inDays > 0) return '${d.inDays}d ${d.inHours.remainder(24)}h left';
-    if (d.inHours > 0) return '${d.inHours}h ${d.inMinutes.remainder(60)}m left';
-    return '${d.inMinutes}m left';
-  }
+  String _formatRemaining(Duration d) =>
+      L10nLabels.formatContractDeadlineRemaining(context.l10n, d);
 
   _StatusStyle _statusStyle(String? status, Color primary) {
+    final l10n = context.l10n;
+    final label = OrderCancellationReason.statusLabel(status, l10n);
     switch ((status ?? '').toLowerCase()) {
       case 'active':
-        return _StatusStyle('Active', primary, const Color(0xFFE8EEF8));
+        return _StatusStyle(label, primary, const Color(0xFFE8EEF8));
       case 'pending':
-        return const _StatusStyle('Pending', Color(0xFFD97706), Color(0xFFFEF3C7));
+        return _StatusStyle(
+          label,
+          const Color(0xFFD97706),
+          const Color(0xFFFEF3C7),
+        );
       case 'delivered':
-        return const _StatusStyle('Delivered', kSecondaryColor, Color(0xFFDBEAFE));
+        return _StatusStyle(
+          label,
+          kSecondaryColor,
+          const Color(0xFFDBEAFE),
+        );
       case 'completed':
-        return const _StatusStyle('Completed', Color(0xFF059669), Color(0xFFD1FAE5));
+        return _StatusStyle(
+          label,
+          const Color(0xFF059669),
+          const Color(0xFFD1FAE5),
+        );
       case 'cancelled':
-        return _StatusStyle('Cancelled', const Color(0xFFDC2626), const Color(0xFFFEE2E2));
+        return _StatusStyle(
+          label,
+          const Color(0xFFDC2626),
+          const Color(0xFFFEE2E2),
+        );
       case 'cancellation_requested':
-        return const _StatusStyle(
-          'Cancel pending',
-          Color(0xFFD97706),
-          Color(0xFFFFF8E1),
+        return _StatusStyle(
+          l10n.orderStatusCancellationPending,
+          const Color(0xFFD97706),
+          const Color(0xFFFFF8E1),
         );
       default:
-        return _StatusStyle(status?.capitalize ?? 'Unknown', kLightNeutralColor, kDarkWhite);
+        return _StatusStyle(label, kLightNeutralColor, kDarkWhite);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final primary = Theme.of(context).colorScheme.primary;
     return Scaffold(
       backgroundColor: kWhite,
       appBar: ClientShellAppBar(
-        title: 'Contracts',
+        title: l10n.contracts,
         persona: ShellPersona.seller,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            tooltip: 'Refresh',
+            tooltip: l10n.refreshTooltip,
             onPressed: _isLoading ? null : _loadOrders,
           ),
         ],
@@ -110,9 +134,10 @@ class _SellerOrderListState extends State<SellerOrderList> {
                 padding: const EdgeInsets.only(left: 15.0, top: 15.0),
                 itemCount: _statusTabs.length,
                 itemBuilder: (_, i) {
-                  final selected = _selectedStatus == _statusTabs[i];
+                  final tab = _statusTabs[i];
+                  final selected = _selectedStatus == tab;
                   return GestureDetector(
-                    onTap: () { setState(() => _selectedStatus = _statusTabs[i]); _loadOrders(); },
+                    onTap: () { setState(() => _selectedStatus = tab); _loadOrders(); },
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
                       decoration: BoxDecoration(
@@ -120,7 +145,7 @@ class _SellerOrderListState extends State<SellerOrderList> {
                         color: selected ? primary : kDarkWhite,
                         border: Border.all(color: selected ? primary : kBorderColorTextField),
                       ),
-                      child: Text(_statusTabs[i],
+                      child: Text(L10nLabels.orderFilterTabLabel(l10n, tab),
                           style: kTextStyle.copyWith(
                               color: selected ? kWhite : kNeutralColor,
                               fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
@@ -135,7 +160,14 @@ class _SellerOrderListState extends State<SellerOrderList> {
                     ? Center(child: CircularProgressIndicator(color: primary))
                     : _orders.isEmpty
                         ? Center(child: Text(
-                            _selectedStatus == 'All' ? 'No contracts yet' : 'No ${_selectedStatus.toLowerCase()} contracts',
+                            _selectedStatus == 'all'
+                                ? l10n.noContractsYet
+                                : l10n.noFilteredContracts(
+                                    L10nLabels.orderFilterTabLabel(
+                                      l10n,
+                                      _selectedStatus,
+                                    ).toLowerCase(),
+                                  ),
                             style: kTextStyle.copyWith(color: kLightNeutralColor),
                           ))
                         : RefreshIndicator(
@@ -157,7 +189,7 @@ class _SellerOrderListState extends State<SellerOrderList> {
     final primary = Theme.of(context).colorScheme.primary;
     final service = order['services'] as Map<String, dynamic>?;
     final client = order['client'] as Map<String, dynamic>?;
-    final clientName = (client?['name'] as String?) ?? 'Unknown';
+    final clientName = (client?['name'] as String?) ?? context.l10n.unknown;
     final orderId = order['id'].toString();
     final idShort = orderId.length >= 8 ? orderId.substring(0, 8).toUpperCase() : orderId.toUpperCase();
     final status = _statusStyle(order['status'] as String?, primary);
@@ -238,7 +270,7 @@ class _SellerOrderListState extends State<SellerOrderList> {
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis),
                               2.height,
-                              Text('Started ${_formatDate(order['created_at'] as String?)}',
+                              Text(context.l10n.contractStartedOn(_formatDate(order['created_at'] as String?)),
                                   style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12)),
                             ],
                           ),
@@ -246,7 +278,7 @@ class _SellerOrderListState extends State<SellerOrderList> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Text('AMOUNT',
+                            Text(context.l10n.amountCaps,
                                 style: kTextStyle.copyWith(
                                     color: kLightNeutralColor, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 0.5)),
                             2.height,
@@ -315,8 +347,4 @@ class _StatusStyle {
   final Color fg;
   final Color bg;
   const _StatusStyle(this.label, this.fg, this.bg);
-}
-
-extension on String {
-  String get capitalize => isEmpty ? '' : '${this[0].toUpperCase()}${substring(1)}';
 }

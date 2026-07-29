@@ -1,18 +1,36 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../data/models/notification_model.dart';
+
 class NotificationService {
   static final _client = Supabase.instance.client;
 
-  /// Fetch notifications for current user
-  static Future<List<Map<String, dynamic>>> getNotifications() async {
+  static const int pageSize = 20;
+
+  /// First page of notifications (newest first).
+  static Future<List<Map<String, dynamic>>> getNotifications({
+    int limit = pageSize,
+    int offset = 0,
+  }) async {
+    return getNotificationsPage(limit: limit, offset: offset);
+  }
+
+  static Future<List<Map<String, dynamic>>> getNotificationsPage({
+    int limit = pageSize,
+    int offset = 0,
+  }) async {
     final user = _client.auth.currentUser;
     if (user == null) return [];
+
+    final from = offset;
+    final to = offset + limit - 1;
 
     final data = await _client
         .from('notifications')
         .select()
         .eq('user_id', user.id)
-        .order('created_at', ascending: false);
+        .order('created_at', ascending: false)
+        .range(from, to);
     return List<Map<String, dynamic>>.from(data);
   }
 
@@ -21,12 +39,12 @@ class NotificationService {
     final user = _client.auth.currentUser;
     if (user == null) return 0;
 
-    final data = await _client
+    final count = await _client
         .from('notifications')
-        .select('id')
+        .count(CountOption.exact)
         .eq('user_id', user.id)
         .eq('read', false);
-    return (data as List).length;
+    return count;
   }
 
   /// Mark a notification as read
@@ -49,9 +67,10 @@ class NotificationService {
         .eq('read', false);
   }
 
-  /// Subscribe to notification inserts/updates for badge refresh
+  /// Subscribe to notification inserts/updates for badge refresh and live alerts.
   static RealtimeChannel subscribeToNotifications({
-    required void Function() onChange,
+    void Function()? onChange,
+    void Function(AppNotification notification)? onInsert,
   }) {
     final user = _client.auth.currentUser;
     if (user == null) throw Exception('Not authenticated');
@@ -67,7 +86,13 @@ class NotificationService {
             column: 'user_id',
             value: user.id,
           ),
-          callback: (_) => onChange(),
+          callback: (payload) {
+            final notification = _parseNotificationRow(payload.newRecord);
+            if (notification != null) {
+              onInsert?.call(notification);
+            }
+            onChange?.call();
+          },
         )
         .onPostgresChanges(
           event: PostgresChangeEvent.update,
@@ -78,11 +103,20 @@ class NotificationService {
             column: 'user_id',
             value: user.id,
           ),
-          callback: (_) => onChange(),
+          callback: (_) => onChange?.call(),
         )
         .subscribe();
 
     return channel;
+  }
+
+  static AppNotification? _parseNotificationRow(Map<String, dynamic> record) {
+    if (record.isEmpty) return null;
+    try {
+      return AppNotification.fromJson(Map<String, dynamic>.from(record));
+    } catch (_) {
+      return null;
+    }
   }
 
   static void unsubscribe(RealtimeChannel? channel) {

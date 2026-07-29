@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/data/models/hire_onboarding_packet_model.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/services/attendance_service.dart';
 import 'package:freelancer/services/hire_onboarding_service.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -49,7 +50,7 @@ class _HireOnboardingReaderScreenState extends State<HireOnboardingReaderScreen>
       if (mounted) {
         setState(() => _loading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
     }
@@ -66,7 +67,7 @@ class _HireOnboardingReaderScreenState extends State<HireOnboardingReaderScreen>
       if (mounted) {
         setState(() => _acking = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
     }
@@ -79,6 +80,7 @@ class _HireOnboardingReaderScreenState extends State<HireOnboardingReaderScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final bottom = MediaQuery.paddingOf(context).bottom;
     final showOnsiteHint =
         widget.jobPost != null && AttendanceService.isOnsiteJob(widget.jobPost);
@@ -91,7 +93,7 @@ class _HireOnboardingReaderScreenState extends State<HireOnboardingReaderScreen>
         elevation: 0,
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
-          'First-day instructions',
+          l10n.firstDayInstructions,
           style: kTextStyle.copyWith(
             color: kNeutralColor,
             fontWeight: FontWeight.bold,
@@ -106,7 +108,7 @@ class _HireOnboardingReaderScreenState extends State<HireOnboardingReaderScreen>
           : _packet == null
               ? Center(
                   child: Text(
-                    'Instructions not available yet.',
+                    l10n.instructionsNotAvailable,
                     style: kTextStyle.copyWith(color: kSubTitleColor),
                   ),
                 )
@@ -140,7 +142,7 @@ class _HireOnboardingReaderScreenState extends State<HireOnboardingReaderScreen>
                                     const SizedBox(width: 10),
                                     Expanded(
                                       child: Text(
-                                        'When you arrive on site, use Scan attendance QR on the contract screen.',
+                                        l10n.onboardingUseScanQrHint,
                                         style: kTextStyle.copyWith(
                                           color: kSubTitleColor,
                                           fontSize: 13,
@@ -155,7 +157,7 @@ class _HireOnboardingReaderScreenState extends State<HireOnboardingReaderScreen>
                             ],
                             if (_visibleSections.isEmpty)
                               Text(
-                                'No section details were provided.',
+                                l10n.noSectionDetails,
                                 style: kTextStyle.copyWith(color: kSubTitleColor),
                               )
                             else
@@ -208,8 +210,8 @@ class _HireOnboardingReaderScreenState extends State<HireOnboardingReaderScreen>
                           padding: EdgeInsets.fromLTRB(16, 12, 16, 12 + bottom),
                           child: ButtonGlobalWithoutIcon(
                             buttontext: _acking
-                                ? 'Please wait…'
-                                : 'I have read and understood',
+                                ? l10n.pleaseWaitEllipsis
+                                : l10n.onboardingReadUnderstood,
                             buttonDecoration: kButtonDecoration.copyWith(
                               color: kPrimaryColor,
                             ),
@@ -231,7 +233,7 @@ class _HireOnboardingReaderScreenState extends State<HireOnboardingReaderScreen>
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              'You acknowledged these instructions',
+                              l10n.onboardingAcknowledgedLabel,
                               style: kTextStyle.copyWith(
                                 color: kSubTitleColor,
                                 fontSize: 13,

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/services/job_posts_service.dart';
 import 'package:freelancer/services/profile_service.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -48,25 +50,17 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
     }
   }
 
-  static String _jobTypeLabel(String? t) {
-    switch (t) {
-      case 'full_time':
-        return 'Full-time';
-      case 'part_time':
-        return 'Part-time';
-      case 'gig':
-      default:
-        return 'Gig';
-    }
-  }
+  static String _jobTypeLabel(AppLocalizations l10n, String? t) =>
+      L10nLabels.jobTypeLabel(l10n, t);
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     if (_isLoading) {
       return const ProfileDetailsSkeleton(extraSection: false);
     }
 
-    final name = _profile?['name'] ?? 'User';
+    final name = _profile?['name'] ?? l10n.userName;
     final bio = _profile?['bio'] as String?;
     final city = (_profile?['city'] as String?) ?? '';
     final country = (_profile?['country'] as String?) ?? '';
@@ -89,7 +83,7 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
         elevation: 0,
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
-          'HupWorks',
+          l10n.appTitle,
           style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -162,11 +156,11 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      _statTile('$totalJobs', 'Posted'),
+                      _statTile('$totalJobs', l10n.statPosted),
                       _statDivider(),
-                      _statTile('$openJobs', 'Open'),
+                      _statTile('$openJobs', l10n.open),
                       _statDivider(),
-                      _statTile('$currencySign$balance', 'Balance'),
+                      _statTile('$currencySign$balance', l10n.balance),
                     ],
                   ),
                 ),
@@ -186,7 +180,7 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
                     },
                     icon: const Icon(IconlyBold.edit, size: 18, color: kPrimaryColor),
                     label: Text(
-                      'Edit profile',
+                      l10n.editProfile,
                       style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold),
                     ),
                     style: ProfileDetailTheme.editProfileOutlinedStyle(),
@@ -218,11 +212,11 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
                 child: Row(
                   children: [
                     Text(
-                      'My Job Posts',
+                      l10n.myJobPosts,
                       style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold),
                     ),
                     const Spacer(),
-                    Text('$totalJobs total', style: kTextStyle.copyWith(color: kLightNeutralColor)),
+                    Text(l10n.countTotal(totalJobs), style: kTextStyle.copyWith(color: kLightNeutralColor)),
                   ],
                 ),
               ),
@@ -236,7 +230,7 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
                     children: [
                       Icon(IconlyLight.paper, size: 48, color: kPrimaryColor.withValues(alpha: 0.45)),
                       const SizedBox(height: 8),
-                      Text('No jobs posted yet', style: kTextStyle.copyWith(color: kLightNeutralColor)),
+                      Text(context.l10n.noJobsPostedYet, style: kTextStyle.copyWith(color: kLightNeutralColor)),
                       const SizedBox(height: 12),
                       OutlinedButton.icon(
                         onPressed: () async {
@@ -245,7 +239,7 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
                         },
                         style: ProfileDetailTheme.editProfileOutlinedStyle(),
                         icon: const Icon(Icons.add, size: 18, color: kPrimaryColor),
-                        label: Text('Post a job', style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.w600)),
+                        label: Text(context.l10n.postAJob, style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.w600)),
                       ),
                     ],
                   ),
@@ -254,7 +248,7 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: Column(
-                    children: _jobs.map(_jobCard).toList(),
+                    children: _jobs.map((j) => _jobCard(context, j)).toList(),
                   ),
                 ),
 
@@ -286,7 +280,8 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
         margin: const EdgeInsets.symmetric(horizontal: 24),
       );
 
-  Widget _jobCard(Map<String, dynamic> job) {
+  Widget _jobCard(BuildContext context, Map<String, dynamic> job) {
+    final l10n = context.l10n;
     final category = job['categories'] as Map<String, dynamic>?;
     final isOpen = job['status'] == 'open';
     final location = job['location'] as String?;
@@ -308,7 +303,7 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
                 children: [
                   Expanded(
                     child: Text(
-                      job['title'] ?? 'Untitled',
+                      job['title'] ?? l10n.untitled,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
@@ -322,7 +317,7 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
                       color: kPrimaryColor.withValues(alpha: 0.1),
                     ),
                     child: Text(
-                      _jobTypeLabel(job['job_type'] as String?),
+                      _jobTypeLabel(l10n, job['job_type'] as String?),
                       style: kTextStyle.copyWith(color: kPrimaryColor, fontSize: 12),
                     ),
                   ),
@@ -355,7 +350,7 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
                       color: isOpen ? kPrimaryColor.withValues(alpha: 0.1) : kDarkWhite,
                     ),
                     child: Text(
-                      isOpen ? 'Open' : 'Closed',
+                      isOpen ? l10n.open : l10n.closed,
                       style: kTextStyle.copyWith(
                         color: isOpen ? kPrimaryColor : kNeutralColor,
                         fontSize: 11,
@@ -364,7 +359,7 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
                   ),
                   const Spacer(),
                   Text(
-                    category?['name'] ?? 'General',
+                    category?['name'] ?? l10n.categoryGeneral,
                     style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
                   ),
                 ],

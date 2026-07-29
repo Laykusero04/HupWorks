@@ -84,7 +84,6 @@ const List<String> revisionTime = ['1 time', '2 time', '3 time', '4 time'];
 String selectedRevisionTime = '1 time';
 
 const List<String> reportTitle = ['Non original content', 'Trademark Violations', 'Copyright Violations', 'Other reasons'];
-String selectedReportTitle = 'Non original content';
 
 const List<String> gateWay = ['PayPal', 'Credit Card', 'Bkash'];
 String selectedGateWay = 'PayPal';

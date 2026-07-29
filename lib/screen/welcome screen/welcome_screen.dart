@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
 import 'package:go_router/go_router.dart';
 
@@ -12,8 +13,10 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
+  bool _isFreelancer = false;
+
   void _goToSignUp() {
-    if (isFreelancer) {
+    if (_isFreelancer) {
       context.push('/auth/seller/signup');
     } else {
       context.push('/auth/client/signup');
@@ -26,6 +29,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final bottom = MediaQuery.paddingOf(context).bottom;
 
     return Scaffold(
@@ -48,7 +52,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'HupWorks',
+                  l10n.appTitle,
                   style: kTextStyle.copyWith(
                     fontWeight: FontWeight.bold,
                     fontSize: 22,
@@ -75,7 +79,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Text(
-                        'How will you use HupWorks?',
+                        l10n.authWelcomeHowToUse,
                         textAlign: TextAlign.center,
                         style: kTextStyle.copyWith(
                           fontSize: 20,
@@ -87,25 +91,25 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         children: [
                           Expanded(
                             child: _ChoiceCard(
-                              label: 'Client',
-                              hint: 'Hire talent',
+                              label: l10n.authRoleClient,
+                              hint: l10n.authRoleClientSubtitle,
                               icon: Icons.person_outline_rounded,
                               color: kPrimaryColor,
-                              selected: !isFreelancer,
+                              selected: !_isFreelancer,
                               onTap: () =>
-                                  setState(() => isFreelancer = false),
+                                  setState(() => _isFreelancer = false),
                             ),
                           ),
                           const SizedBox(width: 14),
                           Expanded(
                             child: _ChoiceCard(
-                              label: 'Freelancer',
-                              hint: 'Find work',
+                              label: l10n.authRoleFreelancer,
+                              hint: l10n.authRoleFreelancerSubtitle,
                               icon: Icons.work_outline_rounded,
                               color: kSecondaryColor,
-                              selected: isFreelancer,
+                              selected: _isFreelancer,
                               onTap: () =>
-                                  setState(() => isFreelancer = true),
+                                  setState(() => _isFreelancer = true),
                             ),
                           ),
                         ],
@@ -123,9 +127,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                             ),
                           ),
                           child: Text(
-                            isFreelancer
-                                ? 'Continue as Freelancer'
-                                : 'Continue as Client',
+                            _isFreelancer
+                                ? l10n.authContinueAsFreelancer
+                                : l10n.authContinueAsClient,
                             style: kTextStyle.copyWith(
                               color: kWhite,
                               fontWeight: FontWeight.w600,
@@ -148,7 +152,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                             ),
                           ),
                           child: Text(
-                            'I already have an account',
+                            l10n.authAlreadyHaveAccount,
                             style: kTextStyle.copyWith(
                               fontWeight: FontWeight.w600,
                               fontSize: 15,

@@ -1,5 +1,6 @@
 import 'package:freelancer/core/utils/attendance_mode.dart';
 import 'package:freelancer/data/models/hire_onboarding_packet_model.dart';
+import 'package:freelancer/l10n/app_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class HireOnboardingService {
@@ -109,6 +110,7 @@ class HireOnboardingService {
     String? location,
     String? locationType,
     String? attendanceMode,
+    AppLocalizations? l10n,
   }) {
     var result = sections;
     if (location != null && location.trim().isNotEmpty) {
@@ -122,7 +124,7 @@ class HireOnboardingService {
     result = result.map((s) {
       if (s.key != 'attendance' || s.body.trim().isNotEmpty) return s;
       final mode = attendanceMode ?? AttendanceMode.qrInOut;
-      return s.copyWith(body: AttendanceMode.onboardingSectionBody(mode));
+      return s.copyWith(body: AttendanceMode.onboardingSectionBody(mode, l10n));
     }).toList();
     return result;
   }

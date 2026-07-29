@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:freelancer/data/models/seller_skill_model.dart';
 import 'package:freelancer/services/profile_service.dart';

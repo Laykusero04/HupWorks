@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/widgets/attendance_punch_cells.dart';
 import 'package:freelancer/services/attendance_service.dart';
 
@@ -55,7 +56,7 @@ class _AttendancePunchLogSectionState extends State<AttendancePunchLogSection> {
       punches: _punches,
       isLoading: _isLoading,
       showSellerName: widget.showSellerName,
-      emptyMessage: 'No attendance recorded today.',
+      emptyMessage: context.l10n.noAttendanceRecordedToday,
     );
   }
 }

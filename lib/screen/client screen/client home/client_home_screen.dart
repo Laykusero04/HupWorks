@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
-import 'package:freelancer/data/repositories/notification_repository.dart';
+import 'package:freelancer/core/notifications/notification_scope.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/client%20screen/client%20job%20post/client_job_post.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:freelancer/screen/client%20screen/client%20job%20post/job_details.dart';
 import 'package:freelancer/services/client_home_service.dart';
 import 'package:freelancer/services/job_posts_service.dart';
@@ -32,9 +31,6 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
   List<Map<String, dynamic>> _myRecentJobs = [];
   List<Map<String, dynamic>> _topSellers = [];
   bool _isLoading = true;
-  int _unreadNotificationCount = 0;
-  RealtimeChannel? _notificationChannel;
-  NotificationRepository? _notificationRepository;
 
   final PageController _bannerController =
       PageController(viewportFraction: 0.9);
@@ -48,37 +44,13 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       _loadData();
-      _loadUnreadNotificationCount();
-      _subscribeToNotifications();
     });
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _notificationRepository ??= context.read<NotificationRepository>();
-  }
-
-  @override
   void dispose() {
-    _notificationRepository?.unsubscribe(_notificationChannel);
     _bannerController.dispose();
     super.dispose();
-  }
-
-  Future<void> _loadUnreadNotificationCount() async {
-    try {
-      final count = await context.read<NotificationRepository>().getUnreadCount();
-      if (mounted) setState(() => _unreadNotificationCount = count);
-    } catch (_) {}
-  }
-
-  void _subscribeToNotifications() {
-    try {
-      _notificationChannel = context.read<NotificationRepository>().subscribeToNotifications(
-            onChange: _loadUnreadNotificationCount,
-          );
-    } catch (_) {}
   }
 
   Future<void> _loadData() async {
@@ -102,21 +74,22 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
       if (mounted) {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading data: $e')),
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
     }
   }
 
-  static String _jobTypeLabel(String? t) {
+  String _jobTypeLabel(String? t) {
+    final l10n = context.l10n;
     switch (t) {
       case 'full_time':
-        return 'Full-time';
+        return l10n.fullTime;
       case 'part_time':
-        return 'Part-time';
+        return l10n.partTime;
       case 'gig':
       default:
-        return 'Gig';
+        return l10n.jobTypeGig;
     }
   }
 
@@ -152,10 +125,11 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Scaffold(
       backgroundColor: kDarkWhite,
       appBar: ClientShellAppBar(
-        title: 'Home',
+        title: l10n.home,
         actions: _isLoading ? null : _homeAppBarActions(),
       ),
       body: _isLoading
@@ -175,7 +149,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
                   const SliverToBoxAdapter(child: SizedBox(height: 24)),
                   SliverToBoxAdapter(
                     child: _buildSectionHeader(
-                      'Browse Categories',
+                      l10n.browseCategories,
                       onViewAll: () =>
                           const ClientAllCategories().launch(context),
                     ),
@@ -184,7 +158,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
                   const SliverToBoxAdapter(child: SizedBox(height: 18)),
                   SliverToBoxAdapter(
                     child: _buildSectionHeader(
-                      'Your Recent Jobs',
+                      l10n.yourRecentJobs,
                       onViewAll: () => const JobPost().launch(context),
                     ),
                   ),
@@ -192,7 +166,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
                   const SliverToBoxAdapter(child: SizedBox(height: 18)),
                   SliverToBoxAdapter(
                     child: _buildSectionHeader(
-                      'Top Freelancers',
+                      l10n.topFreelancers,
                       onViewAll: () => context.go(AppRoutes.clientTalent),
                     ),
                   ),
@@ -205,22 +179,29 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
   }
 
   List<Widget> _homeAppBarActions() {
+    final notifications = NotificationScope.of(context);
     return [
-      IconButton(
-        tooltip: 'Notifications',
-        onPressed: () async {
-          await const ClientNotification().launch(context);
-          if (mounted) _loadUnreadNotificationCount();
+      ListenableBuilder(
+        listenable: notifications,
+        builder: (context, _) {
+          final count = notifications.unreadCount;
+          return IconButton(
+            tooltip: context.l10n.notifications,
+            onPressed: () async {
+              await const ClientNotification().launch(context);
+              if (mounted) await notifications.refreshUnreadCount();
+            },
+            icon: count > 0
+                ? Badge(
+                    label: Text(
+                      count > 9 ? '9+' : '$count',
+                      style: const TextStyle(fontSize: 10),
+                    ),
+                    child: const Icon(Icons.notifications_outlined),
+                  )
+                : const Icon(Icons.notifications_outlined),
+          );
         },
-        icon: _unreadNotificationCount > 0
-            ? Badge(
-                label: Text(
-                  _unreadNotificationCount > 9 ? '9+' : '$_unreadNotificationCount',
-                  style: const TextStyle(fontSize: 10),
-                ),
-                child: const Icon(Icons.notifications_outlined),
-              )
-            : const Icon(Icons.notifications_outlined),
       ),
     ];
   }
@@ -232,7 +213,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
         onTap: () {
           showSearch(
             context: context,
-            delegate: CustomSearchDelegate(),
+            delegate: CustomSearchDelegate(searchHint: context.l10n.searchHint),
           );
         },
         child: Container(
@@ -248,7 +229,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  'Search services, freelancers...',
+                  context.l10n.searchHint,
                   style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 14),
                 ),
               ),
@@ -261,27 +242,28 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
 
   // ------------------------- Quick actions -------------------------
   Widget _buildQuickActions() {
+    final l10n = context.l10n;
     final actions = <_QuickAction>[
       _QuickAction(
-        label: 'Post Job',
+        label: l10n.postJob,
         icon: Icons.add_business_rounded,
         color: kPrimaryColor,
         onTap: () => const JobPost().launch(context),
       ),
       _QuickAction(
-        label: 'Find Talent',
+        label: l10n.findTalent,
         icon: Icons.people_alt_rounded,
         color: kSecondaryColor,
         onTap: () => context.go(AppRoutes.clientTalent),
       ),
       _QuickAction(
-        label: 'Categories',
+        label: l10n.categories,
         icon: Icons.category_rounded,
         color: kAccentColor,
         onTap: () => const ClientAllCategories().launch(context),
       ),
       _QuickAction(
-        label: 'Contracts',
+        label: l10n.contracts,
         icon: Icons.description_outlined,
         color: const Color(0xFF8B5CF6),
         onTap: () => context.go('/client/orders'),
@@ -350,25 +332,26 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
 
   // ------------------------- Promo carousel -------------------------
   Widget _buildPromoCarousel() {
+    final l10n = context.l10n;
     final promos = <_Promo>[
       _Promo(
-        title: 'Hire top-rated\nfreelancers',
-        subtitle: 'Verified talent for every project',
-        cta: 'Explore',
+        title: l10n.hireTopRated,
+        subtitle: l10n.promoVerifiedTalentSubtitle,
+        cta: l10n.explore,
         gradient: const [Color(0xFF16A34A), Color(0xFF0EA5E9)],
         onTap: () => context.go(AppRoutes.clientTalent),
       ),
       _Promo(
-        title: 'Post a job\nin seconds',
-        subtitle: 'Get proposals within minutes',
-        cta: 'Post Now',
+        title: l10n.postAJobBanner,
+        subtitle: l10n.promoProposalsSubtitle,
+        cta: l10n.postNow,
         gradient: const [Color(0xFFF97316), Color(0xFFEF4444)],
         onTap: () => const JobPost().launch(context),
       ),
       _Promo(
-        title: 'Discover new\ncategories',
-        subtitle: 'Find services across every niche',
-        cta: 'Browse',
+        title: l10n.browseCategories,
+        subtitle: l10n.promoNicheServicesSubtitle,
+        cta: l10n.browse,
         gradient: const [Color(0xFF8B5CF6), Color(0xFFEC4899)],
         onTap: () => const ClientAllCategories().launch(context),
       ),
@@ -540,7 +523,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
               child: Row(
                 children: [
                   Text(
-                    'See all',
+                    context.l10n.seeAll,
                     style: kTextStyle.copyWith(
                       color: kPrimaryColor,
                       fontWeight: FontWeight.w600,
@@ -563,7 +546,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
         child: Text(
-          'No categories yet',
+          context.l10n.noCategoriesYet,
           style: kTextStyle.copyWith(color: kLightNeutralColor),
         ),
       );
@@ -649,6 +632,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
 
   // ------------------------- Recent jobs -------------------------
   Widget _buildRecentJobs() {
+    final l10n = context.l10n;
     if (_myRecentJobs.isEmpty) {
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
@@ -676,7 +660,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'No jobs posted yet',
+                      l10n.noJobsYet,
                       style: kTextStyle.copyWith(
                         color: kNeutralColor,
                         fontWeight: FontWeight.w700,
@@ -684,7 +668,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Tap "Post Job" to get started',
+                      l10n.recentJobsEmptyHint,
                       style: kTextStyle.copyWith(
                         color: kLightNeutralColor,
                         fontSize: 12,
@@ -703,7 +687,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    'Post',
+                    l10n.postJobShort,
                     style: kTextStyle.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.w700,
@@ -761,7 +745,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            job['title'] ?? 'Untitled',
+                            job['title'] ?? l10n.untitled,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: kTextStyle.copyWith(
@@ -779,13 +763,13 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
                               ),
                               const SizedBox(width: 6),
                               _miniChip(
-                                isOpen ? 'Open' : 'Closed',
+                                isOpen ? context.l10n.open : context.l10n.closed,
                                 isOpen ? kSecondaryColor : kLightNeutralColor,
                               ),
                               const SizedBox(width: 6),
                               Expanded(
                                 child: Text(
-                                  category?['name'] ?? 'General',
+                                  category?['name'] ?? l10n.categoryGeneral,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: kTextStyle.copyWith(
@@ -839,11 +823,12 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
 
   // ------------------------- Top freelancers -------------------------
   Widget _buildTopFreelancers() {
+    final l10n = context.l10n;
     if (_topSellers.isEmpty) {
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
         child: Text(
-          'No freelancers yet',
+          l10n.noFreelancersYet,
           style: kTextStyle.copyWith(color: kLightNeutralColor),
         ),
       );
@@ -926,7 +911,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
                                     size: 12, color: Colors.white),
                                 const SizedBox(width: 2),
                                 Text(
-                                  'Pro',
+                                  l10n.proBadge,
                                   style: kTextStyle.copyWith(
                                     color: Colors.white,
                                     fontSize: 10,
@@ -973,7 +958,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          seller['name'] ?? 'Freelancer',
+                          seller['name'] ?? l10n.authRoleFreelancer,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: kTextStyle.copyWith(
@@ -985,7 +970,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
                         const SizedBox(height: 2),
                         Text(
                           (seller['headline'] as String?) ??
-                              'Verified Freelancer',
+                              l10n.verifiedFreelancer,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: kTextStyle.copyWith(
@@ -1003,7 +988,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
                           ),
                           child: Center(
                             child: Text(
-                              'View Profile',
+                              l10n.viewProfile,
                               style: kTextStyle.copyWith(
                                 color: kPrimaryColor,
                                 fontWeight: FontWeight.w700,

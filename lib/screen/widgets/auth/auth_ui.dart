@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:freelancer/l10n/l10n.dart';
 
 import '../constant.dart';
 import '../icons.dart';
@@ -262,12 +263,14 @@ class AuthPrimaryButton extends StatelessWidget {
 }
 
 class AuthSocialSection extends StatelessWidget {
-  const AuthSocialSection({super.key, this.dividerText = 'Or continue with'});
+  const AuthSocialSection({super.key, this.dividerText});
 
-  final String dividerText;
+  /// Defaults to [AppLocalizations.authOrContinueWith] when null.
+  final String? dividerText;
 
   @override
   Widget build(BuildContext context) {
+    final text = dividerText ?? context.l10n.authOrContinueWith;
     return Column(
       children: [
         Row(
@@ -276,7 +279,7 @@ class AuthSocialSection extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Text(
-                dividerText,
+                text,
                 style: kTextStyle.copyWith(
                   color: kSubTitleColor,
                   fontSize: 13,
@@ -371,6 +374,7 @@ class AuthTermsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -393,7 +397,7 @@ class AuthTermsRow extends StatelessWidget {
             padding: const EdgeInsets.only(top: 2),
             child: RichText(
               text: TextSpan(
-                text: 'I agree to the ',
+                text: l10n.authAgreeToThe,
                 style: kTextStyle.copyWith(
                   color: kSubTitleColor,
                   fontSize: 13,
@@ -401,7 +405,7 @@ class AuthTermsRow extends StatelessWidget {
                 ),
                 children: [
                   TextSpan(
-                    text: 'Terms of Service',
+                    text: l10n.authTermsOfService,
                     style: kTextStyle.copyWith(
                       color: accentColor,
                       fontWeight: FontWeight.bold,
@@ -433,14 +437,15 @@ class AuthNameRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
           child: AuthTextField(
             controller: firstController,
-            label: 'First name',
-            hint: 'First',
+            label: l10n.authFirstName,
+            hint: l10n.authFirstNameHint,
             textInputAction: TextInputAction.next,
             focusedBorderColor: focusedBorderColor,
           ),
@@ -449,8 +454,8 @@ class AuthNameRow extends StatelessWidget {
         Expanded(
           child: AuthTextField(
             controller: lastController,
-            label: 'Last name',
-            hint: 'Last',
+            label: l10n.authLastName,
+            hint: l10n.authLastNameHint,
             textInputAction: TextInputAction.next,
             focusedBorderColor: focusedBorderColor,
           ),

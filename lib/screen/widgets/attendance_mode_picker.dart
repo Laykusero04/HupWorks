@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/attendance_mode.dart';
+import 'package:freelancer/l10n/l10n.dart';
 
 import 'constant.dart';
 
@@ -25,13 +26,14 @@ class AttendanceModePicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final selected = AttendanceMode.normalize(value);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Attendance tracking',
+          l10n.attendanceTracking,
           style: kTextStyle.copyWith(
             color: kNeutralColor,
             fontWeight: FontWeight.bold,
@@ -39,7 +41,7 @@ class AttendanceModePicker extends StatelessWidget {
         ),
         const SizedBox(height: 6),
         Text(
-          'How workers record time on site.',
+          l10n.attendanceTrackingHint,
           style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12),
         ),
         const SizedBox(height: 10),
@@ -82,7 +84,7 @@ class AttendanceModePicker extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              AttendanceMode.label(mode),
+                              AttendanceMode.label(mode, l10n),
                               style: kTextStyle.copyWith(
                                 color: kNeutralColor,
                                 fontWeight: FontWeight.w600,
@@ -91,7 +93,7 @@ class AttendanceModePicker extends StatelessWidget {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              AttendanceMode.clientHint(mode),
+                              AttendanceMode.clientHint(mode, l10n),
                               style: kTextStyle.copyWith(
                                 color: kSubTitleColor,
                                 fontSize: 12,

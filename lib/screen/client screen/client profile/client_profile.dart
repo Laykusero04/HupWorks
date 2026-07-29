@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/support_chat_navigation.dart';
+import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/services/auth_service.dart';
 import 'package:freelancer/services/profile_service.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -65,7 +67,8 @@ class _ClientProfileState extends State<ClientProfile> {
       return const ProfileTabSkeleton(persona: ShellPersona.client);
     }
 
-    final name = _profile?['name'] ?? 'User';
+    final l10n = context.l10n;
+    final name = _profile?['name'] ?? l10n.userName;
     final balance = _profile?['balance'] ?? 0;
     final profileImageUrl = _profile?['profile_image_url'] as String?;
     final rating = (_profile?['rating'] as num?)?.toDouble() ?? 0;
@@ -79,7 +82,7 @@ class _ClientProfileState extends State<ClientProfile> {
             persona: ShellPersona.client,
             name: name,
             imageUrl: profileImageUrl,
-            balanceLabel: 'Balance: $currencySign$balance',
+            balanceLabel: l10n.balanceWithAmount('$currencySign$balance'),
             rating: rating,
             reviewCount: reviewCount,
           ),
@@ -90,7 +93,7 @@ class _ClientProfileState extends State<ClientProfile> {
               children: [
                 ProfileMenuListTile(
                   icon: Icons.person_outline,
-                  title: 'My Profile',
+                  title: l10n.myProfile,
                   onTap: () async {
                     await const ClientProfileDetails().launch(context);
                     _loadProfile(forceRefresh: true);
@@ -98,51 +101,51 @@ class _ClientProfileState extends State<ClientProfile> {
                 ),
                 ProfileMenuListTile(
                   icon: Icons.dashboard_outlined,
-                  title: 'Dashboard',
+                  title: l10n.dashboard,
                   onTap: () => const ClientDashBoard().launch(context),
                 ),
                 ExpansionTile(
                   leading: const Icon(Icons.account_balance_wallet_outlined, color: kNeutralColor),
-                  title: Text('Deposit', style: kTextStyle.copyWith(color: kNeutralColor)),
+                  title: Text(l10n.deposit, style: kTextStyle.copyWith(color: kNeutralColor)),
                   children: [
                     ListTile(
-                      title: Text('Add Deposit', style: kTextStyle.copyWith(color: kNeutralColor)),
+                      title: Text(l10n.addDeposit, style: kTextStyle.copyWith(color: kNeutralColor)),
                       onTap: () => const AddDeposit().launch(context),
                     ),
                     ListTile(
-                      title: Text('Deposit History', style: kTextStyle.copyWith(color: kNeutralColor)),
+                      title: Text(l10n.depositHistory, style: kTextStyle.copyWith(color: kNeutralColor)),
                       onTap: () => const DepositHistory().launch(context),
                     ),
                   ],
                 ),
                 ProfileMenuListTile(
                   icon: Icons.receipt_long_outlined,
-                  title: 'Transaction',
+                  title: l10n.transaction,
                   onTap: () => const ClientTransaction().launch(context),
                 ),
                 ProfileMenuListTile(
                   icon: Icons.favorite_border,
-                  title: 'Favorite',
+                  title: l10n.favorite,
                   onTap: () => const ClientFavList().launch(context),
                 ),
                 ProfileMenuListTile(
                   icon: Icons.description_outlined,
-                  title: 'Seller Report',
+                  title: l10n.sellerReport,
                   onTap: () => const ClientReport().launch(context),
                 ),
                 ProfileMenuListTile(
                   icon: Icons.settings_outlined,
-                  title: 'Setting',
+                  title: l10n.settings,
                   onTap: () => const ClientSetting().launch(context),
                 ),
                 ProfileMenuListTile(
                   icon: Icons.person_add_outlined,
-                  title: 'Invite Friends',
+                  title: l10n.inviteFriends,
                   onTap: () => const ClientInvite().launch(context),
                 ),
                 ProfileMenuListTile(
                   icon: Icons.help_outline,
-                  title: 'Help & Support',
+                  title: l10n.helpSupport,
                   onTap: () {
                     Navigator.pop(context);
                     openSupportChat(context);
@@ -150,7 +153,7 @@ class _ClientProfileState extends State<ClientProfile> {
                 ),
                 ProfileMenuListTile(
                   icon: Icons.logout,
-                  title: 'Log Out',
+                  title: l10n.logOut,
                   onTap: _handleLogout,
                 ),
               ],

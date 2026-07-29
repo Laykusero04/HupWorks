@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/core/utils/attendance_mode.dart';
 import 'package:freelancer/core/utils/category_name.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
@@ -119,30 +120,31 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
   }
 
   String? _validateStep(int step) {
+    final l10n = context.l10n;
     switch (step) {
       case 0:
         if (_titleController.text.trim().isEmpty) {
-          return 'Please enter a job title';
+          return l10n.pleaseEnterJobTitle;
         }
         if (_selectedCategoryId == null) {
-          return 'Please select a category';
+          return l10n.pleaseSelectCategory;
         }
         if (_selectedCategoryId == CategoryService.otherCategoryOptionId) {
           try {
             CategoryName.normalize(_customCategoryController.text);
           } catch (e) {
-            return e is FormatException ? e.message : 'Enter a valid category';
+            return e is FormatException ? e.message : l10n.enterValidCategory;
           }
         }
         return null;
       case 1:
         if (_descriptionController.text.trim().isEmpty) {
-          return 'Please enter a description';
+          return l10n.pleaseEnterDescription;
         }
         return null;
       case 2:
         if (_locationController.text.trim().isEmpty) {
-          return 'Please enter a location';
+          return l10n.pleaseEnterLocation;
         }
         return null;
       default:
@@ -207,14 +209,14 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Job posted successfully!')),
+          SnackBar(content: Text(context.l10n.jobPostedSuccess)),
         );
         Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
     } finally {
@@ -326,7 +328,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
               ),
-              child: const Text('Back'),
+              child: Text(context.l10n.back),
             ),
           ),
         if (_step > 0) const SizedBox(width: 12),
@@ -648,19 +650,19 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
               items: [
                 DropdownMenuItem(
                   value: JobPostsService.budgetBasisFixed,
-                  child: Text('Fixed — total project', style: kTextStyle.copyWith(color: kNeutralColor)),
+                  child: Text(context.l10n.budgetBasisFixed, style: kTextStyle.copyWith(color: kNeutralColor)),
                 ),
                 DropdownMenuItem(
                   value: JobPostsService.budgetBasisPerHour,
-                  child: Text('Per hour', style: kTextStyle.copyWith(color: kNeutralColor)),
+                  child: Text(context.l10n.budgetBasisPerHour, style: kTextStyle.copyWith(color: kNeutralColor)),
                 ),
                 DropdownMenuItem(
                   value: JobPostsService.budgetBasisPerDay,
-                  child: Text('Per day', style: kTextStyle.copyWith(color: kNeutralColor)),
+                  child: Text(context.l10n.budgetBasisPerDay, style: kTextStyle.copyWith(color: kNeutralColor)),
                 ),
                 DropdownMenuItem(
                   value: JobPostsService.budgetBasisPerMonth,
-                  child: Text('Per month', style: kTextStyle.copyWith(color: kNeutralColor)),
+                  child: Text(context.l10n.budgetBasisPerMonth, style: kTextStyle.copyWith(color: kNeutralColor)),
                 ),
               ],
               onChanged: (v) {

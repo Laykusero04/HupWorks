@@ -1,6 +1,7 @@
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/job_offer_delivery.dart';
-import 'package:freelancer/screen/seller%20screen/seller%20messgae/chat_inbox.dart';
+import 'package:freelancer/screen/seller%20screen/seller%20message/chat_inbox.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/core/utils/attendance_mode.dart';
 import 'package:freelancer/services/attendance_service.dart';
@@ -55,7 +56,7 @@ class _JobDetailsState extends State<JobDetails> {
       if (mounted) {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
     }
@@ -66,14 +67,14 @@ class _JobDetailsState extends State<JobDetails> {
       await JobPostsService.closeJobPost(widget.jobPostId);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Job post closed')),
+          SnackBar(content: Text(context.l10n.jobPostClosed)),
         );
         Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error: $e')));
+            .showSnackBar(SnackBar(content: Text(context.l10n.errorWithDetail('$e'))));
       }
     }
   }
@@ -89,11 +90,12 @@ class _JobDetailsState extends State<JobDetails> {
         conversationId: conversation['id'] as String,
         otherUserName: seller?['name'] ?? 'Freelancer',
         otherUserImage: seller?['profile_image_url'] ?? '',
+        otherUserId: sellerId,
       ).launch(context);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not open chat: $e')),
+          SnackBar(content: Text(context.l10n.couldNotOpenChatWithDetail('$e'))),
         );
       }
     }
@@ -170,7 +172,7 @@ class _JobDetailsState extends State<JobDetails> {
       if (!mounted) return;
       if (orderId == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Contract not found for this hire.')),
+          SnackBar(content: Text(context.l10n.contractNotFoundForHire)),
         );
         return;
       }
@@ -178,7 +180,7 @@ class _JobDetailsState extends State<JobDetails> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
     }
@@ -189,14 +191,14 @@ class _JobDetailsState extends State<JobDetails> {
       await JobPostsService.updateOfferStatus(offerId, 'rejected');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Application rejected')),
+          SnackBar(content: Text(context.l10n.applicationRejected)),
         );
         _loadData();
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error: $e')));
+            .showSnackBar(SnackBar(content: Text(context.l10n.errorWithDetail('$e'))));
       }
     }
   }
@@ -228,20 +230,21 @@ class _JobDetailsState extends State<JobDetails> {
           '(${accepted + 1} of $cap filled). Other pending applications stay open.';
     }
 
+    final l10n = context.l10n;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Hire freelancer?'),
+        title: Text(l10n.hireFreelancerTitle),
         content: Text(bodyText),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text('Cancel',
+            child: Text(l10n.cancel,
                 style: kTextStyle.copyWith(color: kSubTitleColor)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text('Hire',
+            child: Text(l10n.hireAction,
                 style: kTextStyle.copyWith(
                     color: kPrimaryColor, fontWeight: FontWeight.bold)),
           ),
@@ -274,7 +277,7 @@ class _JobDetailsState extends State<JobDetails> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error: $e')));
+            .showSnackBar(SnackBar(content: Text(context.l10n.errorWithDetail('$e'))));
       }
     }
   }
@@ -302,6 +305,7 @@ class _JobDetailsState extends State<JobDetails> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     if (_isLoading) {
       return const Scaffold(
         backgroundColor: kDarkWhite,
@@ -337,7 +341,7 @@ class _JobDetailsState extends State<JobDetails> {
               padding: EdgeInsets.zero,
               itemBuilder: (BuildContext context) => [
                 PopupMenuItem(
-                  child: Text('Close Job',
+                  child: Text(l10n.closeJob,
                           style: kTextStyle.copyWith(color: Colors.red))
                       .onTap(() => _handleCloseJob()),
                 ),
@@ -441,7 +445,7 @@ class _JobDetailsState extends State<JobDetails> {
                   ? Padding(
                       padding: const EdgeInsets.all(20.0),
                       child: Center(
-                        child: Text('No applications yet',
+                        child: Text(l10n.noApplicationsYet,
                             style:
                                 kTextStyle.copyWith(color: kLightNeutralColor)),
                       ),
@@ -630,14 +634,14 @@ class _JobDetailsState extends State<JobDetails> {
           _savingAttendanceMode = false;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Attendance settings updated')),
+          SnackBar(content: Text(context.l10n.attendanceSettingsUpdated)),
         );
       }
     } catch (e) {
       if (mounted) {
         setState(() => _savingAttendanceMode = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
     }
@@ -746,6 +750,7 @@ class _JobDetailsState extends State<JobDetails> {
   }
 
   Widget _buildLocationSection(Map<String, dynamic>? job) {
+    final l10n = context.l10n;
     final location = (job?['location'] as String?)?.trim();
     final locationType = (job?['location_type'] as String?)?.trim();
     final coords = jobPostCoordinates(job);
@@ -763,10 +768,10 @@ class _JobDetailsState extends State<JobDetails> {
           const SizedBox(height: 8),
           Row(
             children: [
-              Text('Location',
+              Text(l10n.locationLabel,
                   style: kTextStyle.copyWith(color: kSubTitleColor)),
               const SizedBox(width: 8),
-              Text(':', style: kTextStyle.copyWith(color: kSubTitleColor)),
+              Text(l10n.labelColon, style: kTextStyle.copyWith(color: kSubTitleColor)),
               const SizedBox(width: 10),
               _locationTypeBadge(locationType),
             ],
@@ -817,6 +822,7 @@ class _JobDetailsState extends State<JobDetails> {
   }
 
   Widget _buildRow(String label, String value) {
+    final l10n = context.l10n;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -829,7 +835,7 @@ class _JobDetailsState extends State<JobDetails> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(':', style: kTextStyle.copyWith(color: kSubTitleColor)),
+              Text(l10n.labelColon, style: kTextStyle.copyWith(color: kSubTitleColor)),
               const SizedBox(width: 10.0),
               Flexible(
                 child: Text(value,

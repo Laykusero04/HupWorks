@@ -5,9 +5,15 @@ import '../../services/notification_service.dart';
 import '../models/notification_model.dart';
 
 class NotificationRepository {
-  Future<List<AppNotification>> getNotifications() async {
+  Future<List<AppNotification>> getNotifications({
+    int limit = NotificationService.pageSize,
+    int offset = 0,
+  }) async {
     try {
-      final data = await NotificationService.getNotifications();
+      final data = await NotificationService.getNotificationsPage(
+        limit: limit,
+        offset: offset,
+      );
       return data.map((m) => AppNotification.fromJson(m)).toList();
     } catch (e) {
       throw ServerFailure(e.toString());
@@ -22,8 +28,14 @@ class NotificationRepository {
     }
   }
 
-  RealtimeChannel subscribeToNotifications({required void Function() onChange}) {
-    return NotificationService.subscribeToNotifications(onChange: onChange);
+  RealtimeChannel subscribeToNotifications({
+    void Function()? onChange,
+    void Function(AppNotification notification)? onInsert,
+  }) {
+    return NotificationService.subscribeToNotifications(
+      onChange: onChange,
+      onInsert: onInsert,
+    );
   }
 
   void unsubscribe(RealtimeChannel? channel) {

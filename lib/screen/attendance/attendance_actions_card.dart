@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/attendance_format.dart';
 import 'package:freelancer/core/utils/attendance_mode.dart';
 import 'package:freelancer/data/models/attendance_punch_model.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/widgets/attendance_punch_cells.dart';
 import 'package:freelancer/services/attendance_service.dart';
 import 'package:go_router/go_router.dart';
@@ -76,6 +77,7 @@ class _AttendanceActionsCardState extends State<AttendanceActionsCard> {
   }
 
   Future<void> _selfReport(String punchType) async {
+    final l10n = context.l10n;
     setState(() => _busy = true);
     try {
       final result = await AttendanceService.recordSelfReportPunch(
@@ -86,8 +88,10 @@ class _AttendanceActionsCardState extends State<AttendanceActionsCard> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            '${AttendanceFormat.punchLabel(result.punchType)} • '
-            '${AttendanceFormat.minutesLabel(result.minutesWorkedToday)} today',
+            l10n.attendancePunchTodaySummary(
+              AttendanceFormat.punchLabel(result.punchType, l10n),
+              AttendanceFormat.minutesLabel(result.minutesWorkedToday, l10n),
+            ),
           ),
         ),
       );
@@ -96,7 +100,7 @@ class _AttendanceActionsCardState extends State<AttendanceActionsCard> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$e')),
+          SnackBar(content: Text(l10n.errorWithDetail('$e'))),
         );
       }
     } finally {
@@ -108,7 +112,7 @@ class _AttendanceActionsCardState extends State<AttendanceActionsCard> {
     context.push('/seller/attendance/scan?jobPostId=${widget.jobPostId}');
   }
 
-  Widget _statusChip(String mode) {
+  Widget _statusChip(String mode, AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
@@ -116,7 +120,7 @@ class _AttendanceActionsCardState extends State<AttendanceActionsCard> {
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
-        AttendanceMode.label(mode),
+        AttendanceMode.label(mode, l10n),
         style: kTextStyle.copyWith(
           color: kPrimaryColor,
           fontSize: 11,
@@ -156,10 +160,10 @@ class _AttendanceActionsCardState extends State<AttendanceActionsCard> {
     return SizedBox(width: double.infinity, child: btn);
   }
 
-  Widget _buildActions(String mode) {
+  Widget _buildActions(String mode, AppLocalizations l10n) {
     if (!AttendanceMode.isEnabled(mode)) {
       return Text(
-        'Attendance is off for this job.',
+        l10n.attendanceOffForJob,
         style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
       );
     }
@@ -168,8 +172,8 @@ class _AttendanceActionsCardState extends State<AttendanceActionsCard> {
       final done = mode == AttendanceMode.qrOnce && widget.checkedInToday;
       return _actionButton(
         label: done
-            ? 'Checked in'
-            : (mode == AttendanceMode.qrOnce ? 'Check in' : 'Scan QR'),
+            ? l10n.checkedIn
+            : (mode == AttendanceMode.qrOnce ? l10n.checkIn : l10n.scanAttendanceQr),
         color: done ? kLightNeutralColor : const Color(0xFF2E7D32),
         icon: Icons.qr_code_scanner,
         onPressed: _busy || done ? null : _openScan,
@@ -180,7 +184,7 @@ class _AttendanceActionsCardState extends State<AttendanceActionsCard> {
       return Row(
         children: [
           _actionButton(
-            label: 'In',
+            label: l10n.clockIn,
             color: const Color(0xFF2E7D32),
             icon: Icons.login_rounded,
             expanded: true,
@@ -189,7 +193,7 @@ class _AttendanceActionsCardState extends State<AttendanceActionsCard> {
           ),
           const SizedBox(width: 8),
           _actionButton(
-            label: 'Out',
+            label: l10n.clockOut,
             color: Colors.orange,
             icon: Icons.logout_rounded,
             expanded: true,
@@ -205,6 +209,7 @@ class _AttendanceActionsCardState extends State<AttendanceActionsCard> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final mode = AttendanceMode.normalize(widget.attendanceMode);
 
     return Container(
@@ -221,7 +226,7 @@ class _AttendanceActionsCardState extends State<AttendanceActionsCard> {
           Row(
             children: [
               Text(
-                'Attendance',
+                l10n.attendance,
                 style: kTextStyle.copyWith(
                   color: kNeutralColor,
                   fontWeight: FontWeight.w700,
@@ -229,7 +234,7 @@ class _AttendanceActionsCardState extends State<AttendanceActionsCard> {
                 ),
               ),
               const SizedBox(width: 8),
-              _statusChip(mode),
+              _statusChip(mode, l10n),
               const Spacer(),
               if (widget.statusLabel != null)
                 Text(
@@ -245,7 +250,7 @@ class _AttendanceActionsCardState extends State<AttendanceActionsCard> {
           if (!widget.compact) ...[
             const SizedBox(height: 4),
             Text(
-              AttendanceMode.freelancerHint(mode),
+              AttendanceMode.freelancerHint(mode, l10n),
               style: kTextStyle.copyWith(
                 color: kSubTitleColor,
                 fontSize: 11,
@@ -256,14 +261,14 @@ class _AttendanceActionsCardState extends State<AttendanceActionsCard> {
             ),
           ],
           const SizedBox(height: 10),
-          _buildActions(mode),
+          _buildActions(mode, l10n),
           if (AttendanceMode.isEnabled(mode)) ...[
             const SizedBox(height: 10),
             AttendancePunchCells(
               punches: _todayPunches,
               isLoading: _loadingPunches,
               showSellerName: false,
-              emptyMessage: 'No punches yet today.',
+              emptyMessage: l10n.noPunchesToday,
             ),
           ],
         ],

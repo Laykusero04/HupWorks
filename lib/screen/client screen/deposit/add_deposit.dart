@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/services/transaction_service.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -33,7 +34,7 @@ class _AddDepositState extends State<AddDeposit> {
     final amount = double.tryParse(_amountController.text.trim());
     if (amount == null || amount <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a valid amount')),
+        SnackBar(content: Text(context.l10n.pleaseEnterValidAmount)),
       );
       return;
     }
@@ -48,14 +49,14 @@ class _AddDepositState extends State<AddDeposit> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Deposit submitted successfully!')),
+          SnackBar(content: Text(context.l10n.depositSubmittedSuccess)),
         );
         Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
     } finally {
@@ -65,6 +66,7 @@ class _AddDepositState extends State<AddDeposit> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Scaffold(
       backgroundColor: kDarkWhite,
       appBar: AppBar(
@@ -72,7 +74,7 @@ class _AddDepositState extends State<AddDeposit> {
         elevation: 0,
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
-          'Add Deposit',
+          context.l10n.addDeposit,
           style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -80,7 +82,7 @@ class _AddDepositState extends State<AddDeposit> {
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(color: kWhite),
         child: ButtonGlobalWithoutIcon(
-          buttontext: _isLoading ? 'Submitting...' : 'Submit',
+          buttontext: _isLoading ? context.l10n.submitting : context.l10n.submit,
           buttonDecoration: kButtonDecoration.copyWith(
             color: _isLoading ? kLightNeutralColor : kPrimaryColor,
             borderRadius: BorderRadius.circular(30.0),

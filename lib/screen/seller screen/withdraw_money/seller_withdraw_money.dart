@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -27,7 +28,7 @@ class _SellerWithdrawMoneyState extends State<SellerWithdrawMoney> {
   Future<void> _handleSubmit() async {
     final amount = double.tryParse(_amountController.text.trim());
     if (amount == null || amount <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please enter a valid amount')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.pleaseEnterValidAmount)));
       return;
     }
 
@@ -45,11 +46,11 @@ class _SellerWithdrawMoneyState extends State<SellerWithdrawMoney> {
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Withdrawal request submitted!')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.withdrawalRequestSubmitted)));
         Navigator.pop(context);
       }
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.errorWithDetail('$e'))));
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
@@ -57,14 +58,15 @@ class _SellerWithdrawMoneyState extends State<SellerWithdrawMoney> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Scaffold(
       backgroundColor: kDarkWhite,
       appBar: AppBar(backgroundColor: kDarkWhite, elevation: 0, iconTheme: const IconThemeData(color: kNeutralColor),
-        title: Text('Withdraw Money', style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)), centerTitle: true),
+        title: Text(l10n.withdrawMoney, style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)), centerTitle: true),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(color: kWhite),
         child: ButtonGlobalWithoutIcon(
-          buttontext: _isSubmitting ? 'Submitting...' : 'Submit', buttonTextColor: kWhite,
+          buttontext: _isSubmitting ? context.l10n.submitting : context.l10n.submit, buttonTextColor: kWhite,
           buttonDecoration: kButtonDecoration.copyWith(color: _isSubmitting ? kLightNeutralColor : kPrimaryColor, borderRadius: BorderRadius.circular(30.0)),
           onPressed: _isSubmitting ? null : _handleSubmit,
         ),
@@ -81,15 +83,15 @@ class _SellerWithdrawMoneyState extends State<SellerWithdrawMoney> {
                 decoration: kInputDecoration.copyWith(
                   enabledBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(8.0)), borderSide: BorderSide(color: kBorderColorTextField, width: 2)),
                   contentPadding: const EdgeInsets.all(7.0), floatingLabelBehavior: FloatingLabelBehavior.always,
-                  labelText: 'Withdraw Method', labelStyle: kTextStyle.copyWith(color: kNeutralColor)),
+                  labelText: context.l10n.withdrawMethod, labelStyle: kTextStyle.copyWith(color: kNeutralColor)),
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
                     icon: const Icon(FeatherIcons.chevronDown), value: _selectedGateway,
                     style: kTextStyle.copyWith(color: kSubTitleColor),
-                    items: const [
-                      DropdownMenuItem(value: 'paypal', child: Text('PayPal')),
-                      DropdownMenuItem(value: 'credit_card', child: Text('Credit Card')),
-                      DropdownMenuItem(value: 'bkash', child: Text('Bkash')),
+                    items: [
+                      DropdownMenuItem(value: 'paypal', child: Text(l10n.paymentPayPal)),
+                      DropdownMenuItem(value: 'credit_card', child: Text(l10n.paymentCreditCard)),
+                      DropdownMenuItem(value: 'bkash', child: Text(l10n.paymentBkash)),
                     ],
                     onChanged: (v) => setState(() => _selectedGateway = v!),
                   ),
@@ -99,8 +101,8 @@ class _SellerWithdrawMoneyState extends State<SellerWithdrawMoney> {
             const SizedBox(height: 20.0),
             TextFormField(
               controller: _amountController, keyboardType: TextInputType.number, cursorColor: kNeutralColor,
-              decoration: kInputDecoration.copyWith(labelText: 'Amount', labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                hintText: 'Enter amount', hintStyle: kTextStyle.copyWith(color: kSubTitleColor), border: const OutlineInputBorder()),
+              decoration: kInputDecoration.copyWith(labelText: context.l10n.amount, labelStyle: kTextStyle.copyWith(color: kNeutralColor),
+                hintText: context.l10n.enterAmount, hintStyle: kTextStyle.copyWith(color: kSubTitleColor), border: const OutlineInputBorder()),
             ),
           ]),
         ),

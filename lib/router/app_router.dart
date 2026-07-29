@@ -1,10 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../core/auth/role_cache.dart';
 import '../core/constants/colors.dart';
+import '../core/utils/app_logger.dart';
+import '../services/auth_service.dart';
 
 // Old screens — used during incremental migration
 import '../screen/splash screen/mt_splash_screen.dart';
@@ -25,12 +29,13 @@ import '../screen/seller screen/orders/seller_order_details.dart';
 import '../screen/seller screen/profile/seller_profile.dart';
 import '../screen/seller screen/applications/seller_applications.dart';
 import '../screen/seller screen/buyer request/seller_buyer_request.dart';
-import '../screen/seller screen/seller messgae/chat_list.dart';
+import '../screen/seller screen/seller message/chat_list.dart';
 import '../screen/attendance/attendance_scan_screen.dart';
 import '../screen/attendance/seller_attendance_hub_screen.dart';
 import '../screen/widgets/shell_tab_header.dart';
 
-final _rootNavigatorKey = GlobalKey<NavigatorState>();
+/// Root navigator for overlays and notification tap navigation.
+final rootNavigatorKey = GlobalKey<NavigatorState>();
 final _clientShellKey = GlobalKey<NavigatorState>();
 final _sellerShellKey = GlobalKey<NavigatorState>();
 
@@ -55,7 +60,7 @@ GoRouter createRouter() {
   final supabase = Supabase.instance.client;
 
   return GoRouter(
-    navigatorKey: _rootNavigatorKey,
+    navigatorKey: rootNavigatorKey,
     initialLocation: '/',
     debugLogDiagnostics: false,
     redirect: (context, state) {
@@ -69,18 +74,35 @@ GoRouter createRouter() {
 
       // Not signed in — send to the login hub (welcome)
       if (!loggedIn) {
+        RoleCache.clear();
         if (isSplash) return '/welcome';
         return isPublicAuthRoute ? null : '/welcome';
       }
 
+      // Source of truth: profiles.role (cached). Never use JWT userMetadata here.
+      final role = AuthService.cachedRole;
+
       // Signed in — bounce splash/auth screens to the correct home
       if (isSplash || isPublicAuthRoute) {
-        final role = supabase.auth.currentUser?.userMetadata?['role'] as String?;
-        return role == 'seller' ? '/seller' : '/client';
+        if (role == null) {
+          // Role still loading from profiles; stay put until refresh notifies.
+          return null;
+        }
+        return AuthService.homePathForRole(role);
+      }
+
+      // Keep users on the shell that matches their DB role.
+      if (role != null) {
+        if (role == 'seller' && location.startsWith('/client')) {
+          return '/seller';
+        }
+        if (role == 'client' && location.startsWith('/seller')) {
+          return '/client';
+        }
       }
 
       // Seller menu is the shell drawer (removed tab route).
-      if (loggedIn && location == '/seller/profile') {
+      if (location == '/seller/profile') {
         return '/seller';
       }
 
@@ -111,7 +133,6 @@ GoRouter createRouter() {
             scaffoldKey: clientShellScaffoldKey,
             drawer: const Drawer(child: ClientProfile()),
             navigationShell: navigationShell,
-            items: _clientNavItems,
           );
         },
         branches: [
@@ -185,7 +206,6 @@ GoRouter createRouter() {
               scaffoldKey: sellerShellScaffoldKey,
               drawer: const Drawer(child: SellerProfile()),
               navigationShell: navigationShell,
-              items: _sellerNavItems,
             ),
           );
         },
@@ -224,26 +244,26 @@ GoRouter createRouter() {
       // on top of the bottom-nav scaffold).
       GoRoute(
         path: '/seller/applications',
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const SellerApplications(),
       ),
       GoRoute(
         path: '/seller/orders/:id',
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => SellerOrderDetails(
           orderId: state.pathParameters['id']!,
         ),
       ),
       GoRoute(
         path: '/seller/attendance',
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => SellerAttendanceHubScreen(
           highlightJobPostId: state.uri.queryParameters['jobPostId'],
         ),
       ),
       GoRoute(
         path: '/seller/attendance/scan',
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => AttendanceScanScreen(
           hintJobPostId: state.uri.queryParameters['jobPostId'],
         ),
@@ -252,69 +272,73 @@ GoRouter createRouter() {
   );
 }
 
-const _clientNavItems = [
-  BottomNavigationBarItem(
-    icon: Icon(Icons.home_outlined),
-    activeIcon: Icon(Icons.home),
-    label: 'Home',
-  ),
-  BottomNavigationBarItem(
-    icon: Icon(Icons.chat_bubble_outline),
-    activeIcon: Icon(Icons.chat_bubble),
-    label: 'Message',
-  ),
-  BottomNavigationBarItem(
-    icon: Icon(Icons.people_outline),
-    activeIcon: Icon(Icons.people),
-    label: 'Talent',
-  ),
-  BottomNavigationBarItem(
-    icon: Icon(Icons.work_outline),
-    activeIcon: Icon(Icons.work),
-    label: 'My Jobs',
-  ),
-  BottomNavigationBarItem(
-    icon: Icon(Icons.description_outlined),
-    activeIcon: Icon(Icons.description),
-    label: 'Contracts',
-  ),
-];
+List<BottomNavigationBarItem> _clientNavItems(BuildContext context) {
+  final l10n = context.l10n;
+  return [
+    BottomNavigationBarItem(
+      icon: const Icon(Icons.home_outlined),
+      activeIcon: const Icon(Icons.home),
+      label: l10n.home,
+    ),
+    BottomNavigationBarItem(
+      icon: const Icon(Icons.chat_bubble_outline),
+      activeIcon: const Icon(Icons.chat_bubble),
+      label: l10n.message,
+    ),
+    BottomNavigationBarItem(
+      icon: const Icon(Icons.people_outline),
+      activeIcon: const Icon(Icons.people),
+      label: l10n.talent,
+    ),
+    BottomNavigationBarItem(
+      icon: const Icon(Icons.work_outline),
+      activeIcon: const Icon(Icons.work),
+      label: l10n.myJobs,
+    ),
+    BottomNavigationBarItem(
+      icon: const Icon(Icons.description_outlined),
+      activeIcon: const Icon(Icons.description),
+      label: l10n.contracts,
+    ),
+  ];
+}
 
-const _sellerNavItems = [
-  BottomNavigationBarItem(
-    icon: Icon(Icons.home_outlined),
-    activeIcon: Icon(Icons.home),
-    label: 'Home',
-  ),
-  BottomNavigationBarItem(
-    icon: Icon(Icons.chat_bubble_outline),
-    activeIcon: Icon(Icons.chat_bubble),
-    label: 'Message',
-  ),
-  BottomNavigationBarItem(
-    icon: Icon(Icons.search),
-    activeIcon: Icon(Icons.search),
-    label: 'Find Jobs',
-  ),
-  BottomNavigationBarItem(
-    icon: Icon(Icons.description_outlined),
-    activeIcon: Icon(Icons.description),
-    label: 'Contracts',
-  ),
-];
+List<BottomNavigationBarItem> _sellerNavItems(BuildContext context) {
+  final l10n = context.l10n;
+  return [
+    BottomNavigationBarItem(
+      icon: const Icon(Icons.home_outlined),
+      activeIcon: const Icon(Icons.home),
+      label: l10n.home,
+    ),
+    BottomNavigationBarItem(
+      icon: const Icon(Icons.chat_bubble_outline),
+      activeIcon: const Icon(Icons.chat_bubble),
+      label: l10n.message,
+    ),
+    BottomNavigationBarItem(
+      icon: const Icon(Icons.search),
+      activeIcon: const Icon(Icons.search),
+      label: l10n.findJobs,
+    ),
+    BottomNavigationBarItem(
+      icon: const Icon(Icons.description_outlined),
+      activeIcon: const Icon(Icons.description),
+      label: l10n.contracts,
+    ),
+  ];
+}
 
 /// Shared bottom nav for client and seller shells.
 class _ScaffoldWithNavBar extends StatelessWidget {
   final ShellPersona persona;
   final StatefulNavigationShell navigationShell;
-  final List<BottomNavigationBarItem> items;
   final Widget? drawer;
   final GlobalKey<ScaffoldState>? scaffoldKey;
 
   const _ScaffoldWithNavBar({
     required this.persona,
     required this.navigationShell,
-    required this.items,
     this.drawer,
     this.scaffoldKey,
   });
@@ -324,6 +348,10 @@ class _ScaffoldWithNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final items = persona == ShellPersona.client
+        ? _clientNavItems(context)
+        : _sellerNavItems(context);
+
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: kWhite,
@@ -356,14 +384,39 @@ class _ScaffoldWithNavBar extends StatelessWidget {
   }
 }
 
-/// Bridges Supabase's auth state stream to a ChangeNotifier so GoRouter
-/// re-evaluates the redirect every time the user signs in or out.
+/// Bridges Supabase auth + [profiles.role] loading to GoRouter redirects.
 class _SupabaseAuthRefreshStream extends ChangeNotifier {
   _SupabaseAuthRefreshStream(Stream<AuthState> stream) {
-    _subscription = stream.listen((_) => notifyListeners());
+    _subscription = stream.listen((authState) {
+      unawaited(_onAuthEvent(authState));
+    });
+    // Cold start: session may already exist before the first stream event.
+    if (Supabase.instance.client.auth.currentSession != null) {
+      unawaited(_ensureRoleCached());
+    }
   }
 
   late final StreamSubscription<AuthState> _subscription;
+
+  Future<void> _onAuthEvent(AuthState authState) async {
+    final session = authState.session;
+    if (session == null) {
+      RoleCache.clear();
+      notifyListeners();
+      return;
+    }
+    await _ensureRoleCached();
+  }
+
+  Future<void> _ensureRoleCached() async {
+    try {
+      await AuthService.getUserRole(forceRefresh: true);
+    } catch (e, st) {
+      AppLogger.error('Router.ensureRoleCached', e, st);
+      // Keep previous cache if refresh fails; redirect will wait or use last value.
+    }
+    notifyListeners();
+  }
 
   @override
   void dispose() {

@@ -1,3 +1,5 @@
+import 'package:freelancer/l10n/app_localizations.dart';
+
 /// Cancellation reason codes stored on `orders.cancellation_reason_code`.
 class OrderCancellationReason {
   OrderCancellationReason._();
@@ -18,41 +20,45 @@ class OrderCancellationReason {
     other,
   ];
 
-  static String label(String? code) {
+  static String label(String? code, [AppLocalizations? l10n]) {
     switch ((code ?? '').toLowerCase()) {
       case scheduleConflict:
-        return 'Schedule conflict';
+        return l10n?.cancelReasonScheduleConflict ?? 'Schedule conflict';
       case scopeMismatch:
-        return 'Scope does not match agreement';
+        return l10n?.cancelReasonScopeMismatch ??
+            'Scope does not match agreement';
       case siteOrSafety:
-        return 'Site or safety concern';
+        return l10n?.cancelReasonSiteOrSafety ?? 'Site or safety concern';
       case personalEmergency:
-        return 'Personal emergency';
+        return l10n?.cancelReasonPersonalEmergency ?? 'Personal emergency';
       case clientIssue:
-        return 'Issue with client / communication';
+        return l10n?.cancelReasonClientIssue ??
+            'Issue with client / communication';
       case other:
-        return 'Other';
+        return l10n?.cancelReasonOther ?? 'Other';
       default:
-        return 'Not specified';
+        return l10n?.notSpecified ?? 'Not specified';
     }
   }
 
-  static String statusLabel(String? status) {
+  static String statusLabel(String? status, [AppLocalizations? l10n]) {
     switch ((status ?? '').toLowerCase()) {
       case 'cancellation_requested':
-        return 'Cancellation pending';
+        return l10n?.orderStatusCancellationPending ?? 'Cancellation pending';
       case 'cancelled':
-        return 'Cancelled';
+        return l10n?.orderStatusCancelled ?? 'Cancelled';
       case 'active':
-        return 'Active';
+        return l10n?.orderStatusActive ?? 'Active';
       case 'pending':
-        return 'Pending';
+        return l10n?.orderStatusPending ?? 'Pending';
       case 'delivered':
-        return 'Delivered';
+        return l10n?.orderStatusDelivered ?? 'Delivered';
       case 'completed':
-        return 'Completed';
+        return l10n?.orderStatusCompleted ?? 'Completed';
       default:
-        if (status == null || status.isEmpty) return 'Unknown';
+        if (status == null || status.isEmpty) {
+          return l10n?.unknown ?? 'Unknown';
+        }
         return '${status[0].toUpperCase()}${status.length > 1 ? status.substring(1) : ''}';
     }
   }

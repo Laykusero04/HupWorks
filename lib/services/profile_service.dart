@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:freelancer/core/auth/role_cache.dart';
+import 'package:freelancer/core/utils/app_logger.dart';
 import 'package:freelancer/data/models/seller_skill_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -126,8 +128,9 @@ class ProfileService {
 
     try {
       await _client.from('profiles').update({'rating': rating}).eq('id', profileId);
-    } catch (_) {
-      // Client cannot update another user's profile; enrichment handles public UI.
+    } catch (e, st) {
+      // Client often cannot update another user's profile; enrichment still works in UI.
+      AppLogger.error('ProfileService.syncReviewStatsToProfile', e, st);
     }
 
     final user = _client.auth.currentUser;
@@ -185,13 +188,19 @@ class ProfileService {
             .from('profiles')
             .update({'rating': profile['rating']})
             .eq('id', user.id);
-      } catch (_) {}
+      } catch (e, st) {
+        AppLogger.error('ProfileService.syncOwnRating', e, st);
+      }
     } else {
       profile['rating'] = parseRatingValue(profile['rating']) ?? 0.0;
     }
 
     _profileCache = Map<String, dynamic>.from(profile);
     _cacheUserId = user.id;
+    final role = profile['role'];
+    if (role is String && role.trim().isNotEmpty) {
+      RoleCache.set(userId: user.id, role: role);
+    }
     return Map<String, dynamic>.from(profile);
   }
 
@@ -314,11 +323,16 @@ class ProfileService {
     required List<SellerSkill> skills,
     DateTime? dateOfBirth,
     String? address,
+    List<String>? languages,
+    String? streetAddress,
+    String? state,
+    String? postalCode,
+    bool clearPublicCountryCity = true,
   }) async {
     final user = _client.auth.currentUser;
     if (user == null) throw Exception('Not logged in');
 
-    await _client.from('seller_profiles').update({
+    final sellerUpdates = <String, dynamic>{
       'job_title': jobTitle?.trim().isEmpty == true ? null : jobTitle?.trim(),
       'about': about?.trim().isEmpty == true ? null : about?.trim(),
       'skills': skills.map((s) => s.toJson()).toList(),
@@ -326,7 +340,15 @@ class ProfileService {
       'birth_year': dateOfBirth?.year,
       'birth_month': dateOfBirth?.month,
       'birth_day': dateOfBirth?.day,
-    }).eq('user_id', user.id);
+    };
+    if (languages != null) {
+      sellerUpdates['languages'] = languages
+          .map((l) => l.trim())
+          .where((l) => l.isNotEmpty)
+          .toList();
+    }
+
+    await _client.from('seller_profiles').update(sellerUpdates).eq('user_id', user.id);
 
     await _client.from('seller_private_details').upsert({
       'user_id': user.id,
@@ -335,20 +357,23 @@ class ProfileService {
               '${dateOfBirth.month.toString().padLeft(2, '0')}-'
               '${dateOfBirth.day.toString().padLeft(2, '0')}'
           : null,
-      'street_address': null,
-      'state': null,
-      'postal_code': null,
+      'street_address':
+          streetAddress?.trim().isEmpty == true ? null : streetAddress?.trim(),
+      'state': state?.trim().isEmpty == true ? null : state?.trim(),
+      'postal_code': postalCode?.trim().isEmpty == true ? null : postalCode?.trim(),
       'updated_at': DateTime.now().toUtc().toIso8601String(),
     });
 
-    await _client.from('profiles').update({
-      'country': null,
-      'city': null,
-    }).eq('id', user.id);
+    if (clearPublicCountryCity) {
+      await _client.from('profiles').update({
+        'country': null,
+        'city': null,
+      }).eq('id', user.id);
 
-    if (_profileCache != null && _cacheUserId == user.id) {
-      _profileCache!['country'] = null;
-      _profileCache!['city'] = null;
+      if (_profileCache != null && _cacheUserId == user.id) {
+        _profileCache!['country'] = null;
+        _profileCache!['city'] = null;
+      }
     }
   }
 

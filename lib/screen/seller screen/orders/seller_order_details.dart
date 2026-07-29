@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/core/utils/order_cancellation.dart';
 import 'package:freelancer/core/utils/order_contract_display.dart';
 import 'package:freelancer/data/models/hire_onboarding_packet_model.dart';
@@ -74,7 +75,7 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
       if (mounted) {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
     }
@@ -141,10 +142,8 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
       }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Cancellation request sent. Waiting for client response (48h).',
-            ),
+          SnackBar(
+            content: Text(context.l10n.cancellationRequestSent48h),
           ),
         );
         await _loadOrder();
@@ -152,7 +151,7 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$e')),
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
     } finally {
@@ -166,14 +165,14 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
       await SellerOrdersService.withdrawCancellation(widget.orderId);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Cancellation request withdrawn')),
+          SnackBar(content: Text(context.l10n.cancellationRequestWithdrawn)),
         );
         await _loadOrder();
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$e')),
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
     } finally {
@@ -186,14 +185,14 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
       await SellerOrdersService.updateOrderStatus(widget.orderId, 'completed');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Order marked complete')),
+          SnackBar(content: Text(context.l10n.orderMarkedComplete)),
         );
         Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
     }
@@ -208,9 +207,10 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
     required bool canRequestCancel,
     required double bottomInset,
   }) {
+    final l10n = context.l10n;
     if (isCancelled) {
       return ButtonGlobalWithoutIcon(
-        buttontext: 'Close',
+        buttontext: l10n.closeAction,
         buttonDecoration: kButtonDecoration.copyWith(color: kPrimaryColor),
         onPressed: () => Navigator.pop(context),
         buttonTextColor: kWhite,
@@ -219,7 +219,9 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
 
     if (isCancellationRequested) {
       return ButtonGlobalWithoutIcon(
-        buttontext: _actionBusy ? 'Withdrawing…' : 'Withdraw request',
+        buttontext: _actionBusy
+            ? l10n.withdrawingEllipsis
+            : l10n.withdrawCancelRequest,
         buttonTextColor: kNeutralColor,
         buttonDecoration: kButtonDecoration.copyWith(
           color: kWhite,
@@ -231,7 +233,7 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
 
     if (isCompleted) {
       return ButtonGlobalWithoutIcon(
-        buttontext: 'Completed',
+        buttontext: l10n.orderStatusCompleted,
         buttonTextColor: kWhite,
         buttonDecoration: kButtonDecoration.copyWith(color: kLightNeutralColor),
         onPressed: () {},
@@ -243,7 +245,7 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
         if (canRequestCancel)
           Expanded(
             child: ButtonGlobalWithoutIcon(
-              buttontext: 'Request cancel',
+              buttontext: l10n.requestCancel,
               buttonTextColor: Colors.red,
               buttonDecoration: kButtonDecoration.copyWith(
                 color: kWhite,
@@ -255,7 +257,8 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
         if (canRequestCancel) const SizedBox(width: 8),
         Expanded(
           child: ButtonGlobalWithoutIcon(
-            buttontext: isDelivered ? 'Complete Order' : 'Deliver Work',
+            buttontext:
+                isDelivered ? l10n.completeOrder : l10n.deliverWork,
             buttonTextColor: kWhite,
             buttonDecoration: kButtonDecoration.copyWith(
               color: kPrimaryColor,
@@ -274,6 +277,7 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
   }
 
   Widget _buildCancellationPendingBanner() {
+    final l10n = context.l10n;
     final code = _order?['cancellation_reason_code'] as String?;
     final note = _order?['cancellation_reason_note'] as String?;
     return Container(
@@ -293,7 +297,7 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Waiting for client response',
+                  l10n.waitingForClientResponse,
                   style: kTextStyle.copyWith(
                     color: kNeutralColor,
                     fontWeight: FontWeight.bold,
@@ -304,7 +308,7 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
           ),
           const SizedBox(height: 6),
           Text(
-            'Your cancellation request was sent. The client has up to 48 hours to approve or keep the contract active.',
+            l10n.sellerCancellationPendingBody,
             style: kTextStyle.copyWith(
               color: kSubTitleColor,
               fontSize: 13,
@@ -314,7 +318,9 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
           if (code != null) ...[
             const SizedBox(height: 8),
             Text(
-              'Reason: ${OrderCancellationReason.label(code)}',
+              l10n.cancellationReasonLine(
+                OrderCancellationReason.label(code, l10n),
+              ),
               style: kTextStyle.copyWith(
                 color: kNeutralColor,
                 fontSize: 13,
@@ -339,6 +345,7 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
   }
 
   Widget _buildCancelledSummary() {
+    final l10n = context.l10n;
     final code = _order?['cancellation_reason_code'] as String?;
     final note = _order?['cancellation_reason_note'] as String?;
     final at = _order?['cancelled_at'] as String?;
@@ -354,7 +361,7 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Contract cancelled',
+            l10n.contractCancelledTitle,
             style: kTextStyle.copyWith(
               color: const Color(0xFFDC2626),
               fontWeight: FontWeight.bold,
@@ -370,7 +377,7 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
           if (code != null) ...[
             const SizedBox(height: 8),
             Text(
-              OrderCancellationReason.label(code),
+              OrderCancellationReason.label(code, l10n),
               style: kTextStyle.copyWith(
                 color: kNeutralColor,
                 fontSize: 13,
@@ -396,6 +403,7 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     if (_isLoading) {
       return const Scaffold(
         backgroundColor: kDarkWhite,
@@ -417,7 +425,7 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
     final durationText = OrderContractDisplay.durationLabel(_order, _service);
     final revisionText = OrderContractDisplay.revisionsLabel(_order, _service);
     final price = _order?['price'] ?? 0;
-    final clientName = _client?['name'] ?? 'Client';
+    final clientName = _client?['name'] ?? l10n.roleClient;
     final orderId = widget.orderId.substring(0, 8).toUpperCase();
     final bottomInset = MediaQuery.paddingOf(context).bottom + 12;
     final jobPost = OrderContractDisplay.jobPostFromOrder(_order);
@@ -437,7 +445,7 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
         elevation: 0,
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
-          'Order Details',
+          l10n.orderDetailsTitle,
           style: kTextStyle.copyWith(
             color: kNeutralColor,
             fontWeight: FontWeight.bold,
@@ -509,7 +517,7 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
                       Row(
                         children: [
                           Text(
-                            'Order ID #$orderId',
+                            l10n.orderIdHash(orderId),
                             style: kTextStyle.copyWith(
                               color: kNeutralColor,
                               fontWeight: FontWeight.bold,
@@ -534,7 +542,7 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
                       const SizedBox(height: 10.0),
                       RichText(
                         text: TextSpan(
-                          text: 'Client: ',
+                          text: '${l10n.clientColon} ',
                           style: kTextStyle.copyWith(color: kLightNeutralColor),
                           children: [
                             TextSpan(
@@ -560,41 +568,41 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
                         height: 1.0,
                       ),
                       const SizedBox(height: 8.0),
-                      _row('Title', title, emphasizeValue: true),
+                      _row(l10n.labelTitle, title, emphasizeValue: true),
                       const SizedBox(height: 8.0),
-                      _rowExpand('Service Info', description),
+                      _rowExpand(l10n.labelServiceInfo, description),
                       const SizedBox(height: 8.0),
-                      _row('Duration', durationText),
+                      _row(l10n.labelDuration, durationText),
                       const SizedBox(height: 8.0),
-                      _row('Amount', '$currencySign$price'),
+                      _row(l10n.amount, '$currencySign$price'),
                       const SizedBox(height: 8.0),
                       _row(
-                        'Status',
-                        OrderCancellationReason.statusLabel(status),
+                        l10n.labelStatus,
+                        OrderCancellationReason.statusLabel(status, l10n),
                       ),
                       const SizedBox(height: 15.0),
                       Text(
-                        'Order Details',
+                        l10n.orderDetailsTitle,
                         style: kTextStyle.copyWith(
                           color: kNeutralColor,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 8.0),
-                      _row('Revisions', revisionText),
+                      _row(l10n.labelRevisions, revisionText),
                       const SizedBox(height: 15.0),
                       Text(
-                        'Order Summary',
+                        l10n.orderSummary,
                         style: kTextStyle.copyWith(
                           color: kNeutralColor,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 8.0),
-                      _row('Total', '$currencySign$price'),
+                      _row(l10n.labelTotal, '$currencySign$price'),
                       const SizedBox(height: 8.0),
                       _row(
-                        'Delivery date',
+                        l10n.deliveryDate,
                         _formatDate(_order?['delivery_deadline']),
                       ),
                       if (OrdersService.jobOfferIdFromOrderMap(_order ?? {}) !=
@@ -638,6 +646,7 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
   }
 
   Widget _buildOnboardingBanner() {
+    final l10n = context.l10n;
     final packet = _onboardingPacket;
     if (packet == null || !packet.isPublished) return const SizedBox.shrink();
 
@@ -652,7 +661,7 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
             color: kPrimaryColor,
           ),
           label: Text(
-            'View first-day instructions',
+            l10n.viewFirstDayInstructions,
             style: kTextStyle.copyWith(
               color: kPrimaryColor,
               fontWeight: FontWeight.w600,
@@ -679,7 +688,7 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Read first-day instructions',
+                  l10n.readFirstDayInstructions,
                   style: kTextStyle.copyWith(
                     color: kNeutralColor,
                     fontWeight: FontWeight.bold,
@@ -690,7 +699,7 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
           ),
           const SizedBox(height: 6),
           Text(
-            'Your client shared site details, access, and contacts for this job.',
+            l10n.firstDayInstructionsSharedBody,
             style: kTextStyle.copyWith(
               color: kSubTitleColor,
               fontSize: 13,
@@ -699,7 +708,7 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
           ),
           const SizedBox(height: 10),
           ButtonGlobalWithoutIcon(
-            buttontext: 'Open instructions',
+            buttontext: l10n.openInstructions,
             buttonDecoration: kButtonDecoration.copyWith(
               color: const Color(0xFF2E7D32),
             ),
@@ -723,7 +732,7 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(':', style: kTextStyle.copyWith(color: kSubTitleColor)),
+                Text(context.l10n.labelColon, style: kTextStyle.copyWith(color: kSubTitleColor)),
                 const SizedBox(width: 10.0),
                 Flexible(
                   child: Text(
@@ -760,7 +769,7 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(':', style: kTextStyle.copyWith(color: kSubTitleColor)),
+                Text(context.l10n.labelColon, style: kTextStyle.copyWith(color: kSubTitleColor)),
                 const SizedBox(width: 10.0),
                 Flexible(
                   child: ReadMoreText(
@@ -769,8 +778,8 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
                     trimLines: 3,
                     colorClickableText: kPrimaryColor,
                     trimMode: TrimMode.Line,
-                    trimCollapsedText: '..Read more',
-                    trimExpandedText: '..Read less',
+                    trimCollapsedText: context.l10n.readMoreSuffix,
+                    trimExpandedText: context.l10n.readLessSuffix,
                   ),
                 ),
               ],

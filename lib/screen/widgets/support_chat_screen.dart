@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tawkto/flutter_tawk.dart';
 import 'package:freelancer/core/config/tawk_config.dart';
 import 'package:freelancer/core/constants/support_presets.dart';
+import 'package:freelancer/core/utils/app_logger.dart';
 import 'package:freelancer/data/models/support_preset_model.dart';
 import 'package:freelancer/services/auth_service.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/services/profile_service.dart';
 
 import 'constant.dart';
@@ -34,7 +36,16 @@ class _SupportChatScreenState extends State<SupportChatScreen>
       if (mounted && profile != null) {
         setState(() => _profile = profile);
       }
-    } catch (_) {}
+    } catch (e, st) {
+      AppLogger.error('SupportChat.loadProfile', e, st);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(context.l10n.supportProfileLoadFailed),
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -50,7 +61,7 @@ class _SupportChatScreenState extends State<SupportChatScreen>
     final profile = _profile ?? ProfileService.peekCachedProfile();
     final rawName = (profile?['name'] as String?)?.trim() ??
         (user.userMetadata?['name'] as String?)?.trim();
-    final role = (user.userMetadata?['role'] as String?)?.trim();
+    final role = _userRole();
 
     String? displayName;
     if (rawName != null && rawName.isNotEmpty) {
@@ -72,12 +83,19 @@ class _SupportChatScreenState extends State<SupportChatScreen>
     );
   }
 
+  /// Prefer [profiles.role] (cache / loaded profile), not JWT metadata.
   String? _userRole() {
-    return AuthService.currentUser?.userMetadata?['role'] as String?;
+    final fromProfile = (_profile?['role'] as String?)?.trim() ??
+        (ProfileService.peekCachedProfile()?['role'] as String?)?.trim();
+    if (fromProfile != null && fromProfile.isNotEmpty) {
+      return fromProfile.toLowerCase();
+    }
+    return AuthService.cachedRole;
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final link = TawkConfig.directChatLink;
     final chatConfigured = link != null;
 
@@ -88,7 +106,7 @@ class _SupportChatScreenState extends State<SupportChatScreen>
         elevation: 0,
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
-          'Help & Support',
+          l10n.helpSupport,
           style: kTextStyle.copyWith(
             color: kNeutralColor,
             fontWeight: FontWeight.bold,
@@ -100,9 +118,9 @@ class _SupportChatScreenState extends State<SupportChatScreen>
           labelColor: kPrimaryColor,
           unselectedLabelColor: kSubTitleColor,
           indicatorColor: kPrimaryColor,
-          tabs: const [
-            Tab(text: 'Common Questions'),
-            Tab(text: 'Live Chat'),
+          tabs: [
+            Tab(text: l10n.supportCommonQuestions),
+            Tab(text: l10n.supportLiveChat),
           ],
         ),
       ),
@@ -129,7 +147,7 @@ class _SupportChatScreenState extends State<SupportChatScreen>
             const Icon(Icons.support_agent_outlined, size: 48, color: kSubTitleColor),
             const SizedBox(height: 16),
             Text(
-              'Live chat is not configured yet.',
+              context.l10n.supportLiveChatNotConfigured,
               textAlign: TextAlign.center,
               style: kTextStyle.copyWith(
                 color: kNeutralColor,
@@ -138,8 +156,7 @@ class _SupportChatScreenState extends State<SupportChatScreen>
             ),
             const SizedBox(height: 8),
             Text(
-              'Add TAWK_DIRECT_CHAT_LINK to your .env file '
-              '(see .env.example). FAQ answers are still available in the first tab.',
+              context.l10n.supportTawkEnvHint,
               textAlign: TextAlign.center,
               style: kTextStyle.copyWith(color: kSubTitleColor),
             ),
@@ -177,7 +194,7 @@ class _SupportFaqTab extends StatelessWidget {
           child: presets.isEmpty
               ? Center(
                   child: Text(
-                    'No questions available yet.',
+                    context.l10n.supportNoQuestionsYet,
                     style: kTextStyle.copyWith(color: kSubTitleColor),
                   ),
                 )
@@ -202,7 +219,7 @@ class _SupportFaqTab extends StatelessWidget {
                   onPressed: onChatTap,
                   icon: const Icon(Icons.chat_bubble_outline, color: kWhite),
                   label: Text(
-                    'Still need help? Chat with us',
+                    context.l10n.supportStillNeedHelp,
                     style: kTextStyle.copyWith(
                       color: kWhite,
                       fontWeight: FontWeight.w600,

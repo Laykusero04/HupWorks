@@ -17,7 +17,7 @@ class AuthNavigation {
     final role = await AuthService.getUserRole();
     if (!context.mounted) return;
 
-    final path = role == 'seller' ? '/seller' : '/client';
+    final path = AuthService.homePathForRole(role);
 
     final navigator = Navigator.of(context, rootNavigator: true);
     while (navigator.canPop()) {

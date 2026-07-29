@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/order_cancellation.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
 
@@ -41,10 +42,11 @@ class _OrderCancellationSheetState extends State<OrderCancellationSheet> {
   }
 
   Future<void> _submit() async {
+    final l10n = context.l10n;
     final note = _noteController.text.trim();
     if (note.length < OrderCancellationReason.minNoteLength) {
       setState(() => _error =
-          'Please add at least ${OrderCancellationReason.minNoteLength} characters.');
+          l10n.cancellationMinChars(OrderCancellationReason.minNoteLength));
       return;
     }
     setState(() {
@@ -60,7 +62,9 @@ class _OrderCancellationSheetState extends State<OrderCancellationSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final noteLen = _noteController.text.trim().length;
+    final min = OrderCancellationReason.minNoteLength;
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
@@ -81,7 +85,7 @@ class _OrderCancellationSheetState extends State<OrderCancellationSheet> {
               ),
               const SizedBox(height: 16),
               Text(
-                'Request to cancel contract',
+                l10n.cancellationSheetTitle,
                 style: kTextStyle.copyWith(
                   color: kNeutralColor,
                   fontWeight: FontWeight.bold,
@@ -90,8 +94,7 @@ class _OrderCancellationSheetState extends State<OrderCancellationSheet> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Your client will be notified and can approve or decline within 48 hours. '
-                'The contract stays active until they respond.',
+                l10n.cancellationSheetBody,
                 style: kTextStyle.copyWith(
                   color: kSubTitleColor,
                   fontSize: 13,
@@ -100,7 +103,7 @@ class _OrderCancellationSheetState extends State<OrderCancellationSheet> {
               ),
               const SizedBox(height: 16),
               Text(
-                'Reason',
+                l10n.cancellationReason,
                 style: kTextStyle.copyWith(
                   color: kNeutralColor,
                   fontWeight: FontWeight.w600,
@@ -132,7 +135,7 @@ class _OrderCancellationSheetState extends State<OrderCancellationSheet> {
                             : kWhite,
                       ),
                       child: Text(
-                        OrderCancellationReason.label(code),
+                        OrderCancellationReason.label(code, l10n),
                         style: kTextStyle.copyWith(
                           color: kNeutralColor,
                           fontSize: 13,
@@ -152,17 +155,16 @@ class _OrderCancellationSheetState extends State<OrderCancellationSheet> {
                 maxLines: 4,
                 minLines: 3,
                 decoration: kInputDecoration.copyWith(
-                  labelText: 'Explain briefly',
-                  hintText:
-                      'What happened? This helps your client understand your request.',
+                  labelText: l10n.cancellationExplain,
+                  hintText: l10n.cancellationExplainHint,
                   alignLabelWithHint: true,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
-                '$noteLen / ${OrderCancellationReason.minNoteLength} characters minimum',
+                l10n.cancellationCharCount(noteLen, min),
                 style: kTextStyle.copyWith(
-                  color: noteLen >= OrderCancellationReason.minNoteLength
+                  color: noteLen >= min
                       ? const Color(0xFF2E7D32)
                       : kLightNeutralColor,
                   fontSize: 11,
@@ -180,7 +182,7 @@ class _OrderCancellationSheetState extends State<OrderCancellationSheet> {
                 children: [
                   Expanded(
                     child: ButtonGlobalWithoutIcon(
-                      buttontext: 'Back',
+                      buttontext: l10n.back,
                       buttonTextColor: kNeutralColor,
                       buttonDecoration: kButtonDecoration.copyWith(
                         color: kWhite,
@@ -192,7 +194,7 @@ class _OrderCancellationSheetState extends State<OrderCancellationSheet> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: ButtonGlobalWithoutIcon(
-                      buttontext: _submitting ? 'Sending…' : 'Submit request',
+                      buttontext: _submitting ? l10n.sending : l10n.cancellationSubmit,
                       buttonTextColor: kWhite,
                       buttonDecoration: kButtonDecoration.copyWith(
                         color: _submitting ? kLightNeutralColor : Colors.red.shade700,

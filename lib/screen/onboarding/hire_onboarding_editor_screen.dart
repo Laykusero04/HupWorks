@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/data/models/hire_onboarding_packet_model.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/services/hire_onboarding_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -52,11 +53,14 @@ class _HireOnboardingEditorScreenState extends State<HireOnboardingEditorScreen>
       var packet = await HireOnboardingService.getPacketForOrder(widget.orderId);
       if (packet != null) {
         var sections = packet.sections;
+        if (!mounted) return;
+        final l10n = context.l10n;
         sections = HireOnboardingService.sectionsWithLocationHint(
           sections: sections,
           location: widget.jobLocation,
           locationType: widget.jobLocationType,
           attendanceMode: widget.attendanceMode,
+          l10n: l10n,
         );
         _bindSections(sections);
         setState(() {
@@ -71,7 +75,7 @@ class _HireOnboardingEditorScreenState extends State<HireOnboardingEditorScreen>
       if (mounted) {
         setState(() => _loading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
     }
@@ -108,14 +112,14 @@ class _HireOnboardingEditorScreenState extends State<HireOnboardingEditorScreen>
           _saving = false;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Draft saved')),
+          SnackBar(content: Text(context.l10n.draftSaved)),
         );
       }
     } catch (e) {
       if (mounted) {
         setState(() => _saving = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
     }
@@ -134,8 +138,8 @@ class _HireOnboardingEditorScreenState extends State<HireOnboardingEditorScreen>
       if (mounted) {
         setState(() => _saving = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Instructions sent to freelancer'),
+          SnackBar(
+            content: Text(context.l10n.instructionsSentToFreelancer),
           ),
         );
         Navigator.pop(context, true);
@@ -144,7 +148,7 @@ class _HireOnboardingEditorScreenState extends State<HireOnboardingEditorScreen>
       if (mounted) {
         setState(() => _saving = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
     }
@@ -152,6 +156,7 @@ class _HireOnboardingEditorScreenState extends State<HireOnboardingEditorScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final bottom = MediaQuery.paddingOf(context).bottom;
 
     return Scaffold(
@@ -161,7 +166,7 @@ class _HireOnboardingEditorScreenState extends State<HireOnboardingEditorScreen>
         elevation: 0,
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
-          'First-day instructions',
+          l10n.firstDayInstructions,
           style: kTextStyle.copyWith(
             color: kNeutralColor,
             fontWeight: FontWeight.bold,
@@ -182,7 +187,7 @@ class _HireOnboardingEditorScreenState extends State<HireOnboardingEditorScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Share site details, access, and contacts so your hire knows what to do on day one.',
+                          l10n.onboardingEditorLead,
                           style: kTextStyle.copyWith(
                             color: kSubTitleColor,
                             height: 1.35,
@@ -201,7 +206,7 @@ class _HireOnboardingEditorScreenState extends State<HireOnboardingEditorScreen>
                               ),
                             ),
                             child: Text(
-                              'Already sent. Saving and publishing again will notify the freelancer.',
+                              l10n.onboardingResendNotice,
                               style: kTextStyle.copyWith(
                                 color: kSubTitleColor,
                                 fontSize: 13,
@@ -238,7 +243,7 @@ class _HireOnboardingEditorScreenState extends State<HireOnboardingEditorScreen>
                                     maxLines: 4,
                                     minLines: 2,
                                     decoration: InputDecoration(
-                                      hintText: 'Add details…',
+                                      hintText: l10n.addDetailsHint,
                                       hintStyle: kTextStyle.copyWith(
                                         color: kLightNeutralColor,
                                       ),
@@ -270,7 +275,7 @@ class _HireOnboardingEditorScreenState extends State<HireOnboardingEditorScreen>
                     child: Column(
                       children: [
                         ButtonGlobalWithoutIcon(
-                          buttontext: _saving ? 'Saving…' : 'Save draft',
+                          buttontext: _saving ? l10n.saving : l10n.saveDraft,
                           buttonDecoration: kButtonDecoration.copyWith(
                             color: kWhite,
                             border: Border.all(color: kPrimaryColor),
@@ -280,7 +285,7 @@ class _HireOnboardingEditorScreenState extends State<HireOnboardingEditorScreen>
                         ),
                         const SizedBox(height: 10),
                         ButtonGlobalWithoutIcon(
-                          buttontext: _saving ? 'Please wait…' : 'Publish to freelancer',
+                          buttontext: _saving ? l10n.pleaseWaitEllipsis : l10n.publishToFreelancer,
                           buttonDecoration: kButtonDecoration.copyWith(
                             color: kPrimaryColor,
                           ),

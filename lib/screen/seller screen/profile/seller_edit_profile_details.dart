@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:freelancer/core/utils/seller_skills_validation.dart';
 import 'package:freelancer/data/models/seller_skill_model.dart';
+import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/screen/widgets/seller_skills_editor.dart';
 import 'package:freelancer/services/profile_service.dart';
@@ -114,11 +116,11 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
         address: _addressController.text.trim(),
       );
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Profile updated!')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.profileUpdatedShort)));
         Navigator.pop(context);
       }
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.errorWithDetail('$e'))));
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }

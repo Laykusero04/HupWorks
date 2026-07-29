@@ -1,0 +1,1110 @@
+{
+  "@@locale": "bn",
+  "appTitle": "HupWorks",
+  "language": "ভাষা",
+  "languageEnglish": "ইংরেজি",
+  "languageBengali": "বাংলা",
+  "languageDutch": "ডাচ",
+  "languageChanged": "ভাষা আপডেট হয়েছে",
+  "cancel": "বাতিল",
+  "save": "সংরক্ষণ",
+  "send": "পাঠান",
+  "share": "শেয়ার",
+  "retry": "আবার চেষ্টা",
+  "done": "সম্পন্ন",
+  "back": "পিছনে",
+  "add": "যোগ করুন",
+  "seeAll": "সব দেখুন",
+  "viewAll": "সব দেখুন",
+  "explore": "এক্সপ্লোর",
+  "other": "অন্যান্য",
+  "unknown": "অজানা",
+  "notSpecified": "নির্দিষ্ট নয়",
+  "aboutUs": "আমাদের সম্পর্কে",
+  "privacyPolicy": "গোপনীয়তা নীতি",
+  "invite": "আমন্ত্রণ",
+  "inviteFriends": "বন্ধুদের আমন্ত্রণ জানান",
+  "inviteBody": "আপনার ব্যক্তিগত আমন্ত্রণ কোড শেয়ার করুন যাতে বন্ধুরা HupWorks-এ যোগ দিতে পারে। রেফারেল পুরস্কার এখনও উপলব্ধ নয়।",
+  "inviteCodeCopied": "আমন্ত্রণ কোড কপি হয়েছে",
+  "inviteSignInRequired": "আমন্ত্রণ কোড পেতে সাইন ইন করুন।",
+  "shareInvite": "আমন্ত্রণ শেয়ার করুন",
+  "report": "রিপোর্ট",
+  "reportSubmitted": "রিপোর্ট জমা হয়েছে। ধন্যবাদ।",
+  "searchHint": "সার্ভিস বা ফ্রিল্যান্সার খুঁজুন",
+  "popularServices": "জনপ্রিয় সার্ভিস",
+  "topFreelancers": "শীর্ষ ফ্রিল্যান্সার",
+  "services": "সার্ভিস",
+  "freelancers": "ফ্রিল্যান্সার",
+  "noSearchResults": "\"{query}\" এর সাথে মিলে এমন সার্ভিস বা ফ্রিল্যান্সার নেই",
+  "noPopularResults": "এখনও কোনো জনপ্রিয় ফলাফল নেই",
+  "couldNotLoadResults": "ফলাফল লোড করা যায়নি",
+  "home": "হোম",
+  "settings": "সেটিংস",
+  "helpSupport": "সাহায্য ও সহায়তা",
+  "logOut": "লগ আউট",
+  "sellerReport": "বিক্রেতা রিপোর্ট",
+  "favorite": "পছন্দ",
+  "transaction": "লেনদেন",
+  "saving": "সংরক্ষণ হচ্ছে...",
+  "sending": "পাঠানো হচ্ছে...",
+  "profileUpdated": "প্রোফাইল সফলভাবে আপডেট হয়েছে!",
+  "pleaseEnterName": "অনুগ্রহ করে আপনার নাম লিখুন",
+  "createProfile": "প্রোফাইল তৈরি করুন",
+  "setupProfile": "প্রোফাইল সেটআপ",
+  "saveProfile": "প্রোফাইল সংরক্ষণ",
+  "continueLabel": "চালিয়ে যান",
+  "errorGeneric": "কিছু ভুল হয়েছে। আবার চেষ্টা করুন।",
+  "errorWithDetail": "ত্রুটি: {message}",
+  "errorLoading": "ডেটা লোড করা যায়নি",
+  "couldNotOpenChat": "চ্যাট খোলা যায়নি",
+  "pleaseFillAllFields": "সব ঘর পূরণ করুন",
+  "pushNotifications": "পুশ নোটিফিকেশন",
+  "notifications": "নোটিফিকেশন",
+  "message": "বার্তা",
+  "contracts": "চুক্তি",
+  "findJobs": "কাজ খুঁজুন",
+  "myJobs": "আমার কাজ",
+  "talent": "ট্যালেন্ট",
+  "justNow": "এইমাত্র",
+  "readAll": "সব পড়া হয়েছে",
+  "noNotifications": "কোনো নোটিফিকেশন নেই",
+  "minutesAgo": "{count}মি আগে",
+  "hoursAgo": "{count}ঘ আগে",
+  "daysAgo": "{count}দি আগে",
+  "orderStatusActive": "সক্রিয়",
+  "orderStatusPending": "অপেক্ষমাণ",
+  "orderStatusCompleted": "সম্পন্ন",
+  "orderStatusCancelled": "বাতিল",
+  "orderStatusDelivered": "ডেলিভার করা হয়েছে",
+  "orderStatusCancellationPending": "বাতিলকরণ অপেক্ষমাণ",
+  "reportReasonNonOriginal": "অরিজিনাল নয় এমন কনটেন্ট",
+  "reportReasonTrademark": "ট্রেডমার্ক লঙ্ঘন",
+  "reportReasonCopyright": "কপিরাইট লঙ্ঘন",
+  "reportReasonOther": "অন্যান্য কারণ",
+  "cancelReasonScheduleConflict": "সময়সূচির দ্বন্দ্ব",
+  "cancelReasonScopeMismatch": "সুযোগ চুক্তির সাথে মিলে না",
+  "cancelReasonSiteOrSafety": "সাইট বা নিরাপত্তা উদ্বেগ",
+  "cancelReasonPersonalEmergency": "ব্যক্তিগত জরুরি অবস্থা",
+  "cancelReasonClientIssue": "ক্লায়েন্ট / যোগাযোগ সমস্যা",
+  "cancelReasonOther": "অন্যান্য",
+  "attendanceModeQrInOut": "QR ইন ও আউট",
+  "attendanceModeQrOnce": "QR চেক-ইন (দিনে একবার)",
+  "attendanceModeSelfReport": "অ্যাপে স্ব-রিপোর্ট",
+  "attendanceModeDisabled": "উপস্থিতি বন্ধ",
+  "attendanceClientHintQrInOut": "সাইটে একটি QR পোস্ট করুন। কর্মীরা ইন ও আউট ক্লক করতে স্ক্যান করবে।",
+  "attendanceClientHintQrOnce": "সাইটে একটি QR পোস্ট করুন। কর্মীরা দিনে একবার চেক-ইন করতে স্ক্যান করবে।",
+  "attendanceClientHintSelfReport": "কর্মীরা অ্যাপে ইন ও আউট ক্লক করবে — QR লাগবে না।",
+  "attendanceClientHintDisabled": "এই কাজের জন্য উপস্থিতি ট্র্যাকিং বন্ধ আছে।",
+  "attendanceFreelancerHintQrInOut": "ইন ও আউট ক্লক করতে সাইটের QR স্ক্যান করুন।",
+  "attendanceFreelancerHintQrOnce": "পৌঁছালে সাইটের QR একবার স্ক্যান করুন।",
+  "attendanceFreelancerHintSelfReport": "শুরুতে ক্লক ইন এবং চলে যাওয়ার সময় ক্লক আউট ট্যাপ করুন।",
+  "attendanceFreelancerHintDisabled": "আপনার ক্লায়েন্ট এই কাজের জন্য উপস্থিতি চালু করেনি।",
+  "attendanceOnboardingQrInOut": "HupWorks-এ উপস্থিতি খুলে জব সাইটের QR স্ক্যান করে আগমনে ক্লক ইন এবং প্রস্থানে ক্লক আউট করুন।",
+  "attendanceOnboardingQrOnce": "পৌঁছালে HupWorks-এ উপস্থিতি খুলে সাইটে পোস্ট করা QR স্ক্যান করুন। দিনে একবার চেক-ইনই যথেষ্ট।",
+  "attendanceOnboardingSelfReport": "এই চুক্তিতে HupWorks উপস্থিতি খুলে শুরুতে ক্লক ইন এবং চলে যাওয়ার সময় ক্লক আউট ট্যাপ করুন। QR স্ক্যান লাগবে না।",
+  "attendanceOnboardingDisabled": "এই কাজের জন্য অ্যাপে উপস্থিতি ট্র্যাক হয় না। সাইটে সুপারভাইজারের নির্দেশ অনুসরণ করুন।",
+  "attendanceTracking": "উপস্থিতি ট্র্যাকিং",
+  "attendanceTrackingHint": "কর্মীরা সাইটে সময় কীভাবে রেকর্ড করে।",
+  "genderMale": "পুরুষ",
+  "genderFemale": "মহিলা",
+  "aboutHupWorksTitle": "HupWorks সম্পর্কে",
+  "aboutHupWorksBody": "HupWorks একটি মার্কেটপ্লেস যা ক্লায়েন্টদের ফ্রিল্যান্সার ও স্থানীয় কর্মীদের সাথে কাজ ও সার্ভিসের জন্য সংযুক্ত করে। আমরা কাজ পোস্ট, ট্যালেন্ট নিয়োগ, সাইটে উপস্থিতি ট্র্যাক এবং অর্ডার শুরু থেকে শেষ পর্যন্ত পরিচালনায় সাহায্য করি।\n\nআমাদের লক্ষ্য নিয়োগ ও নিযুক্ত হওয়াকে সহজ, স্পষ্ট ও নির্ভরযোগ্য করা—প্রজেক্টে দক্ষ সাহায্য হোক বা আপনার ফ্রিল্যান্স ব্যবসা বাড়ান।",
+  "privacySectionCollectTitle": "আমরা যে তথ্য সংগ্রহ করি",
+  "privacySectionCollectBody": "আমরা আপনার দেওয়া অ্যাকাউন্ট বিবরণ (নাম, ইমেইল, ফোন, প্রোফাইল), আপনার পোস্ট করা কনটেন্ট (কাজ, বার্তা, রিভিউ) এবং অ্যাপ চালানোর জন্য প্রয়োজনীয় প্রযুক্তিগত ডেটা সংগ্রহ করি। পেমেন্ট-সম্পর্কিত ডেটা সক্রিয় থাকলে আমাদের পেমেন্ট প্রদানকারীরা প্রক্রিয়া করে।",
+  "privacySectionUseTitle": "তথ্য কীভাবে ব্যবহার করি",
+  "privacySectionUseBody": "আমরা আপনার তথ্য অ্যাকাউন্ট তৈরি ও পরিচালনা, প্রাসঙ্গিক কাজ ও প্রোফাইল দেখানো, মেসেজিং ও অর্ডার ওয়ার্কফ্লো, নিরাপত্তা উন্নয়ন এবং গুরুত্বপূর্ণ আপডেট জানাতে ব্যবহার করি। আমরা আপনার ব্যক্তিগত তথ্য বিক্রি করি না।",
+  "privacySectionShareTitle": "তথ্য শেয়ারিং",
+  "privacySectionShareBody": "মার্কেটপ্লেসের প্রয়োজনেই অন্য ব্যবহারকারীদের সাথে তথ্য শেয়ার করি (যেমন পাবলিক প্রোফাইল ও আপনার পাঠানো বার্তা)। HupWorks চালাতে সহায়তাকারী সার্ভিস প্রদানকারীদের সাথে শেয়ার করতে পারি, বা আইন অনুযায়ী, অধিকার ও নিরাপত্তা রক্ষা বা প্রতারণা তদন্তে।",
+  "privacySectionChoicesTitle": "আপনার পছন্দ",
+  "privacySectionChoicesBody": "আপনি অ্যাপে প্রোফাইল আপডেট করতে পারেন এবং অ্যাকাউন্ট পরিবর্তনের জন্য সাপোর্টে যোগাযোগ করতে পারেন। অবস্থান অনুযায়ে ব্যক্তিগত ডেটা অ্যাক্সেস, সংশোধন বা মুছে ফেলার অতিরিক্ত অধিকার থাকতে পারে।",
+  "privacySectionContactTitle": "যোগাযোগ",
+  "privacySectionContactBody": "এই নীতি বা আপনার ডেটা নিয়ে প্রশ্ন থাকলে অ্যাপের সাহায্য ও সহায়তার মাধ্যমে যোগাযোগ করুন।",
+  "authWelcomeHowToUse": "আপনি HupWorks কীভাবে ব্যবহার করবেন?",
+  "authRoleClient": "ক্লায়েন্ট",
+  "authRoleClientSubtitle": "ট্যালেন্ট নিয়োগ",
+  "authRoleFreelancer": "ফ্রিল্যান্সার",
+  "authRoleFreelancerSubtitle": "কাজ খুঁজুন",
+  "authContinueAsClient": "ক্লায়েন্ট হিসেবে চালিয়ে যান",
+  "authContinueAsFreelancer": "ফ্রিল্যান্সার হিসেবে চালিয়ে যান",
+  "authAlreadyHaveAccount": "আমার ইতিমধ্যে অ্যাকাউন্ট আছে",
+  "authWelcomeBack": "আবার স্বাগতম",
+  "authSignInSubtitle": "HupWorks চালিয়ে যেতে সাইন ইন করুন।",
+  "authEmail": "ইমেইল",
+  "authEmailHint": "you@email.com",
+  "authPassword": "পাসওয়ার্ড",
+  "authPasswordHint": "আপনার পাসওয়ার্ড লিখুন",
+  "authForgotPassword": "পাসওয়ার্ড ভুলে গেছেন?",
+  "authLogIn": "লগ ইন",
+  "authDontHaveAccount": "অ্যাকাউন্ট নেই?",
+  "authSignUp": "সাইন আপ",
+  "authOrContinueWith": "অথবা চালিয়ে যান",
+  "authAgreeToThe": "আমি সম্মত ",
+  "authTermsOfService": "সেবার শর্তাবলী",
+  "authFirstName": "নামের প্রথম অংশ",
+  "authFirstNameHint": "প্রথম",
+  "authLastName": "নামের শেষ অংশ",
+  "authLastNameHint": "শেষ",
+  "authCreateAccount": "আপনার অ্যাকাউন্ট তৈরি করুন",
+  "authJoinAsClient": "ফ্রিল্যান্সার নিয়োগের জন্য ক্লায়েন্ট হিসেবে যোগ দিন।",
+  "authJoinAsFreelancer": "কাজ খুঁজতে ফ্রিল্যান্সার হিসেবে যোগ দিন।",
+  "authPhone": "ফোন",
+  "authPhoneHint": "ফোন নম্বর",
+  "authSignUpButton": "সাইন আপ",
+  "authOrSignUpWith": "অথবা সাইন আপ করুন",
+  "authAlreadyHaveAccountShort": "ইতিমধ্যে অ্যাকাউন্ট আছে?",
+  "authPasswordMinLength": "পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে",
+  "authMustAgreeTerms": "অনুগ্রহ করে সেবার শর্তাবলীতে সম্মত হন",
+  "authForgotPasswordTitle": "পাসওয়ার্ড ভুলে গেছেন?",
+  "authForgotPasswordBody": "আপনার ইমেইল লিখুন, আমরা পাসওয়ার্ড রিসেট লিঙ্ক পাঠাব।",
+  "authResetPassword": "পাসওয়ার্ড রিসেট",
+  "authEnterEmail": "অনুগ্রহ করে আপনার ইমেইল লিখুন",
+  "authResetLinkSent": "রিসেট লিঙ্ক পাঠানো হয়েছে। ইমেইল চেক করুন।",
+  "authVerification": "যাচাইকরণ",
+  "authCodeSentToEmail": "আমরা আপনার ইমেইলে কোড পাঠিয়েছি-",
+  "authDidntReceiveCode": "কোড পাননি?",
+  "authResendCode": "কোড আবার পাঠান",
+  "selectProfileImage": "প্রোফাইল ছবি নির্বাচন",
+  "photoGallery": "ফটো গ্যালারি",
+  "takePhoto": "ছবি তুলুন",
+  "uploadYourPhoto": "আপনার ছবি আপলোড করুন",
+  "userName": "ব্যবহারকারীর নাম",
+  "phone": "ফোন",
+  "country": "দেশ",
+  "streetAddress": "রাস্তার ঠিকানা",
+  "city": "শহর",
+  "state": "রাজ্য",
+  "zipCode": "জিপ কোড",
+  "selectLanguage": "ভাষা নির্বাচন",
+  "selectGender": "লিঙ্গ নির্বাচন",
+  "addLanguage": "ভাষা যোগ করুন",
+  "addNew": "নতুন যোগ",
+  "noLanguagesYet": "এখনও কোনো ভাষা যোগ হয়নি।",
+  "jobTitle": "পদের নাম",
+  "skills": "দক্ষতা",
+  "aboutYou": "আপনার সম্পর্কে",
+  "aboutYouHint": "ক্লায়েন্টদের আপনার সম্পর্কে বলুন",
+  "stepOf": "ধাপ {current} / {total}",
+  "browseCategories": "ক্যাটাগরি ব্রাউজ",
+  "yourRecentJobs": "আপনার সাম্প্রতিক কাজ",
+  "postJob": "কাজ পোস্ট",
+  "findTalent": "ট্যালেন্ট খুঁজুন",
+  "categories": "ক্যাটাগরি",
+  "hireTopRated": "শীর্ষ রেটেড ফ্রিল্যান্সার নিয়োগ",
+  "postAJobBanner": "কাজ পোস্ট করুন এবং অফার পান",
+  "postNow": "এখন পোস্ট",
+  "browse": "ব্রাউজ",
+  "noCategoriesYet": "এখনও কোনো ক্যাটাগরি নেই",
+  "noJobsYet": "এখনও কোনো কাজ নেই",
+  "noFreelancersYet": "এখনও কোনো ফ্রিল্যান্সার নেই",
+  "open": "খোলা",
+  "closed": "বন্ধ",
+  "fullTime": "পূর্ণকালীন",
+  "partTime": "খণ্ডকালীন",
+  "viewProfile": "প্রোফাইল দেখুন",
+  "verifiedFreelancer": "যাচাইকৃত ফ্রিল্যান্সার",
+  "allCategories": "সব ক্যাটাগরি",
+  "searchCategories": "ক্যাটাগরি খুঁজুন",
+  "noCategoriesMatch": "মিলে এমন ক্যাটাগরি নেই",
+  "searchFreelancers": "ফ্রিল্যান্সার খুঁজুন...",
+  "noFreelancersMatch": "মিলে এমন ফ্রিল্যান্সার নেই",
+  "findYourNextJob": "আপনার পরবর্তী কাজ খুঁজুন",
+  "findYourNextJobSubtitle": "খোলা পদ দেখুন এবং কয়েক মিনিটে আবেদন করুন।",
+  "myApplications": "আমার আবেদন",
+  "browseJobs": "কাজ ব্রাউজ",
+  "statusAccepted": "গৃহীত",
+  "statusRejected": "প্রত্যাখ্যাত",
+  "statusPending": "অপেক্ষমাণ",
+  "yourWork": "আপনার কাজ",
+  "activeContracts": "সক্রিয় চুক্তি",
+  "wallet": "ওয়ালেট",
+  "needsAttention": "মনোযোগ প্রয়োজন",
+  "attentionItems": "{count}টি আইটেমে মনোযোগ প্রয়োজন",
+  "messages": "বার্তা",
+  "applications": "আবেদন",
+  "attendance": "উপস্থিতি",
+  "shortcutFindJobs": "কাজ খুঁজুন",
+  "shortcutFindJobsSub": "খোলা পদ দেখুন",
+  "shortcutMessages": "বার্তা",
+  "shortcutMessagesSub": "ক্লায়েন্টদের সাথে চ্যাট",
+  "shortcutContracts": "চুক্তি",
+  "shortcutContractsSub": "সক্রিয় কাজ",
+  "shortcutApplications": "আবেদন",
+  "shortcutApplicationsSub": "স্ট্যাটাস ট্র্যাক",
+  "shortcutAttendance": "উপস্থিতি",
+  "shortcutAttendanceSub": "ক্লক ইন ও আউট",
+  "balance": "ব্যালেন্স",
+  "totalSpent": "মোট খরচ",
+  "earned": "আয়",
+  "sayHelloTo": "{name}-কে হ্যালো বলুন",
+  "block": "ব্লক",
+  "noMessagesYet": "এখনও কোনো বার্তা নেই",
+  "searchChats": "চ্যাট খুঁজুন",
+  "typeAMessage": "একটি বার্তা লিখুন",
+  "cancellationRequestTitle": "বাতিলের অনুরোধ",
+  "cancellationRequestBody": "আপনার ক্লায়েন্টের অনুমোদন বা চুক্তি রাখার জন্য ৪৮ ঘণ্টা আছে।",
+  "cancellationReason": "কারণ",
+  "cancellationExplain": "সংক্ষেপে ব্যাখ্যা করুন",
+  "cancellationSubmit": "অনুরোধ জমা দিন",
+  "cancellationMinChars": "কমপক্ষে {count} অক্ষর লিখুন",
+  "keepContract": "চুক্তি রাখুন",
+  "approveCancellation": "বাতিল অনুমোদন",
+  "withdrawCancelRequest": "অনুরোধ প্রত্যাহার",
+  "waitingForClientCancel": "ক্লায়েন্ট আপনার বাতিল অনুরোধ পর্যালোচনার অপেক্ষা",
+  "cancellationRequested": "বাতিল অনুরোধ করা হয়েছে",
+  "awaitingYourApproval": "আপনার অনুমোদনের অপেক্ষা",
+  "inProgress": "চলমান",
+  "markComplete": "সম্পন্ন চিহ্নিত করুন",
+  "deliverWork": "কাজ ডেলিভার",
+  "clockIn": "ক্লক ইন",
+  "clockOut": "ক্লক আউট",
+  "scanAttendanceQr": "উপস্থিতি QR স্ক্যান",
+  "editProfile": "প্রোফাইল সম্পাদনা",
+  "profileDetails": "প্রোফাইল বিবরণ",
+  "favourites": "পছন্দসমূহ",
+  "reviews": "রিভিউ",
+  "noFavouritesYet": "এখনও কোনো পছন্দ নেই",
+  "noReviewsYet": "এখনও কোনো রিভিউ নেই",
+  "mapPickLocation": "অবস্থান বেছে নিন",
+  "mapConfirmLocation": "অবস্থান নিশ্চিত করুন",
+  "mapSearchPlace": "স্থান খুঁজুন",
+  "deposit": "জমা",
+  "withdraw": "উত্তোলন",
+  "addPaymentMethod": "পেমেন্ট পদ্ধতি যোগ",
+  "amount": "পরিমাণ",
+  "history": "ইতিহাস",
+  "noTransactionsYet": "এখনও কোনো লেনদেন নেই",
+  "supportChat": "সাপোর্ট চ্যাট",
+  "typeSupportMessage": "আপনার বার্তা লিখুন",
+  "clientReport": "ক্লায়েন্ট রিপোর্ট",
+  "selectReason": "কারণ নির্বাচন",
+  "describeIssue": "সমস্যা বর্ণনা করুন",
+  "submitReport": "রিপোর্ট জমা দিন",
+  "cancellationSheetTitle": "চুক্তি বাতিলের অনুরোধ",
+  "cancellationSheetBody": "আপনার ক্লায়েন্টকে জানানো হবে এবং ৪৮ ঘণ্টার মধ্যে অনুমোদন বা প্রত্যাখ্যান করতে পারবে। তারা উত্তর না দেওয়া পর্যন্ত চুক্তি সক্রিয় থাকবে।",
+  "cancellationExplainHint": "কী ঘটেছে? এটি আপনার ক্লায়েন্টকে অনুরোধ বুঝতে সাহায্য করে।",
+  "cancellationCharCount": "ন্যূনতম {min} অক্ষরের মধ্যে {current}",
+  "cancellationReasonLine": "কারণ: {reason}",
+  "reportWhyQuestion": "আপনি কেন রিপোর্ট করতে চান?",
+  "reportSellerProfileUrl": "বিক্রেতার প্রোফাইল URL",
+  "reportEnterSellerProfileUrl": "বিক্রেতার প্রোফাইল url লিখুন",
+  "reportOriginalContentUrl": "অরিজিনাল কনটেন্টের URL",
+  "reportEnterPostUrl": "পোস্ট url লিখুন",
+  "reportAdditionalInfo": "অতিরিক্ত তথ্য",
+  "reportEnterInformation": "তথ্য লিখুন...",
+  "promoVerifiedTalentSubtitle": "প্রতিটি প্রকল্পের জন্য যাচাইকৃত ট্যালেন্ট",
+  "promoProposalsSubtitle": "কয়েক মিনিটের মধ্যে প্রস্তাব পান",
+  "promoNicheServicesSubtitle": "সব ক্ষেত্রে সেবা খুঁজুন",
+  "jobTypeGig": "গিগ",
+  "recentJobsEmptyHint": "শুরু করতে \"জব পোস্ট\"-এ ট্যাপ করুন",
+  "postJobShort": "পোস্ট",
+  "untitled": "শিরোনামহীন",
+  "untitledJob": "শিরোনামহীন জব",
+  "categoryGeneral": "সাধারণ",
+  "proBadge": "প্রো",
+  "noApplicationsYet": "এখনও কোনো আবেদন নেই",
+  "noApplicationsYetHint": "খোলা জব ব্রাউজ করুন এবং স্পষ্ট অফার পাঠান।",
+  "pendingApplications": "মুলতুবি আবেদন",
+  "completedThisMonth": "এই মাসে সম্পন্ন",
+  "yourRating": "আপনার রেটিং",
+  "reviewCount": "{count}টি রিভিউ",
+  "openJobsToBrowse": "ব্রাউজ করতে {count}টি খোলা জব",
+  "periodLive": "লাইভ",
+  "periodThisMonth": "এই মাস",
+  "shortcuts": "শর্টকাট",
+  "attentionContractDeliveredOne": "১টি চুক্তি ডেলিভার — ক্লায়েন্টের অনুমোদনের অপেক্ষায়",
+  "attentionContractDeliveredMany": "{count}টি চুক্তি ডেলিভার — ক্লায়েন্টের অনুমোদনের অপেক্ষায়",
+  "attentionOnsiteOne": "১টি অন-সাইট চুক্তি — উপস্থিতিতে ক্লক ইন করুন",
+  "attentionOnsiteMany": "{count}টি অন-সাইট চুক্তি — উপস্থিতি ব্যবহার করুন",
+  "attendanceOffForJob": "এই কাজের জন্য উপস্থিতি বন্ধ।",
+  "checkedIn": "চেক ইন হয়েছে",
+  "checkIn": "চেক ইন",
+  "noPunchesToday": "আজ এখনও কোনো পাঞ্চ নেই।",
+  "noAttendanceRecordedToday": "আজ কোনো উপস্থিতি রেকর্ড হয়নি।",
+  "confirmAttendance": "উপস্থিতি নিশ্চিত করুন",
+  "alreadyCheckedInToday": "আজ ইতিমধ্যে চেক ইন করা হয়েছে",
+  "readyForDailyCheckIn": "দৈনিক চেক-ইনের জন্য প্রস্তুত",
+  "clockedInAt": "{time}-এ ক্লক ইন",
+  "notClockedInToday": "আজ ক্লক ইন করা হয়নি",
+  "calendarToday": "আজ",
+  "recordLabel": "রেকর্ড",
+  "alreadyCheckedInTodayMessage": "আপনি আজ এই কাজের জন্য ইতিমধ্যে চেক ইন করেছেন।",
+  "attendanceQrOnceDailyHint": "এই কাজে দিনে একবার চেক-ইন স্ক্যান (ক্লক-আউট স্ক্যান নেই)।",
+  "checkInForToday": "আজকের জন্য চেক ইন",
+  "attendancePunchRecorded": "{punch} রেকর্ড হয়েছে। আজ: {minutes} কাজ করেছেন।",
+  "useSuggestedPunch": "প্রস্তাবিত ব্যবহার: {punch}",
+  "attendanceScanCameraHint": "জব সাইটে পোস্ট করা উপস্থিতি QR-এ ক্যামেরা ধরুন।",
+  "attendanceScanLoadingDetails": "জবের বিবরণ লোড হচ্ছে…",
+  "attendanceScanningForJob": "স্ক্যান করা হচ্ছে: {title}",
+  "viewMyOnsiteJobs": "আমার অন-সাইট জব দেখুন",
+  "attendanceQrScreenTitle": "উপস্থিতি QR",
+  "attendancePrintQrAtSite": "এই QR প্রিন্ট করে কর্মীরা চেক ইন করে এমন জায়গায় পোস্ট করুন।",
+  "attendanceCouldNotLoadQr": "QR লোড করা যায়নি",
+  "attendanceSharePrintInstructions": "শেয়ার / প্রিন্ট নির্দেশ",
+  "regenerateQr": "QR পুনরায় তৈরি",
+  "regenerateQrConfirmTitle": "QR পুনরায় তৈরি করবেন?",
+  "regenerateQrConfirmBody": "পুরানো প্রিন্ট করা QR কাজ করা বন্ধ করবে। সাইটে নতুন কোড প্রিন্ট ও পোস্ট করুন।",
+  "regenerate": "পুনরায় তৈরি",
+  "attendanceNewQrReady": "নতুন উপস্থিতি QR প্রস্তুত",
+  "attendanceHowItWorks": "কীভাবে কাজ করে",
+  "attendanceHowItWorksBody": "1. কর্মস্থলে এই QR প্রিন্ট ও টেপ করুন।\n2. নিয়োগপ্রাপ্ত ফ্রিল্যান্সাররা HupWorks খুলে স্ক্যান করে।\n3. তারা ফোনে ক্লক ইন বা ক্লক আউট নিশ্চিত করে।\n4. জব বিবরণ স্ক্রিনে আজকের উপস্থিতি দেখতে পারবেন।",
+  "noOnsiteJobsYet": "এখনও কোনো অন-সাইট জব নেই",
+  "noOnsiteJobsBody": "একটি গৃহীত অন-সাইট চুক্তি দরকার। ক্লায়েন্ট জব পোস্ট করার সময় উপস্থিতি কীভাবে কাজ করবে (QR বা স্ব-রিপোর্ট) বেছে নেয়।",
+  "findOnsiteJobs": "অন-সাইট জব খুঁজুন",
+  "selectedJob": "নির্বাচিত জব",
+  "openContract": "চুক্তি খুলুন",
+  "attendanceTimeIn": "ইন",
+  "attendanceTimeOut": "আউট",
+  "attendanceWorkedToday": "আজ কাজ: {duration}",
+  "attendancePunchTodaySummary": "{punch} • আজ {duration}",
+  "attendanceLessThanOneMin": "১ মিনিটের কম",
+  "attendanceMinutesOnly": "{count} মিনিট",
+  "attendanceHoursOnly": "{count}ঘ",
+  "attendanceHoursMinutes": "{hours}ঘ {minutes}মি",
+  "firstDayInstructions": "প্রথম দিনের নির্দেশ",
+  "instructionsNotAvailable": "নির্দেশ এখনও উপলব্ধ নয়।",
+  "onboardingUseScanQrHint": "সাইটে পৌঁছালে চুক্তি স্ক্রিনে Scan attendance QR ব্যবহার করুন।",
+  "noSectionDetails": "কোনো বিভাগের বিবরণ দেওয়া হয়নি।",
+  "pleaseWaitEllipsis": "অপেক্ষা করুন…",
+  "onboardingAcknowledgedLabel": "আপনি এই নির্দেশ স্বীকার করেছেন",
+  "onboardingReadUnderstood": "আমি পড়েছি এবং বুঝেছি",
+  "onboardingEditorLead": "সাইটের বিবরণ, প্রবেশাধিকার ও যোগাযোগ শেয়ার করুন যাতে নিয়োগ প্রথম দিন কী করতে হবে জানে।",
+  "onboardingResendNotice": "ইতিমধ্যে পাঠানো হয়েছে। আবার সংরক্ষণ ও প্রকাশ করলে ফ্রিল্যান্সারকে জানানো হবে।",
+  "addDetailsHint": "বিবরণ যোগ…",
+  "draftSaved": "খসড়া সংরক্ষিত",
+  "instructionsSentToFreelancer": "ফ্রিল্যান্সারকে নির্দেশ পাঠানো হয়েছে",
+  "saveDraft": "খসড়া সংরক্ষণ",
+  "publishToFreelancer": "ফ্রিল্যান্সারকে প্রকাশ",
+  "startConversationFirstMessage": "প্রথম বার্তা পাঠিয়ে কথোপকথন শুরু করুন",
+  "chatSendFailed": "বার্তা পাঠাতে ব্যর্থ হয়েছে",
+  "failedTapToRetry": "ব্যর্থ — পুনরায় চেষ্টা করতে ট্যাপ করুন",
+  "chatAttachment": "সংযুক্তি",
+  "calendarYesterday": "গতকাল",
+  "noConversationsYet": "এখনও কোনো কথোপকথন নেই",
+  "noConversationsHint": "ফ্রিল্যান্সার বা ক্লায়েন্ট প্রোফাইল থেকে চ্যাট শুরু করুন",
+  "noChatMatches": "কোনো মিল নেই",
+  "tryDifferentSearch": "অন্য নাম বা কীওয়ার্ড চেষ্টা করুন",
+  "@noSearchResults": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "@errorWithDetail": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "@minutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@hoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@daysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@stepOf": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "@attentionItems": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@sayHelloTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@cancellationMinChars": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@cancellationCharCount": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "@cancellationReasonLine": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "@reviewCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@openJobsToBrowse": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@attentionContractDeliveredMany": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@attentionOnsiteMany": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@clockedInAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "@attendancePunchRecorded": {
+    "placeholders": {
+      "punch": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "@useSuggestedPunch": {
+    "placeholders": {
+      "punch": {
+        "type": "String"
+      }
+    }
+  },
+  "@attendanceScanningForJob": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@attendanceWorkedToday": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "@attendancePunchTodaySummary": {
+    "placeholders": {
+      "punch": {
+        "type": "String"
+      },
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "@attendanceMinutesOnly": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@attendanceHoursOnly": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@attendanceHoursMinutes": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "myProfile": "আমার প্রোফাইল",
+  "dashboard": "ড্যাশবোর্ড",
+  "addDeposit": "জমা যোগ",
+  "depositHistory": "জমার ইতিহাস",
+  "paymentMethods": "পেমেন্ট পদ্ধতি",
+  "withdrawals": "উত্তোলন",
+  "withdrawMoney": "টাকা উত্তোলন",
+  "withdrawHistory": "উত্তোলনের ইতিহাস",
+  "balanceWithAmount": "ব্যালেন্স: {amount}",
+  "@balanceWithAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "editProfileSubtitle": "প্রোফাইল বিবরণ সম্পাদনা করুন",
+  "fullName": "পূর্ণ নাম",
+  "enterYourName": "আপনার নাম লিখুন",
+  "phoneNo": "ফোন নম্বর",
+  "enterPhoneNo": "ফোন নম্বর লিখুন",
+  "aboutYourCompany": "আপনার কোম্পানি সম্পর্কে",
+  "aboutCompanyHint": "ফ্রিল্যান্সারদের জন্য সংক্ষিপ্ত পরিচয়…",
+  "updating": "আপডেট হচ্ছে...",
+  "updateProfile": "প্রোফাইল আপডেট",
+  "basicInfo": "মৌলিক তথ্য",
+  "professional": "পেশাগত",
+  "address": "ঠিকানা",
+  "enterFullAddress": "আপনার পূর্ণ ঠিকানা লিখুন",
+  "tapSetBirthDate": "জন্ম তারিখ সেট করতে ট্যাপ করুন",
+  "ageHiddenOnProfile": "বয়স {age} (প্রোফাইলে জন্ম তারিখ দেখানো হয় না)",
+  "@ageHiddenOnProfile": {
+    "placeholders": {
+      "age": {
+        "type": "int"
+      }
+    }
+  },
+  "birthDateSaved": "জন্ম তারিখ সংরক্ষিত",
+  "ageLabel": "বয়স",
+  "agePrivacyHint": "আপনার বয়স প্রোফাইলে দেখানো হয়। জন্ম তারিখ কখনো দেখানো হয় না।",
+  "dateOfBirth": "জন্ম তারিখ",
+  "profileDescription": "প্রোফাইল বিবরণ",
+  "profileDescriptionHint": "নিজের সম্পর্কে সংক্ষিপ্ত বিবরণ লিখুন…",
+  "yourSkills": "আপনার দক্ষতা",
+  "skillsOptionalHint": "ঐচ্ছিক — ক্লায়েন্টদের খুঁজে পেতে দক্ষতা যোগ করুন.",
+  "jobTitleHint": "যেমন, ফ্যাক্টরি কর্মী",
+  "statPosted": "পোস্ট করা",
+  "myJobPosts": "আমার জব পোস্ট",
+  "countTotal": "মোট {count}",
+  "@countTotal": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noJobsPostedYet": "এখনও কোনো জব পোস্ট নেই",
+  "postAJob": "জব পোস্ট করুন",
+  "avgRating": "গড় রেটিং",
+  "about": "সম্পর্কে",
+  "email": "ইমেইল",
+  "ageYearsOld": "{age} বছর বয়সী",
+  "@ageYearsOld": {
+    "placeholders": {
+      "age": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewsFromClientsHint": "সম্পন্ন অর্ডারের পর ক্লায়েন্টের রিভিউ এখানে দেখা যাবে।",
+  "clientProfile": "ক্লায়েন্ট প্রোফাইল",
+  "clientNotFound": "ক্লায়েন্ট পাওয়া যায়নি",
+  "freelancerProfile": "ফ্রিল্যান্সার প্রোফাইল",
+  "freelancerNotFound": "ফ্রিল্যান্সার পাওয়া যায়নি",
+  "couldNotLoadProfile": "প্রোফাইল লোড করা যায়নি: {message}",
+  "@couldNotLoadProfile": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "jobsPosted": "পোস্ট করা জব",
+  "memberSince": "সদস্য হওয়ার তারিখ",
+  "noneYet": "এখনও নেই",
+  "noReviewsForClientYet": "এই ক্লায়েন্টের জন্য এখনও রিভিউ নেই।",
+  "viewServices": "সেবা দেখুন",
+  "noActiveServiceListing": "এখনও সক্রিয় সেবা তালিকা নেই।",
+  "favouriteList": "পছন্দের তালিকা",
+  "removedFromFavourites": "পছন্দ থেকে সরানো হয়েছে",
+  "addedToFavourites": "পছন্দে যোগ করা হয়েছে",
+  "priceColon": "মূল্য: ",
+  "service": "সেবা",
+  "serviceDetails": "সেবার বিবরণ",
+  "orderNow": "এখনই অর্ডার",
+  "errorLoadingService": "সেবা লোড করা যায়নি: {message}",
+  "@errorLoadingService": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "noDescriptionAvailable": "কোনো বিবরণ নেই।",
+  "deliveryDays": "ডেলিভারি দিন",
+  "revisions": "রিভিশন",
+  "unlimited": "অসীম",
+  "totalReviewsCount": "মোট {count}টি রিভিউ",
+  "@totalReviewsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "anonymous": "অজ্ঞাত",
+  "orderPlacedSuccess": "অর্ডার সফলভাবে দেওয়া হয়েছে!",
+  "errorPlacingOrder": "অর্ডার দেওয়া যায়নি: {message}",
+  "@errorPlacingOrder": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "writeReview": "রিভিউ লিখুন",
+  "publishing": "প্রকাশ হচ্ছে…",
+  "publishReview": "রিভিউ প্রকাশ",
+  "pleaseChooseStarRating": "অনুগ্রহ করে প্রথমে স্টার রেটিং বেছে নিন।",
+  "reviewYourExperience": "আপনার অভিজ্ঞতা রিভিউ করুন",
+  "rateOverallExperience": "এই বিক্রেতার সাথে আপনার সামগ্রিক অভিজ্ঞতা কেমন?",
+  "freelancerForContract": "এই চুক্তির ফ্রিল্যান্সার",
+  "selectRating": "রেটিং নির্বাচন",
+  "yourFeedback": "আপনার মতামত",
+  "feedbackHint": "কী ভালো হয়েছে বা কী উন্নতি দরকার…",
+  "uploadImageOptional": "ছবি আপলোড (ঐচ্ছিক)",
+  "tapToAdd": "যোগ করতে ট্যাপ",
+  "removePhoto": "ছবি সরান",
+  "reviewAlreadySubmitted": "আপনি ইতিমধ্যে এই অর্ডারের রিভিউ জমা দিয়েছেন।",
+  "couldNotPublishReview": "রিভিউ প্রকাশ করা যায়নি: {message}",
+  "@couldNotPublishReview": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenPicker": "পিকার খোলা যায়নি: {message}",
+  "@couldNotOpenPicker": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "mapMovePinJob": "কাজের স্থান চিহ্নিত করতে মানচিত্র সরান।",
+  "mapMovePinProfile": "আপনার স্থান চিহ্নিত করতে মানচিত্র সরান।",
+  "mapUseThisLocation": "এই অবস্থান ব্যবহার করুন",
+  "mapAddressLookupFailed": "ঠিকানা খোঁজা ব্যর্থ: {message}",
+  "@mapAddressLookupFailed": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "mapNoAddressForPoint": "এই বিন্দুর ঠিকানা পড়া যায়নি। মানচিত্র সরিয়ে দেখুন।",
+  "mapNoCityCountryFound": "শহর বা দেশ পাওয়া যায়নি। আরও জুম ইন করুন।",
+  "pickLocationOnMap": "মানচিত্রে অবস্থান বেছে নিন",
+  "mapPinConfirmHint": "পিন আপনার স্থানে রাখুন, তারপর নিশ্চিত করুন।",
+  "mapOrType": "মানচিত্র বা টাইপ",
+  "supportCommonQuestions": "সাধারণ প্রশ্ন",
+  "supportLiveChat": "লাইভ চ্যাট",
+  "supportProfileLoadFailed": "সাপোর্ট চ্যাটের জন্য প্রোফাইল লোড করা যায়নি।",
+  "supportLiveChatNotConfigured": "লাইভ চ্যাট এখনও কনফিগার করা হয়নি।",
+  "supportTawkEnvHint": ".env-এ TAWK_DIRECT_CHAT_LINK যোগ করুন (.env.example দেখুন)। প্রথম ট্যাবে FAQ উপলব্ধ।",
+  "supportNoQuestionsYet": "এখনও কোনো প্রশ্ন নেই।",
+  "supportStillNeedHelp": "আরও সাহায্য দরকার? আমাদের সাথে চ্যাট করুন",
+  "pleaseEnterValidAmount": "সঠিক পরিমাণ লিখুন",
+  "depositSubmittedSuccess": "জমা সফলভাবে জমা দেওয়া হয়েছে!",
+  "submitting": "জমা দেওয়া হচ্ছে...",
+  "submit": "জমা দিন",
+  "noDepositHistory": "কোনো জমার ইতিহাস নেই",
+  "withdrawalRequestSubmitted": "উত্তোলনের অনুরোধ জমা হয়েছে!",
+  "withdrawMethod": "উত্তোলন পদ্ধতি",
+  "enterAmount": "পরিমাণ লিখুন",
+  "creditOrDebitCard": "ক্রেডিট বা ডেবিট কার্ড",
+  "txnTypeDeposit": "জমা",
+  "txnTypeWithdrawal": "উত্তোলন",
+  "txnTypeEarning": "আয়",
+  "txnTypePayment": "পেমেন্ট",
+  "processingOrder": "আমরা আপনার\nঅর্ডার প্রক্রিয়া করছি",
+  "stayTuned": "অপেক্ষা করুন...",
+  "chooseYourAction": "আপনার কাজ বেছে নিন",
+  "openGallery": "গ্যালারি খুলুন",
+  "openFile": "ফাইল খুলুন",
+  "congratulations": "অভিনন্দন!",
+  "profileSetupCompleteBody": "আপনার প্রোফাইল সফলভাবে সম্পন্ন। লাইভ হওয়ার পর আরও পরিবর্তন করতে পারবেন।",
+  "cancelJobConfirmTitle": "আপনি কি নিশ্চিত\nজব পোস্ট বাতিল করবেন!",
+  "noLabel": "না",
+  "yesLabel": "হ্যাঁ",
+  "cancelOrderWhy": "আপনি অর্ডার কেন বাতিল করছেন?",
+  "enterReason": "কারণ লিখুন",
+  "confirm": "নিশ্চিত",
+  "reviewSuccessTitle": "সফল",
+  "reviewSuccessBody": "ধন্যবাদ, আপনার রিভিউ প্রকাশিত হয়েছে",
+  "gotIt": "বুঝেছি!",
+  "withdrawAmount": "উত্তোলনের পরিমাণ",
+  "reviewWithdrawalDetails": "উত্তোলনের বিবরণ পর্যালোচনা করুন",
+  "transferTo": "স্থানান্তর",
+  "account": "অ্যাকাউন্ট",
+  "withdrawalCompleted": "উত্তোলন সম্পন্ন",
+  "orderCompleted": "অর্ডার সম্পন্ন",
+  "detailsLabel": "বিবরণ",
+  "profileUpdatedShort": "প্রোফাইল আপডেট!",
+  "filterAll": "All",
+  "refreshTooltip": "Refresh",
+  "noContractsYet": "No contracts yet",
+  "noFilteredContracts": "No {status} contracts",
+  "@noFilteredContracts": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "contractOverdue": "Overdue",
+  "deadlineDaysHoursLeft": "{days}d {hours}h left",
+  "@deadlineDaysHoursLeft": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "deadlineHoursMinutesLeft": "{hours}h {minutes}m left",
+  "@deadlineHoursMinutesLeft": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "deadlineMinutesLeft": "{minutes}m left",
+  "@deadlineMinutesLeft": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "contractStartedOn": "Started {date}",
+  "@contractStartedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "amountCaps": "AMOUNT",
+  "orderDetailsTitle": "Order Details",
+  "orderIdHash": "Order ID #{id}",
+  "@orderIdHash": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "sellerColon": "Seller:",
+  "clientColon": "Client:",
+  "labelTitle": "Title",
+  "labelServiceInfo": "Service Info",
+  "labelDuration": "Duration",
+  "labelStatus": "Status",
+  "labelRevisions": "Revisions",
+  "orderSummary": "Order Summary",
+  "subtotal": "Subtotal",
+  "labelTotal": "Total",
+  "deliveryDate": "Delivery date",
+  "readMoreSuffix": "..Read more",
+  "readLessSuffix": "..Read less",
+  "closeAction": "Close",
+  "contractCancelledSnack": "Contract cancelled",
+  "contractKeptActive": "Contract kept active",
+  "markJobComplete": "Mark job complete",
+  "completingEllipsis": "Completing…",
+  "markJobCompleteTitle": "Mark this job complete?",
+  "markJobCompleteDeliveredBody": "You are confirming you received the work from {seller} through their delivery submission. The contract will close as completed and you can leave a review next.",
+  "@markJobCompleteDeliveredBody": {
+    "placeholders": {
+      "seller": {
+        "type": "String"
+      }
+    }
+  },
+  "markJobCompleteManualBody": "You are about to close this contract as finished. Use this when you have received the deliverables from {seller} (for example via chat or files), even if they have not pressed \"Submit delivery\" yet.",
+  "@markJobCompleteManualBody": {
+    "placeholders": {
+      "seller": {
+        "type": "String"
+      }
+    }
+  },
+  "notYet": "Not yet",
+  "yesCompleteJob": "Yes, complete job",
+  "jobMarkedCompleteThanks": "Job marked complete. Thank you!",
+  "leaveReviewTitle": "Leave a review?",
+  "leaveReviewBody": "Reviews help other clients and reward great work.",
+  "later": "Later",
+  "couldNotCompleteJob": "Could not complete job: {message}",
+  "@couldNotCompleteJob": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenReviewMissingSeller": "Could not open review (missing seller).",
+  "sellerSubmittedDelivery": "Seller submitted delivery",
+  "deliveredCalloutBody": "Review what they sent. When you are happy with the result, tap Mark job complete below to close the order. To chat with the seller, use the ⋮ menu at the top.",
+  "openContractCalloutBody": "When your freelancer has finished and you have the final result, tap Mark job complete below to close the contract. You can message the seller from the ⋮ menu at the top.",
+  "cancellationRequestBannerBody": "{seller} asked to cancel this contract. You can approve or keep it active. If you do not respond within 48 hours, the contract stays active.",
+  "@cancellationRequestBannerBody": {
+    "placeholders": {
+      "seller": {
+        "type": "String"
+      }
+    }
+  },
+  "respondUsingBanner": "Respond using the banner above.",
+  "reviewSubmittedForOrder": "You submitted a review for this order.",
+  "errorLoadingOrder": "Error loading order: {message}",
+  "@errorLoadingOrder": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingOrders": "Error loading orders: {message}",
+  "@errorLoadingOrders": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "onboardingNotSet": "Not set",
+  "onboardingAcknowledgedShort": "Acknowledged",
+  "onboardingAwaitingAck": "Awaiting ack",
+  "theSeller": "the seller",
+  "roleSeller": "Seller",
+  "roleClient": "Client",
+  "cancellationRequestSent48h": "Cancellation request sent. Waiting for client response (48h).",
+  "cancellationRequestWithdrawn": "Cancellation request withdrawn",
+  "orderMarkedComplete": "Order marked complete",
+  "withdrawingEllipsis": "Withdrawing…",
+  "requestCancel": "Request cancel",
+  "completeOrder": "Complete Order",
+  "waitingForClientResponse": "Waiting for client response",
+  "sellerCancellationPendingBody": "Your cancellation request was sent. The client has up to 48 hours to approve or keep the contract active.",
+  "contractCancelledTitle": "Contract cancelled",
+  "viewFirstDayInstructions": "View first-day instructions",
+  "readFirstDayInstructions": "Read first-day instructions",
+  "firstDayInstructionsSharedBody": "Your client shared site details, access, and contacts for this job.",
+  "openInstructions": "Open instructions",
+  "errorLoadingApplications": "Error loading applications: {message}",
+  "@errorLoadingApplications": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "messageClientTooltip": "Message client",
+  "openAttendance": "Open attendance",
+  "instructionsReadyTap": "Instructions ready — tap to read",
+  "rateExperienceWithClient": "How would you rate your overall experience with this client?",
+  "postedThisContract": "Posted this contract",
+  "errorLoadingJobPosts": "Error loading job posts: {message}",
+  "@errorLoadingJobPosts": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "jobPostClosed": "Job post closed",
+  "addFirstDayInstructionsTitle": "Add first-day instructions?",
+  "addFirstDayInstructionsBody": "Share office location, building access, and site rules so your new hire knows what to do before day one.",
+  "addInstructionsNow": "Add instructions now",
+  "sendLater": "Send later",
+  "contractNotFoundForHire": "Contract not found for this hire.",
+  "applicationRejected": "Application rejected",
+  "hireFreelancerTitle": "Hire freelancer?",
+  "hireAction": "Hire",
+  "closeJob": "Close Job",
+  "attendanceSettingsUpdated": "Attendance settings updated",
+  "jobPostedSuccess": "Job posted successfully!",
+  "pleaseEnterJobTitle": "Please enter a job title",
+  "pleaseSelectCategory": "Please select a category",
+  "enterValidCategory": "Enter a valid category",
+  "pleaseEnterDescription": "Please enter a description",
+  "pleaseEnterLocation": "Please enter a location",
+  "createJobStepBasics": "Basics",
+  "createJobStepDetails": "Details",
+  "createJobStepLocation": "Location",
+  "createJobStepBudget": "Budget",
+  "createJobPostTitle": "Create Job Post",
+  "shortJobTitleHint": "Short title for the work",
+  "categoryNameLabel": "Category name",
+  "categoryNameHint": "e.g. Janitor, Baker, Waiter",
+  "describeJobLabel": "Describe the job",
+  "describeJobHint": "Scope, timeline, skills needed",
+  "workersNeeded": "Workers needed",
+  "limitHiresToCount": "Limit hires to this count",
+  "budgetMinLabel": "Min",
+  "budgetMaxLabel": "Max",
+  "budgetMinHint": "Min (optional)",
+  "budgetMaxHint": "Max (optional)",
+  "rateTypeLabel": "Rate type",
+  "budgetBasisFixed": "Fixed — total project",
+  "budgetBasisPerHour": "Per hour",
+  "budgetBasisPerDay": "Per day",
+  "budgetBasisPerMonth": "Per month",
+  "postingEllipsis": "Posting…",
+  "reviewAndPost": "Review & post",
+  "nextStep": "Next",
+  "totalJobPostCount": "Total Job Post ({count})",
+  "@totalJobPostCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "applicationsSection": "Applications",
+  "rejectApplication": "Reject",
+  "freelancerDefault": "Freelancer",
+  "submitOfferTitle": "Submit offer",
+  "applyAtClientRate": "Apply at client's rate",
+  "agreeToClientRate": "Agree to\nclient's rate",
+  "customBid": "Custom\nbid",
+  "offerNoPostedRateWarning": "This job has no posted rate to agree to. Enter a custom amount instead.",
+  "offerSentAtPostedRate": "Application sent at client's posted rate",
+  "offerSentSuccess": "Your offer has been sent",
+  "successTitle": "Success",
+  "headsUp": "Heads up",
+  "applyWithoutCounterBody": "You are applying without a counter-offer. The client sees your application at their posted rate.",
+  "clientPostedRate": "Client's posted rate",
+  "yourApplicationAmount": "Your application: {amount}",
+  "@yourApplicationAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "customBidIntroWithBudget": "Enter your own amount if you want to bid differently from the client's budget.",
+  "customBidIntroNoBudget": "This job has no posted budget — enter the amount you are asking for.",
+  "clientPostedPrefix": "Client posted: {amount}",
+  "@clientPostedPrefix": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "yourOfferAmount": "Your offer amount",
+  "enterYourBid": "Enter your bid",
+  "quoteAsLabel": "Quote as",
+  "quoteTotal": "Total",
+  "quotePerHour": "/ hour",
+  "quotePerDay": "/ day",
+  "quotePerMonth": "/ month",
+  "offerMessageOptional": "Message (optional)",
+  "offerMessageHint": "Optional note for the client…",
+  "findJobsTitle": "Find Jobs",
+  "couldNotLoadSkillsFilter": "Could not load skills filter. Pull to refresh later.",
+  "buyerRequestDetailsTitle": "Job details",
+  "submitOfferAction": "Submit offer",
+  "offersCount": "{count} offers",
+  "@offersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "locationLabel": "Location",
+  "ellipsisBusy": "…",
+  "couldNotOpenChatWithDetail": "Could not open chat: {message}",
+  "@couldNotOpenChatWithDetail": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "chooseFromGallery": "Choose from gallery",
+  "filterClear": "Clear",
+  "filterApply": "Apply",
+  "clearFilters": "Clear filters",
+  "deliverOrderTitle": "Deliver Order",
+  "pleaseDescribeDelivery": "Please describe your delivery",
+  "orderDeliveredSuccess": "Order delivered successfully!",
+  "maxSize1Gb": "Max size 1 GB",
+  "addCustomSkill": "Add custom skill",
+  "skillAlreadyAdded": "You already added \"{skill}\"",
+  "@skillAlreadyAdded": {
+    "placeholders": {
+      "skill": {
+        "type": "String"
+      }
+    }
+  },
+  "noWithdrawalHistory": "No withdrawal history",
+  "paymentPayPal": "PayPal",
+  "paymentCreditCard": "Credit Card",
+  "paymentBkash": "Bkash",
+  "bidOfferLabel": "Bid Offer",
+  "proposalCaps": "PROPOSAL",
+  "labelColon": ":",
+  "requiredFieldMark": "*",
+  "writeReviewAction": "Write review",
+  "deliveryDaysCount": "{count} Days",
+  "@deliveryDaysCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
+}

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/services/dashboard_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -36,7 +37,7 @@ class _SellerFavListState extends State<SellerFavList> {
       if (mounted) {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
     }
@@ -48,13 +49,13 @@ class _SellerFavListState extends State<SellerFavList> {
       if (mounted) {
         setState(() => _favourites.removeAt(index));
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Removed from favourites')),
+          SnackBar(content: Text(context.l10n.removedFromFavourites)),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
     }
@@ -62,6 +63,7 @@ class _SellerFavListState extends State<SellerFavList> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Scaffold(
       backgroundColor: kDarkWhite,
       appBar: AppBar(
@@ -69,7 +71,7 @@ class _SellerFavListState extends State<SellerFavList> {
         elevation: 0,
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
-          'Favorite List',
+          context.l10n.favouriteList,
           style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -90,7 +92,7 @@ class _SellerFavListState extends State<SellerFavList> {
               ? const Center(child: CircularProgressIndicator(color: kPrimaryColor))
               : _favourites.isEmpty
                   ? Center(
-                      child: Text('No favourites yet', style: kTextStyle.copyWith(color: kLightNeutralColor)),
+                      child: Text(l10n.noFavouritesYet, style: kTextStyle.copyWith(color: kLightNeutralColor)),
                     )
                   : RefreshIndicator(
                       color: kPrimaryColor,
@@ -176,7 +178,7 @@ class _SellerFavListState extends State<SellerFavList> {
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             Text(
-                                              service['title'] ?? 'Service',
+                                              service['title'] ?? context.l10n.service,
                                               style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
                                               maxLines: 2,
                                               overflow: TextOverflow.ellipsis,
@@ -192,7 +194,7 @@ class _SellerFavListState extends State<SellerFavList> {
                                                 const SizedBox(width: 20),
                                                 RichText(
                                                   text: TextSpan(
-                                                    text: 'Price: ',
+                                                    text: context.l10n.priceColon,
                                                     style: kTextStyle.copyWith(color: kLightNeutralColor),
                                                     children: [
                                                       TextSpan(
@@ -223,7 +225,7 @@ class _SellerFavListState extends State<SellerFavList> {
                                                 const SizedBox(width: 5.0),
                                                 Expanded(
                                                   child: Text(
-                                                    seller?['name'] ?? 'Seller',
+                                                    seller?['name'] ?? context.l10n.freelancerDefault,
                                                     maxLines: 1,
                                                     overflow: TextOverflow.ellipsis,
                                                     style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),

@@ -1,42 +1,102 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
+import 'package:freelancer/services/report_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../widgets/constant.dart';
 
 class ClientReport extends StatefulWidget {
-  const ClientReport({Key? key}) : super(key: key);
+  const ClientReport({
+    Key? key,
+    this.reportedUserId,
+    this.initialProfileUrl,
+  }) : super(key: key);
+
+  /// When reporting from an order/chat, pass the seller (or other user) id.
+  final String? reportedUserId;
+  final String? initialProfileUrl;
 
   @override
   State<ClientReport> createState() => _ClientReportState();
 }
 
 class _ClientReportState extends State<ClientReport> {
-  DropdownButton<String> getReportType() {
-    List<DropdownMenuItem<String>> dropDownItems = [];
-    for (String des in reportTitle) {
-      var item = DropdownMenuItem(
-        value: des,
-        child: Text(des),
-      );
-      dropDownItems.add(item);
+  final _profileUrlController = TextEditingController();
+  final _contentUrlController = TextEditingController();
+  final _detailsController = TextEditingController();
+
+  late String _selectedReason;
+  bool _isSubmitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedReason = L10nLabels.reportCodes.first;
+    if (widget.initialProfileUrl != null) {
+      _profileUrlController.text = widget.initialProfileUrl!;
     }
-    return DropdownButton(
+  }
+
+  @override
+  void dispose() {
+    _profileUrlController.dispose();
+    _contentUrlController.dispose();
+    _detailsController.dispose();
+    super.dispose();
+  }
+
+  DropdownButton<String> _reasonDropdown(AppLocalizations l10n) {
+    return DropdownButton<String>(
       icon: const Icon(FeatherIcons.chevronDown),
-      items: dropDownItems,
-      value: selectedReportTitle,
+      items: L10nLabels.reportCodes
+          .map((code) => DropdownMenuItem(
+                value: code,
+                child: Text(L10nLabels.reportReason(l10n, code)),
+              ))
+          .toList(),
+      value: _selectedReason,
       style: kTextStyle.copyWith(color: kSubTitleColor),
-      onChanged: (value) {
-        setState(() {
-          selectedReportTitle = value!;
-        });
-      },
+      onChanged: _isSubmitting
+          ? null
+          : (value) {
+              if (value == null) return;
+              setState(() => _selectedReason = value);
+            },
     );
+  }
+
+  Future<void> _handleSend() async {
+    setState(() => _isSubmitting = true);
+    try {
+      await ReportService.createReport(
+        reportedUserId: widget.reportedUserId,
+        reason: _selectedReason,
+        details: _detailsController.text,
+        profileUrl: _profileUrlController.text,
+        contentUrl: _contentUrlController.text,
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.reportSubmitted)),
+      );
+      Navigator.pop(context);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Scaffold(
       backgroundColor: kDarkWhite,
       appBar: AppBar(
@@ -44,7 +104,7 @@ class _ClientReportState extends State<ClientReport> {
         elevation: 0,
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
-          'Report',
+          l10n.report,
           style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -54,34 +114,33 @@ class _ClientReportState extends State<ClientReport> {
         children: [
           Expanded(
             child: ButtonGlobalWithoutIcon(
-                buttontext: 'Cancel',
-                buttonDecoration: kButtonDecoration.copyWith(
-                  color: kWhite,
-                  borderRadius: BorderRadius.circular(30.0),
-                  border: Border.all(color: redColor),
-                ),
-                onPressed: () {},
-                buttonTextColor: redColor),
+              buttontext: l10n.cancel,
+              buttonDecoration: kButtonDecoration.copyWith(
+                color: kWhite,
+                borderRadius: BorderRadius.circular(30.0),
+                border: Border.all(color: redColor),
+              ),
+              onPressed: _isSubmitting ? null : () => Navigator.pop(context),
+              buttonTextColor: redColor,
+            ),
           ),
           Expanded(
             child: ButtonGlobalWithoutIcon(
-                buttontext: 'Send',
-                buttonDecoration: kButtonDecoration.copyWith(
-                  color: kPrimaryColor,
-                  borderRadius: BorderRadius.circular(30.0),
-                ),
-                onPressed: () {},
-                buttonTextColor: kWhite),
+              buttontext: _isSubmitting ? l10n.sending : l10n.send,
+              buttonDecoration: kButtonDecoration.copyWith(
+                color: _isSubmitting ? kLightNeutralColor : kPrimaryColor,
+                borderRadius: BorderRadius.circular(30.0),
+              ),
+              onPressed: _isSubmitting ? null : _handleSend,
+              buttonTextColor: kWhite,
+            ),
           ),
         ],
       ),
       body: Padding(
         padding: const EdgeInsets.only(top: 20.0),
         child: Container(
-          padding: const EdgeInsets.only(
-            left: 15.0,
-            right: 15.0,
-          ),
+          padding: const EdgeInsets.only(left: 15.0, right: 15.0),
           width: context.width(),
           decoration: const BoxDecoration(
             color: kWhite,
@@ -96,13 +155,14 @@ class _ClientReportState extends State<ClientReport> {
               children: [
                 const SizedBox(height: 30.0),
                 TextFormField(
-                  keyboardType: TextInputType.name,
+                  controller: _profileUrlController,
+                  keyboardType: TextInputType.url,
                   cursorColor: kNeutralColor,
                   textInputAction: TextInputAction.next,
                   decoration: kInputDecoration.copyWith(
-                    labelText: 'Seller Profile URL',
+                    labelText: l10n.reportSellerProfileUrl,
                     labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                    hintText: 'Enter seller profile url',
+                    hintText: l10n.reportEnterSellerProfileUrl,
                     hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
                     focusColor: kNeutralColor,
                     border: const OutlineInputBorder(),
@@ -114,29 +174,28 @@ class _ClientReportState extends State<ClientReport> {
                     return InputDecorator(
                       decoration: InputDecoration(
                         enabledBorder: const OutlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(8.0),
-                          ),
+                          borderRadius: BorderRadius.all(Radius.circular(8.0)),
                           borderSide: BorderSide(color: kBorderColorTextField, width: 2),
                         ),
                         contentPadding: const EdgeInsets.all(7.0),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
-                        labelText: 'Why do you want to report?',
+                        labelText: l10n.reportWhyQuestion,
                         labelStyle: kTextStyle.copyWith(color: kNeutralColor),
                       ),
-                      child: DropdownButtonHideUnderline(child: getReportType()),
+                      child: DropdownButtonHideUnderline(child: _reasonDropdown(l10n)),
                     );
                   },
                 ),
                 const SizedBox(height: 20.0),
                 TextFormField(
-                  keyboardType: TextInputType.name,
+                  controller: _contentUrlController,
+                  keyboardType: TextInputType.url,
                   cursorColor: kNeutralColor,
                   textInputAction: TextInputAction.next,
                   decoration: kInputDecoration.copyWith(
-                    labelText: 'URL of original content',
+                    labelText: l10n.reportOriginalContentUrl,
                     labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                    hintText: 'Enter post url',
+                    hintText: l10n.reportEnterPostUrl,
                     hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
                     focusColor: kNeutralColor,
                     border: const OutlineInputBorder(),
@@ -144,20 +203,22 @@ class _ClientReportState extends State<ClientReport> {
                 ),
                 const SizedBox(height: 20.0),
                 TextFormField(
+                  controller: _detailsController,
                   keyboardType: TextInputType.multiline,
                   maxLines: 3,
                   cursorColor: kNeutralColor,
-                  textInputAction: TextInputAction.next,
+                  textInputAction: TextInputAction.done,
                   decoration: kInputDecoration.copyWith(
-                    labelText: 'Additional information',
+                    labelText: l10n.reportAdditionalInfo,
                     labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                    hintText: 'Enter information...',
+                    hintText: l10n.reportEnterInformation,
                     hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
                     focusColor: kNeutralColor,
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     border: const OutlineInputBorder(),
                   ),
                 ),
+                const SizedBox(height: 24.0),
               ],
             ),
           ),

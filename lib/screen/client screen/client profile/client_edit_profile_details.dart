@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/services/profile_service.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -79,14 +81,14 @@ class _ClientEditProfileState extends State<ClientEditProfile> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profile updated successfully!')),
+          SnackBar(content: Text(context.l10n.profileUpdated)),
         );
         Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
     } finally {
@@ -96,6 +98,7 @@ class _ClientEditProfileState extends State<ClientEditProfile> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     if (_isLoading) {
       return const Scaffold(
         backgroundColor: kDarkWhite,
@@ -110,7 +113,7 @@ class _ClientEditProfileState extends State<ClientEditProfile> {
         elevation: 0,
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
-          'Edit Profile',
+          l10n.editProfile,
           style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -157,13 +160,13 @@ class _ClientEditProfileState extends State<ClientEditProfile> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          _nameController.text.isEmpty ? 'User' : _nameController.text,
+                          _nameController.text.isEmpty ? l10n.userName : _nameController.text,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 18.0),
                         ),
                         Text(
-                          'Edit your profile details',
+                          l10n.editProfileSubtitle,
                           style: kTextStyle.copyWith(color: kSubTitleColor),
                         ),
                       ],
@@ -178,9 +181,9 @@ class _ClientEditProfileState extends State<ClientEditProfile> {
                   cursorColor: kNeutralColor,
                   textInputAction: TextInputAction.next,
                   decoration: kInputDecoration.copyWith(
-                    labelText: 'Full Name',
+                    labelText: l10n.fullName,
                     labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                    hintText: 'Enter your name',
+                    hintText: l10n.enterYourName,
                     hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
                     focusColor: kNeutralColor,
                     border: const OutlineInputBorder(),
@@ -193,8 +196,8 @@ class _ClientEditProfileState extends State<ClientEditProfile> {
                   cursorColor: kNeutralColor,
                   textInputAction: TextInputAction.next,
                   decoration: kInputDecoration.copyWith(
-                    labelText: 'Phone No.',
-                    hintText: 'Enter Phone No.',
+                    labelText: l10n.phoneNo,
+                    hintText: l10n.enterPhoneNo,
                     hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
                     focusColor: kNeutralColor,
                     border: const OutlineInputBorder(),
@@ -212,9 +215,9 @@ class _ClientEditProfileState extends State<ClientEditProfile> {
                   maxLines: 4,
                   cursorColor: kNeutralColor,
                   decoration: kInputDecoration.copyWith(
-                    labelText: 'About your company',
+                    labelText: l10n.aboutYourCompany,
                     labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                    hintText: 'Short intro for freelancers viewing your jobs…',
+                    hintText: l10n.aboutCompanyHint,
                     hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
                     alignLabelWithHint: true,
                     border: const OutlineInputBorder(),
@@ -231,7 +234,7 @@ class _ClientEditProfileState extends State<ClientEditProfile> {
                         ),
                         contentPadding: const EdgeInsets.all(7.0),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
-                        labelText: 'Select Gender',
+                        labelText: l10n.selectGender,
                         labelStyle: kTextStyle.copyWith(color: kNeutralColor),
                       ),
                       child: DropdownButtonHideUnderline(
@@ -239,7 +242,14 @@ class _ClientEditProfileState extends State<ClientEditProfile> {
                           icon: const Icon(FeatherIcons.chevronDown),
                           value: gender.contains(_selectedGender) ? _selectedGender : gender.first,
                           style: kTextStyle.copyWith(color: kSubTitleColor),
-                          items: gender.map((g) => DropdownMenuItem(value: g, child: Text(g))).toList(),
+                          items: gender
+                              .map(
+                                (g) => DropdownMenuItem(
+                                  value: g,
+                                  child: Text(L10nLabels.gender(l10n, g)),
+                                ),
+                              )
+                              .toList(),
                           onChanged: (value) {
                             setState(() => _selectedGender = value!);
                           },
@@ -257,7 +267,7 @@ class _ClientEditProfileState extends State<ClientEditProfile> {
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(color: kWhite),
         child: ButtonGlobalWithoutIcon(
-          buttontext: _isSaving ? 'Updating...' : 'Update Profile',
+          buttontext: _isSaving ? l10n.updating : l10n.updateProfile,
           buttonDecoration: kButtonDecoration.copyWith(
             color: _isSaving ? kLightNeutralColor : kPrimaryColor,
             borderRadius: BorderRadius.circular(30.0),

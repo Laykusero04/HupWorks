@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/services/client_home_service.dart';
 import 'package:freelancer/services/profile_service.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -52,7 +53,7 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
       if (mounted) {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not load profile: $e')),
+          SnackBar(content: Text(context.l10n.couldNotLoadProfile('$e'))),
         );
       }
     }
@@ -66,7 +67,7 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
       await ClientServiceDetails(serviceId: serviceId).launch(context);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No active service listing yet.')),
+        SnackBar(content: Text(context.l10n.noActiveServiceListing)),
       );
     }
   }

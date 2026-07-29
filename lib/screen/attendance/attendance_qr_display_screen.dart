@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/services/attendance_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -50,23 +51,22 @@ class _AttendanceQrDisplayScreenState extends State<AttendanceQrDisplayScreen> {
       if (mounted) {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
     }
   }
 
   Future<void> _regenerate() async {
+    final l10n = context.l10n;
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Regenerate QR?'),
-        content: const Text(
-          'The old printed QR will stop working. Print and post the new code at your site.',
-        ),
+        title: Text(l10n.regenerateQrConfirmTitle),
+        content: Text(l10n.regenerateQrConfirmBody),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Regenerate')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text(l10n.regenerate)),
         ],
       ),
     );
@@ -82,14 +82,14 @@ class _AttendanceQrDisplayScreenState extends State<AttendanceQrDisplayScreen> {
           _isRegenerating = false;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('New attendance QR ready')),
+          SnackBar(content: Text(l10n.attendanceNewQrReady)),
         );
       }
     } catch (e) {
       if (mounted) {
         setState(() => _isRegenerating = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
     }
@@ -108,6 +108,7 @@ class _AttendanceQrDisplayScreenState extends State<AttendanceQrDisplayScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Scaffold(
       backgroundColor: kDarkWhite,
       appBar: AppBar(
@@ -115,7 +116,7 @@ class _AttendanceQrDisplayScreenState extends State<AttendanceQrDisplayScreen> {
         elevation: 0,
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
-          'Attendance QR',
+          l10n.attendanceQrScreenTitle,
           style: kTextStyle.copyWith(
             color: kNeutralColor,
             fontWeight: FontWeight.bold,
@@ -140,7 +141,7 @@ class _AttendanceQrDisplayScreenState extends State<AttendanceQrDisplayScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Print this QR and post it where workers check in.',
+                    l10n.attendancePrintQrAtSite,
                     textAlign: TextAlign.center,
                     style: kTextStyle.copyWith(color: kSubTitleColor),
                   ),
@@ -162,7 +163,7 @@ class _AttendanceQrDisplayScreenState extends State<AttendanceQrDisplayScreen> {
                     )
                   else
                     Text(
-                      'Could not load QR',
+                      l10n.attendanceCouldNotLoadQr,
                       style: kTextStyle.copyWith(color: kSubTitleColor),
                     ),
                   const SizedBox(height: 24),
@@ -170,7 +171,7 @@ class _AttendanceQrDisplayScreenState extends State<AttendanceQrDisplayScreen> {
                     const CircularProgressIndicator(color: kPrimaryColor)
                   else ...[
                     ButtonGlobalWithoutIcon(
-                      buttontext: 'Share / Print instructions',
+                      buttontext: l10n.attendanceSharePrintInstructions,
                       buttonDecoration:
                           kButtonDecoration.copyWith(color: kPrimaryColor),
                       buttonTextColor: kWhite,
@@ -178,7 +179,7 @@ class _AttendanceQrDisplayScreenState extends State<AttendanceQrDisplayScreen> {
                     ),
                     const SizedBox(height: 12),
                     ButtonGlobalWithoutIcon(
-                      buttontext: 'Regenerate QR',
+                      buttontext: l10n.regenerateQr,
                       buttonDecoration: kButtonDecoration.copyWith(
                         color: kWhite,
                         border: Border.all(color: kPrimaryColor),
@@ -199,7 +200,7 @@ class _AttendanceQrDisplayScreenState extends State<AttendanceQrDisplayScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'How it works',
+                          l10n.attendanceHowItWorks,
                           style: kTextStyle.copyWith(
                             fontWeight: FontWeight.bold,
                             color: const Color(0xFF2E7D32),
@@ -207,10 +208,7 @@ class _AttendanceQrDisplayScreenState extends State<AttendanceQrDisplayScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          '1. Print and tape this QR at the workplace.\n'
-                          '2. Hired freelancers open HupWorks and scan it.\n'
-                          '3. They confirm clock in or clock out on their phone.\n'
-                          '4. You can view today\'s attendance on the job details screen.',
+                          l10n.attendanceHowItWorksBody,
                           style: kTextStyle.copyWith(
                             color: const Color(0xFF2E7D32),
                             fontSize: 13,

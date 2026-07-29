@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/utils/app_logger.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/services/attendance_service.dart';
 import 'package:freelancer/services/job_posts_service.dart';
 import 'package:go_router/go_router.dart';
@@ -38,7 +40,10 @@ class _AttendanceScanScreenState extends State<AttendanceScanScreen> {
       if (mounted) {
         setState(() => _hintTitle = post['title'] as String?);
       }
-    } catch (_) {}
+    } catch (e, st) {
+      AppLogger.error('AttendanceScan.loadHint', e, st);
+      // Hint title is optional — scanner still works without it.
+    }
   }
 
   @override
@@ -84,7 +89,7 @@ class _AttendanceScanScreenState extends State<AttendanceScanScreen> {
       if (mounted) {
         setState(() => _isProcessing = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$e')),
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
         await _controller.start();
       }
@@ -93,12 +98,13 @@ class _AttendanceScanScreenState extends State<AttendanceScanScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.black,
         foregroundColor: kWhite,
-        title: const Text('Scan attendance QR'),
+        title: Text(l10n.scanAttendanceQr),
         centerTitle: true,
       ),
       body: Stack(
@@ -123,7 +129,7 @@ class _AttendanceScanScreenState extends State<AttendanceScanScreen> {
                 children: [
                   if (_hintTitle != null) ...[
                     Text(
-                      'Scanning for: $_hintTitle',
+                      l10n.attendanceScanningForJob(_hintTitle!),
                       textAlign: TextAlign.center,
                       style: kTextStyle.copyWith(
                         color: kWhite,
@@ -135,8 +141,8 @@ class _AttendanceScanScreenState extends State<AttendanceScanScreen> {
                   ],
                   Text(
                     _isProcessing
-                        ? 'Loading job details…'
-                        : 'Point your camera at the attendance QR posted at the job site.',
+                        ? l10n.attendanceScanLoadingDetails
+                        : l10n.attendanceScanCameraHint,
                     textAlign: TextAlign.center,
                     style: kTextStyle.copyWith(color: kWhite, fontSize: 14),
                   ),
@@ -146,7 +152,7 @@ class _AttendanceScanScreenState extends State<AttendanceScanScreen> {
                         ? null
                         : () => context.push('/seller/attendance'),
                     child: Text(
-                      'View my on-site jobs',
+                      l10n.viewMyOnsiteJobs,
                       style: kTextStyle.copyWith(
                         color: kWhite,
                         fontWeight: FontWeight.w600,

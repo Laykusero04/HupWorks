@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/core/utils/app_logger.dart';
 import 'package:freelancer/services/job_posts_service.dart';
 import 'package:freelancer/services/seller_orders_service.dart';
 import 'package:freelancer/services/skill_service.dart';
@@ -51,7 +53,14 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
     try {
       final skills = await SkillService.listForPicker();
       if (mounted) setState(() => _skillCatalog = skills);
-    } catch (_) {}
+    } catch (e, st) {
+      AppLogger.error('SellerBuyerRequest.loadSkillCatalog', e, st);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.couldNotLoadSkillsFilter)),
+        );
+      }
+    }
   }
 
   Future<void> _loadRequests() async {
@@ -67,7 +76,7 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
       if (mounted) {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
     }
@@ -333,7 +342,7 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
                                 side: const BorderSide(color: kBorderColorTextField),
                                 minimumSize: const Size(0, 46),
                               ),
-                              child: const Text('Clear'),
+                              child: Text(context.l10n.filterClear),
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -350,7 +359,7 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
                                 backgroundColor: primary,
                                 minimumSize: const Size(0, 46),
                               ),
-                              child: const Text('Apply'),
+                              child: Text(context.l10n.filterApply),
                             ),
                           ),
                         ],
@@ -726,7 +735,7 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
                     _skillFilter = null;
                   });
                 },
-                child: const Text('Clear filters'),
+                child: Text(context.l10n.clearFilters),
               ),
             ],
           ],

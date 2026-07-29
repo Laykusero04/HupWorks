@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/services/seller_orders_service.dart';
 import 'package:image_picker/image_picker.dart';
@@ -40,7 +41,7 @@ class _SellerDeliverOrderState extends State<SellerDeliverOrder> {
   Future<void> _handleSend() async {
     final message = _messageController.text.trim();
     if (message.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please describe your delivery')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.pleaseDescribeDelivery)));
       return;
     }
 
@@ -54,11 +55,11 @@ class _SellerDeliverOrderState extends State<SellerDeliverOrder> {
       );
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Order delivered successfully!')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.orderDeliveredSuccess)));
         Navigator.pop(context);
       }
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.errorWithDetail('$e'))));
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
@@ -66,11 +67,12 @@ class _SellerDeliverOrderState extends State<SellerDeliverOrder> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Scaffold(
       backgroundColor: kDarkWhite,
       appBar: AppBar(
         backgroundColor: kDarkWhite, elevation: 0, iconTheme: const IconThemeData(color: kNeutralColor),
-        title: Text('Deliver Order', style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)), centerTitle: true,
+        title: Text(l10n.deliverOrderTitle, style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)), centerTitle: true,
       ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(color: kWhite),
@@ -125,7 +127,7 @@ class _SellerDeliverOrderState extends State<SellerDeliverOrder> {
                     ),
                   ),
                 const SizedBox(height: 5.0),
-                Text('Max size 1 GB', style: kTextStyle.copyWith(color: kLightNeutralColor)),
+                Text(l10n.maxSize1Gb, style: kTextStyle.copyWith(color: kLightNeutralColor)),
                 const SizedBox(height: 20.0),
 
                 // Delivery message

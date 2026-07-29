@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/services/job_posts_service.dart';
 import 'package:freelancer/services/seller_orders_service.dart';
@@ -461,19 +462,19 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
                               items: [
                                 DropdownMenuItem(
                                   value: JobPostsService.budgetBasisFixed,
-                                  child: Text('Total', style: kTextStyle.copyWith(fontSize: 13)),
+                                  child: Text(context.l10n.quoteTotal, style: kTextStyle.copyWith(fontSize: 13)),
                                 ),
                                 DropdownMenuItem(
                                   value: JobPostsService.budgetBasisPerHour,
-                                  child: Text('/ hour', style: kTextStyle.copyWith(fontSize: 13)),
+                                  child: Text(context.l10n.quotePerHour, style: kTextStyle.copyWith(fontSize: 13)),
                                 ),
                                 DropdownMenuItem(
                                   value: JobPostsService.budgetBasisPerDay,
-                                  child: Text('/ day', style: kTextStyle.copyWith(fontSize: 13)),
+                                  child: Text(context.l10n.quotePerDay, style: kTextStyle.copyWith(fontSize: 13)),
                                 ),
                                 DropdownMenuItem(
                                   value: JobPostsService.budgetBasisPerMonth,
-                                  child: Text('/ month', style: kTextStyle.copyWith(fontSize: 13)),
+                                  child: Text(context.l10n.quotePerMonth, style: kTextStyle.copyWith(fontSize: 13)),
                                 ),
                               ],
                               onChanged: (v) {

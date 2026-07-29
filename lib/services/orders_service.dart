@@ -1,3 +1,4 @@
+import 'package:freelancer/core/utils/app_logger.dart';
 import 'package:freelancer/services/profile_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -198,6 +199,8 @@ class OrdersService {
   static Future<void> expireStaleCancellationRequests() async {
     try {
       await _client.rpc('expire_stale_cancellation_requests');
-    } catch (_) {}
+    } catch (e, st) {
+      AppLogger.error('OrdersService.expireStaleCancellationRequests', e, st);
+    }
   }
 }

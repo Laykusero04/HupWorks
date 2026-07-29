@@ -2,11 +2,16 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:nb_utils/nb_utils.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../services/auth_service.dart';
 import '../../../services/chat_service.dart';
+import '../../client screen/client report/client_report.dart';
+import '../report/seller_report.dart';
 import '../seller popUp/seller_popup.dart';
 import 'model/chat_model.dart';
 
@@ -14,12 +19,14 @@ class ChatInbox extends StatefulWidget {
   final String conversationId;
   final String otherUserName;
   final String otherUserImage;
+  final String? otherUserId;
 
   const ChatInbox({
     super.key,
     required this.conversationId,
     required this.otherUserName,
     required this.otherUserImage,
+    this.otherUserId,
   });
 
   @override
@@ -89,7 +96,7 @@ class _ChatInboxState extends State<ChatInbox> {
       if (mounted) {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load messages: $e')),
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
     }
@@ -99,6 +106,22 @@ class _ChatInboxState extends State<ChatInbox> {
     _messageChannel = ChatService.subscribeToMessages(
       conversationId: widget.conversationId,
       onNewMessage: (newRecord) async {
+        // If this incoming message was sent by us, drop the matching pending
+        // bubble BEFORE the list rebuild so there is no flicker: the pending
+        // entry vanishes at the same frame the real server copy appears.
+        final senderId = newRecord['sender_id'] as String?;
+        final content = newRecord['content'] as String? ?? '';
+        if (senderId == _currentUserId && mounted) {
+          setState(() {
+            _pendingMessages.removeWhere(
+              (m) =>
+                  m.status == _PendingStatus.sending &&
+                  m.content == content &&
+                  m.attachmentUrl == (newRecord['attachment_url'] as String?),
+            );
+          });
+        }
+
         final data = await ChatService.getMessages(widget.conversationId);
         if (mounted) {
           setState(() {
@@ -157,21 +180,27 @@ class _ChatInboxState extends State<ChatInbox> {
         content: pending.content,
         attachmentUrl: pending.attachmentUrl,
       );
-      // The realtime subscription will refetch and bring the real row in.
-      // We optimistically drop the pending entry now; if realtime is slow,
-      // the bubble simply disappears here and reappears as the server copy.
-      if (mounted) {
-        setState(() {
-          _pendingMessages
-              .removeWhere((m) => m.tempId == pending.tempId);
-        });
-      }
-    } catch (_) {
-      if (mounted) {
-        setState(() {
-          pending.status = _PendingStatus.failed;
-        });
-      }
+      // Success: the realtime subscription's onNewMessage will drop the
+      // pending bubble and insert the confirmed server copy in one setState,
+      // eliminating the double-render flicker. We intentionally do NOT remove
+      // the pending entry here.
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => pending.status = _PendingStatus.failed);
+      // Show a clear toast so the failure is noticed even if the user has
+      // scrolled away from the failed bubble.
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(context.l10n.chatSendFailed),
+          action: SnackBarAction(
+            label: context.l10n.retry,
+            onPressed: () => _retryPending(pending),
+          ),
+          backgroundColor: const Color(0xFFDC2626),
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 5),
+        ),
+      );
     }
   }
 
@@ -212,7 +241,7 @@ class _ChatInboxState extends State<ChatInbox> {
       if (mounted) {
         setState(() => _isUploadingAttachment = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to send attachment: $e')),
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
     }
@@ -232,24 +261,24 @@ class _ChatInboxState extends State<ChatInbox> {
     );
   }
 
-  String _formatMessageTime(DateTime dateTime) {
-    final hour = dateTime.hour;
-    final minute = dateTime.minute.toString().padLeft(2, '0');
-    final period = hour >= 12 ? 'PM' : 'AM';
-    final displayHour = hour == 0 ? 12 : (hour > 12 ? hour - 12 : hour);
-    return '$displayHour:$minute $period';
+  String _formatMessageTime(BuildContext context, DateTime dateTime) {
+    return MaterialLocalizations.of(context).formatTimeOfDay(
+      TimeOfDay.fromDateTime(dateTime),
+      alwaysUse24HourFormat: MediaQuery.alwaysUse24HourFormatOf(context),
+    );
   }
 
-  String _formatDateHeader(DateTime dateTime) {
+  String _formatDateHeader(BuildContext context, DateTime dateTime) {
+    final l10n = context.l10n;
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final messageDate = DateTime(dateTime.year, dateTime.month, dateTime.day);
 
-    if (messageDate == today) return 'Today';
+    if (messageDate == today) return l10n.calendarToday;
     if (messageDate == today.subtract(const Duration(days: 1))) {
-      return 'Yesterday';
+      return l10n.calendarYesterday;
     }
-    return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
+    return MaterialLocalizations.of(context).formatShortDate(dateTime);
   }
 
   bool _isSameDay(DateTime a, DateTime b) =>
@@ -303,6 +332,7 @@ class _ChatInboxState extends State<ChatInbox> {
 
   // ---------------------------------------------------------------- App bar
   PreferredSizeWidget _buildAppBar() {
+    final l10n = context.l10n;
     return AppBar(
       backgroundColor: kWhite,
       surfaceTintColor: kWhite,
@@ -359,7 +389,7 @@ class _ChatInboxState extends State<ChatInbox> {
                       const Icon(Icons.block_rounded,
                           size: 18, color: kNeutralColor),
                       const SizedBox(width: 10),
-                      Text('Block',
+                      Text(l10n.block,
                           style: kTextStyle.copyWith(color: kNeutralColor)),
                     ],
                   ),
@@ -371,7 +401,7 @@ class _ChatInboxState extends State<ChatInbox> {
                       const Icon(Icons.flag_outlined,
                           size: 18, color: kNeutralColor),
                       const SizedBox(width: 10),
-                      Text('Report',
+                      Text(l10n.report,
                           style: kTextStyle.copyWith(color: kNeutralColor)),
                     ],
                   ),
@@ -380,6 +410,8 @@ class _ChatInboxState extends State<ChatInbox> {
               onSelected: (value) {
                 if (value == 'block') {
                   Future.delayed(Duration.zero, _showBlockPopUp);
+                } else if (value == 'report') {
+                  Future.delayed(Duration.zero, _openReport);
                 }
               },
             ),
@@ -391,6 +423,22 @@ class _ChatInboxState extends State<ChatInbox> {
         child: Container(height: 1, color: kBorderColorTextField),
       ),
     );
+  }
+
+  Future<void> _openReport() async {
+    final otherId = widget.otherUserId;
+    try {
+      final role = await AuthService.getUserRole();
+      if (!mounted) return;
+      if (role == 'seller') {
+        SellerReport(reportedUserId: otherId).launch(context);
+      } else {
+        ClientReport(reportedUserId: otherId).launch(context);
+      }
+    } catch (_) {
+      if (!mounted) return;
+      ClientReport(reportedUserId: otherId).launch(context);
+    }
   }
 
   Widget _appBarAvatar() {
@@ -427,6 +475,7 @@ class _ChatInboxState extends State<ChatInbox> {
 
   // ---------------------------------------------------------------- Empty
   Widget _buildEmptyState() {
+    final l10n = context.l10n;
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -444,7 +493,7 @@ class _ChatInboxState extends State<ChatInbox> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Say hello to ${widget.otherUserName}',
+              l10n.sayHelloTo(widget.otherUserName),
               textAlign: TextAlign.center,
               style: kTextStyle.copyWith(
                 color: kNeutralColor,
@@ -454,7 +503,7 @@ class _ChatInboxState extends State<ChatInbox> {
             ),
             const SizedBox(height: 6),
             Text(
-              'Start a conversation by sending your first message',
+              l10n.startConversationFirstMessage,
               textAlign: TextAlign.center,
               style: kTextStyle.copyWith(
                 color: kLightNeutralColor,
@@ -497,7 +546,7 @@ class _ChatInboxState extends State<ChatInbox> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (showDateHeader) _dateHeader(message.createdAt),
+        if (showDateHeader) _dateHeader(context, message.createdAt),
         _buildMessageBubble(
           message,
           isMine: isMine,
@@ -508,7 +557,7 @@ class _ChatInboxState extends State<ChatInbox> {
     );
   }
 
-  Widget _dateHeader(DateTime date) {
+  Widget _dateHeader(BuildContext context, DateTime date) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Center(
@@ -520,7 +569,7 @@ class _ChatInboxState extends State<ChatInbox> {
             border: Border.all(color: kBorderColorTextField),
           ),
           child: Text(
-            _formatDateHeader(date),
+            _formatDateHeader(context, date),
             style: kTextStyle.copyWith(
               color: kLightNeutralColor,
               fontWeight: FontWeight.w600,
@@ -621,7 +670,7 @@ class _ChatInboxState extends State<ChatInbox> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          _formatMessageTime(message.createdAt),
+                          _formatMessageTime(context, message.createdAt),
                           style: kTextStyle.copyWith(
                             color: kLightNeutralColor,
                             fontSize: 10,
@@ -653,6 +702,7 @@ class _ChatInboxState extends State<ChatInbox> {
   }
 
   Widget _bubbleContent(Message message, bool isMine) {
+    final l10n = context.l10n;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -703,7 +753,7 @@ class _ChatInboxState extends State<ChatInbox> {
                       size: 18),
                   const SizedBox(width: 6),
                   Text(
-                    'Attachment',
+                    l10n.chatAttachment,
                     style: kTextStyle.copyWith(
                       color: isMine ? Colors.white : kPrimaryColor,
                       fontWeight: FontWeight.w600,
@@ -761,6 +811,7 @@ class _ChatInboxState extends State<ChatInbox> {
 
   // ---------------------------------------------------------------- Input
   Widget _buildMessageInput() {
+    final l10n = context.l10n;
     return SafeArea(
       top: false,
       child: Padding(
@@ -826,7 +877,7 @@ class _ChatInboxState extends State<ChatInbox> {
                       isCollapsed: true,
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 6, vertical: 12),
-                      hintText: 'Type a message...',
+                      hintText: l10n.typeAMessage,
                       hintStyle: kTextStyle.copyWith(
                         color: kLightNeutralColor,
                         fontSize: 14,
@@ -893,6 +944,7 @@ class _ChatInboxState extends State<ChatInbox> {
   // ---------------------------------------------------------------- Pending bubble
   Widget _buildPendingBubble(_PendingMessage pending,
       {required bool isFirstPending}) {
+    final l10n = context.l10n;
     final maxWidth = MediaQuery.of(context).size.width * 0.72;
     final isFailed = pending.status == _PendingStatus.failed;
     final radius = const Radius.circular(18);
@@ -992,7 +1044,7 @@ class _ChatInboxState extends State<ChatInbox> {
                                   size: 14, color: Color(0xFFEF4444)),
                               const SizedBox(width: 4),
                               Text(
-                                'Failed — Tap to retry',
+                                l10n.failedTapToRetry,
                                 style: kTextStyle.copyWith(
                                   color: const Color(0xFFEF4444),
                                   fontSize: 10,
@@ -1016,7 +1068,7 @@ class _ChatInboxState extends State<ChatInbox> {
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              'Sending...',
+                              l10n.sending,
                               style: kTextStyle.copyWith(
                                 color: kLightNeutralColor,
                                 fontSize: 10,
@@ -1139,7 +1191,7 @@ class _ChatInboxState extends State<ChatInbox> {
                               child: const Icon(Icons.assignment_outlined, color: kWhite, size: 14),
                             ),
                             const SizedBox(width: 8),
-                            Text('Bid Offer',
+                            Text(context.l10n.bidOfferLabel,
                                 style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold, fontSize: 13, letterSpacing: 0.3)),
                           ],
                         ),
@@ -1176,7 +1228,7 @@ class _ChatInboxState extends State<ChatInbox> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text('PROPOSAL',
+                                    Text(context.l10n.proposalCaps,
                                         style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 0.5)),
                                     const SizedBox(height: 4),
                                     Text(bid.proposal!,
@@ -1195,7 +1247,7 @@ class _ChatInboxState extends State<ChatInbox> {
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(_formatMessageTime(message.createdAt),
+                    Text(_formatMessageTime(context, message.createdAt),
                         style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 11)),
                     if (isMine) ...[
                       const SizedBox(width: 4),

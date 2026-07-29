@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -17,6 +18,7 @@ class ProcessingPopUp extends StatefulWidget {
 class _ProcessingPopUpState extends State<ProcessingPopUp> {
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: SingleChildScrollView(
@@ -37,14 +39,14 @@ class _ProcessingPopUpState extends State<ProcessingPopUp> {
             ),
             const SizedBox(height: 20.0),
             Text(
-              'We’re processing\nyour Order',
+              l10n.processingOrder,
               maxLines: 2,
               textAlign: TextAlign.center,
               style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 18.0),
             ),
             const SizedBox(height: 10.0),
             Text(
-              'Stay tuned...',
+              l10n.stayTuned,
               maxLines: 2,
               textAlign: TextAlign.center,
               style: kTextStyle.copyWith(color: kLightNeutralColor),
@@ -66,6 +68,7 @@ class UploadRequirementsPopUp extends StatefulWidget {
 class _UploadRequirementsPopUpState extends State<UploadRequirementsPopUp> {
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Padding(
       padding: const EdgeInsets.all(15.0),
       child: SingleChildScrollView(
@@ -77,7 +80,7 @@ class _UploadRequirementsPopUpState extends State<UploadRequirementsPopUp> {
             Row(
               children: [
                 Text(
-                  'Choose your Action',
+                  l10n.chooseYourAction,
                   style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
                 ),
                 const Spacer(),
@@ -100,7 +103,7 @@ class _UploadRequirementsPopUpState extends State<UploadRequirementsPopUp> {
                     ),
                     const SizedBox(height: 10.0),
                     Text(
-                      'Open Gallery',
+                      l10n.openGallery,
                       style: kTextStyle.copyWith(color: kPrimaryColor),
                     ),
                   ],
@@ -115,7 +118,7 @@ class _UploadRequirementsPopUpState extends State<UploadRequirementsPopUp> {
                     ),
                     const SizedBox(height: 10.0),
                     Text(
-                      'Open File',
+                      l10n.openFile,
                       style: kTextStyle.copyWith(color: kLightNeutralColor),
                     ),
                   ],
@@ -140,6 +143,7 @@ class UploadCompletePopUp extends StatefulWidget {
 class _UploadCompletePopUpState extends State<UploadCompletePopUp> {
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Padding(
       padding: const EdgeInsets.all(15.0),
       child: SingleChildScrollView(
@@ -158,12 +162,12 @@ class _UploadCompletePopUpState extends State<UploadCompletePopUp> {
             ),
             const SizedBox(height: 15.0),
             Text(
-              'Congratulations!',
+              l10n.congratulations,
               style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 18.0),
             ),
             const SizedBox(height: 10.0),
             Text(
-              'Your profile is successfully completed. You can more changes after it\'s live.',
+              l10n.profileSetupCompleteBody,
               style: kTextStyle.copyWith(color: kLightNeutralColor),
               textAlign: TextAlign.center,
             ),
@@ -171,7 +175,7 @@ class _UploadCompletePopUpState extends State<UploadCompletePopUp> {
             Button(
               containerBg: kPrimaryColor,
               borderColor: Colors.transparent,
-              buttonText: 'Done',
+              buttonText: l10n.done,
               textColor: kWhite,
               onPressed: () {
                 Navigator.of(context).pop();
@@ -194,6 +198,7 @@ class CancelJobPopUp extends StatefulWidget {
 class _CancelJobPopUpState extends State<CancelJobPopUp> {
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Padding(
       padding: const EdgeInsets.all(15.0),
       child: SingleChildScrollView(
@@ -207,7 +212,7 @@ class _CancelJobPopUpState extends State<CancelJobPopUp> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Are You Sure Cancel Your\nJob Post!',
+                  l10n.cancelJobConfirmTitle,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
@@ -232,7 +237,7 @@ class _CancelJobPopUpState extends State<CancelJobPopUp> {
                   child: Button(
                     containerBg: kWhite,
                     borderColor: redColor,
-                    buttonText: 'No',
+                    buttonText: l10n.noLabel,
                     textColor: Colors.red,
                     onPressed: () {
                       setState(() {
@@ -245,7 +250,7 @@ class _CancelJobPopUpState extends State<CancelJobPopUp> {
                   child: Button(
                     containerBg: kPrimaryColor,
                     borderColor: Colors.transparent,
-                    buttonText: 'Yes',
+                    buttonText: l10n.yesLabel,
                     textColor: kWhite,
                     onPressed: () {
                       setState(() {
@@ -273,6 +278,7 @@ class CancelOrderPopUp extends StatefulWidget {
 class _CancelOrderPopUpState extends State<CancelOrderPopUp> {
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Padding(
       padding: const EdgeInsets.all(15.0),
       child: SingleChildScrollView(
@@ -282,7 +288,7 @@ class _CancelOrderPopUpState extends State<CancelOrderPopUp> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Why are you Cancel Order?',
+              l10n.cancelOrderWhy,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
@@ -299,7 +305,7 @@ class _CancelOrderPopUpState extends State<CancelOrderPopUp> {
               maxLines: 2,
               cursorColor: kNeutralColor,
               textInputAction: TextInputAction.next,
-              decoration: kInputDecoration.copyWith(labelText: 'Enter Reason', labelStyle: kTextStyle.copyWith(color: kNeutralColor), hintText: 'Lorem ipsum dolor sit amet, cons ectetur adipiscing elit.', hintStyle: kTextStyle.copyWith(color: kSubTitleColor), focusColor: kNeutralColor, border: const OutlineInputBorder(), floatingLabelBehavior: FloatingLabelBehavior.always),
+              decoration: kInputDecoration.copyWith(labelText: l10n.enterReason, labelStyle: kTextStyle.copyWith(color: kNeutralColor), hintText: '', hintStyle: kTextStyle.copyWith(color: kSubTitleColor), focusColor: kNeutralColor, border: const OutlineInputBorder(), floatingLabelBehavior: FloatingLabelBehavior.always),
             ),
             const SizedBox(height: 10.0),
             Row(
@@ -308,7 +314,7 @@ class _CancelOrderPopUpState extends State<CancelOrderPopUp> {
                   child: Button(
                     containerBg: kWhite,
                     borderColor: redColor,
-                    buttonText: 'Cancel',
+                    buttonText: l10n.cancel,
                     textColor: Colors.red,
                     onPressed: () {
                       setState(() {
@@ -321,7 +327,7 @@ class _CancelOrderPopUpState extends State<CancelOrderPopUp> {
                   child: Button(
                     containerBg: kPrimaryColor,
                     borderColor: Colors.transparent,
-                    buttonText: 'Confirm',
+                    buttonText: l10n.confirm,
                     textColor: kWhite,
                     onPressed: () {
                       setState(() {

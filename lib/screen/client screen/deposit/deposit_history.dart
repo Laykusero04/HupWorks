@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/services/transaction_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -34,7 +35,7 @@ class _DepositHistoryState extends State<DepositHistory> {
       if (mounted) {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
     }
@@ -68,6 +69,7 @@ class _DepositHistoryState extends State<DepositHistory> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Scaffold(
       backgroundColor: kDarkWhite,
       appBar: AppBar(
@@ -75,7 +77,7 @@ class _DepositHistoryState extends State<DepositHistory> {
         elevation: 0,
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
-          'Deposit History',
+          context.l10n.depositHistory,
           style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -96,7 +98,7 @@ class _DepositHistoryState extends State<DepositHistory> {
               ? const Center(child: CircularProgressIndicator(color: kPrimaryColor))
               : _deposits.isEmpty
                   ? Center(
-                      child: Text('No deposit history', style: kTextStyle.copyWith(color: kLightNeutralColor)),
+                      child: Text(l10n.noDepositHistory, style: kTextStyle.copyWith(color: kLightNeutralColor)),
                     )
                   : RefreshIndicator(
                       color: kPrimaryColor,

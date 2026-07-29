@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/services/profile_service.dart';
 
 import '../../widgets/constant.dart';
@@ -50,7 +51,7 @@ class _ClientPublicProfileState extends State<ClientPublicProfile> {
       if (mounted) {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not load profile: $e')),
+          SnackBar(content: Text(context.l10n.couldNotLoadProfile('$e'))),
         );
       }
     }

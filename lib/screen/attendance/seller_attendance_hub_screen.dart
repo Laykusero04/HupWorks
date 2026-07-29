@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/services/attendance_service.dart';
 import 'package:go_router/go_router.dart';
 
@@ -40,7 +41,7 @@ class _SellerAttendanceHubScreenState extends State<SellerAttendanceHubScreen> {
       if (mounted) {
         setState(() => _loading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
     }
@@ -48,6 +49,7 @@ class _SellerAttendanceHubScreenState extends State<SellerAttendanceHubScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Scaffold(
       backgroundColor: kDarkWhite,
       appBar: AppBar(
@@ -55,7 +57,7 @@ class _SellerAttendanceHubScreenState extends State<SellerAttendanceHubScreen> {
         elevation: 0,
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
-          'Attendance',
+          l10n.attendance,
           style: kTextStyle.copyWith(
             color: kNeutralColor,
             fontWeight: FontWeight.bold,
@@ -65,7 +67,7 @@ class _SellerAttendanceHubScreenState extends State<SellerAttendanceHubScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.qr_code_scanner, color: Color(0xFF2E7D32)),
-            tooltip: 'Scan QR',
+            tooltip: l10n.scanAttendanceQr,
             onPressed: () => context.push('/seller/attendance/scan'),
           ),
         ],
@@ -104,7 +106,7 @@ class _SellerAttendanceHubScreenState extends State<SellerAttendanceHubScreen> {
                                 Padding(
                                   padding: const EdgeInsets.only(bottom: 8),
                                   child: Text(
-                                    'Selected job',
+                                    l10n.selectedJob,
                                     style: kTextStyle.copyWith(
                                       color: kPrimaryColor,
                                       fontWeight: FontWeight.w600,
@@ -145,7 +147,7 @@ class _SellerAttendanceHubScreenState extends State<SellerAttendanceHubScreen> {
                                   '/seller/orders/${job.orderId}',
                                 ),
                                 child: Text(
-                                  'Open contract',
+                                  l10n.openContract,
                                   style: kTextStyle.copyWith(
                                     color: kPrimaryColor,
                                     fontWeight: FontWeight.w600,
@@ -162,6 +164,7 @@ class _SellerAttendanceHubScreenState extends State<SellerAttendanceHubScreen> {
   }
 
   Widget _emptyState() {
+    final l10n = context.l10n;
     return Column(
       children: [
         const SizedBox(height: 40),
@@ -172,7 +175,7 @@ class _SellerAttendanceHubScreenState extends State<SellerAttendanceHubScreen> {
         ),
         const SizedBox(height: 16),
         Text(
-          'No on-site jobs yet',
+          l10n.noOnsiteJobsYet,
           textAlign: TextAlign.center,
           style: kTextStyle.copyWith(
             color: kNeutralColor,
@@ -182,13 +185,13 @@ class _SellerAttendanceHubScreenState extends State<SellerAttendanceHubScreen> {
         ),
         const SizedBox(height: 10),
         Text(
-          'You need an accepted on-site contract. Your client chooses how attendance works (QR scan or self-report) when they post the job.',
+          l10n.noOnsiteJobsBody,
           textAlign: TextAlign.center,
           style: kTextStyle.copyWith(color: kSubTitleColor, height: 1.4),
         ),
         const SizedBox(height: 24),
         ButtonGlobalWithoutIcon(
-          buttontext: 'Find on-site jobs',
+          buttontext: l10n.findOnsiteJobs,
           buttonDecoration: kButtonDecoration.copyWith(color: kPrimaryColor),
           onPressed: () => context.go('/seller/find-jobs'),
           buttonTextColor: kWhite,

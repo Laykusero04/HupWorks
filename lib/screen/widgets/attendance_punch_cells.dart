@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/attendance_format.dart';
 import 'package:freelancer/data/models/attendance_punch_model.dart';
+import 'package:freelancer/l10n/l10n.dart';
 
 import 'constant.dart';
 
@@ -79,6 +80,8 @@ class AttendancePunchCells extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final locale = Localizations.localeOf(context).toString();
     if (isLoading) {
       return const Padding(
         padding: EdgeInsets.symmetric(vertical: 12),
@@ -109,9 +112,9 @@ class AttendancePunchCells extends StatelessWidget {
               children: [
                 Expanded(
                   child: _MetricCell(
-                    label: 'Time in',
+                    label: l10n.attendanceTimeIn,
                     value: summary.timeIn != null
-                        ? AttendanceFormat.timeOfDay(summary.timeIn!)
+                        ? AttendanceFormat.timeOfDay(summary.timeIn!, locale)
                         : '—',
                     accent: const Color(0xFF2E7D32),
                   ),
@@ -119,9 +122,9 @@ class AttendancePunchCells extends StatelessWidget {
                 Container(width: 1, color: kBorderColorTextField),
                 Expanded(
                   child: _MetricCell(
-                    label: 'Time out',
+                    label: l10n.attendanceTimeOut,
                     value: summary.timeOut != null
-                        ? AttendanceFormat.timeOfDay(summary.timeOut!)
+                        ? AttendanceFormat.timeOfDay(summary.timeOut!, locale)
                         : '—',
                     accent: Colors.orange,
                   ),
@@ -138,7 +141,9 @@ class AttendancePunchCells extends StatelessWidget {
                 border: Border(top: BorderSide(color: kBorderColorTextField)),
               ),
               child: Text(
-                'Worked today: ${AttendanceFormat.minutesLabel(summary.minutes)}',
+                l10n.attendanceWorkedToday(
+                  AttendanceFormat.minutesLabel(summary.minutes, l10n),
+                ),
                 style: kTextStyle.copyWith(
                   color: kSubTitleColor,
                   fontSize: 12,
@@ -165,6 +170,7 @@ class AttendancePunchCells extends StatelessWidget {
                     punchType: p.punchType,
                     punchedAt: p.punchedAt,
                     sellerName: showSellerName ? p.sellerName : null,
+                    locale: locale,
                   ),
                   if (!isLast)
                     Container(
@@ -223,16 +229,20 @@ class _PunchRowCell extends StatelessWidget {
   final String punchType;
   final DateTime punchedAt;
   final String? sellerName;
+  final String locale;
 
   const _PunchRowCell({
     required this.punchType,
     required this.punchedAt,
     this.sellerName,
+    required this.locale,
   });
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final isIn = punchType == 'in';
+    final punchLabel = AttendanceFormat.punchLabel(punchType, l10n);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       child: Row(
@@ -249,8 +259,8 @@ class _PunchRowCell extends StatelessWidget {
               children: [
                 Text(
                   sellerName != null && sellerName!.isNotEmpty
-                      ? '$sellerName • ${AttendanceFormat.punchLabel(punchType)}'
-                      : AttendanceFormat.punchLabel(punchType),
+                      ? '$sellerName • $punchLabel'
+                      : punchLabel,
                   style: kTextStyle.copyWith(
                     color: kNeutralColor,
                     fontWeight: FontWeight.w600,
@@ -258,7 +268,7 @@ class _PunchRowCell extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  AttendanceFormat.timeOfDay(punchedAt),
+                  AttendanceFormat.timeOfDay(punchedAt, locale),
                   style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12),
                 ),
               ],

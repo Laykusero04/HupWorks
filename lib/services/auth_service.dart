@@ -1,3 +1,4 @@
+import 'package:freelancer/core/auth/role_cache.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'profile_service.dart';
@@ -34,6 +35,8 @@ class AuthService {
       email: email,
       password: password,
     );
+    // Prefer DB role over JWT metadata (can drift for older accounts).
+    await getUserRole(forceRefresh: true);
     return response;
   }
 
@@ -45,6 +48,7 @@ class AuthService {
   /// Sign out
   static Future<void> signOut() async {
     ProfileService.clearProfileCache();
+    clearRoleCache();
     await _client.auth.signOut();
   }
 
@@ -54,16 +58,44 @@ class AuthService {
   /// Get current user
   static User? get currentUser => _client.auth.currentUser;
 
-  /// Get user role from profile
-  static Future<String?> getUserRole() async {
+  /// Sync [profiles.role] for GoRouter redirects (may be null while loading).
+  static String? get cachedRole => RoleCache.roleForUser(currentUser?.id);
+
+  static void clearRoleCache() => RoleCache.clear();
+
+  /// Store a normalized role from [profiles].
+  static void setCachedRole(String? role) {
     final user = currentUser;
-    if (user == null) return null;
+    if (user == null || role == null) {
+      clearRoleCache();
+      return;
+    }
+    RoleCache.set(userId: user.id, role: role);
+  }
+
+  /// Get user role from [profiles.role] (source of truth). Caches for sync routing.
+  static Future<String?> getUserRole({bool forceRefresh = false}) async {
+    final user = currentUser;
+    if (user == null) {
+      clearRoleCache();
+      return null;
+    }
+
+    if (!forceRefresh && cachedRole != null) {
+      return cachedRole;
+    }
 
     final data = await _client
         .from('profiles')
         .select('role')
         .eq('id', user.id)
         .single();
-    return data['role'] as String?;
+    setCachedRole(data['role'] as String?);
+    return cachedRole;
+  }
+
+  /// Home path for the current cached/DB role.
+  static String homePathForRole(String? role) {
+    return role == 'seller' ? '/seller' : '/client';
   }
 }

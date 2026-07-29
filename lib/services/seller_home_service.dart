@@ -1,3 +1,4 @@
+import 'package:freelancer/core/utils/app_logger.dart';
 import 'package:freelancer/services/attendance_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -106,7 +107,9 @@ class SellerHomeService {
     try {
       final attJobs = await AttendanceService.getMyOnsiteAttendanceJobs();
       onsiteAttendanceCount = attJobs.length;
-    } catch (_) {}
+    } catch (e, st) {
+      AppLogger.error('SellerHomeService.onsiteAttendanceCount', e, st);
+    }
 
     return {
       'active_contracts': activeContracts,

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/screen/widgets/interactive_star_rating.dart';
 import 'package:freelancer/services/orders_service.dart';
@@ -72,10 +73,10 @@ class _ClientOrderReviewState extends State<ClientOrderReview> {
     Navigator.of(context).maybePop();
   }
 
-  String get _displaySellerName {
+  String _displaySellerName(AppLocalizations l10n) {
     final n = widget.sellerName?.trim();
     if (n != null && n.isNotEmpty) return n;
-    return 'Seller';
+    return l10n.freelancerDefault;
   }
 
   ImageProvider _sellerAvatar() {
@@ -87,6 +88,7 @@ class _ClientOrderReviewState extends State<ClientOrderReview> {
   }
 
   Future<void> _openImagePicker() async {
+    final l10n = context.l10n;
     final action = await showModalBottomSheet<String>(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -98,18 +100,18 @@ class _ClientOrderReviewState extends State<ClientOrderReview> {
           children: [
             ListTile(
               leading: const Icon(Icons.photo_library_outlined),
-              title: const Text('Choose from gallery'),
+              title: Text(l10n.chooseFromGallery),
               onTap: () => Navigator.pop(ctx, 'gallery'),
             ),
             ListTile(
               leading: const Icon(Icons.photo_camera_outlined),
-              title: const Text('Take a photo'),
+              title: Text(l10n.takePhoto),
               onTap: () => Navigator.pop(ctx, 'camera'),
             ),
             if (_pickedImage != null)
               ListTile(
                 leading: const Icon(Icons.delete_outline, color: Colors.red),
-                title: Text('Remove photo', style: kTextStyle.copyWith(color: Colors.red)),
+                title: Text(l10n.removePhoto, style: kTextStyle.copyWith(color: Colors.red)),
                 onTap: () => Navigator.pop(ctx, 'remove'),
               ),
           ],
@@ -131,7 +133,7 @@ class _ClientOrderReviewState extends State<ClientOrderReview> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not open picker: $e')),
+          SnackBar(content: Text(context.l10n.couldNotOpenPicker('$e'))),
         );
       }
     }
@@ -146,7 +148,7 @@ class _ClientOrderReviewState extends State<ClientOrderReview> {
           Icon(IconlyBold.camera, color: kLightNeutralColor, size: 32),
           const SizedBox(height: 6),
           Text(
-            'Tap to add',
+            context.l10n.tapToAdd,
             style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
           ),
         ],
@@ -168,6 +170,7 @@ class _ClientOrderReviewState extends State<ClientOrderReview> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Scaffold(
       backgroundColor: kDarkWhite,
       resizeToAvoidBottomInset: true,
@@ -176,7 +179,7 @@ class _ClientOrderReviewState extends State<ClientOrderReview> {
         elevation: 0,
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
-          'Write a review',
+          l10n.writeReview,
           style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -189,7 +192,7 @@ class _ClientOrderReviewState extends State<ClientOrderReview> {
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
             child: ButtonGlobalWithoutIcon(
-              buttontext: _isSubmitting ? 'Publishing…' : 'Publish review',
+              buttontext: _isSubmitting ? l10n.publishing : l10n.publishReview,
               buttonDecoration: kButtonDecoration.copyWith(
                 color: _isSubmitting ? kLightNeutralColor : kPrimaryColor,
                 borderRadius: BorderRadius.circular(30.0),
@@ -199,7 +202,7 @@ class _ClientOrderReviewState extends State<ClientOrderReview> {
                   : () async {
                       if (_stars <= 0) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Please choose a star rating first.')),
+                          SnackBar(content: Text(context.l10n.pleaseChooseStarRating)),
                         );
                         return;
                       }
@@ -224,8 +227,8 @@ class _ClientOrderReviewState extends State<ClientOrderReview> {
                           SnackBar(
                             content: Text(
                               duplicate
-                                  ? 'You already submitted a review for this order.'
-                                  : 'Could not publish review: $e',
+                                  ? l10n.reviewAlreadySubmitted
+                                  : l10n.couldNotPublishReview('$e'),
                             ),
                           ),
                         );
@@ -257,7 +260,7 @@ class _ClientOrderReviewState extends State<ClientOrderReview> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      'Review your experience',
+                      l10n.reviewYourExperience,
                       style: kTextStyle.copyWith(
                         color: kNeutralColor,
                         fontWeight: FontWeight.bold,
@@ -266,7 +269,7 @@ class _ClientOrderReviewState extends State<ClientOrderReview> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'How would you rate your overall experience with this seller?',
+                      l10n.rateOverallExperience,
                       style: kTextStyle.copyWith(
                         color: kSubTitleColor,
                         height: 1.4,
@@ -284,7 +287,7 @@ class _ClientOrderReviewState extends State<ClientOrderReview> {
                           ),
                           const SizedBox(height: 12),
                           Text(
-                            _displaySellerName,
+                            _displaySellerName(l10n),
                             textAlign: TextAlign.center,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
@@ -296,7 +299,7 @@ class _ClientOrderReviewState extends State<ClientOrderReview> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Freelancer for this contract',
+                            l10n.freelancerForContract,
                             textAlign: TextAlign.center,
                             style: kTextStyle.copyWith(
                               color: kSubTitleColor,
@@ -308,7 +311,7 @@ class _ClientOrderReviewState extends State<ClientOrderReview> {
                     ),
                     const SizedBox(height: 28),
                     Text(
-                      'Select rating',
+                      l10n.selectRating,
                       style: kTextStyle.copyWith(
                         color: kNeutralColor,
                         fontWeight: FontWeight.w600,
@@ -328,16 +331,16 @@ class _ClientOrderReviewState extends State<ClientOrderReview> {
                       maxLines: 8,
                       decoration: kInputDecoration.copyWith(
                         alignLabelWithHint: true,
-                        labelText: 'Your feedback',
+                        labelText: l10n.yourFeedback,
                         labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                        hintText: 'Share what went well or what could improve…',
+                        hintText: l10n.feedbackHint,
                         hintStyle: kTextStyle.copyWith(color: kLightNeutralColor),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                     ),
                     const SizedBox(height: 24),
                     Text(
-                      'Upload image (optional)',
+                      l10n.uploadImageOptional,
                       style: kTextStyle.copyWith(
                         color: kNeutralColor,
                         fontWeight: FontWeight.w600,

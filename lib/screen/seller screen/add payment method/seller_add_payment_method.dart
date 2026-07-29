@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/seller%20screen/add%20payment%20method/seller_add_paypal.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -33,6 +34,7 @@ class _SellerAddPaymentMethodState extends State<SellerAddPaymentMethod> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Scaffold(
       backgroundColor: kDarkWhite,
       appBar: AppBar(
@@ -40,7 +42,7 @@ class _SellerAddPaymentMethodState extends State<SellerAddPaymentMethod> {
         elevation: 0,
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
-          'Add Payment Method',
+          context.l10n.addPaymentMethod,
           style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,

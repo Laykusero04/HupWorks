@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
 import 'package:freelancer/services/job_posts_service.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -24,24 +26,15 @@ class _JobPostState extends State<JobPost> {
   static const double _scrollEndPadding = 24;
   static const double _horizontalPadding = 16;
 
-  static const _filterOptions = <Map<String, String?>>[
-    {'value': null, 'label': 'All'},
-    {'value': 'gig', 'label': 'Gig'},
-    {'value': 'full_time', 'label': 'Full-time'},
-    {'value': 'part_time', 'label': 'Part-time'},
-  ];
+  static const _filterValues = <String?>[null, 'gig', 'full_time', 'part_time'];
 
-  static String _jobTypeLabel(String? type) {
-    switch (type) {
-      case 'full_time':
-        return 'Full-time';
-      case 'part_time':
-        return 'Part-time';
-      case 'gig':
-      default:
-        return 'Gig';
-    }
+  String _filterLabel(String? value) {
+    final l10n = context.l10n;
+    if (value == null) return l10n.filterAll;
+    return L10nLabels.jobType(l10n, value);
   }
+
+  String _jobTypeLabel(String? type) => L10nLabels.jobType(context.l10n, type);
 
   List<Map<String, dynamic>> get _visibleJobPosts {
     if (_typeFilter == null) return _jobPosts;
@@ -67,7 +60,7 @@ class _JobPostState extends State<JobPost> {
       if (mounted) {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading job posts: $e')),
+          SnackBar(content: Text(context.l10n.errorLoadingJobPosts('$e'))),
         );
       }
     }
@@ -99,9 +92,10 @@ class _JobPostState extends State<JobPost> {
     final safeBottom = MediaQuery.paddingOf(context).bottom;
     final scrollBottomGap = safeBottom + _scrollEndPadding;
 
+    final l10n = context.l10n;
     return Scaffold(
       backgroundColor: kWhite,
-      appBar: const ClientShellAppBar(title: 'My Jobs'),
+      appBar: ClientShellAppBar(title: l10n.myJobs),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           await Navigator.of(context).push(
@@ -135,7 +129,7 @@ class _JobPostState extends State<JobPost> {
                       ),
                       const SizedBox(height: 20.0),
                       Text(
-                        'No Job Posts Yet',
+                        l10n.noJobsPostedYet,
                         style: kTextStyle.copyWith(
                           color: kNeutralColor,
                           fontWeight: FontWeight.bold,
@@ -163,17 +157,17 @@ class _JobPostState extends State<JobPost> {
                                     scrollDirection: Axis.horizontal,
                                     physics: const BouncingScrollPhysics(),
                                     child: Row(
-                                      children: _filterOptions.map((opt) {
+                                      children: _filterValues.map((value) {
                                         final selected =
-                                            _typeFilter == opt['value'];
+                                            _typeFilter == value;
                                         return Padding(
                                           padding:
                                               const EdgeInsets.only(right: 8.0),
                                           child: ChoiceChip(
-                                            label: Text(opt['label']!),
+                                            label: Text(_filterLabel(value)),
                                             selected: selected,
                                             onSelected: (_) => setState(() =>
-                                                _typeFilter = opt['value']),
+                                                _typeFilter = value),
                                             selectedColor: kPrimaryColor,
                                             backgroundColor: kDarkWhite,
                                             labelStyle: kTextStyle.copyWith(
@@ -197,7 +191,7 @@ class _JobPostState extends State<JobPost> {
                                   ),
                                   const SizedBox(height: 15.0),
                                   Text(
-                                    'Total Job Post (${_visibleJobPosts.length})',
+                                    l10n.totalJobPostCount(_visibleJobPosts.length),
                                     style: kTextStyle.copyWith(
                                         color: kNeutralColor,
                                         fontWeight: FontWeight.bold),

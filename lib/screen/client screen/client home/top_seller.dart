@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/services/client_home_service.dart';
 import 'package:freelancer/services/profile_service.dart';
 
@@ -46,7 +47,7 @@ class _TopSellerState extends State<TopSeller> {
       if (mounted) {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading talent: $e')),
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
     }
@@ -80,7 +81,7 @@ class _TopSellerState extends State<TopSeller> {
     return null;
   }
 
-  static String _subtitle(Map<String, dynamic> seller) {
+  String _subtitle(Map<String, dynamic> seller) {
     final sp = _sellerProfileRow(seller);
     final jobTitle = sp?['job_title'] as String?;
     if (jobTitle != null && jobTitle.trim().isNotEmpty) return jobTitle.trim();
@@ -96,7 +97,7 @@ class _TopSellerState extends State<TopSeller> {
       final t = about.trim();
       return t.length > 48 ? '${t.substring(0, 48)}…' : t;
     }
-    return 'Verified freelancer';
+    return context.l10n.verifiedFreelancer;
   }
 
   void _openSeller(Map<String, dynamic> seller) {
@@ -117,7 +118,7 @@ class _TopSellerState extends State<TopSeller> {
         onChanged: (q) => setState(() => _searchQuery = q),
         style: kTextStyle.copyWith(color: kNeutralColor, fontSize: 14),
         decoration: InputDecoration(
-          hintText: 'Search freelancers...',
+          hintText: context.l10n.searchFreelancers,
           hintStyle: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 14),
           prefixIcon: const Icon(Icons.search, color: kLightNeutralColor),
           suffixIcon: _searchQuery.isNotEmpty
@@ -165,8 +166,9 @@ class _TopSellerState extends State<TopSeller> {
         itemCount: sellers.length,
         itemBuilder: (_, i) {
           final seller = sellers[i];
+          final l10n = context.l10n;
           final profileImageUrl = seller['profile_image_url'] as String?;
-          final name = seller['name'] as String? ?? 'Freelancer';
+          final name = seller['name'] as String? ?? l10n.authRoleFreelancer;
           final rating = double.tryParse('${seller['rating'] ?? 0}') ?? 0;
           final reviewCount = (seller['review_count'] as num?)?.toInt();
 
@@ -258,11 +260,12 @@ class _TopSellerState extends State<TopSeller> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final filtered = _filteredSellers;
 
     return Scaffold(
       backgroundColor: kWhite,
-      appBar: const ClientShellAppBar(title: 'Talent'),
+      appBar: ClientShellAppBar(title: l10n.talent),
       body: Column(
         children: [
           _buildSearchBar(),
@@ -272,14 +275,14 @@ class _TopSellerState extends State<TopSeller> {
                 : _sellers.isEmpty
                     ? Center(
                         child: Text(
-                          'No freelancers yet',
+                          l10n.noFreelancersYet,
                           style: kTextStyle.copyWith(color: kLightNeutralColor),
                         ),
                       )
                     : filtered.isEmpty
                         ? Center(
                             child: Text(
-                              'No freelancers match your search',
+                              l10n.noFreelancersMatch,
                               style: kTextStyle.copyWith(color: kLightNeutralColor),
                             ),
                           )

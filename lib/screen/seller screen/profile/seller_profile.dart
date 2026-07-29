@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/support_chat_navigation.dart';
+import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/seller%20screen/profile/seller_profile_details.dart';
 import 'package:freelancer/services/auth_service.dart';
 import 'package:freelancer/services/profile_service.dart';
@@ -66,7 +68,8 @@ class _SellerProfileState extends State<SellerProfile> {
       return const ProfileTabSkeleton(persona: ShellPersona.seller);
     }
 
-    final name = _profile?['name'] ?? 'Seller';
+    final l10n = context.l10n;
+    final name = _profile?['name'] ?? l10n.freelancerDefault;
     final balance = _profile?['balance'] ?? 0;
     final profileImageUrl = _profile?['profile_image_url'] as String?;
     final rating = (_profile?['rating'] as num?)?.toDouble() ?? 0;
@@ -81,7 +84,7 @@ class _SellerProfileState extends State<SellerProfile> {
             name: name,
             imageUrl: profileImageUrl,
             fallbackAsset: 'images/profile1.png',
-            balanceLabel: 'Balance: $currencySign$balance',
+            balanceLabel: l10n.balanceWithAmount('$currencySign$balance'),
             rating: rating,
             reviewCount: reviewCount,
           ),
@@ -92,7 +95,7 @@ class _SellerProfileState extends State<SellerProfile> {
               children: [
                 ProfileMenuListTile(
                   icon: Icons.person_outline,
-                  title: 'My Profile',
+                  title: l10n.myProfile,
                   onTap: () async {
                     await const SellerProfileDetails().launch(context);
                     _loadProfile(forceRefresh: true);
@@ -100,7 +103,7 @@ class _SellerProfileState extends State<SellerProfile> {
                 ),
                 ProfileMenuListTile(
                   icon: Icons.schedule_outlined,
-                  title: 'Attendance',
+                  title: l10n.attendance,
                   onTap: () {
                     Navigator.pop(context);
                     context.push('/seller/attendance');
@@ -108,7 +111,7 @@ class _SellerProfileState extends State<SellerProfile> {
                 ),
                 ProfileMenuListTile(
                   icon: Icons.assignment_outlined,
-                  title: 'My Applications',
+                  title: l10n.myApplications,
                   onTap: () {
                     Navigator.pop(context);
                     context.push('/seller/applications');
@@ -116,51 +119,51 @@ class _SellerProfileState extends State<SellerProfile> {
                 ),
                 ProfileMenuListTile(
                   icon: Icons.payment_outlined,
-                  title: 'Payment Methods',
+                  title: l10n.paymentMethods,
                   onTap: () => const SellerAddPaymentMethod().launch(context),
                 ),
                 ExpansionTile(
                   leading: const Icon(Icons.download_outlined, color: kNeutralColor),
-                  title: Text('Withdrawals', style: kTextStyle.copyWith(color: kNeutralColor)),
+                  title: Text(l10n.withdrawals, style: kTextStyle.copyWith(color: kNeutralColor)),
                   children: [
                     ListTile(
-                      title: Text('Withdraw Money', style: kTextStyle.copyWith(color: kNeutralColor)),
+                      title: Text(l10n.withdrawMoney, style: kTextStyle.copyWith(color: kNeutralColor)),
                       onTap: () => const SellerWithdrawMoney().launch(context),
                     ),
                     ListTile(
-                      title: Text('Withdraw History', style: kTextStyle.copyWith(color: kNeutralColor)),
+                      title: Text(l10n.withdrawHistory, style: kTextStyle.copyWith(color: kNeutralColor)),
                       onTap: () => const SellerWithDrawHistory().launch(context),
                     ),
                   ],
                 ),
                 ProfileMenuListTile(
                   icon: Icons.favorite_border,
-                  title: 'Favorite',
+                  title: l10n.favorite,
                   onTap: () => const SellerFavList().launch(context),
                 ),
                 ProfileMenuListTile(
                   icon: Icons.receipt_long_outlined,
-                  title: 'Transaction',
+                  title: l10n.transaction,
                   onTap: () => const SellerTransaction().launch(context),
                 ),
                 ProfileMenuListTile(
                   icon: Icons.description_outlined,
-                  title: 'Report',
+                  title: l10n.report,
                   onTap: () => const SellerReport().launch(context),
                 ),
                 ProfileMenuListTile(
                   icon: Icons.settings_outlined,
-                  title: 'Setting',
+                  title: l10n.settings,
                   onTap: () => const SellerSetting().launch(context),
                 ),
                 ProfileMenuListTile(
                   icon: Icons.person_add_outlined,
-                  title: 'Invite Friends',
+                  title: l10n.inviteFriends,
                   onTap: () => const SellerInvite().launch(context),
                 ),
                 ProfileMenuListTile(
                   icon: Icons.help_outline,
-                  title: 'Help & Support',
+                  title: l10n.helpSupport,
                   onTap: () {
                     Navigator.pop(context);
                     openSupportChat(context);
@@ -168,7 +171,7 @@ class _SellerProfileState extends State<SellerProfile> {
                 ),
                 ProfileMenuListTile(
                   icon: Icons.logout,
-                  title: 'Log Out',
+                  title: l10n.logOut,
                   onTap: _handleLogout,
                 ),
               ],

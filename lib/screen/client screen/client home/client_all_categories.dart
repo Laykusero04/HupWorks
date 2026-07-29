@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/category_icons.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/services/client_home_service.dart';
 
 import '../../widgets/constant.dart';
@@ -54,13 +55,19 @@ class _ClientAllCategoriesState extends State<ClientAllCategories> {
           _loading = false;
         });
       }
-    } catch (_) {
-      if (mounted) setState(() => _loading = false);
+    } catch (e) {
+      if (mounted) {
+        setState(() => _loading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+        );
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Scaffold(
       backgroundColor: kDarkWhite,
       appBar: AppBar(
@@ -69,7 +76,7 @@ class _ClientAllCategoriesState extends State<ClientAllCategories> {
         centerTitle: true,
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
-          'All Categories',
+          l10n.allCategories,
           style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
       ),
@@ -89,7 +96,7 @@ class _ClientAllCategoriesState extends State<ClientAllCategories> {
               : _categories.isEmpty
                   ? Center(
                       child: Text(
-                        'No categories yet',
+                        l10n.noCategoriesYet,
                         style: kTextStyle.copyWith(color: kLightNeutralColor),
                       ),
                     )
@@ -102,7 +109,7 @@ class _ClientAllCategoriesState extends State<ClientAllCategories> {
                             onChanged: (v) => setState(() => _query = v),
                             cursorColor: kNeutralColor,
                             decoration: kInputDecoration.copyWith(
-                              hintText: 'Search categories',
+                              hintText: l10n.searchCategories,
                               hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
                               prefixIcon: const Icon(Icons.search, color: kLightNeutralColor),
                               suffixIcon: _query.isEmpty
@@ -122,7 +129,7 @@ class _ClientAllCategoriesState extends State<ClientAllCategories> {
                           child: _filtered.isEmpty
                               ? Center(
                                   child: Text(
-                                    'No categories match your search',
+                                    l10n.noCategoriesMatch,
                                     style: kTextStyle.copyWith(color: kLightNeutralColor),
                                   ),
                                 )

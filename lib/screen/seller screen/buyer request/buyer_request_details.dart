@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/services/job_posts_service.dart';
 import 'package:freelancer/services/seller_orders_service.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -38,7 +39,7 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
       final data = await SellerOrdersService.getBuyerRequestDetails(widget.jobPostId);
       if (mounted) setState(() { _jobPost = data; _isLoading = false; });
     } catch (e) {
-      if (mounted) { setState(() => _isLoading = false); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'))); }
+      if (mounted) { setState(() => _isLoading = false); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.errorWithDetail('$e')))); }
     }
   }
 
@@ -54,6 +55,7 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
   Widget build(BuildContext context) {
     if (_isLoading) return const Scaffold(backgroundColor: kDarkWhite, body: Center(child: CircularProgressIndicator(color: kPrimaryColor)));
 
+    final l10n = context.l10n;
     final category = (_jobPost?['categories'] as Map<String, dynamic>?)?['name'] ?? 'General';
     final title = _jobPost?['title'] ?? 'Job Post';
     final description = _jobPost?['description'] ?? '';
@@ -90,7 +92,7 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
       backgroundColor: kDarkWhite,
       appBar: AppBar(
         backgroundColor: kDarkWhite, elevation: 0, iconTheme: const IconThemeData(color: kNeutralColor),
-        title: Text('Job Details', style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)), centerTitle: true,
+        title: Text(l10n.buyerRequestDetailsTitle, style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)), centerTitle: true,
       ),
       bottomNavigationBar: Material(
         color: kWhite,
@@ -189,12 +191,13 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
   Widget _row(String l, String v) => Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
     Expanded(flex: 2, child: Text(l, style: kTextStyle.copyWith(color: kSubTitleColor))),
     Expanded(flex: 4, child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(':', style: kTextStyle.copyWith(color: kSubTitleColor)), const SizedBox(width: 10.0),
+      Text(context.l10n.labelColon, style: kTextStyle.copyWith(color: kSubTitleColor)), const SizedBox(width: 10.0),
       Flexible(child: Text(v, style: kTextStyle.copyWith(color: kSubTitleColor), overflow: TextOverflow.ellipsis, maxLines: 2)),
     ])),
   ]);
 
   Widget _buildLocationSection(Map<String, dynamic>? job) {
+    final l10n = context.l10n;
     final location = (job?['location'] as String?)?.trim();
     final locationType = (job?['location_type'] as String?)?.trim();
     final coords = jobPostCoordinates(job);
@@ -207,9 +210,9 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
         if (locationType != null && locationType.isNotEmpty) ...[
           const SizedBox(height: 8),
           Row(children: [
-            Text('Location', style: kTextStyle.copyWith(color: kSubTitleColor)),
+            Text(l10n.locationLabel, style: kTextStyle.copyWith(color: kSubTitleColor)),
             const SizedBox(width: 8),
-            Text(':', style: kTextStyle.copyWith(color: kSubTitleColor)),
+            Text(l10n.labelColon, style: kTextStyle.copyWith(color: kSubTitleColor)),
             const SizedBox(width: 10),
             _locationTypeBadge(locationType),
           ]),

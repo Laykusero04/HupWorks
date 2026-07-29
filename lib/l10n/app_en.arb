@@ -1,0 +1,984 @@
+{
+  "@@locale": "en",
+  "appTitle": "HupWorks",
+  "language": "Language",
+  "languageEnglish": "English",
+  "languageBengali": "Bengali",
+  "languageDutch": "Dutch",
+  "languageChanged": "Language updated",
+  "cancel": "Cancel",
+  "save": "Save",
+  "send": "Send",
+  "share": "Share",
+  "retry": "Retry",
+  "done": "Done",
+  "back": "Back",
+  "add": "Add",
+  "seeAll": "See all",
+  "viewAll": "View all",
+  "explore": "Explore",
+  "other": "Other",
+  "unknown": "Unknown",
+  "notSpecified": "Not specified",
+  "aboutUs": "About Us",
+  "privacyPolicy": "Privacy Policy",
+  "invite": "Invite",
+  "inviteFriends": "Invite friends",
+  "inviteBody": "Share your personal invite code so friends can join HupWorks. Referral rewards are not available yet.",
+  "inviteCodeCopied": "Invite code copied",
+  "inviteSignInRequired": "Sign in to get your invite code.",
+  "shareInvite": "Share invite",
+  "report": "Report",
+  "reportSubmitted": "Report submitted. Thank you.",
+  "searchHint": "Search services or freelancers",
+  "popularServices": "Popular services",
+  "topFreelancers": "Top freelancers",
+  "services": "Services",
+  "freelancers": "Freelancers",
+  "noSearchResults": "No services or freelancers match \"{query}\"",
+  "@noSearchResults": {
+    "placeholders": {
+      "query": { "type": "String" }
+    }
+  },
+  "noPopularResults": "No popular results yet",
+  "couldNotLoadResults": "Could not load results",
+  "home": "Home",
+  "settings": "Setting",
+  "helpSupport": "Help & Support",
+  "logOut": "Log Out",
+  "sellerReport": "Seller Report",
+  "favorite": "Favorite",
+  "transaction": "Transaction",
+  "saving": "Saving...",
+  "sending": "Sending...",
+  "profileUpdated": "Profile updated successfully!",
+  "pleaseEnterName": "Please enter your name",
+  "createProfile": "Create Profile",
+  "setupProfile": "Setup Profile",
+  "saveProfile": "Save Profile",
+  "continueLabel": "Continue",
+  "errorGeneric": "Something went wrong. Please try again.",
+  "errorWithDetail": "Error: {message}",
+  "@errorWithDetail": {
+    "placeholders": {
+      "message": { "type": "String" }
+    }
+  },
+  "errorLoading": "Could not load data",
+  "couldNotOpenChat": "Could not open chat",
+  "pleaseFillAllFields": "Please fill in all fields",
+  "pushNotifications": "Push Notifications",
+  "notifications": "Notifications",
+  "message": "Message",
+  "contracts": "Contracts",
+  "findJobs": "Find Jobs",
+  "myJobs": "My Jobs",
+  "talent": "Talent",
+  "justNow": "Just now",
+  "readAll": "Read All",
+  "noNotifications": "No notifications",
+  "minutesAgo": "{count}m ago",
+  "@minutesAgo": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "hoursAgo": "{count}h ago",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "daysAgo": "{count}d ago",
+  "@daysAgo": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "orderStatusActive": "Active",
+  "orderStatusPending": "Pending",
+  "orderStatusCompleted": "Completed",
+  "orderStatusCancelled": "Cancelled",
+  "orderStatusDelivered": "Delivered",
+  "orderStatusCancellationPending": "Cancellation pending",
+  "reportReasonNonOriginal": "Non original content",
+  "reportReasonTrademark": "Trademark Violations",
+  "reportReasonCopyright": "Copyright Violations",
+  "reportReasonOther": "Other reasons",
+  "cancelReasonScheduleConflict": "Schedule conflict",
+  "cancelReasonScopeMismatch": "Scope does not match agreement",
+  "cancelReasonSiteOrSafety": "Site or safety concern",
+  "cancelReasonPersonalEmergency": "Personal emergency",
+  "cancelReasonClientIssue": "Issue with client / communication",
+  "cancelReasonOther": "Other",
+  "attendanceModeQrInOut": "QR clock in & out",
+  "attendanceModeQrOnce": "QR check-in (once per day)",
+  "attendanceModeSelfReport": "Self-report in app",
+  "attendanceModeDisabled": "Attendance off",
+  "attendanceClientHintQrInOut": "Post a QR at the site. Workers scan to clock in and clock out.",
+  "attendanceClientHintQrOnce": "Post a QR at the site. Workers scan once per day to check in.",
+  "attendanceClientHintSelfReport": "Workers clock in and out in the app — no QR needed.",
+  "attendanceClientHintDisabled": "Attendance tracking is turned off for this job.",
+  "attendanceFreelancerHintQrInOut": "Scan the site QR to clock in and clock out.",
+  "attendanceFreelancerHintQrOnce": "Scan the site QR once when you arrive.",
+  "attendanceFreelancerHintSelfReport": "Tap clock in when you start and clock out when you leave.",
+  "attendanceFreelancerHintDisabled": "Your client has not enabled attendance for this job.",
+  "attendanceOnboardingQrInOut": "Open Attendance in HupWorks and scan the QR code at the job site to clock in when you arrive and clock out when you leave.",
+  "attendanceOnboardingQrOnce": "When you arrive, open Attendance in HupWorks and scan the QR code posted on site. You only need to check in once per day.",
+  "attendanceOnboardingSelfReport": "Open Attendance in HupWorks on this contract and tap Clock in when you start and Clock out when you leave. No QR scan is required.",
+  "attendanceOnboardingDisabled": "Attendance is not tracked in the app for this job. Follow your supervisor's instructions on site.",
+  "attendanceTracking": "Attendance tracking",
+  "attendanceTrackingHint": "How workers record time on site.",
+  "genderMale": "Male",
+  "genderFemale": "Female",
+  "aboutHupWorksTitle": "About HupWorks",
+  "aboutHupWorksBody": "HupWorks is a marketplace that connects clients with freelancers and local workers for jobs and services. We help people post work, hire talent, track attendance on-site, and manage orders from start to finish.\n\nOur goal is to make hiring and getting hired simpler, clearer, and more reliable—whether you need skilled help for a project or want to grow your freelance business.",
+  "privacySectionCollectTitle": "Information We Collect",
+  "privacySectionCollectBody": "We collect account details you provide (such as name, email, phone, and profile information), content you post (jobs, messages, reviews), and technical data needed to operate the app (device and usage information). Payment-related data is processed by our payment providers when those features are enabled.",
+  "privacySectionUseTitle": "How We Use Information",
+  "privacySectionUseBody": "We use your information to create and manage your account, show relevant jobs and profiles, enable messaging and order workflows, improve safety and reliability, and communicate important service updates. We do not sell your personal information.",
+  "privacySectionShareTitle": "Sharing of Information",
+  "privacySectionShareBody": "We share information with other users only as needed for the marketplace (for example, your public profile and messages you send). We may share data with service providers who help us run HupWorks, or when required by law, to protect rights and safety, or to investigate fraud or abuse.",
+  "privacySectionChoicesTitle": "Your Choices",
+  "privacySectionChoicesBody": "You can update profile details in the app and contact support to request account changes. Depending on your location, you may have additional rights to access, correct, or delete personal data.",
+  "privacySectionContactTitle": "Contact",
+  "privacySectionContactBody": "If you have questions about this policy or your data, reach us through Help & Support in the app.",
+  "authWelcomeHowToUse": "How will you use HupWorks?",
+  "authRoleClient": "Client",
+  "authRoleClientSubtitle": "Hire talent",
+  "authRoleFreelancer": "Freelancer",
+  "authRoleFreelancerSubtitle": "Find work",
+  "authContinueAsClient": "Continue as Client",
+  "authContinueAsFreelancer": "Continue as Freelancer",
+  "authAlreadyHaveAccount": "I already have an account",
+  "authWelcomeBack": "Welcome back",
+  "authSignInSubtitle": "Sign in to continue to HupWorks.",
+  "authEmail": "Email",
+  "authEmailHint": "you@email.com",
+  "authPassword": "Password",
+  "authPasswordHint": "Enter your password",
+  "authForgotPassword": "Forgot password?",
+  "authLogIn": "Log In",
+  "authDontHaveAccount": "Don't have an account?",
+  "authSignUp": "Sign up",
+  "authOrContinueWith": "Or continue with",
+  "authAgreeToThe": "I agree to the ",
+  "authTermsOfService": "Terms of Service",
+  "authFirstName": "First name",
+  "authFirstNameHint": "First",
+  "authLastName": "Last name",
+  "authLastNameHint": "Last",
+  "authCreateAccount": "Create your account",
+  "authJoinAsClient": "Join as a client to hire freelancers.",
+  "authJoinAsFreelancer": "Join as a freelancer to find work.",
+  "authPhone": "Phone",
+  "authPhoneHint": "Phone number",
+  "authSignUpButton": "Sign Up",
+  "authOrSignUpWith": "Or sign up with",
+  "authAlreadyHaveAccountShort": "Already have an account?",
+  "authPasswordMinLength": "Password must be at least 6 characters",
+  "authMustAgreeTerms": "Please agree to the Terms of Service",
+  "authForgotPasswordTitle": "Forgot Password?",
+  "authForgotPasswordBody": "Enter your email and we'll send you a link to reset your password.",
+  "authResetPassword": "Reset Password",
+  "authEnterEmail": "Please enter your email",
+  "authResetLinkSent": "Password reset link sent. Check your email.",
+  "authVerification": "Verification",
+  "authCodeSentToEmail": "We've sent the code to your email-",
+  "authDidntReceiveCode": "Didn't receive code?",
+  "authResendCode": "Resend Code",
+  "selectProfileImage": "Select Profile Image",
+  "photoGallery": "Photo Gallery",
+  "takePhoto": "Take Photo",
+  "uploadYourPhoto": "Upload Your Photo",
+  "userName": "User Name",
+  "phone": "Phone",
+  "country": "Country",
+  "streetAddress": "Street Address",
+  "city": "City",
+  "state": "State",
+  "zipCode": "ZIP Code",
+  "selectLanguage": "Select Language",
+  "selectGender": "Select Gender",
+  "addLanguage": "Add Language",
+  "addNew": "Add New",
+  "noLanguagesYet": "No languages added yet.",
+  "jobTitle": "Job Title",
+  "skills": "Skills",
+  "aboutYou": "About You",
+  "aboutYouHint": "Tell clients about yourself",
+  "stepOf": "Step {current} of {total}",
+  "@stepOf": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "browseCategories": "Browse Categories",
+  "yourRecentJobs": "Your Recent Jobs",
+  "postJob": "Post Job",
+  "findTalent": "Find Talent",
+  "categories": "Categories",
+  "hireTopRated": "Hire top-rated freelancers",
+  "postAJobBanner": "Post a job and get offers",
+  "postNow": "Post Now",
+  "browse": "Browse",
+  "noCategoriesYet": "No categories yet",
+  "noJobsYet": "No jobs yet",
+  "noFreelancersYet": "No freelancers yet",
+  "open": "Open",
+  "closed": "Closed",
+  "fullTime": "Full-time",
+  "partTime": "Part-time",
+  "viewProfile": "View Profile",
+  "verifiedFreelancer": "Verified Freelancer",
+  "allCategories": "All Categories",
+  "searchCategories": "Search categories",
+  "noCategoriesMatch": "No matching categories",
+  "searchFreelancers": "Search freelancers...",
+  "noFreelancersMatch": "No matching freelancers",
+  "findYourNextJob": "Find your next job",
+  "findYourNextJobSubtitle": "Browse open roles and apply in minutes.",
+  "myApplications": "My Applications",
+  "browseJobs": "Browse jobs",
+  "statusAccepted": "Accepted",
+  "statusRejected": "Rejected",
+  "statusPending": "Pending",
+  "yourWork": "Your work",
+  "activeContracts": "Active contracts",
+  "wallet": "Wallet",
+  "needsAttention": "Needs attention",
+  "attentionItems": "{count} items need attention",
+  "@attentionItems": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "messages": "Messages",
+  "applications": "Applications",
+  "attendance": "Attendance",
+  "shortcutFindJobs": "Find jobs",
+  "shortcutFindJobsSub": "Browse open roles",
+  "shortcutMessages": "Messages",
+  "shortcutMessagesSub": "Chat with clients",
+  "shortcutContracts": "Contracts",
+  "shortcutContractsSub": "Active work",
+  "shortcutApplications": "Applications",
+  "shortcutApplicationsSub": "Track status",
+  "shortcutAttendance": "Attendance",
+  "shortcutAttendanceSub": "Clock in & out",
+  "balance": "Balance",
+  "totalSpent": "Total spent",
+  "earned": "Earned",
+  "sayHelloTo": "Say hello to {name}",
+  "@sayHelloTo": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "block": "Block",
+  "noMessagesYet": "No messages yet",
+  "searchChats": "Search chats",
+  "typeAMessage": "Type a message",
+  "cancellationRequestTitle": "Request to cancel",
+  "cancellationRequestBody": "Your client has 48 hours to approve or keep the contract.",
+  "cancellationReason": "Reason",
+  "cancellationExplain": "Explain briefly",
+  "cancellationSubmit": "Submit request",
+  "cancellationMinChars": "Please write at least {count} characters",
+  "@cancellationMinChars": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "keepContract": "Keep contract",
+  "approveCancellation": "Approve cancellation",
+  "withdrawCancelRequest": "Withdraw request",
+  "waitingForClientCancel": "Waiting for client to review your cancellation request",
+  "cancellationRequested": "Cancellation requested",
+  "awaitingYourApproval": "Awaiting your approval",
+  "inProgress": "In progress",
+  "markComplete": "Mark complete",
+  "deliverWork": "Deliver work",
+  "clockIn": "Clock in",
+  "clockOut": "Clock out",
+  "scanAttendanceQr": "Scan attendance QR",
+  "editProfile": "Edit Profile",
+  "profileDetails": "Profile Details",
+  "favourites": "Favourites",
+  "reviews": "Reviews",
+  "noFavouritesYet": "No favourites yet",
+  "noReviewsYet": "No reviews yet",
+  "mapPickLocation": "Pick location",
+  "mapConfirmLocation": "Confirm location",
+  "mapSearchPlace": "Search place",
+  "deposit": "Deposit",
+  "withdraw": "Withdraw",
+  "addPaymentMethod": "Add payment method",
+  "amount": "Amount",
+  "history": "History",
+  "noTransactionsYet": "No transactions yet",
+  "supportChat": "Support chat",
+  "typeSupportMessage": "Type your message",
+  "clientReport": "Client Report",
+  "selectReason": "Select reason",
+  "describeIssue": "Describe the issue",
+  "submitReport": "Submit report",
+  "cancellationSheetTitle": "Request to cancel contract",
+  "cancellationSheetBody": "Your client will be notified and can approve or decline within 48 hours. The contract stays active until they respond.",
+  "cancellationExplainHint": "What happened? This helps your client understand your request.",
+  "cancellationCharCount": "{current} / {min} characters minimum",
+  "@cancellationCharCount": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "min": { "type": "int" }
+    }
+  },
+  "cancellationReasonLine": "Reason: {reason}",
+  "@cancellationReasonLine": {
+    "placeholders": {
+      "reason": { "type": "String" }
+    }
+  },
+  "reportWhyQuestion": "Why do you want to report?",
+  "reportSellerProfileUrl": "Seller Profile URL",
+  "reportEnterSellerProfileUrl": "Enter seller profile url",
+  "reportOriginalContentUrl": "URL of original content",
+  "reportEnterPostUrl": "Enter post url",
+  "reportAdditionalInfo": "Additional information",
+  "reportEnterInformation": "Enter information...",
+  "promoVerifiedTalentSubtitle": "Verified talent for every project",
+  "promoProposalsSubtitle": "Get proposals within minutes",
+  "promoNicheServicesSubtitle": "Find services across every niche",
+  "jobTypeGig": "Gig",
+  "recentJobsEmptyHint": "Tap \"Post Job\" to get started",
+  "postJobShort": "Post",
+  "untitled": "Untitled",
+  "untitledJob": "Untitled job",
+  "categoryGeneral": "General",
+  "proBadge": "Pro",
+  "noApplicationsYet": "No applications yet",
+  "noApplicationsYetHint": "Browse open jobs and send a clear offer to stand out.",
+  "pendingApplications": "Pending applications",
+  "completedThisMonth": "Completed this month",
+  "yourRating": "Your rating",
+  "reviewCount": "{count} reviews",
+  "@reviewCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "openJobsToBrowse": "{count} open jobs to browse",
+  "@openJobsToBrowse": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "periodLive": "Live",
+  "periodThisMonth": "This month",
+  "shortcuts": "Shortcuts",
+  "attentionContractDeliveredOne": "1 contract delivered — waiting for client approval",
+  "attentionContractDeliveredMany": "{count} contracts delivered — waiting for client approval",
+  "@attentionContractDeliveredMany": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "attentionOnsiteOne": "1 on-site contract — clock in via Attendance",
+  "attentionOnsiteMany": "{count} on-site contracts — use Attendance",
+  "@attentionOnsiteMany": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "attendanceOffForJob": "Attendance is off for this job.",
+  "checkedIn": "Checked in",
+  "checkIn": "Check in",
+  "noPunchesToday": "No punches yet today.",
+  "noAttendanceRecordedToday": "No attendance recorded today.",
+  "confirmAttendance": "Confirm attendance",
+  "alreadyCheckedInToday": "Already checked in today",
+  "readyForDailyCheckIn": "Ready for daily check-in",
+  "clockedInAt": "Clocked in at {time}",
+  "@clockedInAt": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "notClockedInToday": "Not clocked in today",
+  "calendarToday": "Today",
+  "recordLabel": "Record",
+  "alreadyCheckedInTodayMessage": "You have already checked in today for this job.",
+  "attendanceQrOnceDailyHint": "This job uses one check-in scan per day (no clock-out scan).",
+  "checkInForToday": "Check in for today",
+  "attendancePunchRecorded": "{punch} recorded. Today: {minutes} worked.",
+  "@attendancePunchRecorded": {
+    "placeholders": {
+      "punch": { "type": "String" },
+      "minutes": { "type": "String" }
+    }
+  },
+  "useSuggestedPunch": "Use suggested: {punch}",
+  "@useSuggestedPunch": {
+    "placeholders": {
+      "punch": { "type": "String" }
+    }
+  },
+  "attendanceScanCameraHint": "Point your camera at the attendance QR posted at the job site.",
+  "attendanceScanLoadingDetails": "Loading job details…",
+  "attendanceScanningForJob": "Scanning for: {title}",
+  "@attendanceScanningForJob": {
+    "placeholders": {
+      "title": { "type": "String" }
+    }
+  },
+  "viewMyOnsiteJobs": "View my on-site jobs",
+  "attendanceQrScreenTitle": "Attendance QR",
+  "attendancePrintQrAtSite": "Print this QR and post it where workers check in.",
+  "attendanceCouldNotLoadQr": "Could not load QR",
+  "attendanceSharePrintInstructions": "Share / Print instructions",
+  "regenerateQr": "Regenerate QR",
+  "regenerateQrConfirmTitle": "Regenerate QR?",
+  "regenerateQrConfirmBody": "The old printed QR will stop working. Print and post the new code at your site.",
+  "regenerate": "Regenerate",
+  "attendanceNewQrReady": "New attendance QR ready",
+  "attendanceHowItWorks": "How it works",
+  "attendanceHowItWorksBody": "1. Print and tape this QR at the workplace.\n2. Hired freelancers open HupWorks and scan it.\n3. They confirm clock in or clock out on their phone.\n4. You can view today's attendance on the job details screen.",
+  "noOnsiteJobsYet": "No on-site jobs yet",
+  "noOnsiteJobsBody": "You need an accepted on-site contract. Your client chooses how attendance works (QR scan or self-report) when they post the job.",
+  "findOnsiteJobs": "Find on-site jobs",
+  "selectedJob": "Selected job",
+  "openContract": "Open contract",
+  "attendanceTimeIn": "Time in",
+  "attendanceTimeOut": "Time out",
+  "attendanceWorkedToday": "Worked today: {duration}",
+  "@attendanceWorkedToday": {
+    "placeholders": {
+      "duration": { "type": "String" }
+    }
+  },
+  "attendancePunchTodaySummary": "{punch} • {duration} today",
+  "@attendancePunchTodaySummary": {
+    "placeholders": {
+      "punch": { "type": "String" },
+      "duration": { "type": "String" }
+    }
+  },
+  "attendanceLessThanOneMin": "Less than 1 min",
+  "attendanceMinutesOnly": "{count} min",
+  "@attendanceMinutesOnly": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "attendanceHoursOnly": "{count}h",
+  "@attendanceHoursOnly": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "attendanceHoursMinutes": "{hours}h {minutes}m",
+  "@attendanceHoursMinutes": {
+    "placeholders": {
+      "hours": { "type": "int" },
+      "minutes": { "type": "int" }
+    }
+  },
+  "firstDayInstructions": "First-day instructions",
+  "instructionsNotAvailable": "Instructions not available yet.",
+  "onboardingUseScanQrHint": "When you arrive on site, use Scan attendance QR on the contract screen.",
+  "noSectionDetails": "No section details were provided.",
+  "pleaseWaitEllipsis": "Please wait…",
+  "onboardingAcknowledgedLabel": "You acknowledged these instructions",
+  "onboardingReadUnderstood": "I have read and understood",
+  "onboardingEditorLead": "Share site details, access, and contacts so your hire knows what to do on day one.",
+  "onboardingResendNotice": "Already sent. Saving and publishing again will notify the freelancer.",
+  "addDetailsHint": "Add details…",
+  "draftSaved": "Draft saved",
+  "instructionsSentToFreelancer": "Instructions sent to freelancer",
+  "saveDraft": "Save draft",
+  "publishToFreelancer": "Publish to freelancer",
+  "startConversationFirstMessage": "Start a conversation by sending your first message",
+  "chatSendFailed": "Message failed to send",
+  "failedTapToRetry": "Failed — Tap to retry",
+  "chatAttachment": "Attachment",
+  "calendarYesterday": "Yesterday",
+  "noConversationsYet": "No conversations yet",
+  "noConversationsHint": "Start a chat from a freelancer or client profile",
+  "noChatMatches": "No matches found",
+  "tryDifferentSearch": "Try a different name or keyword",
+  "myProfile": "My Profile",
+  "dashboard": "Dashboard",
+  "addDeposit": "Add Deposit",
+  "depositHistory": "Deposit History",
+  "paymentMethods": "Payment Methods",
+  "withdrawals": "Withdrawals",
+  "withdrawMoney": "Withdraw Money",
+  "withdrawHistory": "Withdraw History",
+  "balanceWithAmount": "Balance: {amount}",
+  "@balanceWithAmount": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
+  "editProfileSubtitle": "Edit your profile details",
+  "fullName": "Full Name",
+  "enterYourName": "Enter your name",
+  "phoneNo": "Phone No.",
+  "enterPhoneNo": "Enter Phone No.",
+  "aboutYourCompany": "About your company",
+  "aboutCompanyHint": "Short intro for freelancers viewing your jobs…",
+  "updating": "Updating...",
+  "updateProfile": "Update Profile",
+  "basicInfo": "Basic info",
+  "professional": "Professional",
+  "address": "Address",
+  "enterFullAddress": "Enter your full address",
+  "tapSetBirthDate": "Tap to set your birth date",
+  "ageHiddenOnProfile": "Age {age} (birth date is hidden on profile)",
+  "@ageHiddenOnProfile": {
+    "placeholders": {
+      "age": { "type": "int" }
+    }
+  },
+  "birthDateSaved": "Birth date saved",
+  "ageLabel": "Age",
+  "agePrivacyHint": "Your age is shown on your profile. Your birth date is never displayed.",
+  "dateOfBirth": "Date of birth",
+  "profileDescription": "Profile description",
+  "profileDescriptionHint": "Write a brief description about you…",
+  "yourSkills": "Your skills",
+  "skillsOptionalHint": "Optional — add skills to help clients find you.",
+  "jobTitleHint": "e.g. Factory Worker",
+  "statPosted": "Posted",
+  "myJobPosts": "My Job Posts",
+  "countTotal": "{count} total",
+  "@countTotal": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "noJobsPostedYet": "No jobs posted yet",
+  "postAJob": "Post a job",
+  "avgRating": "Avg rating",
+  "about": "About",
+  "email": "Email",
+  "ageYearsOld": "{age} years old",
+  "@ageYearsOld": {
+    "placeholders": {
+      "age": { "type": "int" }
+    }
+  },
+  "reviewsFromClientsHint": "Reviews from clients appear here after completed orders.",
+  "clientProfile": "Client profile",
+  "clientNotFound": "Client not found",
+  "freelancerProfile": "Freelancer profile",
+  "freelancerNotFound": "Freelancer not found",
+  "couldNotLoadProfile": "Could not load profile: {message}",
+  "@couldNotLoadProfile": {
+    "placeholders": {
+      "message": { "type": "String" }
+    }
+  },
+  "jobsPosted": "Jobs posted",
+  "memberSince": "Member since",
+  "noneYet": "None yet",
+  "noReviewsForClientYet": "No reviews for this client yet.",
+  "viewServices": "View services",
+  "noActiveServiceListing": "No active service listing yet.",
+  "favouriteList": "Favorite List",
+  "removedFromFavourites": "Removed from favourites",
+  "addedToFavourites": "Added to favourites",
+  "priceColon": "Price: ",
+  "service": "Service",
+  "serviceDetails": "Service Details",
+  "orderNow": "Order Now",
+  "errorLoadingService": "Could not load service: {message}",
+  "@errorLoadingService": {
+    "placeholders": {
+      "message": { "type": "String" }
+    }
+  },
+  "noDescriptionAvailable": "No description available.",
+  "deliveryDays": "Delivery days",
+  "revisions": "Revisions",
+  "unlimited": "Unlimited",
+  "totalReviewsCount": "Total {count} Reviews",
+  "@totalReviewsCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "anonymous": "Anonymous",
+  "orderPlacedSuccess": "Order placed successfully!",
+  "errorPlacingOrder": "Could not place order: {message}",
+  "@errorPlacingOrder": {
+    "placeholders": {
+      "message": { "type": "String" }
+    }
+  },
+  "writeReview": "Write a review",
+  "publishing": "Publishing…",
+  "publishReview": "Publish review",
+  "pleaseChooseStarRating": "Please choose a star rating first.",
+  "reviewYourExperience": "Review your experience",
+  "rateOverallExperience": "How would you rate your overall experience with this seller?",
+  "freelancerForContract": "Freelancer for this contract",
+  "selectRating": "Select rating",
+  "yourFeedback": "Your feedback",
+  "feedbackHint": "Share what went well or what could improve…",
+  "uploadImageOptional": "Upload image (optional)",
+  "tapToAdd": "Tap to add",
+  "removePhoto": "Remove photo",
+  "reviewAlreadySubmitted": "You already submitted a review for this order.",
+  "couldNotPublishReview": "Could not publish review: {message}",
+  "@couldNotPublishReview": {
+    "placeholders": {
+      "message": { "type": "String" }
+    }
+  },
+  "couldNotOpenPicker": "Could not open picker: {message}",
+  "@couldNotOpenPicker": {
+    "placeholders": {
+      "message": { "type": "String" }
+    }
+  },
+  "mapMovePinJob": "Move the map so the pin marks the job site.",
+  "mapMovePinProfile": "Move the map so the pin marks your spot.",
+  "mapUseThisLocation": "Use this location",
+  "mapAddressLookupFailed": "Address lookup failed: {message}",
+  "@mapAddressLookupFailed": {
+    "placeholders": {
+      "message": { "type": "String" }
+    }
+  },
+  "mapNoAddressForPoint": "Could not read an address for this point. Try moving the map.",
+  "mapNoCityCountryFound": "No city or country found. Try zooming in closer.",
+  "pickLocationOnMap": "Pick location on map",
+  "mapPinConfirmHint": "Center the pin on your spot, then confirm.",
+  "mapOrType": "Map or type",
+  "supportCommonQuestions": "Common Questions",
+  "supportLiveChat": "Live Chat",
+  "supportProfileLoadFailed": "Could not load your profile for support chat.",
+  "supportLiveChatNotConfigured": "Live chat is not configured yet.",
+  "supportTawkEnvHint": "Add TAWK_DIRECT_CHAT_LINK to your .env file (see .env.example). FAQ answers are still available in the first tab.",
+  "supportNoQuestionsYet": "No questions available yet.",
+  "supportStillNeedHelp": "Still need help? Chat with us",
+  "pleaseEnterValidAmount": "Please enter a valid amount",
+  "depositSubmittedSuccess": "Deposit submitted successfully!",
+  "submitting": "Submitting...",
+  "submit": "Submit",
+  "noDepositHistory": "No deposit history",
+  "withdrawalRequestSubmitted": "Withdrawal request submitted!",
+  "withdrawMethod": "Withdraw method",
+  "enterAmount": "Enter amount",
+  "creditOrDebitCard": "Credit or Debit Card",
+  "txnTypeDeposit": "Deposit",
+  "txnTypeWithdrawal": "Withdrawal",
+  "txnTypeEarning": "Earning",
+  "txnTypePayment": "Payment",
+  "processingOrder": "We're processing\nyour Order",
+  "stayTuned": "Stay tuned...",
+  "chooseYourAction": "Choose your Action",
+  "openGallery": "Open Gallery",
+  "openFile": "Open File",
+  "congratulations": "Congratulations!",
+  "profileSetupCompleteBody": "Your profile is successfully completed. You can make more changes after it's live.",
+  "cancelJobConfirmTitle": "Are You Sure Cancel Your\nJob Post!",
+  "noLabel": "No",
+  "yesLabel": "Yes",
+  "cancelOrderWhy": "Why are you Cancel Order?",
+  "enterReason": "Enter Reason",
+  "confirm": "Confirm",
+  "reviewSuccessTitle": "Successfully",
+  "reviewSuccessBody": "Thank you so much you've just publish your review",
+  "gotIt": "Got it!",
+  "withdrawAmount": "Withdraw Amount",
+  "reviewWithdrawalDetails": "Review your withdrawal details",
+  "transferTo": "Transfer To",
+  "account": "Account",
+  "withdrawalCompleted": "Withdrawal Completed",
+  "orderCompleted": "Order Completed",
+  "detailsLabel": "Details",
+  "profileUpdatedShort": "Profile updated!",
+  "filterAll": "All",
+  "refreshTooltip": "Refresh",
+  "noContractsYet": "No contracts yet",
+  "noFilteredContracts": "No {status} contracts",
+  "@noFilteredContracts": {
+    "placeholders": {
+      "status": { "type": "String" }
+    }
+  },
+  "contractOverdue": "Overdue",
+  "deadlineDaysHoursLeft": "{days}d {hours}h left",
+  "@deadlineDaysHoursLeft": {
+    "placeholders": {
+      "days": { "type": "int" },
+      "hours": { "type": "int" }
+    }
+  },
+  "deadlineHoursMinutesLeft": "{hours}h {minutes}m left",
+  "@deadlineHoursMinutesLeft": {
+    "placeholders": {
+      "hours": { "type": "int" },
+      "minutes": { "type": "int" }
+    }
+  },
+  "deadlineMinutesLeft": "{minutes}m left",
+  "@deadlineMinutesLeft": {
+    "placeholders": {
+      "minutes": { "type": "int" }
+    }
+  },
+  "contractStartedOn": "Started {date}",
+  "@contractStartedOn": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "amountCaps": "AMOUNT",
+  "orderDetailsTitle": "Order Details",
+  "orderIdHash": "Order ID #{id}",
+  "@orderIdHash": {
+    "placeholders": {
+      "id": { "type": "String" }
+    }
+  },
+  "sellerColon": "Seller:",
+  "clientColon": "Client:",
+  "labelTitle": "Title",
+  "labelServiceInfo": "Service Info",
+  "labelDuration": "Duration",
+  "labelStatus": "Status",
+  "labelRevisions": "Revisions",
+  "orderSummary": "Order Summary",
+  "subtotal": "Subtotal",
+  "labelTotal": "Total",
+  "deliveryDate": "Delivery date",
+  "readMoreSuffix": "..Read more",
+  "readLessSuffix": "..Read less",
+  "closeAction": "Close",
+  "contractCancelledSnack": "Contract cancelled",
+  "contractKeptActive": "Contract kept active",
+  "markJobComplete": "Mark job complete",
+  "completingEllipsis": "Completing…",
+  "markJobCompleteTitle": "Mark this job complete?",
+  "markJobCompleteDeliveredBody": "You are confirming you received the work from {seller} through their delivery submission. The contract will close as completed and you can leave a review next.",
+  "@markJobCompleteDeliveredBody": {
+    "placeholders": {
+      "seller": { "type": "String" }
+    }
+  },
+  "markJobCompleteManualBody": "You are about to close this contract as finished. Use this when you have received the deliverables from {seller} (for example via chat or files), even if they have not pressed \"Submit delivery\" yet.",
+  "@markJobCompleteManualBody": {
+    "placeholders": {
+      "seller": { "type": "String" }
+    }
+  },
+  "notYet": "Not yet",
+  "yesCompleteJob": "Yes, complete job",
+  "jobMarkedCompleteThanks": "Job marked complete. Thank you!",
+  "leaveReviewTitle": "Leave a review?",
+  "leaveReviewBody": "Reviews help other clients and reward great work.",
+  "later": "Later",
+  "couldNotCompleteJob": "Could not complete job: {message}",
+  "@couldNotCompleteJob": {
+    "placeholders": {
+      "message": { "type": "String" }
+    }
+  },
+  "couldNotOpenReviewMissingSeller": "Could not open review (missing seller).",
+  "sellerSubmittedDelivery": "Seller submitted delivery",
+  "deliveredCalloutBody": "Review what they sent. When you are happy with the result, tap Mark job complete below to close the order. To chat with the seller, use the ⋮ menu at the top.",
+  "openContractCalloutBody": "When your freelancer has finished and you have the final result, tap Mark job complete below to close the contract. You can message the seller from the ⋮ menu at the top.",
+  "cancellationRequestBannerBody": "{seller} asked to cancel this contract. You can approve or keep it active. If you do not respond within 48 hours, the contract stays active.",
+  "@cancellationRequestBannerBody": {
+    "placeholders": {
+      "seller": { "type": "String" }
+    }
+  },
+  "respondUsingBanner": "Respond using the banner above.",
+  "reviewSubmittedForOrder": "You submitted a review for this order.",
+  "errorLoadingOrder": "Error loading order: {message}",
+  "@errorLoadingOrder": {
+    "placeholders": {
+      "message": { "type": "String" }
+    }
+  },
+  "errorLoadingOrders": "Error loading orders: {message}",
+  "@errorLoadingOrders": {
+    "placeholders": {
+      "message": { "type": "String" }
+    }
+  },
+  "onboardingNotSet": "Not set",
+  "onboardingAcknowledgedShort": "Acknowledged",
+  "onboardingAwaitingAck": "Awaiting ack",
+  "theSeller": "the seller",
+  "roleSeller": "Seller",
+  "roleClient": "Client",
+  "cancellationRequestSent48h": "Cancellation request sent. Waiting for client response (48h).",
+  "cancellationRequestWithdrawn": "Cancellation request withdrawn",
+  "orderMarkedComplete": "Order marked complete",
+  "withdrawingEllipsis": "Withdrawing…",
+  "requestCancel": "Request cancel",
+  "completeOrder": "Complete Order",
+  "waitingForClientResponse": "Waiting for client response",
+  "sellerCancellationPendingBody": "Your cancellation request was sent. The client has up to 48 hours to approve or keep the contract active.",
+  "contractCancelledTitle": "Contract cancelled",
+  "viewFirstDayInstructions": "View first-day instructions",
+  "readFirstDayInstructions": "Read first-day instructions",
+  "firstDayInstructionsSharedBody": "Your client shared site details, access, and contacts for this job.",
+  "openInstructions": "Open instructions",
+  "errorLoadingApplications": "Error loading applications: {message}",
+  "@errorLoadingApplications": {
+    "placeholders": {
+      "message": { "type": "String" }
+    }
+  },
+  "messageClientTooltip": "Message client",
+  "openAttendance": "Open attendance",
+  "instructionsReadyTap": "Instructions ready — tap to read",
+  "rateExperienceWithClient": "How would you rate your overall experience with this client?",
+  "postedThisContract": "Posted this contract",
+  "errorLoadingJobPosts": "Error loading job posts: {message}",
+  "@errorLoadingJobPosts": {
+    "placeholders": {
+      "message": { "type": "String" }
+    }
+  },
+  "jobPostClosed": "Job post closed",
+  "addFirstDayInstructionsTitle": "Add first-day instructions?",
+  "addFirstDayInstructionsBody": "Share office location, building access, and site rules so your new hire knows what to do before day one.",
+  "addInstructionsNow": "Add instructions now",
+  "sendLater": "Send later",
+  "contractNotFoundForHire": "Contract not found for this hire.",
+  "applicationRejected": "Application rejected",
+  "hireFreelancerTitle": "Hire freelancer?",
+  "hireAction": "Hire",
+  "closeJob": "Close Job",
+  "attendanceSettingsUpdated": "Attendance settings updated",
+  "jobPostedSuccess": "Job posted successfully!",
+  "pleaseEnterJobTitle": "Please enter a job title",
+  "pleaseSelectCategory": "Please select a category",
+  "enterValidCategory": "Enter a valid category",
+  "pleaseEnterDescription": "Please enter a description",
+  "pleaseEnterLocation": "Please enter a location",
+  "createJobStepBasics": "Basics",
+  "createJobStepDetails": "Details",
+  "createJobStepLocation": "Location",
+  "createJobStepBudget": "Budget",
+  "createJobPostTitle": "Create Job Post",
+  "shortJobTitleHint": "Short title for the work",
+  "categoryNameLabel": "Category name",
+  "categoryNameHint": "e.g. Janitor, Baker, Waiter",
+  "describeJobLabel": "Describe the job",
+  "describeJobHint": "Scope, timeline, skills needed",
+  "workersNeeded": "Workers needed",
+  "limitHiresToCount": "Limit hires to this count",
+  "budgetMinLabel": "Min",
+  "budgetMaxLabel": "Max",
+  "budgetMinHint": "Min (optional)",
+  "budgetMaxHint": "Max (optional)",
+  "rateTypeLabel": "Rate type",
+  "budgetBasisFixed": "Fixed — total project",
+  "budgetBasisPerHour": "Per hour",
+  "budgetBasisPerDay": "Per day",
+  "budgetBasisPerMonth": "Per month",
+  "postingEllipsis": "Posting…",
+  "reviewAndPost": "Review & post",
+  "nextStep": "Next",
+  "totalJobPostCount": "Total Job Post ({count})",
+  "@totalJobPostCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "applicationsSection": "Applications",
+  "rejectApplication": "Reject",
+  "freelancerDefault": "Freelancer",
+  "submitOfferTitle": "Submit offer",
+  "applyAtClientRate": "Apply at client's rate",
+  "agreeToClientRate": "Agree to\nclient's rate",
+  "customBid": "Custom\nbid",
+  "offerNoPostedRateWarning": "This job has no posted rate to agree to. Enter a custom amount instead.",
+  "offerSentAtPostedRate": "Application sent at client's posted rate",
+  "offerSentSuccess": "Your offer has been sent",
+  "successTitle": "Success",
+  "headsUp": "Heads up",
+  "applyWithoutCounterBody": "You are applying without a counter-offer. The client sees your application at their posted rate.",
+  "clientPostedRate": "Client's posted rate",
+  "yourApplicationAmount": "Your application: {amount}",
+  "@yourApplicationAmount": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
+  "customBidIntroWithBudget": "Enter your own amount if you want to bid differently from the client's budget.",
+  "customBidIntroNoBudget": "This job has no posted budget — enter the amount you are asking for.",
+  "clientPostedPrefix": "Client posted: {amount}",
+  "@clientPostedPrefix": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
+  "yourOfferAmount": "Your offer amount",
+  "enterYourBid": "Enter your bid",
+  "quoteAsLabel": "Quote as",
+  "quoteTotal": "Total",
+  "quotePerHour": "/ hour",
+  "quotePerDay": "/ day",
+  "quotePerMonth": "/ month",
+  "offerMessageOptional": "Message (optional)",
+  "offerMessageHint": "Optional note for the client…",
+  "findJobsTitle": "Find Jobs",
+  "couldNotLoadSkillsFilter": "Could not load skills filter. Pull to refresh later.",
+  "buyerRequestDetailsTitle": "Job details",
+  "submitOfferAction": "Submit offer",
+  "offersCount": "{count} offers",
+  "@offersCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "locationLabel": "Location",
+  "ellipsisBusy": "…",
+  "couldNotOpenChatWithDetail": "Could not open chat: {message}",
+  "@couldNotOpenChatWithDetail": {
+    "placeholders": {
+      "message": { "type": "String" }
+    }
+  },
+  "chooseFromGallery": "Choose from gallery",
+  "filterClear": "Clear",
+  "filterApply": "Apply",
+  "clearFilters": "Clear filters",
+  "deliverOrderTitle": "Deliver Order",
+  "pleaseDescribeDelivery": "Please describe your delivery",
+  "orderDeliveredSuccess": "Order delivered successfully!",
+  "maxSize1Gb": "Max size 1 GB",
+  "addCustomSkill": "Add custom skill",
+  "skillAlreadyAdded": "You already added \"{skill}\"",
+  "@skillAlreadyAdded": {
+    "placeholders": {
+      "skill": { "type": "String" }
+    }
+  },
+  "noWithdrawalHistory": "No withdrawal history",
+  "paymentPayPal": "PayPal",
+  "paymentCreditCard": "Credit Card",
+  "paymentBkash": "Bkash",
+  "bidOfferLabel": "Bid Offer",
+  "proposalCaps": "PROPOSAL",
+  "labelColon": ":",
+  "requiredFieldMark": "*",
+  "writeReviewAction": "Write review",
+  "deliveryDaysCount": "{count} Days",
+  "@deliveryDaysCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  }
+}

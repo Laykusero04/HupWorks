@@ -3,6 +3,7 @@ import 'package:freelancer/data/models/notification_model.dart';
 import 'package:freelancer/screen/client%20screen/client%20job%20post/job_details.dart';
 import 'package:freelancer/screen/client%20screen/client%20orders/client_order_details.dart';
 import 'package:freelancer/screen/seller%20screen/applications/seller_applications.dart';
+import 'package:freelancer/screen/seller%20screen/buyer%20request/buyer_request_details.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -36,6 +37,13 @@ class NotificationNavigation {
           return;
         case 'job_offer':
           await _openJobOffer(context, role: role, offerId: refId);
+          return;
+        case 'job_match':
+          if (role != NotificationUserRole.seller) {
+            _showSnack(context, 'Unable to open this notification.');
+            return;
+          }
+          await BuyerRequestDetails(jobPostId: refId).launch(context);
           return;
         case 'review':
           await _openOrder(context, role: role, orderId: refId);

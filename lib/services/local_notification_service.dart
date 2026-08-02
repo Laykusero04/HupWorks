@@ -9,10 +9,6 @@ import 'package:freelancer/data/models/notification_model.dart';
 
 typedef NotificationTapHandler = void Function(NotificationPayload payload);
 
-/// System tray notifications (no Firebase). Driven by Supabase realtime in-app.
-///
-/// Requires a **full restart** (not hot reload) after adding the plugin.
-/// On web/desktop, initialization is skipped; in-app banners still work.
 class LocalNotificationService {
   LocalNotificationService._();
 

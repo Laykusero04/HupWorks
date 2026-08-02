@@ -14,6 +14,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
 
 import '../../widgets/constant.dart';
+import '../../widgets/profile_location_fields.dart';
 import '../seller popUp/seller_popup.dart';
 
 class SetupSellerProfile extends StatefulWidget {
@@ -35,6 +36,9 @@ class _SetupSellerProfileState extends State<SetupSellerProfile> {
   final _cityController = TextEditingController();
   final _stateController = TextEditingController();
   final _postalController = TextEditingController();
+
+  double? _latitude;
+  double? _longitude;
   final _aboutController = TextEditingController();
 
   String _selectedGender = L10nLabels.genderMale;
@@ -256,6 +260,8 @@ class _SetupSellerProfileState extends State<SetupSellerProfile> {
             ? null
             : _countryController.text.trim(),
         'city': _cityController.text.trim().isEmpty ? null : _cityController.text.trim(),
+        if (_latitude != null) 'latitude': _latitude,
+        if (_longitude != null) 'longitude': _longitude,
       });
 
       await ProfileService.updateSellerProfile(
@@ -436,7 +442,19 @@ class _SetupSellerProfileState extends State<SetupSellerProfile> {
         const SizedBox(height: 20.0),
         _field(_phoneController, l10n.phone, l10n.phone, type: TextInputType.phone),
         const SizedBox(height: 20.0),
-        _field(_countryController, l10n.country, l10n.country),
+        ProfileLocationFields(
+          countryController: _countryController,
+          cityController: _cityController,
+          accentColor: kPrimaryColor,
+          initialLatitude: _latitude,
+          initialLongitude: _longitude,
+          onCoordinatesChanged: (lat, lng) {
+            setState(() {
+              _latitude = lat;
+              _longitude = lng;
+            });
+          },
+        ),
         const SizedBox(height: 20.0),
         _field(
           _streetController,
@@ -444,8 +462,6 @@ class _SetupSellerProfileState extends State<SetupSellerProfile> {
           l10n.streetAddress,
           type: TextInputType.streetAddress,
         ),
-        const SizedBox(height: 20.0),
-        _field(_cityController, l10n.city, l10n.city),
         const SizedBox(height: 20.0),
         _field(_stateController, l10n.state, l10n.state),
         const SizedBox(height: 20.0),

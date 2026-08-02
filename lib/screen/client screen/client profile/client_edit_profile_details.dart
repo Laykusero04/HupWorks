@@ -27,6 +27,8 @@ class _ClientEditProfileState extends State<ClientEditProfile> {
   bool _isLoading = true;
   bool _isSaving = false;
   String? _profileImageUrl;
+  double? _latitude;
+  double? _longitude;
 
   @override
   void initState() {
@@ -56,6 +58,8 @@ class _ClientEditProfileState extends State<ClientEditProfile> {
           _bioController.text = profile['bio'] ?? '';
           _selectedGender = profile['gender'] ?? 'Male';
           _profileImageUrl = profile['profile_image_url'];
+          _latitude = ProfileService.latitudeFromProfile(profile);
+          _longitude = ProfileService.longitudeFromProfile(profile);
           _isLoading = false;
         });
       } else {
@@ -77,6 +81,8 @@ class _ClientEditProfileState extends State<ClientEditProfile> {
         'city': _cityController.text.trim(),
         'bio': _bioController.text.trim(),
         'gender': _selectedGender,
+        if (_latitude != null) 'latitude': _latitude,
+        if (_longitude != null) 'longitude': _longitude,
       });
 
       if (mounted) {
@@ -207,6 +213,14 @@ class _ClientEditProfileState extends State<ClientEditProfile> {
                 ProfileLocationFields(
                   countryController: _countryController,
                   cityController: _cityController,
+                  initialLatitude: _latitude,
+                  initialLongitude: _longitude,
+                  onCoordinatesChanged: (lat, lng) {
+                    setState(() {
+                      _latitude = lat;
+                      _longitude = lng;
+                    });
+                  },
                 ),
                 const SizedBox(height: 20.0),
                 TextFormField(

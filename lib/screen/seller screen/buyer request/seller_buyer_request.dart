@@ -4,6 +4,8 @@ import 'package:freelancer/core/utils/app_logger.dart';
 import 'package:freelancer/services/job_posts_service.dart';
 import 'package:freelancer/services/seller_orders_service.dart';
 import 'package:freelancer/services/skill_service.dart';
+import 'package:freelancer/screen/seller%20screen/job%20alerts/seller_job_alert_editor_screen.dart';
+import 'package:freelancer/screen/seller%20screen/job%20alerts/seller_job_alerts_screen.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../widgets/client_shell_app_bar.dart';
@@ -327,6 +329,24 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
                         }).toList(),
                       ),
                       const SizedBox(height: 24),
+                      if (tempJobType != null ||
+                          (tempSkill != null && tempSkill!.trim().isNotEmpty)) ...[
+                        const SizedBox(height: 8),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: TextButton(
+                            onPressed: () {
+                              Navigator.pop(ctx);
+                              SellerJobAlertEditorScreen(
+                                initialSkillName: tempSkill,
+                                initialJobType: tempJobType,
+                              ).launch(context);
+                            },
+                            child: Text(context.l10n.jobAlertSaveFromFilter),
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 12),
                       Row(
                         children: [
                           Expanded(
@@ -751,9 +771,16 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
 
     return Scaffold(
       backgroundColor: kWhite,
-      appBar: const ClientShellAppBar(
-        title: 'Find Jobs',
+      appBar: ClientShellAppBar(
+        title: context.l10n.findJobsTitle,
         persona: ShellPersona.seller,
+        actions: [
+          IconButton(
+            tooltip: context.l10n.jobAlertsAppBarTooltip,
+            icon: const Icon(Icons.notifications_active_outlined, color: kWhite),
+            onPressed: () => const SellerJobAlertsScreen().launch(context),
+          ),
+        ],
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator(color: primary))

@@ -41,6 +41,24 @@ class ProfileService {
     return v.round().clamp(0, 5);
   }
 
+  static double? latitudeFromProfile(Map<String, dynamic> profile) {
+    final v = profile['latitude'];
+    if (v is num) return v.toDouble();
+    if (v is String) return double.tryParse(v.trim());
+    return null;
+  }
+
+  static double? longitudeFromProfile(Map<String, dynamic> profile) {
+    final v = profile['longitude'];
+    if (v is num) return v.toDouble();
+    if (v is String) return double.tryParse(v.trim());
+    return null;
+  }
+
+  static bool hasProfileCoordinates(Map<String, dynamic> profile) {
+    return latitudeFromProfile(profile) != null && longitudeFromProfile(profile) != null;
+  }
+
   /// Average rating from review rows (e.g. [getReviewsReceived]).
   static double averageFromReviewRows(List<Map<String, dynamic>> reviews) {
     if (reviews.isEmpty) return 0;

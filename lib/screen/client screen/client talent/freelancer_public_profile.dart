@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/services/client_home_service.dart';
 import 'package:freelancer/services/profile_service.dart';
+import 'package:freelancer/services/seller_work_trust_service.dart';
+import 'package:freelancer/data/models/seller_work_trust_model.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../widgets/constant.dart';
@@ -9,6 +11,7 @@ import '../../widgets/profile_detail_theme.dart';
 import '../../widgets/profile_rating_summary.dart';
 import '../../widgets/profile_skeleton.dart';
 import '../../widgets/seller_skills_display.dart';
+import '../../widgets/verified_work_trust_section.dart';
 import '../client service details/client_service_details.dart';
 
 /// Client-facing view of a freelancer's public profile.
@@ -29,6 +32,7 @@ class FreelancerPublicProfile extends StatefulWidget {
 class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
   Map<String, dynamic>? _profile;
   List<Map<String, dynamic>> _reviews = [];
+  SellerWorkTrust _workTrust = SellerWorkTrust.empty;
   bool _isLoading = true;
 
   @override
@@ -42,11 +46,13 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
       final results = await Future.wait([
         ProfileService.getPublicSellerProfile(widget.sellerId),
         ProfileService.getReviewsReceived(widget.sellerId),
+        SellerWorkTrustService.getPublicWorkTrust(widget.sellerId),
       ]);
       if (!mounted) return;
       setState(() {
         _profile = results[0] as Map<String, dynamic>?;
         _reviews = List<Map<String, dynamic>>.from(results[1] as List<dynamic>? ?? const []);
+        _workTrust = results[2] as SellerWorkTrust;
         _isLoading = false;
       });
     } catch (e) {
@@ -287,6 +293,10 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: SellerSkillsDisplay(skills: skills, accentColor: kPrimaryColor),
                 ),
+              ],
+              if (_workTrust.shouldShowSection) ...[
+                const SizedBox(height: 24),
+                VerifiedWorkTrustSection(trust: _workTrust),
               ],
               const SizedBox(height: 24),
               ProfileDetailTheme.sectionDivider(

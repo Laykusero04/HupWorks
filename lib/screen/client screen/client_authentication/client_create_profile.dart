@@ -11,6 +11,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../seller screen/seller popUp/seller_popup.dart';
 import '../../widgets/constant.dart';
+import '../../widgets/profile_location_fields.dart';
 
 class ClientCreateProfile extends StatefulWidget {
   const ClientCreateProfile({Key? key}) : super(key: key);
@@ -27,6 +28,9 @@ class _ClientCreateProfileState extends State<ClientCreateProfile> {
   final _streetController = TextEditingController();
   final _stateController = TextEditingController();
   final _postalController = TextEditingController();
+
+  double? _latitude;
+  double? _longitude;
 
   String _selectedGender = L10nLabels.genderMale;
   String _selectedLanguage = 'English';
@@ -198,6 +202,8 @@ class _ClientCreateProfileState extends State<ClientCreateProfile> {
         'country': _countryController.text.trim(),
         'city': _cityController.text.trim(),
         'gender': _selectedGender,
+        if (_latitude != null) 'latitude': _latitude,
+        if (_longitude != null) 'longitude': _longitude,
       });
 
       if (!mounted) return;
@@ -318,19 +324,17 @@ class _ClientCreateProfileState extends State<ClientCreateProfile> {
                 ),
               ),
               const SizedBox(height: 20.0),
-              TextFormField(
-                controller: _countryController,
-                keyboardType: TextInputType.name,
-                cursorColor: kNeutralColor,
-                textInputAction: TextInputAction.next,
-                decoration: kInputDecoration.copyWith(
-                  labelText: l10n.country,
-                  labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                  hintText: l10n.country,
-                  hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
-                  focusColor: kNeutralColor,
-                  border: const OutlineInputBorder(),
-                ),
+              ProfileLocationFields(
+                countryController: _countryController,
+                cityController: _cityController,
+                initialLatitude: _latitude,
+                initialLongitude: _longitude,
+                onCoordinatesChanged: (lat, lng) {
+                  setState(() {
+                    _latitude = lat;
+                    _longitude = lng;
+                  });
+                },
               ),
               const SizedBox(height: 20.0),
               TextFormField(
@@ -342,21 +346,6 @@ class _ClientCreateProfileState extends State<ClientCreateProfile> {
                   labelText: l10n.streetAddress,
                   labelStyle: kTextStyle.copyWith(color: kNeutralColor),
                   hintText: l10n.streetAddress,
-                  hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
-                  focusColor: kNeutralColor,
-                  border: const OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 20.0),
-              TextFormField(
-                controller: _cityController,
-                keyboardType: TextInputType.name,
-                cursorColor: kNeutralColor,
-                textInputAction: TextInputAction.next,
-                decoration: kInputDecoration.copyWith(
-                  labelText: l10n.city,
-                  labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                  hintText: l10n.city,
                   hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
                   focusColor: kNeutralColor,
                   border: const OutlineInputBorder(),

@@ -2270,4 +2270,130 @@ class AppLocalizationsEn extends AppLocalizations {
   String deliveryDaysCount(int count) {
     return '$count Days';
   }
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get jobAlertsTitle => 'Job alerts';
+
+  @override
+  String get jobAlertNew => 'New alert';
+
+  @override
+  String get jobAlertEdit => 'Edit alert';
+
+  @override
+  String get jobAlertsEmpty =>
+      'Save rules for skills and distance. We will notify you when matching jobs are posted.';
+
+  @override
+  String get jobAlertUntitled => 'Job alert';
+
+  @override
+  String get jobAlertDeleteTitle => 'Delete alert?';
+
+  @override
+  String get jobAlertDeleteMessage =>
+      'You will no longer get notifications for this rule.';
+
+  @override
+  String get jobAlertMatchesAllJobs => 'All open jobs';
+
+  @override
+  String get jobAlertAnyDistance => 'Any distance';
+
+  @override
+  String get jobAlertIncludesRemote => 'Includes remote';
+
+  @override
+  String jobAlertWithinKm(int km) {
+    return 'Within $km km';
+  }
+
+  @override
+  String jobAlertCategoriesCount(int count) {
+    return '$count categories';
+  }
+
+  @override
+  String get jobAlertNameLabel => 'Alert name (optional)';
+
+  @override
+  String get jobAlertNameHint => 'e.g. Plumber near me';
+
+  @override
+  String get jobAlertEnabled => 'Notifications on';
+
+  @override
+  String get jobAlertSkillsSection => 'Skills';
+
+  @override
+  String get jobAlertAddSkill => 'Add skill';
+
+  @override
+  String get jobAlertCategoriesSection => 'Categories';
+
+  @override
+  String get jobAlertAnyCategory => 'Any category';
+
+  @override
+  String get jobAlertPickCategories => 'Choose categories';
+
+  @override
+  String get jobAlertJobTypeSection => 'Job type';
+
+  @override
+  String get jobAlertLocationSection => 'Your location';
+
+  @override
+  String get jobAlertLocationSet => 'Location saved for distance';
+
+  @override
+  String get jobAlertLocationMissing =>
+      'Pick your location on the map to use distance alerts.';
+
+  @override
+  String get jobAlertLimitDistance => 'Limit to nearby jobs';
+
+  @override
+  String get jobAlertIncludeRemote => 'Include remote jobs';
+
+  @override
+  String get jobAlertNeedProfileLocation =>
+      'Pick your location on the map before using a distance limit.';
+
+  @override
+  String get jobAlertSaveFromFilter => 'Save as job alert';
+
+  @override
+  String get jobAlertsAppBarTooltip => 'Job alerts';
+
+  @override
+  String get workTrustSectionTitle => 'Verified work';
+
+  @override
+  String get workTrustSectionSubtitle =>
+      'Counts come from completed on-site contracts and attendance check-ins on HupWorks—not paid badges.';
+
+  @override
+  String get workTrustStatCompletedOnsite => 'Completed on-site';
+
+  @override
+  String get workTrustStatVerifiedCheckins => 'Verified check-ins';
+
+  @override
+  String get workTrustStatVerifiedDays => 'Verified days';
+
+  @override
+  String get workTrustHighlightsTitle => 'Recent on-site work';
+
+  @override
+  String get workTrustAttendanceVerifiedTooltip =>
+      'Attendance recorded for this job';
+
+  @override
+  String workTrustCompletedMonthLabel(String month, int year) {
+    return '$month $year';
+  }
 }

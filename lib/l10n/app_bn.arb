@@ -1106,5 +1106,59 @@
         "type": "int"
       }
     }
+  },
+  "delete": "Delete",
+  "jobAlertsTitle": "Job alerts",
+  "jobAlertNew": "New alert",
+  "jobAlertEdit": "Edit alert",
+  "jobAlertsEmpty": "Save rules for skills and distance. We will notify you when matching jobs are posted.",
+  "jobAlertUntitled": "Job alert",
+  "jobAlertDeleteTitle": "Delete alert?",
+  "jobAlertDeleteMessage": "You will no longer get notifications for this rule.",
+  "jobAlertMatchesAllJobs": "All open jobs",
+  "jobAlertAnyDistance": "Any distance",
+  "jobAlertIncludesRemote": "Includes remote",
+  "jobAlertWithinKm": "Within {km} km",
+  "@jobAlertWithinKm": {
+    "placeholders": {
+      "km": { "type": "int" }
+    }
+  },
+  "jobAlertCategoriesCount": "{count} categories",
+  "@jobAlertCategoriesCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "jobAlertNameLabel": "Alert name (optional)",
+  "jobAlertNameHint": "e.g. Plumber near me",
+  "jobAlertEnabled": "Notifications on",
+  "jobAlertSkillsSection": "Skills",
+  "jobAlertAddSkill": "Add skill",
+  "jobAlertCategoriesSection": "Categories",
+  "jobAlertAnyCategory": "Any category",
+  "jobAlertPickCategories": "Choose categories",
+  "jobAlertJobTypeSection": "Job type",
+  "jobAlertLocationSection": "Your location",
+  "jobAlertLocationSet": "Location saved for distance",
+  "jobAlertLocationMissing": "Pick your location on the map to use distance alerts.",
+  "jobAlertLimitDistance": "Limit to nearby jobs",
+  "jobAlertIncludeRemote": "Include remote jobs",
+  "jobAlertNeedProfileLocation": "Pick your location on the map before using a distance limit.",
+  "jobAlertSaveFromFilter": "Save as job alert",
+  "jobAlertsAppBarTooltip": "Job alerts",
+  "workTrustSectionTitle": "Verified work",
+  "workTrustSectionSubtitle": "Counts come from completed on-site contracts and attendance check-ins on HupWorks—not paid badges.",
+  "workTrustStatCompletedOnsite": "Completed on-site",
+  "workTrustStatVerifiedCheckins": "Verified check-ins",
+  "workTrustStatVerifiedDays": "Verified days",
+  "workTrustHighlightsTitle": "Recent on-site work",
+  "workTrustAttendanceVerifiedTooltip": "Attendance recorded for this job",
+  "workTrustCompletedMonthLabel": "{month} {year}",
+  "@workTrustCompletedMonthLabel": {
+    "placeholders": {
+      "month": { "type": "String" },
+      "year": { "type": "int" }
+    }
   }
 }

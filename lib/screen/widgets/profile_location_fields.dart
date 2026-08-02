@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:latlong2/latlong.dart';
 
 import 'constant.dart';
 import 'map_location_picker_screen.dart';
@@ -12,19 +13,29 @@ class ProfileLocationFields extends StatelessWidget {
     required this.countryController,
     required this.cityController,
     this.accentColor,
+    this.initialLatitude,
+    this.initialLongitude,
+    this.onCoordinatesChanged,
   });
 
   final TextEditingController countryController;
   final TextEditingController cityController;
   final Color? accentColor;
+  final double? initialLatitude;
+  final double? initialLongitude;
+  final void Function(double latitude, double longitude)? onCoordinatesChanged;
 
   Future<void> _openMap(BuildContext context) async {
+    final LatLng? initialPosition = initialLatitude != null && initialLongitude != null
+        ? LatLng(initialLatitude!, initialLongitude!)
+        : null;
     final result = await Navigator.of(context).push<MapLocationPickerResult>(
       MaterialPageRoute(
         builder: (_) => MapLocationPickerScreen(
           purpose: MapLocationPickerPurpose.profile,
           initialCity: cityController.text,
           initialCountry: countryController.text,
+          initialPosition: initialPosition,
           accentColor: accentColor,
         ),
       ),
@@ -36,6 +47,7 @@ class ProfileLocationFields extends StatelessWidget {
     if (result.city != null && result.city!.isNotEmpty) {
       cityController.text = result.city!;
     }
+    onCoordinatesChanged?.call(result.latitude, result.longitude);
   }
 
   @override

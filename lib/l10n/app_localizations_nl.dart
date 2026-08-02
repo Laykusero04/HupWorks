@@ -2286,4 +2286,130 @@ class AppLocalizationsNl extends AppLocalizations {
   String deliveryDaysCount(int count) {
     return '$count Dagen';
   }
+
+  @override
+  String get delete => 'Verwijderen';
+
+  @override
+  String get jobAlertsTitle => 'Vacaturemeldingen';
+
+  @override
+  String get jobAlertNew => 'Nieuwe melding';
+
+  @override
+  String get jobAlertEdit => 'Melding bewerken';
+
+  @override
+  String get jobAlertsEmpty =>
+      'Sla regels op voor vaardigheden en afstand. We sturen een melding bij passende vacatures.';
+
+  @override
+  String get jobAlertUntitled => 'Vacaturemelding';
+
+  @override
+  String get jobAlertDeleteTitle => 'Melding verwijderen?';
+
+  @override
+  String get jobAlertDeleteMessage =>
+      'Je ontvangt geen meldingen meer voor deze regel.';
+
+  @override
+  String get jobAlertMatchesAllJobs => 'Alle open vacatures';
+
+  @override
+  String get jobAlertAnyDistance => 'Elke afstand';
+
+  @override
+  String get jobAlertIncludesRemote => 'Inclusief remote';
+
+  @override
+  String jobAlertWithinKm(int km) {
+    return 'Binnen $km km';
+  }
+
+  @override
+  String jobAlertCategoriesCount(int count) {
+    return '$count categorieën';
+  }
+
+  @override
+  String get jobAlertNameLabel => 'Naam melding (optioneel)';
+
+  @override
+  String get jobAlertNameHint => 'bijv. Loodgieter in de buurt';
+
+  @override
+  String get jobAlertEnabled => 'Meldingen aan';
+
+  @override
+  String get jobAlertSkillsSection => 'Vaardigheden';
+
+  @override
+  String get jobAlertAddSkill => 'Vaardigheid toevoegen';
+
+  @override
+  String get jobAlertCategoriesSection => 'Categorieën';
+
+  @override
+  String get jobAlertAnyCategory => 'Elke categorie';
+
+  @override
+  String get jobAlertPickCategories => 'Kies categorieën';
+
+  @override
+  String get jobAlertJobTypeSection => 'Type vacature';
+
+  @override
+  String get jobAlertLocationSection => 'Jouw locatie';
+
+  @override
+  String get jobAlertLocationSet => 'Locatie opgeslagen voor afstand';
+
+  @override
+  String get jobAlertLocationMissing =>
+      'Kies je locatie op de kaart voor afstandsmeldingen.';
+
+  @override
+  String get jobAlertLimitDistance => 'Alleen vacatures in de buurt';
+
+  @override
+  String get jobAlertIncludeRemote => 'Remote vacatures meenemen';
+
+  @override
+  String get jobAlertNeedProfileLocation =>
+      'Kies eerst je locatie op de kaart voordat je een afstand instelt.';
+
+  @override
+  String get jobAlertSaveFromFilter => 'Opslaan als vacaturemelding';
+
+  @override
+  String get jobAlertsAppBarTooltip => 'Vacaturemeldingen';
+
+  @override
+  String get workTrustSectionTitle => 'Geverifieerd werk';
+
+  @override
+  String get workTrustSectionSubtitle =>
+      'Gebaseerd op voltooide on-site contracten en aanwezigheidsregistraties op HupWorks—geen betaalde badges.';
+
+  @override
+  String get workTrustStatCompletedOnsite => 'On-site voltooid';
+
+  @override
+  String get workTrustStatVerifiedCheckins => 'Geverifieerde check-ins';
+
+  @override
+  String get workTrustStatVerifiedDays => 'Geverifieerde dagen';
+
+  @override
+  String get workTrustHighlightsTitle => 'Recent on-site werk';
+
+  @override
+  String get workTrustAttendanceVerifiedTooltip =>
+      'Aanwezigheid geregistreerd voor deze vacature';
+
+  @override
+  String workTrustCompletedMonthLabel(String month, int year) {
+    return '$month $year';
+  }
 }

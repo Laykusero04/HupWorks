@@ -773,5 +773,59 @@
   "withdrawalCompleted": "Opname voltooid",
   "orderCompleted": "Order voltooid",
   "detailsLabel": "Details",
-  "profileUpdatedShort": "Profiel bijgewerkt!"
+  "profileUpdatedShort": "Profiel bijgewerkt!",
+  "delete": "Verwijderen",
+  "jobAlertsTitle": "Vacaturemeldingen",
+  "jobAlertNew": "Nieuwe melding",
+  "jobAlertEdit": "Melding bewerken",
+  "jobAlertsEmpty": "Sla regels op voor vaardigheden en afstand. We sturen een melding bij passende vacatures.",
+  "jobAlertUntitled": "Vacaturemelding",
+  "jobAlertDeleteTitle": "Melding verwijderen?",
+  "jobAlertDeleteMessage": "Je ontvangt geen meldingen meer voor deze regel.",
+  "jobAlertMatchesAllJobs": "Alle open vacatures",
+  "jobAlertAnyDistance": "Elke afstand",
+  "jobAlertIncludesRemote": "Inclusief remote",
+  "jobAlertWithinKm": "Binnen {km} km",
+  "@jobAlertWithinKm": {
+    "placeholders": {
+      "km": { "type": "int" }
+    }
+  },
+  "jobAlertCategoriesCount": "{count} categorieën",
+  "@jobAlertCategoriesCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "jobAlertNameLabel": "Naam melding (optioneel)",
+  "jobAlertNameHint": "bijv. Loodgieter in de buurt",
+  "jobAlertEnabled": "Meldingen aan",
+  "jobAlertSkillsSection": "Vaardigheden",
+  "jobAlertAddSkill": "Vaardigheid toevoegen",
+  "jobAlertCategoriesSection": "Categorieën",
+  "jobAlertAnyCategory": "Elke categorie",
+  "jobAlertPickCategories": "Kies categorieën",
+  "jobAlertJobTypeSection": "Type vacature",
+  "jobAlertLocationSection": "Jouw locatie",
+  "jobAlertLocationSet": "Locatie opgeslagen voor afstand",
+  "jobAlertLocationMissing": "Kies je locatie op de kaart voor afstandsmeldingen.",
+  "jobAlertLimitDistance": "Alleen vacatures in de buurt",
+  "jobAlertIncludeRemote": "Remote vacatures meenemen",
+  "jobAlertNeedProfileLocation": "Kies eerst je locatie op de kaart voordat je een afstand instelt.",
+  "jobAlertSaveFromFilter": "Opslaan als vacaturemelding",
+  "jobAlertsAppBarTooltip": "Vacaturemeldingen",
+  "workTrustSectionTitle": "Geverifieerd werk",
+  "workTrustSectionSubtitle": "Gebaseerd op voltooide on-site contracten en aanwezigheidsregistraties op HupWorks—geen betaalde badges.",
+  "workTrustStatCompletedOnsite": "On-site voltooid",
+  "workTrustStatVerifiedCheckins": "Geverifieerde check-ins",
+  "workTrustStatVerifiedDays": "Geverifieerde dagen",
+  "workTrustHighlightsTitle": "Recent on-site werk",
+  "workTrustAttendanceVerifiedTooltip": "Aanwezigheid geregistreerd voor deze vacature",
+  "workTrustCompletedMonthLabel": "{month} {year}",
+  "@workTrustCompletedMonthLabel": {
+    "placeholders": {
+      "month": { "type": "String" },
+      "year": { "type": "int" }
+    }
+  }
 }

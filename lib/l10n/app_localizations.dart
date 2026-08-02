@@ -4263,6 +4263,234 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} Days'**
   String deliveryDaysCount(int count);
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @jobAlertsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Job alerts'**
+  String get jobAlertsTitle;
+
+  /// No description provided for @jobAlertNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New alert'**
+  String get jobAlertNew;
+
+  /// No description provided for @jobAlertEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit alert'**
+  String get jobAlertEdit;
+
+  /// No description provided for @jobAlertsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Save rules for skills and distance. We will notify you when matching jobs are posted.'**
+  String get jobAlertsEmpty;
+
+  /// No description provided for @jobAlertUntitled.
+  ///
+  /// In en, this message translates to:
+  /// **'Job alert'**
+  String get jobAlertUntitled;
+
+  /// No description provided for @jobAlertDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete alert?'**
+  String get jobAlertDeleteTitle;
+
+  /// No description provided for @jobAlertDeleteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You will no longer get notifications for this rule.'**
+  String get jobAlertDeleteMessage;
+
+  /// No description provided for @jobAlertMatchesAllJobs.
+  ///
+  /// In en, this message translates to:
+  /// **'All open jobs'**
+  String get jobAlertMatchesAllJobs;
+
+  /// No description provided for @jobAlertAnyDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Any distance'**
+  String get jobAlertAnyDistance;
+
+  /// No description provided for @jobAlertIncludesRemote.
+  ///
+  /// In en, this message translates to:
+  /// **'Includes remote'**
+  String get jobAlertIncludesRemote;
+
+  /// No description provided for @jobAlertWithinKm.
+  ///
+  /// In en, this message translates to:
+  /// **'Within {km} km'**
+  String jobAlertWithinKm(int km);
+
+  /// No description provided for @jobAlertCategoriesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} categories'**
+  String jobAlertCategoriesCount(int count);
+
+  /// No description provided for @jobAlertNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Alert name (optional)'**
+  String get jobAlertNameLabel;
+
+  /// No description provided for @jobAlertNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Plumber near me'**
+  String get jobAlertNameHint;
+
+  /// No description provided for @jobAlertEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications on'**
+  String get jobAlertEnabled;
+
+  /// No description provided for @jobAlertSkillsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Skills'**
+  String get jobAlertSkillsSection;
+
+  /// No description provided for @jobAlertAddSkill.
+  ///
+  /// In en, this message translates to:
+  /// **'Add skill'**
+  String get jobAlertAddSkill;
+
+  /// No description provided for @jobAlertCategoriesSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Categories'**
+  String get jobAlertCategoriesSection;
+
+  /// No description provided for @jobAlertAnyCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Any category'**
+  String get jobAlertAnyCategory;
+
+  /// No description provided for @jobAlertPickCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose categories'**
+  String get jobAlertPickCategories;
+
+  /// No description provided for @jobAlertJobTypeSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Job type'**
+  String get jobAlertJobTypeSection;
+
+  /// No description provided for @jobAlertLocationSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Your location'**
+  String get jobAlertLocationSection;
+
+  /// No description provided for @jobAlertLocationSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Location saved for distance'**
+  String get jobAlertLocationSet;
+
+  /// No description provided for @jobAlertLocationMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick your location on the map to use distance alerts.'**
+  String get jobAlertLocationMissing;
+
+  /// No description provided for @jobAlertLimitDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Limit to nearby jobs'**
+  String get jobAlertLimitDistance;
+
+  /// No description provided for @jobAlertIncludeRemote.
+  ///
+  /// In en, this message translates to:
+  /// **'Include remote jobs'**
+  String get jobAlertIncludeRemote;
+
+  /// No description provided for @jobAlertNeedProfileLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick your location on the map before using a distance limit.'**
+  String get jobAlertNeedProfileLocation;
+
+  /// No description provided for @jobAlertSaveFromFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Save as job alert'**
+  String get jobAlertSaveFromFilter;
+
+  /// No description provided for @jobAlertsAppBarTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Job alerts'**
+  String get jobAlertsAppBarTooltip;
+
+  /// No description provided for @workTrustSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified work'**
+  String get workTrustSectionTitle;
+
+  /// No description provided for @workTrustSectionSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Counts come from completed on-site contracts and attendance check-ins on HupWorks—not paid badges.'**
+  String get workTrustSectionSubtitle;
+
+  /// No description provided for @workTrustStatCompletedOnsite.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed on-site'**
+  String get workTrustStatCompletedOnsite;
+
+  /// No description provided for @workTrustStatVerifiedCheckins.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified check-ins'**
+  String get workTrustStatVerifiedCheckins;
+
+  /// No description provided for @workTrustStatVerifiedDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified days'**
+  String get workTrustStatVerifiedDays;
+
+  /// No description provided for @workTrustHighlightsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent on-site work'**
+  String get workTrustHighlightsTitle;
+
+  /// No description provided for @workTrustAttendanceVerifiedTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendance recorded for this job'**
+  String get workTrustAttendanceVerifiedTooltip;
+
+  /// No description provided for @workTrustCompletedMonthLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{month} {year}'**
+  String workTrustCompletedMonthLabel(String month, int year);
 }
 
 class _AppLocalizationsDelegate

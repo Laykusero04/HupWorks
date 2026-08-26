@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/core/utils/app_logger.dart';
+import 'package:freelancer/services/favourite_service.dart';
 import 'package:freelancer/services/job_posts_service.dart';
 import 'package:freelancer/services/seller_orders_service.dart';
 import 'package:freelancer/services/skill_service.dart';
@@ -26,6 +27,8 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
 
   List<Map<String, dynamic>> _requests = [];
   List<Map<String, dynamic>> _skillCatalog = [];
+  final Set<String> _savedJobIds = {};
+  final Set<String> _saveBusyIds = {};
   bool _isLoading = true;
   String _titleQuery = '';
   String? _jobTypeFilter;
@@ -67,10 +70,16 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
 
   Future<void> _loadRequests() async {
     try {
-      final reqs = await SellerOrdersService.getBuyerRequests();
+      final results = await Future.wait([
+        SellerOrdersService.getBuyerRequests(),
+        FavouriteService.getFavouritedJobPostIds(),
+      ]);
       if (mounted) {
         setState(() {
-          _requests = reqs;
+          _requests = results[0] as List<Map<String, dynamic>>;
+          _savedJobIds
+            ..clear()
+            ..addAll(results[1] as Set<String>);
           _isLoading = false;
         });
       }
@@ -81,6 +90,36 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
           SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
+    }
+  }
+
+  Future<void> _toggleSaveJob(String jobPostId) async {
+    if (_saveBusyIds.contains(jobPostId)) return;
+    setState(() => _saveBusyIds.add(jobPostId));
+    try {
+      final saved = await FavouriteService.toggleFavourite(jobPostId);
+      if (!mounted) return;
+      setState(() {
+        _saveBusyIds.remove(jobPostId);
+        if (saved) {
+          _savedJobIds.add(jobPostId);
+        } else {
+          _savedJobIds.remove(jobPostId);
+        }
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            saved ? context.l10n.addedToFavourites : context.l10n.removedFromFavourites,
+          ),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _saveBusyIds.remove(jobPostId));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+      );
     }
   }
 
@@ -562,6 +601,9 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
   Widget _buildJobCard(Map<String, dynamic> req, Color primary) {
     final buyer = req['profiles'] as Map<String, dynamic>?;
     final category = req['categories'] as Map<String, dynamic>?;
+    final jobId = req['id'] as String?;
+    final isSaved = jobId != null && _savedJobIds.contains(jobId);
+    final saveBusy = jobId != null && _saveBusyIds.contains(jobId);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
@@ -607,6 +649,16 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
                       ],
                     ),
                   ),
+                  if (jobId != null)
+                    IconButton(
+                      tooltip: isSaved ? context.l10n.favourites : context.l10n.favorite,
+                      onPressed: saveBusy ? null : () => _toggleSaveJob(jobId),
+                      visualDensity: VisualDensity.compact,
+                      icon: Icon(
+                        isSaved ? Icons.bookmark : Icons.bookmark_border,
+                        color: isSaved ? primary : kNeutralColor,
+                      ),
+                    ),
                 ],
               ),
               const SizedBox(height: 10),

@@ -175,8 +175,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
             onPressed: _handleSignUp,
           ),
           const SizedBox(height: 24),
-          AuthSocialSection(dividerText: l10n.authOrSignUpWith),
-          const SizedBox(height: 24),
           AuthFooterLink(
             prefix: '${l10n.authAlreadyHaveAccountShort} ',
             action: l10n.authLogIn,

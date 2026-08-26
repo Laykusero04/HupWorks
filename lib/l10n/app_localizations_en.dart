@@ -141,7 +141,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sellerReport => 'Seller Report';
 
   @override
-  String get favorite => 'Favorite';
+  String get favorite => 'Save';
 
   @override
   String get transaction => 'Transaction';
@@ -261,6 +261,46 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reportReasonOther => 'Other reasons';
+
+  @override
+  String get reportReasonHarassment => 'Harassment or inappropriate behavior';
+
+  @override
+  String get reportReasonFakeJob => 'Fake or misleading job';
+
+  @override
+  String get reportReasonNoShow => 'No-show or incomplete work';
+
+  @override
+  String get reportReasonPaymentDispute => 'Payment or contract dispute';
+
+  @override
+  String get reportReasonSpam => 'Spam or scam';
+
+  @override
+  String get reportDetailsTooShort =>
+      'Please describe the issue (at least 10 characters).';
+
+  @override
+  String get reportDetailsHelp =>
+      'Include what happened, when, and any messages or job details that help us review.';
+
+  @override
+  String get reportOpenFromContextHint =>
+      'Tip: open Report from a chat, job, or contract to link the other person automatically.';
+
+  @override
+  String reportReportingUser(String name) {
+    return 'Reporting: $name';
+  }
+
+  @override
+  String reportReportingJob(String title) {
+    return 'Job: $title';
+  }
+
+  @override
+  String get reportReportingContract => 'Linked to this contract';
 
   @override
   String get cancelReasonScheduleConflict => 'Schedule conflict';
@@ -830,13 +870,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileDetails => 'Profile Details';
 
   @override
-  String get favourites => 'Favourites';
+  String get favourites => 'Saved';
 
   @override
   String get reviews => 'Reviews';
 
   @override
-  String get noFavouritesYet => 'No favourites yet';
+  String get noFavouritesYet => 'No saved jobs yet';
 
   @override
   String get noReviewsYet => 'No reviews yet';
@@ -908,7 +948,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get reportWhyQuestion => 'Why do you want to report?';
+  String get reportWhyQuestion => 'Why are you reporting?';
 
   @override
   String get reportSellerProfileUrl => 'Seller Profile URL';
@@ -923,10 +963,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reportEnterPostUrl => 'Enter post url';
 
   @override
-  String get reportAdditionalInfo => 'Additional information';
+  String get reportAdditionalInfo => 'What happened?';
 
   @override
-  String get reportEnterInformation => 'Enter information...';
+  String get reportEnterInformation => 'Describe the issue…';
 
   @override
   String get promoVerifiedTalentSubtitle => 'Verified talent for every project';
@@ -1423,13 +1463,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noActiveServiceListing => 'No active service listing yet.';
 
   @override
-  String get favouriteList => 'Favorite List';
+  String get favouriteList => 'Saved jobs';
 
   @override
-  String get removedFromFavourites => 'Removed from favourites';
+  String get removedFromFavourites => 'Removed from saved';
 
   @override
-  String get addedToFavourites => 'Added to favourites';
+  String get addedToFavourites => 'Job saved';
 
   @override
   String get priceColon => 'Price: ';

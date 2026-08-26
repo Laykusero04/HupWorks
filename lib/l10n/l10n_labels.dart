@@ -20,23 +20,37 @@ class L10nLabels {
   }
 
   static const reportCodes = [
-    'Non original content',
-    'Trademark Violations',
-    'Copyright Violations',
+    'Harassment or inappropriate behavior',
+    'Fake or misleading job',
+    'No-show or incomplete work',
+    'Payment or contract dispute',
+    'Spam or scam',
     'Other reasons',
   ];
 
   static String reportReason(AppLocalizations l10n, String code) {
     switch (code) {
+      case 'Harassment or inappropriate behavior':
+        return l10n.reportReasonHarassment;
+      case 'Fake or misleading job':
+        return l10n.reportReasonFakeJob;
+      case 'No-show or incomplete work':
+        return l10n.reportReasonNoShow;
+      case 'Payment or contract dispute':
+        return l10n.reportReasonPaymentDispute;
+      case 'Spam or scam':
+        return l10n.reportReasonSpam;
+      case 'Other reasons':
+        return l10n.reportReasonOther;
+      // Legacy stored codes (older reports)
       case 'Trademark Violations':
         return l10n.reportReasonTrademark;
       case 'Copyright Violations':
         return l10n.reportReasonCopyright;
-      case 'Other reasons':
-        return l10n.reportReasonOther;
       case 'Non original content':
-      default:
         return l10n.reportReasonNonOriginal;
+      default:
+        return code;
     }
   }
 

@@ -50,22 +50,4 @@ class DashboardService {
     };
   }
 
-  /// Fetch favourited services for current user
-  static Future<List<Map<String, dynamic>>> getFavourites() async {
-    final user = _client.auth.currentUser;
-    if (user == null) return [];
-
-    final data = await _client
-        .from('favourites')
-        .select('id, service_id, services!service_id(id, title, price, rating, review_count, images, profiles!seller_id(name, profile_image_url))')
-        .eq('user_id', user.id)
-        .order('created_at', ascending: false);
-
-    return List<Map<String, dynamic>>.from(data);
-  }
-
-  /// Remove a favourite
-  static Future<void> removeFavourite(String favouriteId) async {
-    await _client.from('favourites').delete().eq('id', favouriteId);
-  }
 }

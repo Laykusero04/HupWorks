@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:freelancer/l10n/l10n.dart';
-import 'package:freelancer/services/dashboard_service.dart';
+import 'package:freelancer/services/favourite_service.dart';
+import 'package:freelancer/services/job_posts_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../widgets/constant.dart';
-import '../../client screen/client service details/client_service_details.dart';
+import '../buyer request/buyer_request_details.dart';
 
 class SellerFavList extends StatefulWidget {
   const SellerFavList({Key? key}) : super(key: key);
@@ -26,7 +26,7 @@ class _SellerFavListState extends State<SellerFavList> {
 
   Future<void> _loadFavourites() async {
     try {
-      final favs = await DashboardService.getFavourites();
+      final favs = await FavouriteService.getFavourites();
       if (mounted) {
         setState(() {
           _favourites = favs;
@@ -45,7 +45,7 @@ class _SellerFavListState extends State<SellerFavList> {
 
   Future<void> _handleRemoveFavourite(String favId, int index) async {
     try {
-      await DashboardService.removeFavourite(favId);
+      await FavouriteService.removeFavourite(favId);
       if (mounted) {
         setState(() => _favourites.removeAt(index));
         ScaffoldMessenger.of(context).showSnackBar(
@@ -61,6 +61,19 @@ class _SellerFavListState extends State<SellerFavList> {
     }
   }
 
+  String _jobTypeLabel(String? type) {
+    switch (type) {
+      case 'full_time':
+        return 'Full time';
+      case 'part_time':
+        return 'Part time';
+      case 'gig':
+        return 'Gig';
+      default:
+        return type ?? 'Job';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -71,7 +84,7 @@ class _SellerFavListState extends State<SellerFavList> {
         elevation: 0,
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
-          context.l10n.favouriteList,
+          l10n.favouriteList,
           style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -92,152 +105,177 @@ class _SellerFavListState extends State<SellerFavList> {
               ? const Center(child: CircularProgressIndicator(color: kPrimaryColor))
               : _favourites.isEmpty
                   ? Center(
-                      child: Text(l10n.noFavouritesYet, style: kTextStyle.copyWith(color: kLightNeutralColor)),
+                      child: Text(
+                        l10n.noFavouritesYet,
+                        style: kTextStyle.copyWith(color: kLightNeutralColor),
+                      ),
                     )
                   : RefreshIndicator(
                       color: kPrimaryColor,
                       onRefresh: _loadFavourites,
                       child: ListView.builder(
-                        physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                        physics: const AlwaysScrollableScrollPhysics(
+                          parent: BouncingScrollPhysics(),
+                        ),
                         padding: const EdgeInsets.only(top: 15.0, bottom: 15.0),
                         itemCount: _favourites.length,
                         itemBuilder: (_, i) {
                           final fav = _favourites[i];
-                          final service = fav['services'] as Map<String, dynamic>?;
-                          if (service == null) return const SizedBox();
+                          final job = fav['job_posts'] as Map<String, dynamic>?;
+                          if (job == null) return const SizedBox.shrink();
 
-                          final seller = service['profiles'] as Map<String, dynamic>?;
-                          final images = service['images'] as List<dynamic>?;
-                          final imageUrl = (images != null && images.isNotEmpty) ? images[0] : null;
+                          final category = job['categories'] as Map<String, dynamic>?;
+                          final client = (job['client'] ?? job['profiles']) as Map<String, dynamic>?;
+                          final jobId = job['id'] as String? ?? fav['job_post_id'] as String?;
+                          final status = (job['status'] as String?) ?? 'open';
 
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 10.0),
-                            child: GestureDetector(
-                              onTap: () {
-                                ClientServiceDetails(serviceId: service['id']).launch(context);
-                              },
-                              child: Container(
-                                height: 120,
-                                decoration: BoxDecoration(
-                                  color: kWhite,
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  border: Border.all(color: kBorderColorTextField),
-                                  boxShadow: const [
-                                    BoxShadow(color: kDarkWhite, blurRadius: 5.0, spreadRadius: 2.0, offset: Offset(0, 5)),
-                                  ],
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Stack(
-                                      alignment: Alignment.topLeft,
-                                      children: [
-                                        Container(
-                                          height: 120,
-                                          width: 120,
-                                          decoration: BoxDecoration(
-                                            borderRadius: const BorderRadius.only(
-                                              bottomLeft: Radius.circular(8.0),
-                                              topLeft: Radius.circular(8.0),
-                                            ),
-                                            image: DecorationImage(
-                                              image: imageUrl != null
-                                                  ? NetworkImage(imageUrl) as ImageProvider
-                                                  : const AssetImage('images/shot1.png'),
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ),
-                                        ),
-                                        GestureDetector(
-                                          onTap: () => _handleRemoveFavourite(fav['id'], i),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(5.0),
-                                            child: Container(
-                                              height: 25,
-                                              width: 25,
-                                              decoration: const BoxDecoration(
-                                                color: Colors.white,
-                                                shape: BoxShape.circle,
-                                                boxShadow: [
-                                                  BoxShadow(color: Colors.black12, blurRadius: 10.0, spreadRadius: 1.0, offset: Offset(0, 2)),
-                                                ],
+                            child: Material(
+                              color: kWhite,
+                              borderRadius: BorderRadius.circular(8.0),
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(8.0),
+                                onTap: jobId == null
+                                    ? null
+                                    : () => BuyerRequestDetails(jobPostId: jobId).launch(context),
+                                child: Container(
+                                  padding: const EdgeInsets.all(12.0),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    border: Border.all(color: kBorderColorTextField),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              job['title'] ?? 'Job',
+                                              style: kTextStyle.copyWith(
+                                                color: kNeutralColor,
+                                                fontWeight: FontWeight.bold,
                                               ),
-                                              child: const Center(
-                                                child: Icon(Icons.favorite, color: Colors.red, size: 16.0),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(5.0),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Text(
-                                              service['title'] ?? context.l10n.service,
-                                              style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
                                               maxLines: 2,
                                               overflow: TextOverflow.ellipsis,
                                             ),
-                                            const SizedBox(height: 5.0),
-                                            Row(
-                                              children: [
-                                                const Icon(IconlyBold.star, color: Colors.amber, size: 18.0),
-                                                const SizedBox(width: 2.0),
-                                                Text('${service['rating'] ?? 0}', style: kTextStyle.copyWith(color: kNeutralColor)),
-                                                const SizedBox(width: 2.0),
-                                                Text('(${service['review_count'] ?? 0})', style: kTextStyle.copyWith(color: kLightNeutralColor)),
-                                                const SizedBox(width: 20),
-                                                RichText(
-                                                  text: TextSpan(
-                                                    text: context.l10n.priceColon,
-                                                    style: kTextStyle.copyWith(color: kLightNeutralColor),
-                                                    children: [
-                                                      TextSpan(
-                                                        text: '$currencySign${service['price'] ?? 0}',
-                                                        style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
+                                          ),
+                                          IconButton(
+                                            tooltip: l10n.removedFromFavourites,
+                                            onPressed: () => _handleRemoveFavourite(fav['id'] as String, i),
+                                            icon: Icon(
+                                              Icons.bookmark,
+                                              color: kPrimaryColor,
+                                              size: 22,
                                             ),
-                                            const SizedBox(height: 5.0),
-                                            Row(
-                                              children: [
-                                                Container(
-                                                  height: 32,
-                                                  width: 32,
-                                                  decoration: BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    image: DecorationImage(
-                                                      image: seller?['profile_image_url'] != null
-                                                          ? NetworkImage(seller!['profile_image_url']) as ImageProvider
-                                                          : const AssetImage('images/profilepic2.png'),
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                  ),
+                                            visualDensity: VisualDensity.compact,
+                                          ),
+                                        ],
+                                      ),
+                                      if ((job['description'] as String?)?.isNotEmpty ?? false) ...[
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          job['description'] as String,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: kTextStyle.copyWith(color: kSubTitleColor),
+                                        ),
+                                      ],
+                                      const SizedBox(height: 10),
+                                      Row(
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(20),
+                                              color: kDarkWhite,
+                                            ),
+                                            child: Text(
+                                              category?['name'] ?? 'General',
+                                              style: kTextStyle.copyWith(color: kNeutralColor, fontSize: 12),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 6),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(20),
+                                              color: kPrimaryColor.withValues(alpha: 0.08),
+                                            ),
+                                            child: Text(
+                                              _jobTypeLabel(job['job_type'] as String?),
+                                              style: kTextStyle.copyWith(
+                                                color: kPrimaryColor,
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 6),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(20),
+                                              color: status == 'open'
+                                                  ? const Color(0xFFE8F5E9)
+                                                  : kDarkWhite,
+                                            ),
+                                            child: Text(
+                                              status,
+                                              style: kTextStyle.copyWith(
+                                                color: status == 'open'
+                                                    ? const Color(0xFF2E7D32)
+                                                    : kSubTitleColor,
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                          ),
+                                          const Spacer(),
+                                          if (job['budget_min'] != null || job['budget_max'] != null)
+                                            Text(
+                                              JobPostsService.formatBudgetRangeShort(
+                                                job['budget_min'],
+                                                job['budget_max'],
+                                                job['budget_basis'],
+                                              ),
+                                              style: kTextStyle.copyWith(
+                                                color: kPrimaryColor,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                      if (client != null) ...[
+                                        const SizedBox(height: 10),
+                                        Row(
+                                          children: [
+                                            CircleAvatar(
+                                              radius: 14,
+                                              backgroundImage: client['profile_image_url'] != null
+                                                  ? NetworkImage(client['profile_image_url'] as String)
+                                                  : const AssetImage('images/profilepic2.png')
+                                                      as ImageProvider,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Expanded(
+                                              child: Text(
+                                                client['name'] as String? ?? l10n.authRoleClient,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: kTextStyle.copyWith(
+                                                  color: kNeutralColor,
+                                                  fontWeight: FontWeight.w600,
                                                 ),
-                                                const SizedBox(width: 5.0),
-                                                Expanded(
-                                                  child: Text(
-                                                    seller?['name'] ?? context.l10n.freelancerDefault,
-                                                    maxLines: 1,
-                                                    overflow: TextOverflow.ellipsis,
-                                                    style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
-                                                  ),
-                                                ),
-                                              ],
+                                              ),
                                             ),
                                           ],
                                         ),
-                                      ),
-                                    ),
-                                  ],
+                                      ],
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),

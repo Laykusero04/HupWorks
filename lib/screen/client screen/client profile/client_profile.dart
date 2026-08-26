@@ -12,7 +12,6 @@ import '../../widgets/profile_skeleton.dart';
 import '../../widgets/shell_drawer_header.dart';
 import '../../widgets/shell_tab_header.dart';
 import '../client dashboard/client_dashboard.dart';
-import '../client favourite/client_favourite_list.dart';
 import '../client invite/client_invite.dart';
 import '../client report/client_report.dart';
 import '../client_setting/client_setting.dart';
@@ -122,11 +121,6 @@ class _ClientProfileState extends State<ClientProfile> {
                   icon: Icons.receipt_long_outlined,
                   title: l10n.transaction,
                   onTap: () => const ClientTransaction().launch(context),
-                ),
-                ProfileMenuListTile(
-                  icon: Icons.favorite_border,
-                  title: l10n.favorite,
-                  onTap: () => const ClientFavList().launch(context),
                 ),
                 ProfileMenuListTile(
                   icon: Icons.description_outlined,

@@ -54,8 +54,17 @@ abstract final class SupportPresets {
       question: 'How do I report a seller?',
       audience: SupportPresetAudience.client,
       answer:
-          'Profile menu → Seller Report. Describe the issue and submit. '
-          'For urgent problems, also start a live chat with our support team.',
+          'Open the chat, contract, or freelancer profile and tap Report. '
+          'Choose a reason, describe what happened, and submit. '
+          'For urgent problems, also start a live chat with support.',
+    ),
+    SupportPreset(
+      question: 'How do I report a client or job?',
+      audience: SupportPresetAudience.seller,
+      answer:
+          'Open the job, contract, or chat and tap the report (flag) icon. '
+          'Choose a reason, describe what happened, and submit. '
+          'You can also use Report in your profile menu.',
     ),
     SupportPreset(
       question: 'How do I apply to a job?',

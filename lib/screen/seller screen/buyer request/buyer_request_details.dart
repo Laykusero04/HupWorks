@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
+import 'package:freelancer/services/favourite_service.dart';
 import 'package:freelancer/services/job_posts_service.dart';
 import 'package:freelancer/services/seller_orders_service.dart';
 import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/screen/seller%20screen/report/seller_report.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -27,6 +29,8 @@ class BuyerRequestDetails extends StatefulWidget {
 class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
   Map<String, dynamic>? _jobPost;
   bool _isLoading = true;
+  bool _isFavourited = false;
+  bool _favBusy = false;
 
   @override
   void initState() {
@@ -36,10 +40,46 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
 
   Future<void> _loadDetails() async {
     try {
-      final data = await SellerOrdersService.getBuyerRequestDetails(widget.jobPostId);
-      if (mounted) setState(() { _jobPost = data; _isLoading = false; });
+      final results = await Future.wait([
+        SellerOrdersService.getBuyerRequestDetails(widget.jobPostId),
+        FavouriteService.isFavourited(widget.jobPostId),
+      ]);
+      if (mounted) {
+        setState(() {
+          _jobPost = results[0] as Map<String, dynamic>;
+          _isFavourited = results[1] as bool;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      if (mounted) { setState(() => _isLoading = false); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.errorWithDetail('$e')))); }
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.errorWithDetail('$e'))));
+      }
+    }
+  }
+
+  Future<void> _toggleFavourite() async {
+    if (_favBusy) return;
+    setState(() => _favBusy = true);
+    try {
+      final next = await FavouriteService.toggleFavourite(widget.jobPostId);
+      if (!mounted) return;
+      setState(() {
+        _isFavourited = next;
+        _favBusy = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(next ? context.l10n.addedToFavourites : context.l10n.removedFromFavourites),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _favBusy = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+      );
     }
   }
 
@@ -93,6 +133,30 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
       appBar: AppBar(
         backgroundColor: kDarkWhite, elevation: 0, iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(l10n.buyerRequestDetailsTitle, style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)), centerTitle: true,
+        actions: [
+          IconButton(
+            tooltip: _isFavourited ? l10n.favourites : l10n.favorite,
+            onPressed: _favBusy ? null : _toggleFavourite,
+            icon: Icon(
+              _isFavourited ? Icons.bookmark : Icons.bookmark_border,
+              color: _isFavourited ? kPrimaryColor : kNeutralColor,
+            ),
+          ),
+          if (clientId != null && myUid != clientId)
+            IconButton(
+              tooltip: l10n.report,
+              onPressed: () {
+                final client = _jobPost?['profiles'] as Map<String, dynamic>?;
+                SellerReport(
+                  reportedUserId: clientId,
+                  reportedUserName: client?['name'] as String?,
+                  jobPostId: widget.jobPostId,
+                  jobTitle: title as String?,
+                ).launch(context);
+              },
+              icon: const Icon(Icons.flag_outlined, color: kNeutralColor),
+            ),
+        ],
       ),
       bottomNavigationBar: Material(
         color: kWhite,

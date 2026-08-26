@@ -694,7 +694,11 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
                 const ChatScreen().launch(context);
               } else if (value == 'report') {
                 final sellerId = _seller?['id'] as String?;
-                ClientReport(reportedUserId: sellerId).launch(context);
+                ClientReport(
+                  reportedUserId: sellerId,
+                  reportedUserName: _seller?['name'] as String?,
+                  orderId: widget.orderId,
+                ).launch(context);
               }
             },
             child: const Padding(

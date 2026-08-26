@@ -33,7 +33,6 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
   Map<String, dynamic>? _seller;
   List<Map<String, dynamic>> _reviews = [];
   List<Map<String, dynamic>> _requirements = [];
-  bool _isFavourited = false;
   bool _isLoading = true;
 
   void _scrollListener() {
@@ -66,7 +65,6 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
         ServiceDetailsService.getServiceDetails(widget.serviceId!),
         ServiceDetailsService.getServiceReviews(widget.serviceId!),
         ServiceDetailsService.getServiceRequirements(widget.serviceId!),
-        ServiceDetailsService.isFavourited(widget.serviceId!),
       ]);
 
       // Track as recently viewed
@@ -79,7 +77,6 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
           _seller = serviceData['profiles'] as Map<String, dynamic>?;
           _reviews = results[1] as List<Map<String, dynamic>>;
           _requirements = results[2] as List<Map<String, dynamic>>;
-          _isFavourited = results[3] as bool;
           _isLoading = false;
         });
       }
@@ -88,25 +85,6 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(context.l10n.errorLoadingService('$e'))),
-        );
-      }
-    }
-  }
-
-  Future<void> _handleFavouriteToggle() async {
-    if (widget.serviceId == null) return;
-    try {
-      final result = await ServiceDetailsService.toggleFavourite(widget.serviceId!);
-      if (mounted) {
-        setState(() => _isFavourited = result);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(result ? 'Added to favourites' : 'Removed from favourites')),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
     }
@@ -334,7 +312,7 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
                                     ),
                                     const SizedBox(height: 5.0),
 
-                                    // Rating + Favourite
+                                    // Rating
                                     Row(
                                       children: [
                                         const Icon(IconlyBold.star, color: Colors.amber, size: 18.0),
@@ -349,15 +327,6 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
                                                 style: kTextStyle.copyWith(color: kLightNeutralColor),
                                               ),
                                             ],
-                                          ),
-                                        ),
-                                        const Spacer(),
-                                        GestureDetector(
-                                          onTap: _handleFavouriteToggle,
-                                          child: Icon(
-                                            _isFavourited ? Icons.favorite : Icons.favorite_border,
-                                            color: _isFavourited ? Colors.red : kLightNeutralColor,
-                                            size: 22.0,
                                           ),
                                         ),
                                       ],

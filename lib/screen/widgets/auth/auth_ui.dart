@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:freelancer/l10n/l10n.dart';
 
 import '../constant.dart';
-import '../icons.dart';
 
 /// Shared auth layout — matches welcome screen (illustration + white sheet).
 class AuthScaffold extends StatelessWidget {
@@ -258,64 +256,6 @@ class AuthPrimaryButton extends StatelessWidget {
                 ),
               ),
       ),
-    );
-  }
-}
-
-class AuthSocialSection extends StatelessWidget {
-  const AuthSocialSection({super.key, this.dividerText});
-
-  /// Defaults to [AppLocalizations.authOrContinueWith] when null.
-  final String? dividerText;
-
-  @override
-  Widget build(BuildContext context) {
-    final text = dividerText ?? context.l10n.authOrContinueWith;
-    return Column(
-      children: [
-        Row(
-          children: [
-            const Expanded(child: Divider(color: kBorderColorTextField)),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Text(
-                text,
-                style: kTextStyle.copyWith(
-                  color: kSubTitleColor,
-                  fontSize: 13,
-                ),
-              ),
-            ),
-            const Expanded(child: Divider(color: kBorderColorTextField)),
-          ],
-        ),
-        const SizedBox(height: 20),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            SocialIcon(
-              bgColor: kNeutralColor,
-              iconColor: kWhite,
-              icon: FontAwesomeIcons.facebookF,
-              borderColor: Colors.transparent,
-            ),
-            SizedBox(width: 16),
-            SocialIcon(
-              bgColor: kWhite,
-              iconColor: kNeutralColor,
-              icon: FontAwesomeIcons.google,
-              borderColor: kBorderColorTextField,
-            ),
-            SizedBox(width: 16),
-            SocialIcon(
-              bgColor: kWhite,
-              iconColor: Color(0xFF76A9EA),
-              icon: FontAwesomeIcons.twitter,
-              borderColor: kBorderColorTextField,
-            ),
-          ],
-        ),
-      ],
     );
   }
 }

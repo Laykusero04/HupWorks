@@ -48,7 +48,7 @@
   "helpSupport": "Help & Support",
   "logOut": "Log Out",
   "sellerReport": "Seller Report",
-  "favorite": "Favorite",
+  "favorite": "Save",
   "transaction": "Transaction",
   "saving": "Saving...",
   "sending": "Sending...",
@@ -106,6 +106,27 @@
   "reportReasonTrademark": "Trademark Violations",
   "reportReasonCopyright": "Copyright Violations",
   "reportReasonOther": "Other reasons",
+  "reportReasonHarassment": "Harassment or inappropriate behavior",
+  "reportReasonFakeJob": "Fake or misleading job",
+  "reportReasonNoShow": "No-show or incomplete work",
+  "reportReasonPaymentDispute": "Payment or contract dispute",
+  "reportReasonSpam": "Spam or scam",
+  "reportDetailsTooShort": "Please describe the issue (at least 10 characters).",
+  "reportDetailsHelp": "Include what happened, when, and any messages or job details that help us review.",
+  "reportOpenFromContextHint": "Tip: open Report from a chat, job, or contract to link the other person automatically.",
+  "reportReportingUser": "Reporting: {name}",
+  "@reportReportingUser": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "reportReportingJob": "Job: {title}",
+  "@reportReportingJob": {
+    "placeholders": {
+      "title": { "type": "String" }
+    }
+  },
+  "reportReportingContract": "Linked to this contract",
   "cancelReasonScheduleConflict": "Schedule conflict",
   "cancelReasonScopeMismatch": "Scope does not match agreement",
   "cancelReasonSiteOrSafety": "Site or safety concern",
@@ -306,9 +327,9 @@
   "scanAttendanceQr": "Scan attendance QR",
   "editProfile": "Edit Profile",
   "profileDetails": "Profile Details",
-  "favourites": "Favourites",
+  "favourites": "Saved",
   "reviews": "Reviews",
-  "noFavouritesYet": "No favourites yet",
+  "noFavouritesYet": "No saved jobs yet",
   "noReviewsYet": "No reviews yet",
   "mapPickLocation": "Pick location",
   "mapConfirmLocation": "Confirm location",
@@ -341,13 +362,13 @@
       "reason": { "type": "String" }
     }
   },
-  "reportWhyQuestion": "Why do you want to report?",
+  "reportWhyQuestion": "Why are you reporting?",
   "reportSellerProfileUrl": "Seller Profile URL",
   "reportEnterSellerProfileUrl": "Enter seller profile url",
   "reportOriginalContentUrl": "URL of original content",
   "reportEnterPostUrl": "Enter post url",
-  "reportAdditionalInfo": "Additional information",
-  "reportEnterInformation": "Enter information...",
+  "reportAdditionalInfo": "What happened?",
+  "reportEnterInformation": "Describe the issue…",
   "promoVerifiedTalentSubtitle": "Verified talent for every project",
   "promoProposalsSubtitle": "Get proposals within minutes",
   "promoNicheServicesSubtitle": "Find services across every niche",
@@ -587,9 +608,9 @@
   "noReviewsForClientYet": "No reviews for this client yet.",
   "viewServices": "View services",
   "noActiveServiceListing": "No active service listing yet.",
-  "favouriteList": "Favorite List",
-  "removedFromFavourites": "Removed from favourites",
-  "addedToFavourites": "Added to favourites",
+  "favouriteList": "Saved jobs",
+  "removedFromFavourites": "Removed from saved",
+  "addedToFavourites": "Job saved",
   "priceColon": "Price: ",
   "service": "Service",
   "serviceDetails": "Service Details",

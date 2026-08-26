@@ -442,9 +442,9 @@ create policy "Order participants can create reviews"
 create table public.favourites (
   id uuid default gen_random_uuid() primary key,
   user_id uuid references public.profiles(id) on delete cascade not null,
-  service_id uuid references public.services(id) on delete cascade not null,
+  job_post_id uuid references public.job_posts(id) on delete cascade not null,
   created_at timestamptz default now(),
-  unique (user_id, service_id)
+  unique (user_id, job_post_id)
 );
 
 alter table public.favourites enable row level security;

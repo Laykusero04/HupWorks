@@ -121,8 +121,6 @@ class _UnifiedLogInState extends State<UnifiedLogIn> {
             onPressed: _handleLogin,
           ),
           const SizedBox(height: 24),
-          const AuthSocialSection(),
-          const SizedBox(height: 24),
           AuthFooterLink(
             prefix: '${l10n.authDontHaveAccount} ',
             action: l10n.authSignUp,

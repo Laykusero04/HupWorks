@@ -12,6 +12,7 @@ import '../../widgets/profile_rating_summary.dart';
 import '../../widgets/profile_skeleton.dart';
 import '../../widgets/seller_skills_display.dart';
 import '../../widgets/verified_work_trust_section.dart';
+import '../client report/client_report.dart';
 import '../client service details/client_service_details.dart';
 
 /// Client-facing view of a freelancer's public profile.
@@ -140,6 +141,18 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
           ),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            tooltip: context.l10n.report,
+            onPressed: () {
+              ClientReport(
+                reportedUserId: widget.sellerId,
+                reportedUserName: name,
+              ).launch(context);
+            },
+            icon: const Icon(Icons.flag_outlined, color: kNeutralColor),
+          ),
+        ],
       ),
       body: RefreshIndicator(
         color: kPrimaryColor,

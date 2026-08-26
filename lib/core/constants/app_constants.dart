@@ -3,7 +3,6 @@ import 'package:freelancer/screen/widgets/data.dart';
 // Global flags (to be replaced by BLoC state in Phase 6)
 bool isClient = false;
 bool isFreelancer = false;
-bool isFavorite = false;
 const String currencySign = '€';
 
 //__________Gender______________________________________________________
@@ -83,7 +82,14 @@ String selectedDeliveryTimeList = '3 days';
 const List<String> revisionTime = ['1 time', '2 time', '3 time', '4 time'];
 String selectedRevisionTime = '1 time';
 
-const List<String> reportTitle = ['Non original content', 'Trademark Violations', 'Copyright Violations', 'Other reasons'];
+const List<String> reportTitle = [
+  'Harassment or inappropriate behavior',
+  'Fake or misleading job',
+  'No-show or incomplete work',
+  'Payment or contract dispute',
+  'Spam or scam',
+  'Other reasons',
+];
 
 const List<String> gateWay = ['PayPal', 'Credit Card', 'Bkash'];
 String selectedGateWay = 'PayPal';

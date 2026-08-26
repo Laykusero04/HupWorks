@@ -7,7 +7,8 @@
 --   The `services` table is still referenced by:
 --     - orders.service_id        (FK, nullable since 0002 — old rows may have it set)
 --     - reviews.service_id       (FK, NOT NULL — every old review has a service_id)
---     - favourites.service_id    (FK, NOT NULL — every favourite is a service)
+--     - favourites.job_post_id   (FK to job_posts — seller saved jobs)
+
 --   Dropping it cascades through all of these. ANY pre-migration order, review,
 --   or favourite will be permanently lost.
 --

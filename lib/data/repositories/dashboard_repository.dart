@@ -1,5 +1,6 @@
 import '../../core/errors/failures.dart';
 import '../../services/dashboard_service.dart';
+import '../../services/favourite_service.dart';
 import '../../services/seller_home_service.dart';
 import '../models/favourite_model.dart';
 import '../models/profile_model.dart';
@@ -18,7 +19,7 @@ class DashboardRepository {
 
   Future<List<Favourite>> getFavourites() async {
     try {
-      final data = await DashboardService.getFavourites();
+      final data = await FavouriteService.getFavourites();
       return data.map((m) => Favourite.fromJson(m)).toList();
     } catch (e) {
       throw ServerFailure(e.toString());
@@ -27,7 +28,7 @@ class DashboardRepository {
 
   Future<void> removeFavourite(String favouriteId) async {
     try {
-      await DashboardService.removeFavourite(favouriteId);
+      await FavouriteService.removeFavourite(favouriteId);
     } catch (e) {
       throw ServerFailure(e.toString());
     }

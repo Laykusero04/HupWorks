@@ -31,46 +31,4 @@ class ServiceDetailsService {
         .eq('service_id', serviceId);
     return List<Map<String, dynamic>>.from(data);
   }
-
-  /// Check if current user has favourited this service
-  static Future<bool> isFavourited(String serviceId) async {
-    final user = _client.auth.currentUser;
-    if (user == null) return false;
-
-    final data = await _client
-        .from('favourites')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('service_id', serviceId);
-    return (data as List).isNotEmpty;
-  }
-
-  /// Toggle favourite (add/remove)
-  static Future<bool> toggleFavourite(String serviceId) async {
-    final user = _client.auth.currentUser;
-    if (user == null) return false;
-
-    final existing = await _client
-        .from('favourites')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('service_id', serviceId);
-
-    if ((existing as List).isNotEmpty) {
-      // Remove
-      await _client
-          .from('favourites')
-          .delete()
-          .eq('user_id', user.id)
-          .eq('service_id', serviceId);
-      return false;
-    } else {
-      // Add
-      await _client.from('favourites').insert({
-        'user_id': user.id,
-        'service_id': serviceId,
-      });
-      return true;
-    }
-  }
 }

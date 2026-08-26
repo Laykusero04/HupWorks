@@ -1,38 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'constant.dart';
-
-class SocialIcon extends StatelessWidget {
-  const SocialIcon({
-    Key? key,
-    required this.bgColor,
-    required this.iconColor,
-    required this.icon,
-    required this.borderColor,
-  }) : super(key: key);
-  final FaIconData icon;
-  final Color bgColor;
-  final Color iconColor;
-  final Color borderColor;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 50,
-      width: 50,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10.0),
-        border: Border.all(color: borderColor),
-        color: bgColor,
-      ),
-      child: FaIcon(
-        icon,
-        color: iconColor,
-      ),
-    );
-  }
-}
 
 // ignore: must_be_immutable
 class Button extends StatelessWidget {

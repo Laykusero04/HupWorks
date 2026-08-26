@@ -16,6 +16,7 @@ import 'package:nb_utils/nb_utils.dart';
 import 'package:slide_countdown/slide_countdown.dart';
 
 import '../../widgets/constant.dart';
+import '../report/seller_report.dart';
 import 'seller_deliver_order.dart';
 
 class SellerOrderDetails extends StatefulWidget {
@@ -452,6 +453,24 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
           ),
         ),
         centerTitle: true,
+        actions: [
+          if ((_client?['id'] ?? _order?['client_id']) != null)
+            IconButton(
+              tooltip: l10n.report,
+              onPressed: () {
+                final clientId =
+                    (_client?['id'] ?? _order?['client_id'])?.toString();
+                SellerReport(
+                  reportedUserId: clientId,
+                  reportedUserName: _client?['name'] as String?,
+                  orderId: widget.orderId,
+                  jobPostId: jobPostId,
+                  jobTitle: jobPost?['title'] as String?,
+                ).launch(context);
+              },
+              icon: const Icon(Icons.flag_outlined, color: kNeutralColor),
+            ),
+        ],
       ),
       bottomNavigationBar: Material(
         color: kWhite,

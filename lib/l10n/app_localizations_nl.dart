@@ -142,7 +142,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get sellerReport => 'Verkoper melden';
 
   @override
-  String get favorite => 'Favoriet';
+  String get favorite => 'Opslaan';
 
   @override
   String get transaction => 'Transactie';
@@ -262,6 +262,46 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get reportReasonOther => 'Andere redenen';
+
+  @override
+  String get reportReasonHarassment => 'Intimidatie of ongepast gedrag';
+
+  @override
+  String get reportReasonFakeJob => 'Nep of misleidende job';
+
+  @override
+  String get reportReasonNoShow => 'Niet komen opdagen of onvoltooid werk';
+
+  @override
+  String get reportReasonPaymentDispute => 'Betalings- of contractgeschil';
+
+  @override
+  String get reportReasonSpam => 'Spam of oplichting';
+
+  @override
+  String get reportDetailsTooShort =>
+      'Beschrijf het probleem (minstens 10 tekens).';
+
+  @override
+  String get reportDetailsHelp =>
+      'Vermeld wat er gebeurde, wanneer, en berichten of jobdetails die helpen bij de beoordeling.';
+
+  @override
+  String get reportOpenFromContextHint =>
+      'Tip: open Rapport vanuit een chat, job of contract om de andere persoon automatisch te koppelen.';
+
+  @override
+  String reportReportingUser(String name) {
+    return 'Rapportage van: $name';
+  }
+
+  @override
+  String reportReportingJob(String title) {
+    return 'Job: $title';
+  }
+
+  @override
+  String get reportReportingContract => 'Gekoppeld aan dit contract';
 
   @override
   String get cancelReasonScheduleConflict => 'Planningconflict';
@@ -834,13 +874,13 @@ class AppLocalizationsNl extends AppLocalizations {
   String get profileDetails => 'Profielgegevens';
 
   @override
-  String get favourites => 'Favorieten';
+  String get favourites => 'Opgeslagen';
 
   @override
   String get reviews => 'Reviews';
 
   @override
-  String get noFavouritesYet => 'Nog geen favorieten';
+  String get noFavouritesYet => 'Nog geen opgeslagen jobs';
 
   @override
   String get noReviewsYet => 'Nog geen reviews';
@@ -912,7 +952,7 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
-  String get reportWhyQuestion => 'Waarom wil je melden?';
+  String get reportWhyQuestion => 'Waarom rapporteer je?';
 
   @override
   String get reportSellerProfileUrl => 'Verkopersprofiel-URL';
@@ -927,10 +967,10 @@ class AppLocalizationsNl extends AppLocalizations {
   String get reportEnterPostUrl => 'Voer post-url in';
 
   @override
-  String get reportAdditionalInfo => 'Aanvullende informatie';
+  String get reportAdditionalInfo => 'Wat is er gebeurd?';
 
   @override
-  String get reportEnterInformation => 'Voer informatie in...';
+  String get reportEnterInformation => 'Beschrijf het probleem…';
 
   @override
   String get promoVerifiedTalentSubtitle =>
@@ -1433,13 +1473,13 @@ class AppLocalizationsNl extends AppLocalizations {
   String get noActiveServiceListing => 'Nog geen actieve dienstvermelding.';
 
   @override
-  String get favouriteList => 'Favorietenlijst';
+  String get favouriteList => 'Opgeslagen jobs';
 
   @override
-  String get removedFromFavourites => 'Verwijderd uit favorieten';
+  String get removedFromFavourites => 'Verwijderd uit opgeslagen';
 
   @override
-  String get addedToFavourites => 'Toegevoegd aan favorieten';
+  String get addedToFavourites => 'Job opgeslagen';
 
   @override
   String get priceColon => 'Prijs: ';

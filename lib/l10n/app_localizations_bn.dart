@@ -141,7 +141,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get sellerReport => 'বিক্রেতা রিপোর্ট';
 
   @override
-  String get favorite => 'পছন্দ';
+  String get favorite => 'সংরক্ষণ';
 
   @override
   String get transaction => 'লেনদেন';
@@ -261,6 +261,46 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get reportReasonOther => 'অন্যান্য কারণ';
+
+  @override
+  String get reportReasonHarassment => 'হয়রানি বা অনুপযুক্ত আচরণ';
+
+  @override
+  String get reportReasonFakeJob => 'নকল বা বিভ্রান্তিকর কাজ';
+
+  @override
+  String get reportReasonNoShow => 'উপস্থিত না হওয়া বা অসম্পূর্ণ কাজ';
+
+  @override
+  String get reportReasonPaymentDispute => 'পেমেন্ট বা চুক্তি নিয়ে বিরোধ';
+
+  @override
+  String get reportReasonSpam => 'স্প্যাম বা প্রতারণা';
+
+  @override
+  String get reportDetailsTooShort =>
+      'সমস্যাটি বর্ণনা করুন (কমপক্ষে ১০ অক্ষর)।';
+
+  @override
+  String get reportDetailsHelp =>
+      'কী ঘটেছে, কখন, এবং পর্যালোচনায় সাহায্য করে এমন বার্তা বা কাজের বিবরণ লিখুন।';
+
+  @override
+  String get reportOpenFromContextHint =>
+      'টিপ: নির্দিষ্ট ব্যক্তিকে লিঙ্ক করতে চ্যাট, কাজ বা চুক্তি থেকে রিপোর্ট খুলুন।';
+
+  @override
+  String reportReportingUser(String name) {
+    return 'রিপোর্ট করা হচ্ছে: $name';
+  }
+
+  @override
+  String reportReportingJob(String title) {
+    return 'কাজ: $title';
+  }
+
+  @override
+  String get reportReportingContract => 'এই চুক্তির সাথে লিঙ্ক করা';
 
   @override
   String get cancelReasonScheduleConflict => 'সময়সূচির দ্বন্দ্ব';
@@ -831,13 +871,13 @@ class AppLocalizationsBn extends AppLocalizations {
   String get profileDetails => 'প্রোফাইল বিবরণ';
 
   @override
-  String get favourites => 'পছন্দসমূহ';
+  String get favourites => 'সংরক্ষিত';
 
   @override
   String get reviews => 'রিভিউ';
 
   @override
-  String get noFavouritesYet => 'এখনও কোনো পছন্দ নেই';
+  String get noFavouritesYet => 'এখনও কোনো সংরক্ষিত কাজ নেই';
 
   @override
   String get noReviewsYet => 'এখনও কোনো রিভিউ নেই';
@@ -909,7 +949,7 @@ class AppLocalizationsBn extends AppLocalizations {
   }
 
   @override
-  String get reportWhyQuestion => 'আপনি কেন রিপোর্ট করতে চান?';
+  String get reportWhyQuestion => 'আপনি কেন রিপোর্ট করছেন?';
 
   @override
   String get reportSellerProfileUrl => 'বিক্রেতার প্রোফাইল URL';
@@ -924,10 +964,10 @@ class AppLocalizationsBn extends AppLocalizations {
   String get reportEnterPostUrl => 'পোস্ট url লিখুন';
 
   @override
-  String get reportAdditionalInfo => 'অতিরিক্ত তথ্য';
+  String get reportAdditionalInfo => 'কী ঘটেছে?';
 
   @override
-  String get reportEnterInformation => 'তথ্য লিখুন...';
+  String get reportEnterInformation => 'সমস্যাটি বর্ণনা করুন…';
 
   @override
   String get promoVerifiedTalentSubtitle =>
@@ -1424,13 +1464,13 @@ class AppLocalizationsBn extends AppLocalizations {
   String get noActiveServiceListing => 'এখনও সক্রিয় সেবা তালিকা নেই।';
 
   @override
-  String get favouriteList => 'পছন্দের তালিকা';
+  String get favouriteList => 'সংরক্ষিত কাজ';
 
   @override
-  String get removedFromFavourites => 'পছন্দ থেকে সরানো হয়েছে';
+  String get removedFromFavourites => 'সংরক্ষণ থেকে সরানো হয়েছে';
 
   @override
-  String get addedToFavourites => 'পছন্দে যোগ করা হয়েছে';
+  String get addedToFavourites => 'কাজ সংরক্ষিত হয়েছে';
 
   @override
   String get priceColon => 'মূল্য: ';

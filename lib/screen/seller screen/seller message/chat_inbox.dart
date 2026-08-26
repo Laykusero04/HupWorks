@@ -431,13 +431,22 @@ class _ChatInboxState extends State<ChatInbox> {
       final role = await AuthService.getUserRole();
       if (!mounted) return;
       if (role == 'seller') {
-        SellerReport(reportedUserId: otherId).launch(context);
+        SellerReport(
+          reportedUserId: otherId,
+          reportedUserName: widget.otherUserName,
+        ).launch(context);
       } else {
-        ClientReport(reportedUserId: otherId).launch(context);
+        ClientReport(
+          reportedUserId: otherId,
+          reportedUserName: widget.otherUserName,
+        ).launch(context);
       }
     } catch (_) {
       if (!mounted) return;
-      ClientReport(reportedUserId: otherId).launch(context);
+      ClientReport(
+        reportedUserId: otherId,
+        reportedUserName: widget.otherUserName,
+      ).launch(context);
     }
   }
 

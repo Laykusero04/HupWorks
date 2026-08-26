@@ -361,7 +361,7 @@ abstract class AppLocalizations {
   /// No description provided for @favorite.
   ///
   /// In en, this message translates to:
-  /// **'Favorite'**
+  /// **'Save'**
   String get favorite;
 
   /// No description provided for @transaction.
@@ -585,6 +585,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Other reasons'**
   String get reportReasonOther;
+
+  /// No description provided for @reportReasonHarassment.
+  ///
+  /// In en, this message translates to:
+  /// **'Harassment or inappropriate behavior'**
+  String get reportReasonHarassment;
+
+  /// No description provided for @reportReasonFakeJob.
+  ///
+  /// In en, this message translates to:
+  /// **'Fake or misleading job'**
+  String get reportReasonFakeJob;
+
+  /// No description provided for @reportReasonNoShow.
+  ///
+  /// In en, this message translates to:
+  /// **'No-show or incomplete work'**
+  String get reportReasonNoShow;
+
+  /// No description provided for @reportReasonPaymentDispute.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment or contract dispute'**
+  String get reportReasonPaymentDispute;
+
+  /// No description provided for @reportReasonSpam.
+  ///
+  /// In en, this message translates to:
+  /// **'Spam or scam'**
+  String get reportReasonSpam;
+
+  /// No description provided for @reportDetailsTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Please describe the issue (at least 10 characters).'**
+  String get reportDetailsTooShort;
+
+  /// No description provided for @reportDetailsHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Include what happened, when, and any messages or job details that help us review.'**
+  String get reportDetailsHelp;
+
+  /// No description provided for @reportOpenFromContextHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tip: open Report from a chat, job, or contract to link the other person automatically.'**
+  String get reportOpenFromContextHint;
+
+  /// No description provided for @reportReportingUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Reporting: {name}'**
+  String reportReportingUser(String name);
+
+  /// No description provided for @reportReportingJob.
+  ///
+  /// In en, this message translates to:
+  /// **'Job: {title}'**
+  String reportReportingJob(String title);
+
+  /// No description provided for @reportReportingContract.
+  ///
+  /// In en, this message translates to:
+  /// **'Linked to this contract'**
+  String get reportReportingContract;
 
   /// No description provided for @cancelReasonScheduleConflict.
   ///
@@ -1663,7 +1729,7 @@ abstract class AppLocalizations {
   /// No description provided for @favourites.
   ///
   /// In en, this message translates to:
-  /// **'Favourites'**
+  /// **'Saved'**
   String get favourites;
 
   /// No description provided for @reviews.
@@ -1675,7 +1741,7 @@ abstract class AppLocalizations {
   /// No description provided for @noFavouritesYet.
   ///
   /// In en, this message translates to:
-  /// **'No favourites yet'**
+  /// **'No saved jobs yet'**
   String get noFavouritesYet;
 
   /// No description provided for @noReviewsYet.
@@ -1807,7 +1873,7 @@ abstract class AppLocalizations {
   /// No description provided for @reportWhyQuestion.
   ///
   /// In en, this message translates to:
-  /// **'Why do you want to report?'**
+  /// **'Why are you reporting?'**
   String get reportWhyQuestion;
 
   /// No description provided for @reportSellerProfileUrl.
@@ -1837,13 +1903,13 @@ abstract class AppLocalizations {
   /// No description provided for @reportAdditionalInfo.
   ///
   /// In en, this message translates to:
-  /// **'Additional information'**
+  /// **'What happened?'**
   String get reportAdditionalInfo;
 
   /// No description provided for @reportEnterInformation.
   ///
   /// In en, this message translates to:
-  /// **'Enter information...'**
+  /// **'Describe the issue…'**
   String get reportEnterInformation;
 
   /// No description provided for @promoVerifiedTalentSubtitle.
@@ -2725,19 +2791,19 @@ abstract class AppLocalizations {
   /// No description provided for @favouriteList.
   ///
   /// In en, this message translates to:
-  /// **'Favorite List'**
+  /// **'Saved jobs'**
   String get favouriteList;
 
   /// No description provided for @removedFromFavourites.
   ///
   /// In en, this message translates to:
-  /// **'Removed from favourites'**
+  /// **'Removed from saved'**
   String get removedFromFavourites;
 
   /// No description provided for @addedToFavourites.
   ///
   /// In en, this message translates to:
-  /// **'Added to favourites'**
+  /// **'Job saved'**
   String get addedToFavourites;
 
   /// No description provided for @priceColon.

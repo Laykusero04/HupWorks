@@ -435,6 +435,43 @@ class AppLocalizationsEn extends AppLocalizations {
       'If you have questions about this policy or your data, reach us through Help & Support in the app.';
 
   @override
+  String get appOnboardSkip => 'Skip';
+
+  @override
+  String get appOnboardNext => 'Next';
+
+  @override
+  String get appOnboardGetStarted => 'Get started';
+
+  @override
+  String get appOnboardLanguageTitle => 'Choose your language';
+
+  @override
+  String get appOnboardLanguageSubtitle =>
+      'We\'ll show the app in the language you pick. You can change it later in Settings.';
+
+  @override
+  String get appOnboardPage1Title => 'Post jobs. Hire locally.';
+
+  @override
+  String get appOnboardPage1Body =>
+      'Create a job post, browse freelancers near you, and hire the right person for cleaning, warehouse, trades, and more.';
+
+  @override
+  String get appOnboardPage2Title => 'Find work that fits.';
+
+  @override
+  String get appOnboardPage2Body =>
+      'Discover open jobs, apply in a few taps, and chat with clients so you know exactly what\'s expected.';
+
+  @override
+  String get appOnboardPage3Title => 'Show up. Track hours. Get paid.';
+
+  @override
+  String get appOnboardPage3Body =>
+      'Manage contracts, clock in on site, and keep hour reports clear—so both sides stay aligned from start to finish.';
+
+  @override
   String get authWelcomeHowToUse => 'How will you use HupWorks?';
 
   @override

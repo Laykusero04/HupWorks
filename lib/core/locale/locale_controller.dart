@@ -17,6 +17,13 @@ class LocaleController extends ChangeNotifier {
 
   static const Locale defaultLocale = Locale('en');
 
+  /// Native labels for first-run language pickers (always shown in each language).
+  static const languageOptionEntries = <({Locale locale, String nativeLabel})>[
+    (locale: Locale('en'), nativeLabel: 'English'),
+    (locale: Locale('nl'), nativeLabel: 'Nederlands'),
+    (locale: Locale('bn'), nativeLabel: 'বাংলা'),
+  ];
+
   Locale _locale = defaultLocale;
 
   Locale get locale => _locale;

@@ -438,6 +438,44 @@ class AppLocalizationsNl extends AppLocalizations {
       'Heb je vragen over dit beleid of je gegevens? Neem contact op via Help & ondersteuning in de app.';
 
   @override
+  String get appOnboardSkip => 'Overslaan';
+
+  @override
+  String get appOnboardNext => 'Volgende';
+
+  @override
+  String get appOnboardGetStarted => 'Aan de slag';
+
+  @override
+  String get appOnboardLanguageTitle => 'Kies je taal';
+
+  @override
+  String get appOnboardLanguageSubtitle =>
+      'We tonen de app in de taal die je kiest. Je kunt dit later wijzigen in Instellingen.';
+
+  @override
+  String get appOnboardPage1Title => 'Plaats opdrachten. Huur lokaal in.';
+
+  @override
+  String get appOnboardPage1Body =>
+      'Maak een vacature, zoek freelancers bij jou in de buurt en huur de juiste persoon in voor schoonmaak, magazijn, vakwerk en meer.';
+
+  @override
+  String get appOnboardPage2Title => 'Vind werk dat bij je past.';
+
+  @override
+  String get appOnboardPage2Body =>
+      'Ontdek openstaande opdrachten, solliciteer in een paar tikken en chat met klanten zodat je precies weet wat er verwacht wordt.';
+
+  @override
+  String get appOnboardPage3Title =>
+      'Kom opdagen. Registreer uren. Krijg betaald.';
+
+  @override
+  String get appOnboardPage3Body =>
+      'Beheer contracten, check in op locatie en houd urenregistratie helder—zodat beide kanten van begin tot eind op één lijn blijven.';
+
+  @override
   String get authWelcomeHowToUse => 'Hoe wil je HupWorks gebruiken?';
 
   @override

@@ -880,6 +880,72 @@ abstract class AppLocalizations {
   /// **'If you have questions about this policy or your data, reach us through Help & Support in the app.'**
   String get privacySectionContactBody;
 
+  /// No description provided for @appOnboardSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get appOnboardSkip;
+
+  /// No description provided for @appOnboardNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get appOnboardNext;
+
+  /// No description provided for @appOnboardGetStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Get started'**
+  String get appOnboardGetStarted;
+
+  /// No description provided for @appOnboardLanguageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your language'**
+  String get appOnboardLanguageTitle;
+
+  /// No description provided for @appOnboardLanguageSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll show the app in the language you pick. You can change it later in Settings.'**
+  String get appOnboardLanguageSubtitle;
+
+  /// No description provided for @appOnboardPage1Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Post jobs. Hire locally.'**
+  String get appOnboardPage1Title;
+
+  /// No description provided for @appOnboardPage1Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a job post, browse freelancers near you, and hire the right person for cleaning, warehouse, trades, and more.'**
+  String get appOnboardPage1Body;
+
+  /// No description provided for @appOnboardPage2Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Find work that fits.'**
+  String get appOnboardPage2Title;
+
+  /// No description provided for @appOnboardPage2Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Discover open jobs, apply in a few taps, and chat with clients so you know exactly what\'s expected.'**
+  String get appOnboardPage2Body;
+
+  /// No description provided for @appOnboardPage3Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Show up. Track hours. Get paid.'**
+  String get appOnboardPage3Title;
+
+  /// No description provided for @appOnboardPage3Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage contracts, clock in on site, and keep hour reports clear—so both sides stay aligned from start to finish.'**
+  String get appOnboardPage3Body;
+
   /// No description provided for @authWelcomeHowToUse.
   ///
   /// In en, this message translates to:

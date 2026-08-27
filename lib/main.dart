@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:freelancer/core/locale/locale_controller.dart';
+import 'package:freelancer/core/onboarding/onboarding_prefs.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:freelancer/app.dart';
@@ -16,6 +17,7 @@ Future<void> main() async {
   );
 
   await initLocalNotifications();
+  await OnboardingPrefs.load();
 
   final localeController = await LocaleController.create();
   runApp(HupWorksApp(localeController: localeController));

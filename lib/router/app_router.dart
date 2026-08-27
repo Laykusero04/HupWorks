@@ -8,6 +8,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../core/auth/role_cache.dart';
 import '../core/chat/chat_unread_scope.dart';
 import '../core/constants/colors.dart';
+import '../core/onboarding/onboarding_prefs.dart';
 import '../core/utils/app_logger.dart';
 import '../services/auth_service.dart';
 
@@ -73,10 +74,19 @@ GoRouter createRouter() {
           location.startsWith('/welcome') ||
           location.startsWith('/auth');
 
-      // Not signed in — send to the login hub (welcome)
+      // Not signed in — first-run onboarding, then welcome / auth
       if (!loggedIn) {
         RoleCache.clear();
-        if (isSplash) return '/welcome';
+        final seenOnboarding = OnboardingPrefs.hasSeen;
+        if (isSplash) {
+          return seenOnboarding ? '/welcome' : '/onboard';
+        }
+        if (!seenOnboarding && location.startsWith('/welcome')) {
+          return '/onboard';
+        }
+        if (seenOnboarding && location.startsWith('/onboard')) {
+          return '/welcome';
+        }
         return isPublicAuthRoute ? null : '/welcome';
       }
 

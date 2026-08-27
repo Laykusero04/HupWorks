@@ -435,6 +435,45 @@ class AppLocalizationsBn extends AppLocalizations {
       'এই নীতি বা আপনার ডেটা নিয়ে প্রশ্ন থাকলে অ্যাপের সাহায্য ও সহায়তার মাধ্যমে যোগাযোগ করুন।';
 
   @override
+  String get appOnboardSkip => 'এড়িয়ে যান';
+
+  @override
+  String get appOnboardNext => 'পরবর্তী';
+
+  @override
+  String get appOnboardGetStarted => 'শুরু করুন';
+
+  @override
+  String get appOnboardLanguageTitle => 'আপনার ভাষা বেছে নিন';
+
+  @override
+  String get appOnboardLanguageSubtitle =>
+      'আপনি যে ভাষা বেছে নেবেন, অ্যাপ সেই ভাষায় দেখাবে। পরে সেটিংস থেকে পরিবর্তন করতে পারবেন।';
+
+  @override
+  String get appOnboardPage1Title =>
+      'কাজ পোস্ট করুন। স্থানীয়ভাবে নিয়োগ করুন।';
+
+  @override
+  String get appOnboardPage1Body =>
+      'একটি জব পোস্ট তৈরি করুন, কাছাকাছি ফ্রিল্যান্সার খুঁজুন এবং পরিষ্কার-পরিচ্ছন্নতা, গুদাম, ট্রেডসসহ আরও অনেক কাজে সঠিক ব্যক্তিকে নিয়োগ করুন।';
+
+  @override
+  String get appOnboardPage2Title => 'মানানসই কাজ খুঁজুন।';
+
+  @override
+  String get appOnboardPage2Body =>
+      'খোলা কাজ আবিষ্কার করুন, কয়েকটি ট্যাপে আবেদন করুন এবং ক্লায়েন্টদের সাথে চ্যাট করুন যাতে কী প্রত্যাশা করা হচ্ছে তা স্পষ্ট থাকে।';
+
+  @override
+  String get appOnboardPage3Title =>
+      'উপস্থিত হন। ঘণ্টা ট্র্যাক করুন। পেমেন্ট পান।';
+
+  @override
+  String get appOnboardPage3Body =>
+      'চুক্তি পরিচালনা করুন, সাইটে ক্লক ইন করুন এবং ঘণ্টার রিপোর্ট স্পষ্ট রাখুন—যাতে দুই পক্ষ শুরু থেকে শেষ পর্যন্ত একমত থাকে।';
+
+  @override
   String get authWelcomeHowToUse => 'আপনি HupWorks কীভাবে ব্যবহার করবেন?';
 
   @override

@@ -6,6 +6,7 @@ import 'package:freelancer/core/utils/order_chat_navigation.dart';
 import 'package:freelancer/core/utils/order_contract_display.dart';
 import 'package:freelancer/data/models/chat_order_context.dart';
 import 'package:freelancer/data/models/hire_onboarding_packet_model.dart';
+import 'package:freelancer/data/models/order_delivery_model.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/screen/onboarding/hire_onboarding_editor_screen.dart';
@@ -19,6 +20,7 @@ import 'package:slide_countdown/slide_countdown.dart';
 import '../../widgets/client_attendance_today_card.dart';
 import '../../widgets/client_site_setup_panel.dart';
 import '../../widgets/constant.dart';
+import '../../widgets/order_delivery_panel.dart';
 import '../client report/client_report.dart';
 import '../client review/client_review.dart';
 
@@ -212,7 +214,14 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
   Future<void> _handleMarkJobComplete() async {
     final l10n = context.l10n;
     final sellerName = _seller?['name'] ?? l10n.theSeller;
-    final deliverySubmitted = _statusKey() == 'delivered';
+    if (_statusKey() != 'delivered') {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.waitingForDelivery)),
+        );
+      }
+      return;
+    }
     final confirmed = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
@@ -224,9 +233,7 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
               color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
         content: Text(
-          deliverySubmitted
-              ? l10n.markJobCompleteDeliveredBody(sellerName)
-              : l10n.markJobCompleteManualBody(sellerName),
+          l10n.markJobCompleteDeliveredBody(sellerName),
           style: kTextStyle.copyWith(color: kSubTitleColor, height: 1.35),
         ),
         actions: [
@@ -248,7 +255,7 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
 
     setState(() => _isCompletingJob = true);
     try {
-      await OrdersService.updateOrderStatus(widget.orderId, 'completed');
+      await OrdersService.completeOrder(widget.orderId);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(context.l10n.jobMarkedCompleteThanks)),
@@ -619,32 +626,15 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
         decoration: const BoxDecoration(color: kWhite),
         padding: const EdgeInsets.fromLTRB(12, 10, 12, 16),
         child: ButtonGlobalWithoutIcon(
-          buttontext: _isCompletingJob
-              ? l10n.completingEllipsis
-              : l10n.markJobComplete,
-          buttonDecoration: kButtonDecoration.copyWith(
-            color: _isCompletingJob ? kLightNeutralColor : kPrimaryColor,
-          ),
-          onPressed: _isCompletingJob ? () {} : _handleMarkJobComplete,
+          buttontext: l10n.waitingForDelivery,
           buttonTextColor: kWhite,
+          buttonDecoration: kButtonDecoration.copyWith(color: kLightNeutralColor),
+          onPressed: () {},
         ),
       );
     }
 
-    return Container(
-      decoration: const BoxDecoration(color: kWhite),
-      padding: const EdgeInsets.fromLTRB(12, 10, 12, 16),
-      child: ButtonGlobalWithoutIcon(
-        buttontext: _isCompletingJob
-            ? l10n.completingEllipsis
-            : l10n.markJobComplete,
-        buttonDecoration: kButtonDecoration.copyWith(
-          color: _isCompletingJob ? kLightNeutralColor : kPrimaryColor,
-        ),
-        onPressed: _isCompletingJob ? () {} : _handleMarkJobComplete,
-        buttonTextColor: kWhite,
-      ),
-    );
+    return const SizedBox.shrink();
   }
 
   @override
@@ -663,7 +653,7 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
     final isCancelled = status == 'cancelled';
     final isCancellationRequested = status == 'cancellation_requested';
 
-    /// New hires start as `pending` (see accept_job_offer); treat like an open job for client actions.
+    /// Open work: active (hire / purchase) or legacy pending rows not yet migrated.
     final isOpenContract =
         (status == 'active' || status == 'pending') && !isCancellationRequested;
     final title = OrderContractDisplay.title(_order, _service);
@@ -679,6 +669,7 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
     final siteSetup = _buildSiteSetupPanel(readOnly: isCancellationRequested);
     final attendanceToday =
         isCancellationRequested ? null : _buildAttendanceTodayCard();
+    final deliveries = OrderDelivery.listFromOrderMap(_order);
 
     return Scaffold(
       backgroundColor: kDarkWhite,
@@ -774,7 +765,15 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
                   _buildCancellationRequestBanner(sellerName),
                   const SizedBox(height: 16),
                 ],
-                if (isDelivered) ...[
+                if (deliveries.isNotEmpty) ...[
+                  OrderDeliveryPanel(
+                    deliveries: deliveries,
+                    title: l10n.sellerSubmittedDelivery,
+                    instruction:
+                        isDelivered ? l10n.deliveredCalloutBody : null,
+                  ),
+                  const SizedBox(height: 16),
+                ] else if (isDelivered) ...[
                   _buildDeliveredCallout(),
                   const SizedBox(height: 16),
                 ],

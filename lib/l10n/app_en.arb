@@ -812,8 +812,9 @@
   },
   "couldNotOpenReviewMissingSeller": "Could not open review (missing seller).",
   "sellerSubmittedDelivery": "Seller submitted delivery",
+  "yourDelivery": "Your delivery",
   "deliveredCalloutBody": "Review what they sent. When you are happy with the result, tap Mark job complete below to close the order. To chat with the seller, use the ⋮ menu at the top.",
-  "openContractCalloutBody": "When your freelancer has finished and you have the final result, tap Mark job complete below to close the contract. You can message the seller from the ⋮ menu at the top.",
+  "openContractCalloutBody": "Your freelancer must submit delivery before you can complete this contract. You can message the seller from the ⋮ menu at the top.",
   "cancellationRequestBannerBody": "{seller} asked to cancel this contract. You can approve or keep it active. If you do not respond within 48 hours, the contract stays active.",
   "@cancellationRequestBannerBody": {
     "placeholders": {
@@ -846,6 +847,8 @@
   "withdrawingEllipsis": "Withdrawing…",
   "requestCancel": "Request cancel",
   "completeOrder": "Complete Order",
+  "waitingForClientApproval": "Waiting for client approval",
+  "waitingForDelivery": "Waiting for delivery",
   "waitingForClientResponse": "Waiting for client response",
   "sellerCancellationPendingBody": "Your cancellation request was sent. The client has up to 48 hours to approve or keep the contract active.",
   "contractCancelledTitle": "Contract cancelled",
@@ -997,7 +1000,7 @@
   "counterOfferLabel": "Counter offer",
   "counterOfferAction": "Counter offer",
   "counterOfferTitle": "Send counter offer",
-  "counterOfferBody": "Propose a different rate. The freelancer can submit a revised bid.",
+  "counterOfferBody": "Propose a different rate. This updates the application amount before you hire.",
   "counterOfferAmountHint": "Proposed amount",
   "counterOfferNoteHint": "Optional note for the freelancer",
   "counterOfferSent": "Counter offer sent",

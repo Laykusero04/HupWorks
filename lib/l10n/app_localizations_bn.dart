@@ -1887,12 +1887,15 @@ class AppLocalizationsBn extends AppLocalizations {
   String get sellerSubmittedDelivery => 'Seller submitted delivery';
 
   @override
+  String get yourDelivery => 'Your delivery';
+
+  @override
   String get deliveredCalloutBody =>
       'Review what they sent. When you are happy with the result, tap Mark job complete below to close the order. To chat with the seller, use the ⋮ menu at the top.';
 
   @override
   String get openContractCalloutBody =>
-      'When your freelancer has finished and you have the final result, tap Mark job complete below to close the contract. You can message the seller from the ⋮ menu at the top.';
+      'Your freelancer must submit delivery before you can complete this contract. You can message the seller from the ⋮ menu at the top.';
 
   @override
   String cancellationRequestBannerBody(String seller) {
@@ -1952,6 +1955,12 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get completeOrder => 'Complete Order';
+
+  @override
+  String get waitingForClientApproval => 'Waiting for client approval';
+
+  @override
+  String get waitingForDelivery => 'Waiting for delivery';
 
   @override
   String get waitingForClientResponse => 'Waiting for client response';
@@ -2314,7 +2323,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get counterOfferBody =>
-      'Propose a different rate. The freelancer can submit a revised bid.';
+      'Propose a different rate. This updates the application amount before you hire.';
 
   @override
   String get counterOfferAmountHint => 'Proposed amount';

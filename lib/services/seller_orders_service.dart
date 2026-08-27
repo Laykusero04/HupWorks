@@ -41,23 +41,50 @@ class SellerOrdersService {
         .from('orders')
         .select(
           '*, services!service_id(title, description, images, delivery_time, revision_count, price), '
-          'client:profiles!client_id(name, profile_image_url), '
+          'client:profiles!client_id(id, name, profile_image_url), '
           'job_offers!job_offer_id('
           'id, cover_letter, delivery_time, delivery_time_unit, price_basis, '
           'job_posts(id, title, description, job_type, location, location_type, attendance_mode, workers_needed)'
-          ')',
+          '), '
+          'order_deliveries(id, order_id, message, attachment_url, delivered_at), '
+          'reviews(id, reviewer_id, rating, comment, created_at)',
         )
         .eq('id', orderId)
         .single();
     return data;
   }
 
-  /// Update order status
-  static Future<void> updateOrderStatus(String orderId, String status) async {
-    await _client.from('orders').update({
-      'status': status,
-      if (status == 'completed') 'completed_at': DateTime.now().toIso8601String(),
-    }).eq('id', orderId);
+  /// Deliver order with message and optional attachment (server RPC).
+  static Future<void> deliverOrder({
+    required String orderId,
+    required String message,
+    File? attachment,
+  }) async {
+    final user = _client.auth.currentUser;
+    if (user == null) throw Exception('Not logged in');
+
+    String? attachmentUrl;
+
+    if (attachment != null) {
+      final ext = attachment.path.split('.').last;
+      final path = '${user.id}/${orderId}_delivery.$ext';
+
+      await _client.storage.from('chat-attachments').upload(
+        path,
+        attachment,
+        fileOptions: const FileOptions(upsert: true),
+      );
+      attachmentUrl = _client.storage.from('chat-attachments').getPublicUrl(path);
+    }
+
+    await _client.rpc(
+      'deliver_order',
+      params: {
+        'p_order_id': orderId,
+        'p_message': message.trim(),
+        'p_attachment_url': attachmentUrl,
+      },
+    );
   }
 
   /// Freelancer requests contract cancellation (client must approve within 48h).
@@ -124,37 +151,6 @@ class SellerOrdersService {
       default:
         return 'Other';
     }
-  }
-
-  /// Deliver order with message and optional attachment
-  static Future<void> deliverOrder({
-    required String orderId,
-    required String message,
-    File? attachment,
-  }) async {
-    String? attachmentUrl;
-
-    if (attachment != null) {
-      final user = _client.auth.currentUser;
-      if (user == null) throw Exception('Not logged in');
-      final ext = attachment.path.split('.').last;
-      final path = '${user.id}/${orderId}_delivery.$ext';
-
-      await _client.storage.from('chat-attachments').upload(
-        path,
-        attachment,
-        fileOptions: const FileOptions(upsert: true),
-      );
-      attachmentUrl = _client.storage.from('chat-attachments').getPublicUrl(path);
-    }
-
-    await _client.from('order_deliveries').insert({
-      'order_id': orderId,
-      'message': message,
-      'attachment_url': attachmentUrl,
-    });
-
-    await updateOrderStatus(orderId, 'delivered');
   }
 
   /// Fetch open job posts for Find Jobs, filtered on the server.

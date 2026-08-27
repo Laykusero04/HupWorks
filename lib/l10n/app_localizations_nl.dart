@@ -1897,12 +1897,15 @@ class AppLocalizationsNl extends AppLocalizations {
   String get sellerSubmittedDelivery => 'Verkoper heeft levering ingediend';
 
   @override
+  String get yourDelivery => 'Jouw levering';
+
+  @override
   String get deliveredCalloutBody =>
       'Bekijk wat ze hebben gestuurd. Als je tevreden bent, tik hieronder op Job voltooien om de order te sluiten. Chat met de verkoper via het ⋮-menu bovenaan.';
 
   @override
   String get openContractCalloutBody =>
-      'Als je freelancer klaar is en je het eindresultaat hebt, tik hieronder op Job voltooien. Bericht de verkoper via het ⋮-menu bovenaan.';
+      'Je freelancer moet de levering indienen voordat je dit contract kunt voltooien. Bericht de verkoper via het ⋮-menu bovenaan.';
 
   @override
   String cancellationRequestBannerBody(String seller) {
@@ -1962,6 +1965,12 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get completeOrder => 'Order voltooien';
+
+  @override
+  String get waitingForClientApproval => 'Wacht op goedkeuring van de klant';
+
+  @override
+  String get waitingForDelivery => 'Wacht op levering';
 
   @override
   String get waitingForClientResponse => 'Wacht op reactie klant';
@@ -2327,7 +2336,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get counterOfferBody =>
-      'Stel een ander tarief voor. De freelancer kan een herzien bod indienen.';
+      'Stel een ander tarief voor. Dit werkt het aanbiedingsbedrag bij voordat je inhuurt.';
 
   @override
   String get counterOfferAmountHint => 'Voorgesteld bedrag';

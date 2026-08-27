@@ -329,6 +329,20 @@ class JobPostsService {
     return result.toString();
   }
 
+  /// Client counter-offer: updates [job_offers.price] so hire uses the new amount.
+  static Future<void> counterJobOffer({
+    required String offerId,
+    required double price,
+  }) async {
+    await _client.rpc(
+      'counter_job_offer',
+      params: {
+        'p_offer_id': offerId,
+        'p_price': price,
+      },
+    );
+  }
+
   /// Close a job post
   static Future<void> closeJobPost(String jobPostId) async {
     await _client.from('job_posts').update({'status': 'closed'}).eq('id', jobPostId);

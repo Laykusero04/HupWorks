@@ -859,7 +859,7 @@ begin
   insert into public.orders
     (job_offer_id, client_id, seller_id, price, status, delivery_deadline)
   values
-    (p_offer_id, v_client, v_seller, v_price, 'pending', v_deadline)
+    (p_offer_id, v_client, v_seller, v_price, 'active', v_deadline)
   returning id into v_order_id;
 
   perform public.create_notification(

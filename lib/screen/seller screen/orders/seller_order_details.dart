@@ -6,6 +6,7 @@ import 'package:freelancer/core/utils/order_chat_navigation.dart';
 import 'package:freelancer/core/utils/order_contract_display.dart';
 import 'package:freelancer/data/models/chat_order_context.dart';
 import 'package:freelancer/data/models/hire_onboarding_packet_model.dart';
+import 'package:freelancer/data/models/order_delivery_model.dart';
 import 'package:freelancer/core/utils/attendance_mode.dart';
 import 'package:freelancer/screen/attendance/attendance_actions_card.dart';
 import 'package:freelancer/screen/onboarding/hire_onboarding_reader_screen.dart';
@@ -19,8 +20,10 @@ import 'package:nb_utils/nb_utils.dart';
 import 'package:slide_countdown/slide_countdown.dart';
 
 import '../../widgets/constant.dart';
+import '../../widgets/order_delivery_panel.dart';
 import '../report/seller_report.dart';
 import 'seller_deliver_order.dart';
+import 'seller_order_review.dart';
 
 class SellerOrderDetails extends StatefulWidget {
   final String orderId;
@@ -37,6 +40,7 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
   Map<String, dynamic>? _client;
   bool _isLoading = true;
   bool _actionBusy = false;
+  bool _sellerHasReviewed = false;
   HireOnboardingPacket? _onboardingPacket;
   OnsiteAttendanceJob? _attendanceJob;
 
@@ -70,6 +74,8 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
           _order = data;
           _service = data['services'] as Map<String, dynamic>?;
           _client = data['client'] as Map<String, dynamic>?;
+          _sellerHasReviewed =
+              OrdersService.currentUserHasReviewedOrder(data);
           _onboardingPacket = packet;
           _attendanceJob = attJob;
           _isLoading = false;
@@ -184,22 +190,29 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
     }
   }
 
-  Future<void> _handleComplete() async {
-    try {
-      await SellerOrdersService.updateOrderStatus(widget.orderId, 'completed');
+  Future<void> _openSellerReviewScreen() async {
+    final clientId =
+        (_client?['id'] ?? _order?['client_id'])?.toString();
+    if (clientId == null || clientId.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.orderMarkedComplete)),
-        );
-        Navigator.pop(context);
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+          SnackBar(content: Text(context.l10n.errorWithDetail('Missing client'))),
         );
       }
+      return;
     }
+    final order = _order;
+    await SellerOrderReview(
+      orderId: widget.orderId,
+      clientId: clientId,
+      serviceId:
+          order != null ? OrdersService.serviceIdFromOrderMap(order) : null,
+      jobOfferId:
+          order != null ? OrdersService.jobOfferIdFromOrderMap(order) : null,
+      clientName: _client?['name'] as String?,
+      clientProfileImageUrl: _client?['profile_image_url'] as String?,
+    ).launch(context);
+    if (mounted) await _loadOrder();
   }
 
   ChatOrderContext _chatOrderContext() {
@@ -260,8 +273,26 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
     }
 
     if (isCompleted) {
+      if (_sellerHasReviewed) {
+        return ButtonGlobalWithoutIcon(
+          buttontext: l10n.reviewSubmittedForOrder,
+          buttonTextColor: kWhite,
+          buttonDecoration:
+              kButtonDecoration.copyWith(color: kLightNeutralColor),
+          onPressed: () {},
+        );
+      }
       return ButtonGlobalWithoutIcon(
-        buttontext: l10n.orderStatusCompleted,
+        buttontext: l10n.writeReviewAction,
+        buttonTextColor: kWhite,
+        buttonDecoration: kButtonDecoration.copyWith(color: kPrimaryColor),
+        onPressed: _openSellerReviewScreen,
+      );
+    }
+
+    if (isDelivered) {
+      return ButtonGlobalWithoutIcon(
+        buttontext: l10n.waitingForClientApproval,
         buttonTextColor: kWhite,
         buttonDecoration: kButtonDecoration.copyWith(color: kLightNeutralColor),
         onPressed: () {},
@@ -285,19 +316,16 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
         if (canRequestCancel) const SizedBox(width: 8),
         Expanded(
           child: ButtonGlobalWithoutIcon(
-            buttontext:
-                isDelivered ? l10n.completeOrder : l10n.deliverWork,
+            buttontext: l10n.deliverWork,
             buttonTextColor: kWhite,
             buttonDecoration: kButtonDecoration.copyWith(
               color: kPrimaryColor,
             ),
-            onPressed: isDelivered
-                ? _handleComplete
-                : () async {
-                    await SellerDeliverOrder(orderId: widget.orderId)
-                        .launch(context);
-                    _loadOrder();
-                  },
+            onPressed: () async {
+              await SellerDeliverOrder(orderId: widget.orderId)
+                  .launch(context);
+              _loadOrder();
+            },
           ),
         ),
       ],
@@ -465,6 +493,7 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
         jobPostId != null &&
         !isReadOnlyContract &&
         AttendanceMode.isEnabled(AttendanceMode.effectiveForJobPost(jobPost));
+    final deliveries = OrderDelivery.listFromOrderMap(_order);
 
     return Scaffold(
       backgroundColor: kDarkWhite,
@@ -545,6 +574,13 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
                 ],
                 if (isCancelled) ...[
                   _buildCancelledSummary(),
+                  const SizedBox(height: 12),
+                ],
+                if (deliveries.isNotEmpty) ...[
+                  OrderDeliveryPanel(
+                    deliveries: deliveries,
+                    title: l10n.yourDelivery,
+                  ),
                   const SizedBox(height: 12),
                 ],
                 Container(

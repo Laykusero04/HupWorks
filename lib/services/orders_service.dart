@@ -46,7 +46,7 @@ class OrdersService {
           'client_id': user.id,
           'seller_id': sellerId,
           'price': price,
-          'status': 'pending',
+          'status': 'active',
           'delivery_deadline': deadline.toIso8601String(),
         })
         .select()
@@ -94,7 +94,8 @@ class OrdersService {
           'id, cover_letter, delivery_time, delivery_time_unit, price_basis, '
           'job_posts(id, title, description, job_type, location, location_type, attendance_mode, workers_needed)'
           '), '
-          'reviews(id, reviewer_id, rating, comment, created_at)',
+          'reviews(id, reviewer_id, rating, comment, created_at), '
+          'order_deliveries(id, order_id, message, attachment_url, delivered_at)',
         )
         .eq('id', orderId)
         .single();
@@ -172,7 +173,68 @@ class OrdersService {
     }
   }
 
-  /// Update order status
+  /// Client marks the order complete after the seller has delivered.
+  static Future<void> completeOrder(String orderId) async {
+    await _client.rpc(
+      'complete_order',
+      params: {'p_order_id': orderId},
+    );
+  }
+
+  /// Seller leaves a review for the client on this order.
+  static Future<void> submitSellerOrderReview({
+    required String orderId,
+    required String clientId,
+    required int rating,
+    String? comment,
+    String? serviceId,
+    String? jobOfferId,
+  }) async {
+    final user = _client.auth.currentUser;
+    if (user == null) throw Exception('Not logged in');
+    if (rating < 1 || rating > 5) throw Exception('Invalid rating');
+
+    final row = <String, dynamic>{
+      'order_id': orderId,
+      'reviewer_id': user.id,
+      'reviewed_id': clientId,
+      'rating': rating,
+    };
+    final sid = serviceId?.trim();
+    if (sid != null && sid.isNotEmpty) row['service_id'] = sid;
+    final jid = jobOfferId?.trim();
+    if (jid != null && jid.isNotEmpty) row['job_offer_id'] = jid;
+    final c = comment?.trim();
+    if (c != null && c.isNotEmpty) row['comment'] = c;
+
+    try {
+      await _client.from('reviews').insert(row).select('id').single();
+      ProfileService.clearProfileCache();
+      await ProfileService.syncReviewStatsToProfile(clientId);
+    } on PostgrestException catch (e) {
+      final msg = e.message;
+      final code = e.code;
+      if (code == '23502' && msg.toLowerCase().contains('service_id')) {
+        throw Exception(
+          'This order has no marketplace service. In Supabase → SQL Editor, run '
+          'migrations/0006_reviews_service_id_nullable.sql so reviews.service_id can be null.',
+        );
+      }
+      if (code == '23503') {
+        throw Exception(
+          'Review could not be saved (linked order, profile, or job offer was not found). $msg',
+        );
+      }
+      if (code == '42501' || msg.toLowerCase().contains('row-level security')) {
+        throw Exception(
+          'Review could not be saved (permission denied). You must be the client or seller on this order.',
+        );
+      }
+      throw Exception(msg.isNotEmpty ? msg : e.toString());
+    }
+  }
+
+  /// Update order status (prefer [completeOrder] / deliver RPC for status changes).
   static Future<void> updateOrderStatus(String orderId, String status) async {
     await _client.from('orders').update({
       'status': status,

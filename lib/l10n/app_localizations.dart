@@ -3550,6 +3550,12 @@ abstract class AppLocalizations {
   /// **'Seller submitted delivery'**
   String get sellerSubmittedDelivery;
 
+  /// No description provided for @yourDelivery.
+  ///
+  /// In en, this message translates to:
+  /// **'Your delivery'**
+  String get yourDelivery;
+
   /// No description provided for @deliveredCalloutBody.
   ///
   /// In en, this message translates to:
@@ -3559,7 +3565,7 @@ abstract class AppLocalizations {
   /// No description provided for @openContractCalloutBody.
   ///
   /// In en, this message translates to:
-  /// **'When your freelancer has finished and you have the final result, tap Mark job complete below to close the contract. You can message the seller from the ⋮ menu at the top.'**
+  /// **'Your freelancer must submit delivery before you can complete this contract. You can message the seller from the ⋮ menu at the top.'**
   String get openContractCalloutBody;
 
   /// No description provided for @cancellationRequestBannerBody.
@@ -3663,6 +3669,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Complete Order'**
   String get completeOrder;
+
+  /// No description provided for @waitingForClientApproval.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for client approval'**
+  String get waitingForClientApproval;
+
+  /// No description provided for @waitingForDelivery.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for delivery'**
+  String get waitingForDelivery;
 
   /// No description provided for @waitingForClientResponse.
   ///
@@ -4333,7 +4351,7 @@ abstract class AppLocalizations {
   /// No description provided for @counterOfferBody.
   ///
   /// In en, this message translates to:
-  /// **'Propose a different rate. The freelancer can submit a revised bid.'**
+  /// **'Propose a different rate. This updates the application amount before you hire.'**
   String get counterOfferBody;
 
   /// No description provided for @counterOfferAmountHint.

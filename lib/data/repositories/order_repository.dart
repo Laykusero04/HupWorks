@@ -47,7 +47,11 @@ class OrderRepository {
 
   Future<void> updateOrderStatus(String orderId, String status) async {
     try {
-      await OrdersService.updateOrderStatus(orderId, status);
+      if (status.toLowerCase() == 'completed') {
+        await OrdersService.completeOrder(orderId);
+      } else {
+        await OrdersService.updateOrderStatus(orderId, status);
+      }
     } catch (e) {
       throw ServerFailure(e.toString());
     }
@@ -75,8 +79,16 @@ class OrderRepository {
 
   Future<void> sellerUpdateOrderStatus(String orderId, String status) async {
     try {
-      await SellerOrdersService.updateOrderStatus(orderId, status);
+      if (status.toLowerCase() == 'delivered') {
+        throw ServerFailure(
+          'Use deliverOrder with a delivery message and attachment',
+        );
+      }
+      throw ServerFailure(
+        'Seller status "$status" must go through a secure delivery RPC',
+      );
     } catch (e) {
+      if (e is ServerFailure) rethrow;
       throw ServerFailure(e.toString());
     }
   }

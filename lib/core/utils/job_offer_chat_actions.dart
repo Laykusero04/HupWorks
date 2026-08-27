@@ -227,6 +227,7 @@ class JobOfferChatActions {
     }
 
     try {
+      await JobPostsService.counterJobOffer(offerId: offerId, price: amount);
       await ChatService.sendMessage(
         conversationId: conversationId,
         content: body.toString().trim(),

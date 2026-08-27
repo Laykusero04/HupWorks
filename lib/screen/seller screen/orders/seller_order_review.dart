@@ -6,13 +6,37 @@ import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/screen/widgets/interactive_star_rating.dart';
+import 'package:freelancer/services/orders_service.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../widgets/constant.dart';
 import '../seller popUp/seller_popup.dart';
 
 class SellerOrderReview extends StatefulWidget {
-  const SellerOrderReview({Key? key}) : super(key: key);
+  final String orderId;
+  final String clientId;
+
+  /// Optional; set for service-based orders.
+  final String? serviceId;
+
+  /// Optional; set for job-offer orders.
+  final String? jobOfferId;
+
+  /// Shown in the header; falls back to a generic label if null.
+  final String? clientName;
+
+  /// Optional profile photo URL from `profiles.profile_image_url`.
+  final String? clientProfileImageUrl;
+
+  const SellerOrderReview({
+    Key? key,
+    required this.orderId,
+    required this.clientId,
+    this.serviceId,
+    this.jobOfferId,
+    this.clientName,
+    this.clientProfileImageUrl,
+  }) : super(key: key);
 
   @override
   State<SellerOrderReview> createState() => _SellerOrderReviewState();
@@ -24,6 +48,7 @@ class _SellerOrderReviewState extends State<SellerOrderReview> {
 
   int _stars = 0;
   XFile? _pickedImage;
+  bool _isSubmitting = false;
 
   @override
   void dispose() {
@@ -46,6 +71,20 @@ class _SellerOrderReviewState extends State<SellerOrderReview> {
     );
     if (!mounted) return;
     Navigator.of(context).maybePop();
+  }
+
+  String _displayClientName(AppLocalizations l10n) {
+    final n = widget.clientName?.trim();
+    if (n != null && n.isNotEmpty) return n;
+    return l10n.roleClient;
+  }
+
+  ImageProvider _clientAvatar() {
+    final url = widget.clientProfileImageUrl?.trim();
+    if (url != null && url.isNotEmpty) {
+      return NetworkImage(url);
+    }
+    return const AssetImage('images/profilepic2.png');
   }
 
   Future<void> _openImagePicker() async {
@@ -72,7 +111,8 @@ class _SellerOrderReviewState extends State<SellerOrderReview> {
             if (_pickedImage != null)
               ListTile(
                 leading: const Icon(Icons.delete_outline, color: Colors.red),
-                title: Text(l10n.removePhoto, style: kTextStyle.copyWith(color: Colors.red)),
+                title: Text(l10n.removePhoto,
+                    style: kTextStyle.copyWith(color: Colors.red)),
                 onTap: () => Navigator.pop(ctx, 'remove'),
               ),
           ],
@@ -87,9 +127,11 @@ class _SellerOrderReviewState extends State<SellerOrderReview> {
       return;
     }
 
-    final source = action == 'camera' ? ImageSource.camera : ImageSource.gallery;
+    final source =
+        action == 'camera' ? ImageSource.camera : ImageSource.gallery;
     try {
-      final file = await _picker.pickImage(source: source, maxWidth: 2000, imageQuality: 88);
+      final file = await _picker.pickImage(
+          source: source, maxWidth: 2000, imageQuality: 88);
       if (file != null && mounted) setState(() => _pickedImage = file);
     } catch (e) {
       if (mounted) {
@@ -109,7 +151,7 @@ class _SellerOrderReviewState extends State<SellerOrderReview> {
           Icon(IconlyBold.camera, color: kLightNeutralColor, size: 32),
           const SizedBox(height: 6),
           Text(
-            'Tap to add',
+            context.l10n.tapToAdd,
             style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
           ),
         ],
@@ -119,18 +161,21 @@ class _SellerOrderReviewState extends State<SellerOrderReview> {
       return Image.network(
         x.path,
         fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => const Center(child: Icon(Icons.broken_image_outlined)),
+        errorBuilder: (_, __, ___) =>
+            const Center(child: Icon(Icons.broken_image_outlined)),
       );
     }
     return Image.file(
       File(x.path),
       fit: BoxFit.cover,
-      errorBuilder: (_, __, ___) => const Center(child: Icon(Icons.broken_image_outlined)),
+      errorBuilder: (_, __, ___) =>
+          const Center(child: Icon(Icons.broken_image_outlined)),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Scaffold(
       backgroundColor: kDarkWhite,
       resizeToAvoidBottomInset: true,
@@ -139,8 +184,9 @@ class _SellerOrderReviewState extends State<SellerOrderReview> {
         elevation: 0,
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
-          'Write a review',
-          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+          l10n.writeReview,
+          style: kTextStyle.copyWith(
+              color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),
@@ -152,20 +198,52 @@ class _SellerOrderReviewState extends State<SellerOrderReview> {
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
             child: ButtonGlobalWithoutIcon(
-              buttontext: 'Publish review',
+              buttontext: _isSubmitting ? l10n.publishing : l10n.publishReview,
               buttonDecoration: kButtonDecoration.copyWith(
-                color: kPrimaryColor,
+                color: _isSubmitting ? kLightNeutralColor : kPrimaryColor,
                 borderRadius: BorderRadius.circular(30.0),
               ),
-              onPressed: () async {
-                if (_stars <= 0) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(context.l10n.pleaseChooseStarRating)),
-                  );
-                  return;
-                }
-                await _showSuccessThenExit();
-              },
+              onPressed: _isSubmitting
+                  ? () {}
+                  : () async {
+                      if (_stars <= 0) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content:
+                                  Text(context.l10n.pleaseChooseStarRating)),
+                        );
+                        return;
+                      }
+                      setState(() => _isSubmitting = true);
+                      try {
+                        await OrdersService.submitSellerOrderReview(
+                          orderId: widget.orderId,
+                          clientId: widget.clientId,
+                          rating: _stars,
+                          comment: _feedbackController.text,
+                          serviceId: widget.serviceId,
+                          jobOfferId: widget.jobOfferId,
+                        );
+                        if (!context.mounted) return;
+                        await _showSuccessThenExit();
+                      } catch (e) {
+                        if (!context.mounted) return;
+                        final s = e.toString();
+                        final duplicate = s.contains('23505') ||
+                            s.contains('reviews_order_reviewer_unique');
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              duplicate
+                                  ? l10n.reviewAlreadySubmitted
+                                  : l10n.couldNotPublishReview('$e'),
+                            ),
+                          ),
+                        );
+                      } finally {
+                        if (mounted) setState(() => _isSubmitting = false);
+                      }
+                    },
               buttonTextColor: kWhite,
             ),
           ),
@@ -190,7 +268,7 @@ class _SellerOrderReviewState extends State<SellerOrderReview> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      'Review your experience',
+                      l10n.reviewYourExperience,
                       style: kTextStyle.copyWith(
                         color: kNeutralColor,
                         fontWeight: FontWeight.bold,
@@ -199,7 +277,7 @@ class _SellerOrderReviewState extends State<SellerOrderReview> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'How would you rate your overall experience with this client?',
+                      l10n.rateExperienceWithClient,
                       style: kTextStyle.copyWith(
                         color: kSubTitleColor,
                         height: 1.4,
@@ -213,11 +291,11 @@ class _SellerOrderReviewState extends State<SellerOrderReview> {
                           CircleAvatar(
                             radius: 50,
                             backgroundColor: kDarkWhite,
-                            backgroundImage: const AssetImage('images/profilepic2.png'),
+                            backgroundImage: _clientAvatar(),
                           ),
                           const SizedBox(height: 12),
                           Text(
-                            'Client',
+                            _displayClientName(l10n),
                             style: kTextStyle.copyWith(
                               color: kNeutralColor,
                               fontWeight: FontWeight.bold,
@@ -226,15 +304,16 @@ class _SellerOrderReviewState extends State<SellerOrderReview> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Posted this contract',
-                            style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13),
+                            l10n.postedThisContract,
+                            style: kTextStyle.copyWith(
+                                color: kSubTitleColor, fontSize: 13),
                           ),
                         ],
                       ),
                     ),
                     const SizedBox(height: 28),
                     Text(
-                      'Select rating',
+                      l10n.selectRating,
                       style: kTextStyle.copyWith(
                         color: kNeutralColor,
                         fontWeight: FontWeight.w600,
@@ -254,16 +333,17 @@ class _SellerOrderReviewState extends State<SellerOrderReview> {
                       maxLines: 8,
                       decoration: kInputDecoration.copyWith(
                         alignLabelWithHint: true,
-                        labelText: 'Your feedback',
+                        labelText: l10n.yourFeedback,
                         labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                        hintText: 'Share your experience…',
-                        hintStyle: kTextStyle.copyWith(color: kLightNeutralColor),
+                        hintText: l10n.feedbackHint,
+                        hintStyle:
+                            kTextStyle.copyWith(color: kLightNeutralColor),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                     ),
                     const SizedBox(height: 24),
                     Text(
-                      'Upload image (optional)',
+                      l10n.uploadImageOptional,
                       style: kTextStyle.copyWith(
                         color: kNeutralColor,
                         fontWeight: FontWeight.w600,
@@ -292,8 +372,10 @@ class _SellerOrderReviewState extends State<SellerOrderReview> {
                                     shape: const CircleBorder(),
                                     child: IconButton(
                                       visualDensity: VisualDensity.compact,
-                                      icon: const Icon(Icons.close, color: Colors.white, size: 20),
-                                      onPressed: () => setState(() => _pickedImage = null),
+                                      icon: const Icon(Icons.close,
+                                          color: Colors.white, size: 20),
+                                      onPressed: () =>
+                                          setState(() => _pickedImage = null),
                                     ),
                                   ),
                                 ),

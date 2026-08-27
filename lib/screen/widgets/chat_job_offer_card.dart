@@ -213,6 +213,9 @@ class _ChatJobOfferCardState extends State<ChatJobOfferCard> {
       conversationId: widget.conversationId,
       offerId: offerId,
       offer: offer,
+      onComplete: () async {
+        await _loadOffer();
+      },
     );
   }
 

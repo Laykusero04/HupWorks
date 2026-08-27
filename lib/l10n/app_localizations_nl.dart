@@ -2154,7 +2154,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get freelancerDefault => 'Freelancer';
 
   @override
-  String get submitOfferTitle => 'Offerte indienen';
+  String get submitOfferTitle => 'Sollicitatie indienen';
 
   @override
   String get applyAtClientRate => 'Solliciteer tegen klanttarief';
@@ -2174,7 +2174,7 @@ class AppLocalizationsNl extends AppLocalizations {
       'Sollicitatie verzonden tegen klanttarief';
 
   @override
-  String get offerSentSuccess => 'Je offerte is verzonden';
+  String get offerSentSuccess => 'Je sollicitatie is verzonden';
 
   @override
   String get successTitle => 'Gelukt';
@@ -2184,7 +2184,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get applyWithoutCounterBody =>
-      'Je solliciteert zonder tegenbod. De klant ziet je sollicitatie tegen hun tarief.';
+      'Je solliciteert tegen het tarief van de klant. Zij zien je sollicitatie tegen dat tarief.';
 
   @override
   String get clientPostedRate => 'Gepubliceerd tarief klant';
@@ -2208,7 +2208,7 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
-  String get yourOfferAmount => 'Jouw offertebedrag';
+  String get yourOfferAmount => 'Jouw sollicitatiebedrag';
 
   @override
   String get enterYourBid => 'Voer je bod in';
@@ -2245,11 +2245,17 @@ class AppLocalizationsNl extends AppLocalizations {
   String get buyerRequestDetailsTitle => 'Vacaturedetails';
 
   @override
-  String get submitOfferAction => 'Offerte indienen';
+  String get submitOfferAction => 'Sollicitatie indienen';
+
+  @override
+  String get cannotSubmitApplication => 'Kan niet solliciteren';
+
+  @override
+  String get applicationsReceived => 'Sollicitaties';
 
   @override
   String offersCount(int count) {
-    return '$count offertes';
+    return '$count sollicitaties';
   }
 
   @override
@@ -2309,6 +2315,68 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get bidOfferLabel => 'Bod aanbieding';
+
+  @override
+  String get counterOfferLabel => 'Tegenbod';
+
+  @override
+  String get counterOfferAction => 'Tegenbod';
+
+  @override
+  String get counterOfferTitle => 'Tegenbod sturen';
+
+  @override
+  String get counterOfferBody =>
+      'Stel een ander tarief voor. De freelancer kan een herzien bod indienen.';
+
+  @override
+  String get counterOfferAmountHint => 'Voorgesteld bedrag';
+
+  @override
+  String get counterOfferNoteHint => 'Optionele notitie voor de freelancer';
+
+  @override
+  String get counterOfferSent => 'Tegenbod verzonden';
+
+  @override
+  String get threadContextTitle => 'Gerelateerd werk';
+
+  @override
+  String get threadContextSubtitle =>
+      'Actieve jobs en contracten met deze persoon';
+
+  @override
+  String threadContextRelatedCount(int count) {
+    return '$count gerelateerde items';
+  }
+
+  @override
+  String get threadContextLoading => 'Gerelateerd werk laden…';
+
+  @override
+  String get chatFilterApplications => 'Sollicitaties';
+
+  @override
+  String get chatFilterActive => 'Actief';
+
+  @override
+  String get chatFilterPast => 'Verleden';
+
+  @override
+  String get chatTagApplication => 'Sollicitatie';
+
+  @override
+  String get chatTagActive => 'Actief';
+
+  @override
+  String get chatTagPast => 'Verleden';
+
+  @override
+  String get noChatsInFilter => 'Geen chats in dit filter';
+
+  @override
+  String get noChatsInFilterHint =>
+      'Probeer een ander filter of start een chat vanaf een profiel';
 
   @override
   String get proposalCaps => 'VOORSTEL';

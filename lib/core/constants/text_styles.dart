@@ -28,7 +28,7 @@ InputDecoration kInputDecoration = const InputDecoration(
     borderRadius: BorderRadius.all(
       Radius.circular(6.0),
     ),
-    borderSide: BorderSide(color: kNeutralColor, width: 2),
+    borderSide: BorderSide(color: kPrimaryColor, width: 2),
   ),
 );
 

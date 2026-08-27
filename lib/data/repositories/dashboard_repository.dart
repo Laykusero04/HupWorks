@@ -62,14 +62,6 @@ class DashboardRepository {
     }
   }
 
-  Future<Map<String, dynamic>> getEarnings({required bool isLastMonth}) async {
-    try {
-      return await SellerHomeService.getEarnings(isLastMonth: isLastMonth);
-    } catch (e) {
-      throw ServerFailure(e.toString());
-    }
-  }
-
   Future<List<ServiceModel>> getSellerMyServices({int limit = 10}) async {
     try {
       final data = await SellerHomeService.getMyServices(limit: limit);

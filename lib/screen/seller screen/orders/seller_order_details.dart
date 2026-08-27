@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/core/utils/order_cancellation.dart';
+import 'package:freelancer/core/utils/order_chat_navigation.dart';
 import 'package:freelancer/core/utils/order_contract_display.dart';
+import 'package:freelancer/data/models/chat_order_context.dart';
 import 'package:freelancer/data/models/hire_onboarding_packet_model.dart';
 import 'package:freelancer/core/utils/attendance_mode.dart';
 import 'package:freelancer/screen/attendance/attendance_actions_card.dart';
@@ -199,6 +202,30 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
     }
   }
 
+  ChatOrderContext _chatOrderContext() {
+    final status = ((_order?['status'] as String?) ?? 'pending').toLowerCase();
+    return ChatOrderContext(
+      orderId: widget.orderId,
+      title: OrderContractDisplay.title(_order, _service),
+      statusLabel: OrderCancellationReason.statusLabel(status, context.l10n),
+      deadlineLabel: _formatDate(_order?['delivery_deadline']),
+      isClientViewer: false,
+    );
+  }
+
+  Future<void> _handleMessageClient() async {
+    final clientId =
+        (_client?['id'] ?? _order?['client_id'])?.toString();
+    if (clientId == null || clientId.isEmpty) return;
+    await openOrderChat(
+      context,
+      otherUserId: clientId,
+      otherUserName: _client?['name'] as String? ?? context.l10n.roleClient,
+      otherUserImage: _client?['profile_image_url'] as String? ?? '',
+      orderContext: _chatOrderContext(),
+    );
+  }
+
   Widget _buildBottomBar({
     required String status,
     required bool isCompleted,
@@ -285,16 +312,16 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFF8E1),
+        color: StatusColors.warningBg,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFD97706).withValues(alpha: 0.4)),
+        border: Border.all(color: StatusColors.warning.withValues(alpha: 0.4)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Icon(Icons.hourglass_top, color: Color(0xFFD97706), size: 22),
+              const Icon(Icons.hourglass_top, color: StatusColors.warning, size: 22),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -354,9 +381,9 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFFFEE2E2),
+        color: StatusColors.dangerBg,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFDC2626).withValues(alpha: 0.35)),
+        border: Border.all(color: StatusColors.danger.withValues(alpha: 0.35)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -364,7 +391,7 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
           Text(
             l10n.contractCancelledTitle,
             style: kTextStyle.copyWith(
-              color: const Color(0xFFDC2626),
+              color: StatusColors.danger,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -454,6 +481,12 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
         ),
         centerTitle: true,
         actions: [
+          if ((_client?['id'] ?? _order?['client_id']) != null)
+            IconButton(
+              tooltip: l10n.message,
+              onPressed: _handleMessageClient,
+              icon: const Icon(IconlyBold.chat, color: kPrimaryColor),
+            ),
           if ((_client?['id'] ?? _order?['client_id']) != null)
             IconButton(
               tooltip: l10n.report,

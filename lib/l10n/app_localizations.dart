@@ -4021,7 +4021,7 @@ abstract class AppLocalizations {
   /// No description provided for @submitOfferTitle.
   ///
   /// In en, this message translates to:
-  /// **'Submit offer'**
+  /// **'Submit application'**
   String get submitOfferTitle;
 
   /// No description provided for @applyAtClientRate.
@@ -4057,7 +4057,7 @@ abstract class AppLocalizations {
   /// No description provided for @offerSentSuccess.
   ///
   /// In en, this message translates to:
-  /// **'Your offer has been sent'**
+  /// **'Your application has been sent'**
   String get offerSentSuccess;
 
   /// No description provided for @successTitle.
@@ -4075,7 +4075,7 @@ abstract class AppLocalizations {
   /// No description provided for @applyWithoutCounterBody.
   ///
   /// In en, this message translates to:
-  /// **'You are applying without a counter-offer. The client sees your application at their posted rate.'**
+  /// **'You are applying at the client\'s posted rate. They will see your application at that rate.'**
   String get applyWithoutCounterBody;
 
   /// No description provided for @clientPostedRate.
@@ -4111,7 +4111,7 @@ abstract class AppLocalizations {
   /// No description provided for @yourOfferAmount.
   ///
   /// In en, this message translates to:
-  /// **'Your offer amount'**
+  /// **'Your application amount'**
   String get yourOfferAmount;
 
   /// No description provided for @enterYourBid.
@@ -4183,13 +4183,25 @@ abstract class AppLocalizations {
   /// No description provided for @submitOfferAction.
   ///
   /// In en, this message translates to:
-  /// **'Submit offer'**
+  /// **'Submit application'**
   String get submitOfferAction;
+
+  /// No description provided for @cannotSubmitApplication.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot apply'**
+  String get cannotSubmitApplication;
+
+  /// No description provided for @applicationsReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'Applications'**
+  String get applicationsReceived;
 
   /// No description provided for @offersCount.
   ///
   /// In en, this message translates to:
-  /// **'{count} offers'**
+  /// **'{count} applications'**
   String offersCount(int count);
 
   /// No description provided for @locationLabel.
@@ -4299,6 +4311,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Bid Offer'**
   String get bidOfferLabel;
+
+  /// No description provided for @counterOfferLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Counter offer'**
+  String get counterOfferLabel;
+
+  /// No description provided for @counterOfferAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Counter offer'**
+  String get counterOfferAction;
+
+  /// No description provided for @counterOfferTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Send counter offer'**
+  String get counterOfferTitle;
+
+  /// No description provided for @counterOfferBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Propose a different rate. The freelancer can submit a revised bid.'**
+  String get counterOfferBody;
+
+  /// No description provided for @counterOfferAmountHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Proposed amount'**
+  String get counterOfferAmountHint;
+
+  /// No description provided for @counterOfferNoteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional note for the freelancer'**
+  String get counterOfferNoteHint;
+
+  /// No description provided for @counterOfferSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Counter offer sent'**
+  String get counterOfferSent;
+
+  /// No description provided for @threadContextTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Related work'**
+  String get threadContextTitle;
+
+  /// No description provided for @threadContextSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Active jobs and contracts with this person'**
+  String get threadContextSubtitle;
+
+  /// No description provided for @threadContextRelatedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} related items'**
+  String threadContextRelatedCount(int count);
+
+  /// No description provided for @threadContextLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading related work…'**
+  String get threadContextLoading;
+
+  /// No description provided for @chatFilterApplications.
+  ///
+  /// In en, this message translates to:
+  /// **'Applications'**
+  String get chatFilterApplications;
+
+  /// No description provided for @chatFilterActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get chatFilterActive;
+
+  /// No description provided for @chatFilterPast.
+  ///
+  /// In en, this message translates to:
+  /// **'Past'**
+  String get chatFilterPast;
+
+  /// No description provided for @chatTagApplication.
+  ///
+  /// In en, this message translates to:
+  /// **'Application'**
+  String get chatTagApplication;
+
+  /// No description provided for @chatTagActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get chatTagActive;
+
+  /// No description provided for @chatTagPast.
+  ///
+  /// In en, this message translates to:
+  /// **'Past'**
+  String get chatTagPast;
+
+  /// No description provided for @noChatsInFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'No chats in this filter'**
+  String get noChatsInFilter;
+
+  /// No description provided for @noChatsInFilterHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Try another filter or start a conversation from a profile'**
+  String get noChatsInFilterHint;
 
   /// No description provided for @proposalCaps.
   ///

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../constants/colors.dart';
+
 /// Maps [categories.icon] from Supabase to Material icons for the home grid.
 abstract final class CategoryIcons {
   static IconData iconData(String? icon) {
@@ -28,14 +30,14 @@ abstract final class CategoryIcons {
 
   static Color tintColor(int index) {
     const colors = [
-      Color(0xFF16A34A),
-      Color(0xFF2563EB),
-      Color(0xFFF97316),
-      Color(0xFF8B5CF6),
-      Color(0xFFEF4444),
-      Color(0xFF06B6D4),
-      Color(0xFFEAB308),
-      Color(0xFFEC4899),
+      kPrimaryColor,
+      kSecondaryColor,
+      kNeutralColor,
+      kAccentColor,
+      kSellerAccent,
+      kSubTitleColor,
+      kSellerPrimary,
+      kLightNeutralColor,
     ];
     return colors[index % colors.length];
   }

@@ -7,7 +7,6 @@ import 'package:nb_utils/nb_utils.dart';
 
 import '../../widgets/constant.dart';
 import '../../widgets/icons.dart';
-import '../seller authentication/verification.dart';
 
 // ---------------------------------------------------------------------------
 // SaveProfilePopUp — shown after profile creation
@@ -203,71 +202,6 @@ class _ReviewSubmittedPopUpState extends State<ReviewSubmittedPopUp> {
                   Navigator.of(context).pop();
                 },
                 buttonTextColor: kWhite),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ---------------------------------------------------------------------------
-// VerifyPopUp — shown before adding a withdrawal method
-// ---------------------------------------------------------------------------
-class VerifyPopUp extends StatefulWidget {
-  const VerifyPopUp({Key? key}) : super(key: key);
-
-  @override
-  State<VerifyPopUp> createState() => _VerifyPopUpState();
-}
-
-class _VerifyPopUpState extends State<VerifyPopUp> {
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    return Padding(
-      padding: const EdgeInsets.all(15.0),
-      child: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  'Let\u2019s Verify It\u2019s You',
-                  style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
-                ),
-                const Spacer(),
-                GestureDetector(
-                  onTap: () => finish(context),
-                  child: const Icon(FeatherIcons.x, color: kSubTitleColor),
-                ),
-              ],
-            ),
-            const Divider(
-              thickness: 1.0,
-              color: kBorderColorTextField,
-            ),
-            const SizedBox(height: 20.0),
-            Text(
-              'You are trying to add a new withdrawal method. Check a verification method so we can make sure it\u2019s you.',
-              style: kTextStyle.copyWith(color: kSubTitleColor),
-            ),
-            const SizedBox(height: 20.0),
-            Padding(
-              padding: const EdgeInsets.only(left: 40.0, right: 40.0),
-              child: Button(
-                containerBg: kPrimaryColor,
-                borderColor: Colors.transparent,
-                buttonText: l10n.gotIt,
-                textColor: kWhite,
-                onPressed: () {
-                  finish(context);
-                  const OtpVerification(email: '').launch(context);
-                },
-              ),
-            ),
           ],
         ),
       ),

@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-/// Client-side mirror of [job_post_matches_alert_rule] (Postgres) for previews.
+/// Client-side mirror of [job_post_matches_alert_rule] (Postgres) for browse filters.
 abstract final class JobAlertMatch {
   static double haversineKm(
     double lat1,
@@ -35,6 +35,7 @@ abstract final class JobAlertMatch {
     required double? sellerLng,
     required List<String> categoryIds,
     required List<String> skillNames,
+    required List<String> jobSkillNames,
     required String? ruleJobType,
     required double? maxDistanceKm,
     required bool includeRemote,
@@ -45,15 +46,17 @@ abstract final class JobAlertMatch {
       }
     }
 
+    // Skill rules match tagged job skills only (not title/description/category).
     if (skillNames.isNotEmpty) {
-      final titleL = (title ?? '').toLowerCase();
-      final descL = (description ?? '').toLowerCase();
-      final catL = (categoryName ?? '').toLowerCase();
+      final jobSkillsLower = jobSkillNames
+          .map((s) => s.trim().toLowerCase())
+          .where((s) => s.isNotEmpty)
+          .toSet();
       var matched = false;
       for (final raw in skillNames) {
         final skill = raw.trim().toLowerCase();
         if (skill.isEmpty) continue;
-        if (titleL.contains(skill) || descL.contains(skill) || catL.contains(skill)) {
+        if (jobSkillsLower.contains(skill)) {
           matched = true;
           break;
         }

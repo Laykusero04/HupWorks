@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/utils/chat_navigation.dart';
 import 'package:freelancer/data/models/notification_model.dart';
 import 'package:freelancer/screen/client%20screen/client%20job%20post/job_details.dart';
 import 'package:freelancer/screen/client%20screen/client%20orders/client_order_details.dart';
@@ -47,6 +48,13 @@ class NotificationNavigation {
           return;
         case 'review':
           await _openOrder(context, role: role, orderId: refId);
+          return;
+        case 'message':
+          await openChatFromNotification(
+            context,
+            conversationId: refId,
+            role: role,
+          );
           return;
         default:
           _showSnack(context, 'Unable to open this notification.');

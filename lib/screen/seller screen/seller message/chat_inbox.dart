@@ -8,9 +8,15 @@ import 'package:image_picker/image_picker.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../core/chat/chat_unread_scope.dart';
+import '../../../core/utils/chat_thread_context.dart';
+import '../../../data/models/chat_order_context.dart';
+import '../../../data/models/chat_thread_context.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/chat_service.dart';
 import '../../client screen/client report/client_report.dart';
+import '../../widgets/chat_job_offer_card.dart';
+import '../../widgets/chat_thread_context_header.dart';
 import '../report/seller_report.dart';
 import '../seller popUp/seller_popup.dart';
 import 'model/chat_model.dart';
@@ -20,6 +26,7 @@ class ChatInbox extends StatefulWidget {
   final String otherUserName;
   final String otherUserImage;
   final String? otherUserId;
+  final ChatOrderContext? orderContext;
 
   const ChatInbox({
     super.key,
@@ -27,6 +34,7 @@ class ChatInbox extends StatefulWidget {
     required this.otherUserName,
     required this.otherUserImage,
     this.otherUserId,
+    this.orderContext,
   });
 
   @override
@@ -46,12 +54,17 @@ class _ChatInboxState extends State<ChatInbox> {
   bool _hasText = false;
   RealtimeChannel? _messageChannel;
 
+  List<ChatThreadContextItem> _threadItems = const [];
+  bool _threadLoading = false;
+  bool _isClientViewer = true;
+
   String get _currentUserId =>
       Supabase.instance.client.auth.currentUser?.id ?? '';
 
   @override
   void initState() {
     super.initState();
+    _isClientViewer = isClientViewerFromAuth();
     _messageController.addListener(_onTextChanged);
     // Defer Supabase calls until after the first frame so the skeleton
     // bubbles paint immediately.
@@ -60,6 +73,7 @@ class _ChatInboxState extends State<ChatInbox> {
       _loadMessages();
       _subscribeToMessages();
       _markAsRead();
+      _loadThreadContext();
     });
   }
 
@@ -136,6 +150,40 @@ class _ChatInboxState extends State<ChatInbox> {
 
   Future<void> _markAsRead() async {
     await ChatService.markMessagesAsRead(widget.conversationId);
+    ChatUnreadScope.refreshGlobal();
+  }
+
+  Future<void> _loadThreadContext() async {
+    setState(() => _threadLoading = true);
+    try {
+      final row = await ChatService.getConversation(widget.conversationId);
+      if (!mounted) return;
+      if (row == null) {
+        setState(() => _threadLoading = false);
+        return;
+      }
+
+      final clientId = row['client_id'] as String?;
+      final sellerId = row['seller_id'] as String?;
+      if (clientId == null || sellerId == null) {
+        setState(() => _threadLoading = false);
+        return;
+      }
+
+      final items = await loadThreadContext(
+        clientId: clientId,
+        sellerId: sellerId,
+        l10n: context.l10n,
+        isClientViewer: _isClientViewer,
+      );
+      if (!mounted) return;
+      setState(() {
+        _threadItems = items;
+        _threadLoading = false;
+      });
+    } catch (_) {
+      if (mounted) setState(() => _threadLoading = false);
+    }
   }
 
   void _scrollToBottom() {
@@ -317,6 +365,12 @@ class _ChatInboxState extends State<ChatInbox> {
       appBar: _buildAppBar(),
       body: Column(
         children: [
+          ChatThreadContextHeader(
+            items: _threadItems,
+            isClientViewer: _isClientViewer,
+            highlightedOrderId: widget.orderContext?.orderId,
+            isLoading: _threadLoading,
+          ),
           Expanded(
             child: _isLoading
                 ? _buildSkeleton()
@@ -348,26 +402,75 @@ class _ChatInboxState extends State<ChatInbox> {
         ),
       ),
       titleSpacing: 0,
-      title: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          _appBarAvatar(),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              widget.otherUserName,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: kTextStyle.copyWith(
-                color: kNeutralColor,
-                fontWeight: FontWeight.w700,
-                fontSize: 15,
+      title: InkWell(
+        onTap: _threadItems.isEmpty
+            ? null
+            : () => showChatThreadContextSheet(
+                  context,
+                  items: _threadItems,
+                  isClientViewer: _isClientViewer,
+                  highlightedOrderId: widget.orderContext?.orderId,
+                ),
+        borderRadius: BorderRadius.circular(8),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _appBarAvatar(),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    widget.otherUserName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: kTextStyle.copyWith(
+                      color: kNeutralColor,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15,
+                    ),
+                  ),
+                  if (_threadItems.isNotEmpty)
+                    Text(
+                      _threadItems.length == 1
+                          ? _threadItems.first.title
+                          : context.l10n
+                              .threadContextRelatedCount(_threadItems.length),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: kTextStyle.copyWith(
+                        color: kPrimaryColor,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       actions: [
+        if (_threadItems.isNotEmpty)
+          IconButton(
+            tooltip: context.l10n.threadContextTitle,
+            onPressed: () => showChatThreadContextSheet(
+              context,
+              items: _threadItems,
+              isClientViewer: _isClientViewer,
+              highlightedOrderId: widget.orderContext?.orderId,
+            ),
+            icon: Badge(
+              isLabelVisible: _threadItems.length > 1,
+              label: Text(
+                '${_threadItems.length}',
+                style: const TextStyle(fontSize: 10),
+              ),
+              child: const Icon(Icons.work_outline_rounded, color: kNeutralColor),
+            ),
+          ),
         Padding(
           padding: const EdgeInsets.only(right: 8),
           child: Container(
@@ -597,8 +700,24 @@ class _ChatInboxState extends State<ChatInbox> {
     required bool isContinued,
   }) {
     final bidInfo = _parseBidMessage(message.content);
-    if (bidInfo != null) {
-      return _buildBidBubble(message, isMine, bidInfo);
+    if (message.isJobOfferMessage ||
+        message.jobOfferId != null ||
+        bidInfo != null) {
+      return ChatJobOfferCard(
+        message: message,
+        conversationId: widget.conversationId,
+        isMine: isMine,
+        formatTime: (dt) => _formatMessageTime(context, dt),
+        smallAvatar: _smallAvatar(),
+        legacyBid: bidInfo == null
+            ? null
+            : LegacyBidInfo(
+                jobTitle: bidInfo.jobTitle,
+                amount: bidInfo.amount,
+                delivery: bidInfo.delivery,
+                proposal: bidInfo.proposal,
+              ),
+      );
     }
 
     final radius = const Radius.circular(18);
@@ -646,10 +765,7 @@ class _ChatInboxState extends State<ChatInbox> {
                   decoration: BoxDecoration(
                     gradient: isMine
                         ? const LinearGradient(
-                            colors: [
-                              Color(0xFF16A34A),
-                              Color(0xFF38C172),
-                            ],
+                            colors: kChatBubbleGradient,
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           )
@@ -915,7 +1031,7 @@ class _ChatInboxState extends State<ChatInbox> {
       decoration: BoxDecoration(
         gradient: active
             ? const LinearGradient(
-                colors: [Color(0xFF16A34A), Color(0xFF38C172)],
+                colors: kChatBubbleGradient,
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               )
@@ -979,10 +1095,7 @@ class _ChatInboxState extends State<ChatInbox> {
                       gradient: isFailed
                           ? null
                           : const LinearGradient(
-                              colors: [
-                                Color(0xFF16A34A),
-                                Color(0xFF38C172),
-                              ],
+                              colors: kChatBubbleGradient,
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             ),
@@ -1138,13 +1251,19 @@ class _ChatInboxState extends State<ChatInbox> {
   // ---------------------------------------------------------------- Bid card
   _BidMessageInfo? _parseBidMessage(String content) {
     final lines = content.split('\n').map((l) => l.trim()).toList();
-    if (lines.isEmpty || !lines[0].contains('New bid for')) return null;
+    if (lines.isEmpty ||
+        (!lines[0].contains('New bid for') &&
+            !lines[0].contains('Application for'))) {
+      return null;
+    }
 
     final titleMatch = RegExp(r'"([^"]+)"').firstMatch(lines[0]);
     final jobTitle = titleMatch?.group(1) ?? '';
     if (jobTitle.isEmpty || lines.length < 2) return null;
 
-    final amountMatch = RegExp(r'Amount:\s*([^·]+?)(?:\s*·|$)').firstMatch(lines[1]);
+    final amountMatch = RegExp(
+      r'(?:Amount:|posted rate:)\s*([^·\n]+?)(?:\s*·|$)',
+    ).firstMatch(lines[1]);
     final deliveryMatch = RegExp(r'·\s*Delivery:\s*(.+)$').firstMatch(lines[1]);
     final amount = amountMatch?.group(1)?.trim() ?? '';
     final delivery = deliveryMatch?.group(1)?.trim() ?? 'Agreed in chat';
@@ -1157,153 +1276,6 @@ class _ChatInboxState extends State<ChatInbox> {
     }
 
     return _BidMessageInfo(jobTitle: jobTitle, amount: amount, delivery: delivery, proposal: proposal);
-  }
-
-  Widget _buildBidBubble(Message message, bool isMine, _BidMessageInfo bid) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        mainAxisAlignment: isMine ? MainAxisAlignment.end : MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          if (!isMine) ...[
-            _smallAvatar(),
-            const SizedBox(width: 6),
-          ],
-          Flexible(
-            child: Column(
-              crossAxisAlignment: isMine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-              children: [
-                Container(
-                  constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.78),
-                  decoration: BoxDecoration(
-                    color: kWhite,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: kPrimaryColor.withOpacity(0.25), width: 1.2),
-                    boxShadow: [
-                      BoxShadow(color: kPrimaryColor.withOpacity(0.08), blurRadius: 12, offset: const Offset(0, 4)),
-                    ],
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                        color: kPrimaryColor.withOpacity(0.10),
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: const BoxDecoration(shape: BoxShape.circle, color: kPrimaryColor),
-                              child: const Icon(Icons.assignment_outlined, color: kWhite, size: 14),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(context.l10n.bidOfferLabel,
-                                style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold, fontSize: 13, letterSpacing: 0.3)),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(14),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              bid.jobTitle,
-                              style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 15, height: 1.25),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 10),
-                            Row(
-                              children: [
-                                Expanded(child: _buildBidPill(icon: Icons.payments_outlined, label: 'AMOUNT', value: bid.amount)),
-                                const SizedBox(width: 8),
-                                Expanded(child: _buildBidPill(icon: Icons.schedule, label: 'DELIVERY', value: bid.delivery)),
-                              ],
-                            ),
-                            if (bid.proposal != null) ...[
-                              const SizedBox(height: 12),
-                              Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: kDarkWhite,
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(color: kBorderColorTextField),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(context.l10n.proposalCaps,
-                                        style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 0.5)),
-                                    const SizedBox(height: 4),
-                                    Text(bid.proposal!,
-                                        style: kTextStyle.copyWith(color: kNeutralColor, fontSize: 13, height: 1.35)),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(_formatMessageTime(context, message.createdAt),
-                        style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 11)),
-                    if (isMine) ...[
-                      const SizedBox(width: 4),
-                      Icon(message.isRead ? Icons.done_all : Icons.done,
-                          size: 14, color: message.isRead ? kPrimaryColor : kLightNeutralColor),
-                    ],
-                  ],
-                ),
-              ],
-            ),
-          ),
-          if (isMine) const SizedBox(width: 6),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBidPill({required IconData icon, required String label, required String value}) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      decoration: BoxDecoration(
-        color: kDarkWhite,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: kBorderColorTextField),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(icon, size: 13, color: kPrimaryColor),
-              const SizedBox(width: 4),
-              Flexible(
-                child: Text(label,
-                    style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 0.5),
-                    overflow: TextOverflow.ellipsis),
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Text(value,
-              style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 14),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis),
-        ],
-      ),
-    );
   }
 }
 

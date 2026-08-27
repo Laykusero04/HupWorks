@@ -6,6 +6,7 @@ import 'package:freelancer/core/utils/category_name.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/services/category_service.dart';
 import 'package:freelancer/services/job_posts_service.dart';
+import 'package:freelancer/services/skill_service.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -13,6 +14,7 @@ import '../../widgets/category_picker_field.dart';
 import '../../widgets/constant.dart';
 import '../../widgets/attendance_mode_picker.dart';
 import '../../widgets/job_location_fields.dart';
+import '../../widgets/skill_picker_field.dart';
 
 class CreateNewJobPost extends StatefulWidget {
   const CreateNewJobPost({super.key});
@@ -33,6 +35,8 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
   String _attendanceMode = AttendanceMode.qrInOut;
 
   List<Map<String, dynamic>> _categories = [];
+  List<Map<String, dynamic>> _skillCatalog = [];
+  final List<String> _skillNames = [];
   String? _selectedCategoryId;
   String? _customCategoryPreview;
   String _selectedJobType = 'gig';
@@ -54,6 +58,53 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
   void initState() {
     super.initState();
     _loadCategories();
+    _loadSkills();
+  }
+
+  Future<void> _loadSkills() async {
+    try {
+      final skills = await SkillService.listForPicker();
+      if (mounted) setState(() => _skillCatalog = skills);
+    } catch (_) {
+      // Optional — posting still works without the catalog loaded.
+    }
+  }
+
+  String? _catalogIdForSkillName(String name) {
+    final key = name.trim().toLowerCase();
+    for (final s in _skillCatalog) {
+      final n = (s['name'] as String?)?.trim().toLowerCase() ?? '';
+      if (n == key) return s['id'] as String?;
+    }
+    return null;
+  }
+
+  Future<void> _addSkill() async {
+    if (_skillNames.length >= JobPostsService.maxJobSkills) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'You can add up to ${JobPostsService.maxJobSkills} skills.',
+          ),
+        ),
+      );
+      return;
+    }
+    await showSkillPickerSheet(
+      context: context,
+      skills: _skillCatalog,
+      title: context.l10n.jobAlertAddSkill,
+      allowCustomSkill: true,
+      excludedNames: _skillNames.map((s) => s.toLowerCase()).toSet(),
+      onSelected: (name) {
+        final trimmed = name.trim();
+        if (trimmed.isEmpty) return;
+        if (_skillNames.any((s) => s.toLowerCase() == trimmed.toLowerCase())) {
+          return;
+        }
+        setState(() => _skillNames.add(trimmed));
+      },
+    );
   }
 
   @override
@@ -205,6 +256,14 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
         attendanceMode: _locationType == JobLocationType.onsite
             ? _attendanceMode
             : AttendanceMode.disabled,
+        skills: _skillNames
+            .map(
+              (n) => (
+                name: n,
+                catalogId: _catalogIdForSkillName(n),
+              ),
+            )
+            .toList(),
       );
 
       if (mounted) {
@@ -359,7 +418,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
         _sectionHeader(IconlyBold.paper, 'Basics'),
         const SizedBox(height: 8),
         Text(
-          'Title, category, and job type.',
+          'Title, category, skills, and job type.',
           style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12, height: 1.35),
         ),
         const SizedBox(height: 14),
@@ -412,6 +471,31 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
           ],
         ],
         const SizedBox(height: 18),
+        _label(context.l10n.skills),
+        const SizedBox(height: 4),
+        Text(
+          'Tag skills freelancers need for this job (optional).',
+          style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12),
+        ),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            ..._skillNames.map(
+              (s) => Chip(
+                label: Text(s),
+                onDeleted: () => setState(() => _skillNames.remove(s)),
+              ),
+            ),
+            ActionChip(
+              avatar: const Icon(Icons.add, size: 18),
+              label: Text(context.l10n.jobAlertAddSkill),
+              onPressed: _addSkill,
+            ),
+          ],
+        ),
+        const SizedBox(height: 18),
         _label('Job Type'),
         const SizedBox(height: 8),
         Wrap(
@@ -458,7 +542,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
           decoration: kInputDecoration.copyWith(
             labelText: 'Describe the job',
             labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-            hintText: 'Scope, timeline, skills needed',
+            hintText: 'Scope, timeline, and expectations',
             hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
             floatingLabelBehavior: FloatingLabelBehavior.always,
             alignLabelWithHint: true,
@@ -675,6 +759,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
         _buildReviewCard(
           title: _titleController.text.trim().isEmpty ? '—' : _titleController.text.trim(),
           category: cat ?? '—',
+          skills: _skillNames.isEmpty ? '—' : _skillNames.join(', '),
           jobType: _jobTypeLabel() ?? '—',
           location: loc.isEmpty ? '—' : loc,
           locationType: _locationType.label,
@@ -688,6 +773,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
   Widget _buildReviewCard({
     required String title,
     required String category,
+    required String skills,
     required String jobType,
     required String location,
     required String locationType,
@@ -711,6 +797,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
           const SizedBox(height: 10),
           _reviewLine('Title', title),
           _reviewLine('Category', category),
+          _reviewLine('Skills', skills),
           _reviewLine('Job type', jobType),
           _reviewLine('Location', '$locationType · $location'),
           _reviewLine('Workers', workers),

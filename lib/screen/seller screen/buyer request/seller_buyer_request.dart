@@ -1,12 +1,18 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/core/utils/app_logger.dart';
-import 'package:freelancer/services/favourite_service.dart';
-import 'package:freelancer/services/job_posts_service.dart';
-import 'package:freelancer/services/seller_orders_service.dart';
-import 'package:freelancer/services/skill_service.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/seller%20screen/job%20alerts/seller_job_alert_editor_screen.dart';
 import 'package:freelancer/screen/seller%20screen/job%20alerts/seller_job_alerts_screen.dart';
+import 'package:freelancer/screen/widgets/map_location_picker_screen.dart';
+import 'package:freelancer/services/category_service.dart';
+import 'package:freelancer/services/favourite_service.dart';
+import 'package:freelancer/services/job_posts_service.dart';
+import 'package:freelancer/services/profile_service.dart';
+import 'package:freelancer/services/seller_orders_service.dart';
+import 'package:freelancer/services/skill_service.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../widgets/client_shell_app_bar.dart';
@@ -24,15 +30,26 @@ class SellerBuyerRequest extends StatefulWidget {
 
 class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
   final _searchController = TextEditingController();
+  Timer? _titleDebounce;
 
   List<Map<String, dynamic>> _requests = [];
+  List<Map<String, dynamic>> _categories = [];
   List<Map<String, dynamic>> _skillCatalog = [];
   final Set<String> _savedJobIds = {};
   final Set<String> _saveBusyIds = {};
   bool _isLoading = true;
+  bool _isRefreshing = false;
   String _titleQuery = '';
   String? _jobTypeFilter;
-  String? _skillFilter;
+  final List<String> _skillNames = [];
+  final Set<String> _categoryIds = {};
+  bool _useDistance = false;
+  double _distanceKm = 25;
+  bool _includeRemote = true;
+  double? _sellerLat;
+  double? _sellerLng;
+  String? _sellerCity;
+  String? _sellerCountry;
 
   static const _employmentTypeOptions = <Map<String, String?>>[
     {'value': null, 'label': 'All'},
@@ -45,33 +62,103 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
   void initState() {
     super.initState();
     _loadRequests();
-    _loadSkillCatalog();
+    _loadFilterMeta();
   }
 
   @override
   void dispose() {
+    _titleDebounce?.cancel();
     _searchController.dispose();
     super.dispose();
   }
 
-  Future<void> _loadSkillCatalog() async {
+  Future<void> _loadFilterMeta() async {
     try {
-      final skills = await SkillService.listForPicker();
-      if (mounted) setState(() => _skillCatalog = skills);
+      final results = await Future.wait([
+        CategoryService.listForPicker(),
+        SkillService.listForPicker(),
+        ProfileService.getProfile(),
+      ]);
+      if (!mounted) return;
+      final profile = results[2] as Map<String, dynamic>?;
+      setState(() {
+        _categories = List<Map<String, dynamic>>.from(results[0] as List);
+        _skillCatalog = List<Map<String, dynamic>>.from(results[1] as List);
+        if (profile != null) {
+          _sellerLat = ProfileService.latitudeFromProfile(profile);
+          _sellerLng = ProfileService.longitudeFromProfile(profile);
+          _sellerCity = profile['city'] as String?;
+          _sellerCountry = profile['country'] as String?;
+        }
+      });
     } catch (e, st) {
-      AppLogger.error('SellerBuyerRequest.loadSkillCatalog', e, st);
+      AppLogger.error('SellerBuyerRequest.loadFilterMeta', e, st);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.couldNotLoadSkillsFilter)),
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
     }
   }
 
-  Future<void> _loadRequests() async {
+  Future<void> _pickSellerLocation() async {
+    final LatLng? initial = _sellerLat != null && _sellerLng != null
+        ? LatLng(_sellerLat!, _sellerLng!)
+        : null;
+    final result = await Navigator.of(context).push<MapLocationPickerResult>(
+      MaterialPageRoute(
+        builder: (_) => MapLocationPickerScreen(
+          purpose: MapLocationPickerPurpose.profile,
+          initialCity: _sellerCity,
+          initialCountry: _sellerCountry,
+          initialPosition: initial,
+          accentColor: kSellerPrimary,
+        ),
+      ),
+    );
+    if (result == null || !mounted) return;
+
+    try {
+      await ProfileService.updateProfile({
+        if (result.country != null && result.country!.isNotEmpty)
+          'country': result.country,
+        if (result.city != null && result.city!.isNotEmpty) 'city': result.city,
+        'latitude': result.latitude,
+        'longitude': result.longitude,
+      });
+      setState(() {
+        _sellerLat = result.latitude;
+        _sellerLng = result.longitude;
+        _sellerCity = result.city;
+        _sellerCountry = result.country;
+      });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+        );
+      }
+    }
+  }
+
+  Future<void> _loadRequests({bool showSpinner = false}) async {
+    if (showSpinner) {
+      setState(() => _isLoading = true);
+    } else if (!_isLoading) {
+      setState(() => _isRefreshing = true);
+    }
     try {
       final results = await Future.wait([
-        SellerOrdersService.getBuyerRequests(),
+        SellerOrdersService.getBuyerRequests(
+          titleQuery: _titleQuery,
+          categoryIds: _categoryIds.toList(),
+          skillNames: List<String>.from(_skillNames),
+          jobType: _jobTypeFilter,
+          maxDistanceKm: _useDistance ? _distanceKm : null,
+          includeRemote: _includeRemote,
+          sellerLat: _sellerLat,
+          sellerLng: _sellerLng,
+        ),
         FavouriteService.getFavouritedJobPostIds(),
       ]);
       if (mounted) {
@@ -81,16 +168,29 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
             ..clear()
             ..addAll(results[1] as Set<String>);
           _isLoading = false;
+          _isRefreshing = false;
         });
       }
     } catch (e) {
       if (mounted) {
-        setState(() => _isLoading = false);
+        setState(() {
+          _isLoading = false;
+          _isRefreshing = false;
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
     }
+  }
+
+  void _onTitleQueryChanged(String q) {
+    setState(() => _titleQuery = q);
+    _titleDebounce?.cancel();
+    _titleDebounce = Timer(const Duration(milliseconds: 350), () {
+      if (!mounted) return;
+      _loadRequests();
+    });
   }
 
   Future<void> _toggleSaveJob(String jobPostId) async {
@@ -125,48 +225,22 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
 
   bool get _hasSecondaryFilters =>
       _jobTypeFilter != null ||
-      (_skillFilter != null && _skillFilter!.trim().isNotEmpty);
+      _skillNames.isNotEmpty ||
+      _categoryIds.isNotEmpty ||
+      _useDistance ||
+      !_includeRemote;
 
   int get _secondaryFilterCount {
     var n = 0;
-    if (_skillFilter != null && _skillFilter!.trim().isNotEmpty) n++;
     if (_jobTypeFilter != null) n++;
+    if (_skillNames.isNotEmpty) n++;
+    if (_categoryIds.isNotEmpty) n++;
+    if (_useDistance) n++;
+    if (!_includeRemote) n++;
     return n;
   }
 
   bool get _hasActiveFilters => _titleQuery.trim().isNotEmpty || _hasSecondaryFilters;
-
-  List<Map<String, dynamic>> get _visibleRequests {
-    var list = _requests;
-
-    final titleQ = _titleQuery.trim().toLowerCase();
-    if (titleQ.isNotEmpty) {
-      list = list.where((r) {
-        final title = (r['title'] as String? ?? '').toLowerCase();
-        return title.contains(titleQ);
-      }).toList();
-    }
-
-    if (_jobTypeFilter != null) {
-      list = list.where((r) => r['job_type'] == _jobTypeFilter).toList();
-    }
-
-    final skillQ = _skillFilter?.trim().toLowerCase() ?? '';
-    if (skillQ.isNotEmpty) {
-      list = list.where((r) {
-        final title = (r['title'] as String? ?? '').toLowerCase();
-        final desc = (r['description'] as String? ?? '').toLowerCase();
-        final cat =
-            ((r['categories'] as Map<String, dynamic>?)?['name'] as String? ?? '')
-                .toLowerCase();
-        return title.contains(skillQ) ||
-            desc.contains(skillQ) ||
-            cat.contains(skillQ);
-      }).toList();
-    }
-
-    return list;
-  }
 
   static String _jobTypeLabel(String? type) {
     switch (type) {
@@ -201,16 +275,85 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
     return '${d.day} ${m[d.month - 1]} ${d.year}';
   }
 
-  void _clearSecondaryFilters() {
+  Future<void> _clearSecondaryFilters() async {
     setState(() {
       _jobTypeFilter = null;
-      _skillFilter = null;
+      _skillNames.clear();
+      _categoryIds.clear();
+      _useDistance = false;
+      _distanceKm = 25;
+      _includeRemote = true;
     });
+    await _loadRequests();
+  }
+
+  Future<void> _openCategoryPicker({
+    required Set<String> selected,
+    required void Function(void Function()) setSheetState,
+  }) async {
+    final draft = Set<String>.from(selected);
+    final l10n = context.l10n;
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: Text(l10n.jobAlertPickCategories),
+              content: SizedBox(
+                width: double.maxFinite,
+                child: ListView(
+                  shrinkWrap: true,
+                  children: _categories.map((c) {
+                    final id = c['id'] as String;
+                    final name = c['name'] as String? ?? '';
+                    return CheckboxListTile(
+                      value: draft.contains(id),
+                      title: Text(name, style: kTextStyle.copyWith(fontSize: 14)),
+                      onChanged: (v) {
+                        setDialogState(() {
+                          if (v == true) {
+                            draft.add(id);
+                          } else {
+                            draft.remove(id);
+                          }
+                        });
+                      },
+                    );
+                  }).toList(),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: Text(l10n.cancel),
+                ),
+                TextButton(
+                  onPressed: () {
+                    setSheetState(() {
+                      selected
+                        ..clear()
+                        ..addAll(draft);
+                    });
+                    Navigator.pop(ctx);
+                  },
+                  child: Text(l10n.filterApply),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   Future<void> _openFilterSheet() async {
     var tempJobType = _jobTypeFilter;
-    var tempSkill = _skillFilter;
+    final tempSkillNames = List<String>.from(_skillNames);
+    final tempCategoryIds = Set<String>.from(_categoryIds);
+    var tempUseDistance = _useDistance;
+    var tempDistanceKm = _distanceKm;
+    var tempIncludeRemote = _includeRemote;
 
     await showModalBottomSheet<void>(
       context: context,
@@ -220,210 +363,371 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
       ),
       builder: (ctx) {
         final primary = Theme.of(ctx).colorScheme.primary;
+        final l10n = context.l10n;
         return StatefulBuilder(
           builder: (context, setSheetState) {
-            final skillSelected =
-                tempSkill != null && tempSkill!.trim().isNotEmpty;
+            final hasCoords = _sellerLat != null && _sellerLng != null;
+            final locationLabel = [
+              if (_sellerCity?.trim().isNotEmpty == true) _sellerCity,
+              if (_sellerCountry?.trim().isNotEmpty == true) _sellerCountry,
+            ].whereType<String>().join(', ');
+            final hasDraftFilters = tempJobType != null ||
+                tempSkillNames.isNotEmpty ||
+                tempCategoryIds.isNotEmpty ||
+                tempUseDistance ||
+                !tempIncludeRemote;
 
             return Padding(
               padding: EdgeInsets.only(
                 bottom: MediaQuery.viewInsetsOf(context).bottom,
               ),
               child: SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Center(
-                        child: Container(
-                          width: 36,
-                          height: 4,
-                          decoration: BoxDecoration(
-                            color: kBorderColorTextField,
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Filter jobs',
-                        style: kTextStyle.copyWith(
-                          color: kNeutralColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 17,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        'Skill',
-                        style: kTextStyle.copyWith(
-                          color: kLightNeutralColor,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      InkWell(
-                        onTap: () async {
-                          await showSkillPickerSheet(
-                            context: context,
-                            skills: _skillCatalog,
-                            title: 'Filter by skill',
-                            allowCustomSkill: true,
-                            onSelected: (name) {
-                              setSheetState(() => tempSkill = name);
-                            },
-                          );
-                        },
-                        borderRadius: BorderRadius.circular(12),
-                        child: Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 14,
-                          ),
-                          decoration: BoxDecoration(
-                            color: skillSelected
-                                ? primary.withValues(alpha: 0.06)
-                                : kDarkWhite,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: skillSelected
-                                  ? primary.withValues(alpha: 0.4)
-                                  : kBorderColorTextField,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.sizeOf(context).height * 0.88,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Center(
+                          child: Container(
+                            width: 36,
+                            height: 4,
+                            decoration: BoxDecoration(
+                              color: kBorderColorTextField,
+                              borderRadius: BorderRadius.circular(2),
                             ),
                           ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.construction_outlined,
-                                size: 20,
-                                color: skillSelected ? primary : kLightNeutralColor,
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Text(
-                                  skillSelected ? tempSkill! : 'Any skill',
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Filter jobs',
+                          style: kTextStyle.copyWith(
+                            color: kNeutralColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 17,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Flexible(
+                          child: SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  l10n.jobAlertCategoriesSection,
                                   style: kTextStyle.copyWith(
-                                    color: skillSelected ? kNeutralColor : kLightNeutralColor,
-                                    fontWeight: skillSelected
-                                        ? FontWeight.w600
-                                        : FontWeight.normal,
+                                    color: kLightNeutralColor,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
-                              ),
-                              if (skillSelected)
-                                GestureDetector(
-                                  onTap: () => setSheetState(() => tempSkill = null),
-                                  child: Icon(
-                                    Icons.close,
-                                    size: 18,
-                                    color: primary,
+                                const SizedBox(height: 8),
+                                OutlinedButton(
+                                  onPressed: () => _openCategoryPicker(
+                                    selected: tempCategoryIds,
+                                    setSheetState: setSheetState,
                                   ),
-                                )
-                              else
-                                Icon(
-                                  Icons.chevron_right,
-                                  color: kLightNeutralColor.withValues(alpha: 0.8),
+                                  style: OutlinedButton.styleFrom(
+                                    minimumSize: const Size(double.infinity, 46),
+                                    alignment: Alignment.centerLeft,
+                                    foregroundColor: kNeutralColor,
+                                    side: BorderSide(
+                                      color: tempCategoryIds.isNotEmpty
+                                          ? primary
+                                          : kBorderColorTextField,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    tempCategoryIds.isEmpty
+                                        ? l10n.jobAlertAnyCategory
+                                        : l10n.jobAlertCategoriesCount(
+                                            tempCategoryIds.length,
+                                          ),
+                                  ),
                                 ),
-                            ],
+
+                                const SizedBox(height: 20),
+                                Text(
+                                  l10n.jobAlertSkillsSection,
+                                  style: kTextStyle.copyWith(
+                                    color: kLightNeutralColor,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Match jobs tagged with these skills.',
+                                  style: kTextStyle.copyWith(
+                                    color: kSubTitleColor,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Wrap(
+                                  spacing: 8,
+                                  runSpacing: 8,
+                                  children: [
+                                    ...tempSkillNames.map(
+                                      (s) => Chip(
+                                        label: Text(s),
+                                        onDeleted: () => setSheetState(
+                                          () => tempSkillNames.remove(s),
+                                        ),
+                                      ),
+                                    ),
+                                    ActionChip(
+                                      avatar: const Icon(Icons.add, size: 18),
+                                      label: Text(l10n.jobAlertAddSkill),
+                                      onPressed: () async {
+                                        await showSkillPickerSheet(
+                                          context: context,
+                                          skills: _skillCatalog,
+                                          title: l10n.jobAlertAddSkill,
+                                          allowCustomSkill: false,
+                                          excludedNames: tempSkillNames
+                                              .map((s) => s.toLowerCase())
+                                              .toSet(),
+                                          onSelected: (name) {
+                                            final trimmed = name.trim();
+                                            if (trimmed.isEmpty) return;
+                                            if (tempSkillNames.any(
+                                              (s) =>
+                                                  s.toLowerCase() ==
+                                                  trimmed.toLowerCase(),
+                                            )) {
+                                              return;
+                                            }
+                                            setSheetState(
+                                              () => tempSkillNames.add(trimmed),
+                                            );
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 20),
+                                Text(
+                                  l10n.jobAlertJobTypeSection,
+                                  style: kTextStyle.copyWith(
+                                    color: kLightNeutralColor,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Wrap(
+                                  spacing: 8,
+                                  runSpacing: 8,
+                                  children: _employmentTypeOptions.map((opt) {
+                                    final selected = tempJobType == opt['value'];
+                                    return ChoiceChip(
+                                      label: Text(opt['label']!),
+                                      selected: selected,
+                                      onSelected: (_) {
+                                        setSheetState(
+                                          () => tempJobType = opt['value'],
+                                        );
+                                      },
+                                      selectedColor: primary,
+                                      backgroundColor: kDarkWhite,
+                                      labelStyle: kTextStyle.copyWith(
+                                        color: selected ? kWhite : kNeutralColor,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                        side: BorderSide(
+                                          color: selected
+                                              ? primary
+                                              : kBorderColorTextField,
+                                        ),
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                                const SizedBox(height: 20),
+                                Text(
+                                  l10n.jobAlertLocationSection,
+                                  style: kTextStyle.copyWith(
+                                    color: kLightNeutralColor,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  hasCoords
+                                      ? (locationLabel.isNotEmpty
+                                          ? locationLabel
+                                          : l10n.jobAlertLocationSet)
+                                      : l10n.jobAlertLocationMissing,
+                                  style: kTextStyle.copyWith(
+                                    color: kSubTitleColor,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                OutlinedButton.icon(
+                                  onPressed: () async {
+                                    await _pickSellerLocation();
+                                    if (mounted) setSheetState(() {});
+                                  },
+                                  icon: const Icon(Icons.map_outlined),
+                                  label: Text(l10n.pickLocationOnMap),
+                                ),
+                                const SizedBox(height: 8),
+                                SwitchListTile(
+                                  contentPadding: EdgeInsets.zero,
+                                  value: tempUseDistance,
+                                  onChanged: (v) =>
+                                      setSheetState(() => tempUseDistance = v),
+                                  title: Text(
+                                    l10n.jobAlertLimitDistance,
+                                    style: kTextStyle.copyWith(
+                                      color: kNeutralColor,
+                                    ),
+                                  ),
+                                  activeThumbColor: primary,
+                                ),
+                                if (tempUseDistance)
+                                  Slider(
+                                    value: tempDistanceKm,
+                                    min: 5,
+                                    max: 100,
+                                    divisions: 19,
+                                    label: l10n.jobAlertWithinKm(
+                                      tempDistanceKm.round(),
+                                    ),
+                                    onChanged: (v) => setSheetState(
+                                      () => tempDistanceKm = v,
+                                    ),
+                                  ),
+                                SwitchListTile(
+                                  contentPadding: EdgeInsets.zero,
+                                  value: tempIncludeRemote,
+                                  onChanged: (v) => setSheetState(
+                                    () => tempIncludeRemote = v,
+                                  ),
+                                  title: Text(
+                                    l10n.jobAlertIncludeRemote,
+                                    style: kTextStyle.copyWith(
+                                      color: kNeutralColor,
+                                    ),
+                                  ),
+                                  activeThumbColor: primary,
+                                ),
+                                if (hasDraftFilters) ...[
+                                  const SizedBox(height: 8),
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: TextButton(
+                                      onPressed: () {
+                                        if (tempUseDistance &&
+                                            (_sellerLat == null ||
+                                                _sellerLng == null)) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                l10n.jobAlertNeedProfileLocation,
+                                              ),
+                                            ),
+                                          );
+                                          return;
+                                        }
+                                        Navigator.pop(ctx);
+                                        SellerJobAlertEditorScreen(
+                                          initialSkillNames: tempSkillNames,
+                                          initialJobType: tempJobType,
+                                          initialCategoryIds:
+                                              tempCategoryIds.toList(),
+                                          initialMaxDistanceKm: tempUseDistance
+                                              ? tempDistanceKm
+                                              : null,
+                                          initialIncludeRemote:
+                                              tempIncludeRemote,
+                                        ).launch(context);
+                                      },
+                                      child: Text(l10n.jobAlertSaveFromFilter),
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        'Employment type',
-                        style: kTextStyle.copyWith(
-                          color: kLightNeutralColor,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: _employmentTypeOptions.map((opt) {
-                          final selected = tempJobType == opt['value'];
-                          return ChoiceChip(
-                            label: Text(opt['label']!),
-                            selected: selected,
-                            onSelected: (_) {
-                              setSheetState(() => tempJobType = opt['value']);
-                            },
-                            selectedColor: primary,
-                            backgroundColor: kDarkWhite,
-                            labelStyle: kTextStyle.copyWith(
-                              color: selected ? kWhite : kNeutralColor,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              side: BorderSide(
-                                color: selected ? primary : kBorderColorTextField,
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton(
+                                onPressed: () {
+                                  setSheetState(() {
+                                    tempJobType = null;
+                                    tempSkillNames.clear();
+                                    tempCategoryIds.clear();
+                                    tempUseDistance = false;
+                                    tempDistanceKm = 25;
+                                    tempIncludeRemote = true;
+                                  });
+                                },
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: kNeutralColor,
+                                  side: const BorderSide(
+                                    color: kBorderColorTextField,
+                                  ),
+                                  minimumSize: const Size(0, 46),
+                                ),
+                                child: Text(l10n.filterClear),
                               ),
                             ),
-                          );
-                        }).toList(),
-                      ),
-                      const SizedBox(height: 24),
-                      if (tempJobType != null ||
-                          (tempSkill != null && tempSkill!.trim().isNotEmpty)) ...[
-                        const SizedBox(height: 8),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: TextButton(
-                            onPressed: () {
-                              Navigator.pop(ctx);
-                              SellerJobAlertEditorScreen(
-                                initialSkillName: tempSkill,
-                                initialJobType: tempJobType,
-                              ).launch(context);
-                            },
-                            child: Text(context.l10n.jobAlertSaveFromFilter),
-                          ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: FilledButton(
+                                onPressed: () {
+                                  if (tempUseDistance &&
+                                      (_sellerLat == null ||
+                                          _sellerLng == null)) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          l10n.jobAlertNeedProfileLocation,
+                                        ),
+                                      ),
+                                    );
+                                    return;
+                                  }
+                                  setState(() {
+                                    _jobTypeFilter = tempJobType;
+                                    _skillNames
+                                      ..clear()
+                                      ..addAll(tempSkillNames);
+                                    _categoryIds
+                                      ..clear()
+                                      ..addAll(tempCategoryIds);
+                                    _useDistance = tempUseDistance;
+                                    _distanceKm = tempDistanceKm;
+                                    _includeRemote = tempIncludeRemote;
+                                  });
+                                  Navigator.pop(ctx);
+                                  _loadRequests();
+                                },
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: primary,
+                                  minimumSize: const Size(0, 46),
+                                ),
+                                child: Text(l10n.filterApply),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
-                      const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: OutlinedButton(
-                              onPressed: () {
-                                setSheetState(() {
-                                  tempJobType = null;
-                                  tempSkill = null;
-                                });
-                              },
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: kNeutralColor,
-                                side: const BorderSide(color: kBorderColorTextField),
-                                minimumSize: const Size(0, 46),
-                              ),
-                              child: Text(context.l10n.filterClear),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: FilledButton(
-                              onPressed: () {
-                                setState(() {
-                                  _jobTypeFilter = tempJobType;
-                                  _skillFilter = tempSkill;
-                                });
-                                Navigator.pop(ctx);
-                              },
-                              style: FilledButton.styleFrom(
-                                backgroundColor: primary,
-                                minimumSize: const Size(0, 46),
-                              ),
-                              child: Text(context.l10n.filterApply),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),
@@ -440,7 +744,7 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
         Expanded(
           child: TextField(
             controller: _searchController,
-            onChanged: (q) => setState(() => _titleQuery = q),
+            onChanged: _onTitleQueryChanged,
             style: kTextStyle.copyWith(color: kNeutralColor, fontSize: 14),
             decoration: InputDecoration(
               hintText: 'Search job title...',
@@ -456,7 +760,9 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
                       ),
                       onPressed: () {
                         _searchController.clear();
+                        _titleDebounce?.cancel();
                         setState(() => _titleQuery = '');
+                        _loadRequests();
                       },
                     )
                   : null,
@@ -532,37 +838,65 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
   Widget _buildActiveFilterChips(Color primary) {
     if (!_hasSecondaryFilters) return const SizedBox.shrink();
 
+    final l10n = context.l10n;
+    InputChip chip(String label, VoidCallback onDeleted) {
+      return InputChip(
+        label: Text(label),
+        deleteIcon: Icon(Icons.close, size: 16, color: primary),
+        onDeleted: onDeleted,
+        backgroundColor: primary.withValues(alpha: 0.08),
+        side: BorderSide(color: primary.withValues(alpha: 0.35)),
+        labelStyle: kTextStyle.copyWith(
+          color: primary,
+          fontWeight: FontWeight.w600,
+          fontSize: 12,
+        ),
+      );
+    }
+
     return Padding(
       padding: const EdgeInsets.only(top: 10),
       child: Wrap(
         spacing: 8,
         runSpacing: 8,
         children: [
-          if (_skillFilter != null && _skillFilter!.trim().isNotEmpty)
-            InputChip(
-              label: Text(_skillFilter!),
-              deleteIcon: Icon(Icons.close, size: 16, color: primary),
-              onDeleted: () => setState(() => _skillFilter = null),
-              backgroundColor: primary.withValues(alpha: 0.08),
-              side: BorderSide(color: primary.withValues(alpha: 0.35)),
-              labelStyle: kTextStyle.copyWith(
-                color: primary,
-                fontWeight: FontWeight.w600,
-                fontSize: 12,
-              ),
+          if (_categoryIds.isNotEmpty)
+            chip(
+              l10n.jobAlertCategoriesCount(_categoryIds.length),
+              () {
+                setState(() => _categoryIds.clear());
+                _loadRequests();
+              },
             ),
+          ..._skillNames.map(
+            (s) => chip(s, () {
+              setState(() => _skillNames.remove(s));
+              _loadRequests();
+            }),
+          ),
           if (_jobTypeFilter != null)
-            InputChip(
-              label: Text(_jobTypeLabel(_jobTypeFilter)),
-              deleteIcon: Icon(Icons.close, size: 16, color: primary),
-              onDeleted: () => setState(() => _jobTypeFilter = null),
-              backgroundColor: primary.withValues(alpha: 0.08),
-              side: BorderSide(color: primary.withValues(alpha: 0.35)),
-              labelStyle: kTextStyle.copyWith(
-                color: primary,
-                fontWeight: FontWeight.w600,
-                fontSize: 12,
-              ),
+            chip(
+              _jobTypeLabel(_jobTypeFilter),
+              () {
+                setState(() => _jobTypeFilter = null);
+                _loadRequests();
+              },
+            ),
+          if (_useDistance)
+            chip(
+              l10n.jobAlertWithinKm(_distanceKm.round()),
+              () {
+                setState(() => _useDistance = false);
+                _loadRequests();
+              },
+            ),
+          if (!_includeRemote)
+            chip(
+              'On-site only',
+              () {
+                setState(() => _includeRemote = true);
+                _loadRequests();
+              },
             ),
           GestureDetector(
             onTap: _clearSecondaryFilters,
@@ -588,7 +922,7 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
         _buildActiveFilterChips(primary),
         const SizedBox(height: 12),
         Text(
-          '${_visibleRequests.length} job${_visibleRequests.length == 1 ? '' : 's'}',
+          '${_requests.length} job${_requests.length == 1 ? '' : 's'}',
           style: kTextStyle.copyWith(
             color: kNeutralColor,
             fontWeight: FontWeight.bold,
@@ -601,6 +935,7 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
   Widget _buildJobCard(Map<String, dynamic> req, Color primary) {
     final buyer = req['profiles'] as Map<String, dynamic>?;
     final category = req['categories'] as Map<String, dynamic>?;
+    final skillTags = JobPostsService.skillNamesFromJob(req);
     final jobId = req['id'] as String?;
     final isSaved = jobId != null && _savedJobIds.contains(jobId);
     final saveBusy = jobId != null && _saveBusyIds.contains(jobId);
@@ -714,6 +1049,36 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
                   ],
                 ),
               ],
+              if (skillTags.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: skillTags
+                      .take(4)
+                      .map(
+                        (s) => Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16),
+                            color: kDarkWhite,
+                            border: Border.all(color: kBorderColorTextField),
+                          ),
+                          child: Text(
+                            s,
+                            style: kTextStyle.copyWith(
+                              color: kSubTitleColor,
+                              fontSize: 11,
+                            ),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                ),
+              ],
               const SizedBox(height: 10),
               Row(
                 children: [
@@ -792,20 +1157,26 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Try a different title, skill, or employment type.',
+              'Try adjusting category, job type, distance, or remote.',
               textAlign: TextAlign.center,
               style: kTextStyle.copyWith(color: kLightNeutralColor),
             ),
             if (_hasActiveFilters) ...[
               const SizedBox(height: 16),
               TextButton(
-                onPressed: () {
+                onPressed: () async {
                   _searchController.clear();
+                  _titleDebounce?.cancel();
                   setState(() {
                     _titleQuery = '';
                     _jobTypeFilter = null;
-                    _skillFilter = null;
+                    _skillNames.clear();
+                    _categoryIds.clear();
+                    _useDistance = false;
+                    _distanceKm = 25;
+                    _includeRemote = true;
                   });
+                  await _loadRequests();
                 },
                 child: Text(context.l10n.clearFilters),
               ),
@@ -819,7 +1190,7 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
   @override
   Widget build(BuildContext context) {
     final primary = Theme.of(context).colorScheme.primary;
-    final visible = _visibleRequests;
+    final visible = _requests;
 
     return Scaffold(
       backgroundColor: kWhite,
@@ -836,37 +1207,49 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator(color: primary))
-          : RefreshIndicator(
-              color: primary,
-              onRefresh: _loadRequests,
-              child: visible.isEmpty
-                  ? ListView(
-                      physics: const AlwaysScrollableScrollPhysics(
-                        parent: BouncingScrollPhysics(),
-                      ),
-                      padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
-                      children: [
-                        _buildFilters(primary),
-                        const SizedBox(height: 48),
-                        _buildEmptyState(),
-                      ],
-                    )
-                  : ListView.builder(
-                      physics: const AlwaysScrollableScrollPhysics(
-                        parent: BouncingScrollPhysics(),
-                      ),
-                      padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
-                      itemCount: visible.length + 1,
-                      itemBuilder: (_, i) {
-                        if (i == 0) {
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: _buildFilters(primary),
-                          );
-                        }
-                        return _buildJobCard(visible[i - 1], primary);
-                      },
-                    ),
+          : Column(
+              children: [
+                if (_isRefreshing)
+                  LinearProgressIndicator(
+                    minHeight: 2,
+                    color: primary,
+                    backgroundColor: primary.withValues(alpha: 0.15),
+                  ),
+                Expanded(
+                  child: RefreshIndicator(
+                    color: primary,
+                    onRefresh: _loadRequests,
+                    child: visible.isEmpty
+                        ? ListView(
+                            physics: const AlwaysScrollableScrollPhysics(
+                              parent: BouncingScrollPhysics(),
+                            ),
+                            padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
+                            children: [
+                              _buildFilters(primary),
+                              const SizedBox(height: 48),
+                              _buildEmptyState(),
+                            ],
+                          )
+                        : ListView.builder(
+                            physics: const AlwaysScrollableScrollPhysics(
+                              parent: BouncingScrollPhysics(),
+                            ),
+                            padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
+                            itemCount: visible.length + 1,
+                            itemBuilder: (_, i) {
+                              if (i == 0) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 12),
+                                  child: _buildFilters(primary),
+                                );
+                              }
+                              return _buildJobCard(visible[i - 1], primary);
+                            },
+                          ),
+                  ),
+                ),
+              ],
             ),
     );
   }

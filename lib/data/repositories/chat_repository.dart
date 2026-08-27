@@ -39,12 +39,16 @@ class ChatRepository {
     required String conversationId,
     required String content,
     String? attachmentUrl,
+    String messageType = 'text',
+    String? jobOfferId,
   }) async {
     try {
       final data = await ChatService.sendMessage(
         conversationId: conversationId,
         content: content,
         attachmentUrl: attachmentUrl,
+        messageType: messageType,
+        jobOfferId: jobOfferId,
       );
       return Message.fromJson(data);
     } catch (e) {

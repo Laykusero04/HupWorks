@@ -70,45 +70,14 @@ class _SellerOrderListState extends State<SellerOrderList> {
   String _formatRemaining(Duration d) =>
       L10nLabels.formatContractDeadlineRemaining(context.l10n, d);
 
-  _StatusStyle _statusStyle(String? status, Color primary) {
+  _StatusStyle _statusStyle(String? status) {
     final l10n = context.l10n;
     final label = OrderCancellationReason.statusLabel(status, l10n);
-    switch ((status ?? '').toLowerCase()) {
-      case 'active':
-        return _StatusStyle(label, primary, const Color(0xFFE8EEF8));
-      case 'pending':
-        return _StatusStyle(
-          label,
-          const Color(0xFFD97706),
-          const Color(0xFFFEF3C7),
-        );
-      case 'delivered':
-        return _StatusStyle(
-          label,
-          kSecondaryColor,
-          const Color(0xFFDBEAFE),
-        );
-      case 'completed':
-        return _StatusStyle(
-          label,
-          const Color(0xFF059669),
-          const Color(0xFFD1FAE5),
-        );
-      case 'cancelled':
-        return _StatusStyle(
-          label,
-          const Color(0xFFDC2626),
-          const Color(0xFFFEE2E2),
-        );
-      case 'cancellation_requested':
-        return _StatusStyle(
-          l10n.orderStatusCancellationPending,
-          const Color(0xFFD97706),
-          const Color(0xFFFFF8E1),
-        );
-      default:
-        return _StatusStyle(label, kLightNeutralColor, kDarkWhite);
+    final (fg, bg) = StatusColors.order(status);
+    if ((status ?? '').toLowerCase() == 'cancellation_requested') {
+      return _StatusStyle(l10n.orderStatusCancellationPending, fg, bg);
     }
+    return _StatusStyle(label, fg, bg);
   }
 
   @override
@@ -192,7 +161,7 @@ class _SellerOrderListState extends State<SellerOrderList> {
     final clientName = (client?['name'] as String?) ?? context.l10n.unknown;
     final orderId = order['id'].toString();
     final idShort = orderId.length >= 8 ? orderId.substring(0, 8).toUpperCase() : orderId.toUpperCase();
-    final status = _statusStyle(order['status'] as String?, primary);
+    final status = _statusStyle(order['status'] as String?);
     final remaining = _getTimeRemaining(order);
     final isActive = (order['status'] as String?)?.toLowerCase() == 'active';
     final title = OrderContractDisplay.title(order, service);

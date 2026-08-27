@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/l10n/l10n.dart';
-import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:freelancer/data/models/seller_skill_model.dart';
 import 'package:freelancer/services/profile_service.dart';
@@ -69,7 +68,6 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
     final name = _profile?['name'] ?? 'Seller';
     final email = (_profile?['email'] as String?) ?? '';
     final bio = _profile?['bio'] as String?;
-    final balance = _profile?['balance'] ?? 0;
     final profileImageUrl = _profile?['profile_image_url'];
     final jobTitle = _profile != null ? ProfileService.sellerJobTitleFromProfile(_profile!) : null;
     final about = _profile != null ? ProfileService.sellerAboutFromProfile(_profile!) : null;
@@ -196,7 +194,7 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                       _statDivider(brand),
                       _statTile(avgLabel, 'Avg rating', brand),
                       _statDivider(brand),
-                      _statTile('$currencySign$balance', 'Balance', brand),
+                      _statTile('${_skills.length}', context.l10n.skills, brand),
                     ],
                   ),
                 ),

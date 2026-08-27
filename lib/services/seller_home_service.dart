@@ -85,24 +85,6 @@ class SellerHomeService {
           reviewList.length;
     }
 
-    final profile = await _client
-        .from('profiles')
-        .select('balance')
-        .eq('id', user.id)
-        .maybeSingle();
-
-    final earnings = await _client
-        .from('transactions')
-        .select('amount')
-        .eq('user_id', user.id)
-        .eq('type', 'earning')
-        .gte('created_at', monthStart.toIso8601String());
-
-    final earnedThisMonth = List<Map<String, dynamic>>.from(earnings).fold<double>(
-      0,
-      (sum, e) => sum + (double.tryParse(e['amount'].toString()) ?? 0),
-    );
-
     var onsiteAttendanceCount = 0;
     try {
       final attJobs = await AttendanceService.getMyOnsiteAttendanceJobs();
@@ -121,8 +103,6 @@ class SellerHomeService {
       'open_jobs_count': openJobsCount,
       'avg_rating': avgRating,
       'review_count': reviewList.length,
-      'balance': (profile?['balance'] as num?)?.toDouble() ?? 0,
-      'earned_this_month': earnedThisMonth,
       'onsite_attendance_jobs': onsiteAttendanceCount,
     };
   }
@@ -199,75 +179,6 @@ class SellerHomeService {
       'Impressions': (data['impressions_count'] as num?)?.toDouble() ?? 0,
       'Interaction': (data['interactions_count'] as num?)?.toDouble() ?? 0,
       'Reached-Out': (data['reach_count'] as num?)?.toDouble() ?? 0,
-    };
-  }
-
-  /// Fetch earnings data for a given period
-  static Future<Map<String, dynamic>> getEarnings({required bool isLastMonth}) async {
-    final user = _client.auth.currentUser;
-    if (user == null) return {};
-
-    final now = DateTime.now();
-    final DateTime startDate;
-    final DateTime endDate;
-
-    if (isLastMonth) {
-      startDate = DateTime(now.year, now.month - 1, 1);
-      endDate = DateTime(now.year, now.month, 1);
-    } else {
-      startDate = DateTime(now.year, now.month, 1);
-      endDate = now;
-    }
-
-    final startIso = startDate.toIso8601String();
-    final endIso = endDate.toIso8601String();
-
-    // Fetch earning transactions (bounded interval so "Last month" is not open-ended)
-    final earnings = await _client
-        .from('transactions')
-        .select('amount')
-        .eq('user_id', user.id)
-        .eq('type', 'earning')
-        .gte('created_at', startIso)
-        .lte('created_at', endIso);
-
-    final earningList = List<Map<String, dynamic>>.from(earnings);
-    final totalEarnings = earningList.fold<double>(0, (sum, e) => sum + (double.tryParse(e['amount'].toString()) ?? 0));
-
-    // Fetch withdrawals
-    final withdrawals = await _client
-        .from('transactions')
-        .select('amount')
-        .eq('user_id', user.id)
-        .eq('type', 'withdrawal')
-        .gte('created_at', startIso)
-        .lte('created_at', endIso);
-
-    final withdrawalList = List<Map<String, dynamic>>.from(withdrawals);
-    final totalWithdrawals = withdrawalList.fold<double>(0, (sum, w) => sum + (double.tryParse(w['amount'].toString()) ?? 0));
-
-    // Balance from profile
-    final profile = await _client
-        .from('profiles')
-        .select('balance')
-        .eq('id', user.id)
-        .single();
-
-    // Active orders value
-    final activeOrders = await _client
-        .from('orders')
-        .select('price')
-        .eq('seller_id', user.id)
-        .eq('status', 'active');
-
-    final activeOrdersValue = List<Map<String, dynamic>>.from(activeOrders)
-        .fold<double>(0, (sum, o) => sum + (double.tryParse(o['price'].toString()) ?? 0));
-
-    return {
-      'total_earnings': totalEarnings,
-      'total_withdrawals': totalWithdrawals,
-      'current_balance': (profile['balance'] as num?)?.toDouble() ?? 0,
-      'active_orders_value': activeOrdersValue,
     };
   }
 

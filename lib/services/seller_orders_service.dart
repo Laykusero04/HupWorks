@@ -157,17 +157,57 @@ class SellerOrdersService {
     await updateOrderStatus(orderId, 'delivered');
   }
 
-  /// Fetch open job posts (buyer requests)
-  static Future<List<Map<String, dynamic>>> getBuyerRequests() async {
-    final data = await _client
-        .from('job_posts')
-        .select(
-          '*, categories(name), '
-          'profiles:client_id(id, name, profile_image_url, rating, created_at, country, city)',
-        )
-        .eq('status', 'open')
-        .order('created_at', ascending: false);
-    return List<Map<String, dynamic>>.from(data);
+  /// Fetch open job posts for Find Jobs, filtered on the server.
+  ///
+  /// Uses [browse_open_job_posts] so clients do not download every open post.
+  static Future<List<Map<String, dynamic>>> getBuyerRequests({
+    String? titleQuery,
+    List<String>? categoryIds,
+    List<String>? skillNames,
+    String? jobType,
+    double? maxDistanceKm,
+    bool includeRemote = true,
+    double? sellerLat,
+    double? sellerLng,
+    int limit = 50,
+    int offset = 0,
+  }) async {
+    final title = titleQuery?.trim();
+    final cats = (categoryIds ?? const <String>[])
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .toList();
+    final skills = (skillNames ?? const <String>[])
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .toList();
+
+    final raw = await _client.rpc(
+      'browse_open_job_posts',
+      params: {
+        'p_title_query': (title == null || title.isEmpty) ? null : title,
+        'p_category_ids': cats.isEmpty ? null : cats,
+        'p_skill_names': skills.isEmpty ? null : skills,
+        'p_job_type': (jobType == null || jobType.isEmpty) ? null : jobType,
+        'p_max_distance_km': maxDistanceKm,
+        'p_include_remote': includeRemote,
+        'p_seller_lat': sellerLat,
+        'p_seller_lng': sellerLng,
+        'p_limit': limit,
+        'p_offset': offset,
+      },
+    );
+
+    if (raw == null) return [];
+    if (raw is List) return List<Map<String, dynamic>>.from(raw);
+    if (raw is Map) {
+      // Defensive: some clients wrap jsonb oddly.
+      final values = raw.values.toList();
+      if (values.length == 1 && values.first is List) {
+        return List<Map<String, dynamic>>.from(values.first as List);
+      }
+    }
+    return [];
   }
 
   /// Fetch single job post details with offer count + client public stats.
@@ -175,7 +215,7 @@ class SellerOrdersService {
     final data = await _client
         .from('job_posts')
         .select(
-          '*, categories(name), '
+          '*, categories(name), ${JobPostsService.jobPostSkillsSelect}, '
           'profiles:client_id(id, name, profile_image_url, rating, created_at, country, city, bio)',
         )
         .eq('id', jobPostId)
@@ -285,11 +325,14 @@ class SellerOrdersService {
       insert['delivery_time_unit'] = null;
     }
 
-    await _client.from('job_offers').insert(insert);
+    final inserted =
+        await _client.from('job_offers').insert(insert).select('id').single();
+    final offerId = inserted['id'] as String;
 
     // Seed the chat — best-effort, never blocks the apply flow.
     try {
-      final conversation = await ChatService.getOrCreateJobApplicationConversation(
+      final conversation =
+          await ChatService.getOrCreateJobApplicationConversation(
         buyerUserId: job['client_id'] as String,
       );
 
@@ -306,6 +349,13 @@ class SellerOrdersService {
           ..writeln(
             'Amount: ${JobPostsService.formatOfferAmountLine(price, insert['price_basis'])}',
           );
+        final deliveryTime = insert['delivery_time'] as int?;
+        final deliveryUnit = insert['delivery_time_unit'] as String?;
+        if (deliveryTime != null && deliveryUnit != null) {
+          body.writeln(
+            'Delivery: ${JobOfferDelivery.formatLabel(deliveryTime, deliveryUnit)}',
+          );
+        }
       }
       if (coverLetter != null && coverLetter.trim().isNotEmpty) {
         body
@@ -316,9 +366,10 @@ class SellerOrdersService {
       await ChatService.sendMessage(
         conversationId: conversation['id'] as String,
         content: body.toString().trim(),
+        messageType: 'job_offer',
+        jobOfferId: offerId,
       );
     } catch (e, st) {
-      // Bid is already saved; chat seeding is best-effort.
       AppLogger.error('SellerOrdersService.seedApplicationChat', e, st);
     }
   }

@@ -108,7 +108,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   child: const Icon(
                     Icons.translate,
-                    color: Color(0xFF144BD6),
+                    color: kSecondaryColor,
                   ),
                 ),
                 title: Text(

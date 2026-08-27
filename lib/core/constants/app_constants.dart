@@ -91,8 +91,5 @@ const List<String> reportTitle = [
   'Other reasons',
 ];
 
-const List<String> gateWay = ['PayPal', 'Credit Card', 'Bkash'];
-String selectedGateWay = 'PayPal';
-
 const List<String> currency = ['EUR', 'USD', 'BDT'];
 String selectedCurrency = 'USD';

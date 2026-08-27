@@ -8,13 +8,6 @@ class DashboardService {
     final user = _client.auth.currentUser;
     if (user == null) return {};
 
-    // Fetch profile balance
-    final profile = await _client
-        .from('profiles')
-        .select('balance')
-        .eq('id', user.id)
-        .single();
-
     // Fetch order counts
     final allOrders = await _client
         .from('orders')
@@ -32,22 +25,11 @@ class DashboardService {
       return sum + price;
     });
 
-    // Fetch latest transactions
-    final transactions = await _client
-        .from('transactions')
-        .select()
-        .eq('user_id', user.id)
-        .order('created_at', ascending: false)
-        .limit(5);
-
     return {
-      'balance': profile['balance'] ?? 0,
       'total_spent': totalSpent,
       'total_orders': totalOrders,
       'completed_orders': completedOrders,
       'incomplete_orders': incompleteOrders,
-      'transactions': List<Map<String, dynamic>>.from(transactions),
     };
   }
-
 }

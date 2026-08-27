@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/support_chat_navigation.dart';
 import 'package:freelancer/l10n/l10n.dart';
-import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/seller%20screen/profile/seller_profile_details.dart';
 import 'package:freelancer/services/auth_service.dart';
 import 'package:freelancer/services/profile_service.dart';
@@ -13,14 +12,10 @@ import '../../widgets/profile_menu_list_tile.dart';
 import '../../widgets/profile_skeleton.dart';
 import '../../widgets/shell_drawer_header.dart';
 import '../../widgets/shell_tab_header.dart';
-import '../add payment method/seller_add_payment_method.dart';
 import '../favourite/seller_favourite_list.dart';
 import '../report/seller_report.dart';
 import '../setting/seller_invite.dart';
 import '../setting/seller_setting.dart';
-import '../transaction/seller_transaction.dart';
-import '../withdraw_money/seller_withdraw_history.dart';
-import '../withdraw_money/seller_withdraw_money.dart';
 
 class SellerProfile extends StatefulWidget {
   const SellerProfile({Key? key}) : super(key: key);
@@ -70,7 +65,6 @@ class _SellerProfileState extends State<SellerProfile> {
 
     final l10n = context.l10n;
     final name = _profile?['name'] ?? l10n.freelancerDefault;
-    final balance = _profile?['balance'] ?? 0;
     final profileImageUrl = _profile?['profile_image_url'] as String?;
     final rating = (_profile?['rating'] as num?)?.toDouble() ?? 0;
     final reviewCount = (_profile?['review_count'] as num?)?.toInt() ?? 0;
@@ -84,7 +78,6 @@ class _SellerProfileState extends State<SellerProfile> {
             name: name,
             imageUrl: profileImageUrl,
             fallbackAsset: 'images/profile1.png',
-            balanceLabel: l10n.balanceWithAmount('$currencySign$balance'),
             rating: rating,
             reviewCount: reviewCount,
           ),
@@ -118,33 +111,9 @@ class _SellerProfileState extends State<SellerProfile> {
                   },
                 ),
                 ProfileMenuListTile(
-                  icon: Icons.payment_outlined,
-                  title: l10n.paymentMethods,
-                  onTap: () => const SellerAddPaymentMethod().launch(context),
-                ),
-                ExpansionTile(
-                  leading: const Icon(Icons.download_outlined, color: kNeutralColor),
-                  title: Text(l10n.withdrawals, style: kTextStyle.copyWith(color: kNeutralColor)),
-                  children: [
-                    ListTile(
-                      title: Text(l10n.withdrawMoney, style: kTextStyle.copyWith(color: kNeutralColor)),
-                      onTap: () => const SellerWithdrawMoney().launch(context),
-                    ),
-                    ListTile(
-                      title: Text(l10n.withdrawHistory, style: kTextStyle.copyWith(color: kNeutralColor)),
-                      onTap: () => const SellerWithDrawHistory().launch(context),
-                    ),
-                  ],
-                ),
-                ProfileMenuListTile(
                   icon: Icons.bookmark_border,
                   title: l10n.favourites,
                   onTap: () => const SellerFavList().launch(context),
-                ),
-                ProfileMenuListTile(
-                  icon: Icons.receipt_long_outlined,
-                  title: l10n.transaction,
-                  onTap: () => const SellerTransaction().launch(context),
                 ),
                 ProfileMenuListTile(
                   icon: Icons.description_outlined,

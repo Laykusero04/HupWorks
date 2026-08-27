@@ -96,28 +96,28 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
   // Soft tints rotated through category cells for visual variety.
   Color _categoryTint(int i) {
     const tints = [
-      Color(0x1A16A34A),
-      Color(0x1A2563EB),
       Color(0x1AF97316),
-      Color(0x1A8B5CF6),
-      Color(0x1AEF4444),
       Color(0x1A06B6D4),
-      Color(0x1AEAB308),
-      Color(0x1AEC4899),
+      Color(0x1A2D3436),
+      Color(0x1AFB923C),
+      Color(0x1A22D3EE),
+      Color(0x1A636E72),
+      Color(0x1A0891B2),
+      Color(0x1A95A5A6),
     ];
     return tints[i % tints.length];
   }
 
   Color _categoryIconColor(int i) {
     const colors = [
-      Color(0xFF16A34A),
-      Color(0xFF2563EB),
-      Color(0xFFF97316),
-      Color(0xFF8B5CF6),
-      Color(0xFFEF4444),
-      Color(0xFF06B6D4),
-      Color(0xFFEAB308),
-      Color(0xFFEC4899),
+      kPrimaryColor,
+      kSecondaryColor,
+      kNeutralColor,
+      kAccentColor,
+      kSellerAccent,
+      kSubTitleColor,
+      kSellerPrimary,
+      kLightNeutralColor,
     ];
     return colors[i % colors.length];
   }
@@ -338,21 +338,21 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
         title: l10n.hireTopRated,
         subtitle: l10n.promoVerifiedTalentSubtitle,
         cta: l10n.explore,
-        gradient: const [Color(0xFF16A34A), Color(0xFF0EA5E9)],
+        gradient: kClientShellGradient,
         onTap: () => context.go(AppRoutes.clientTalent),
       ),
       _Promo(
         title: l10n.postAJobBanner,
         subtitle: l10n.promoProposalsSubtitle,
         cta: l10n.postNow,
-        gradient: const [Color(0xFFF97316), Color(0xFFEF4444)],
+        gradient: const [Color(0xFFEA580C), Color(0xFFF97316)],
         onTap: () => const JobPost().launch(context),
       ),
       _Promo(
         title: l10n.browseCategories,
         subtitle: l10n.promoNicheServicesSubtitle,
         cta: l10n.browse,
-        gradient: const [Color(0xFF8B5CF6), Color(0xFFEC4899)],
+        gradient: kSellerShellGradient,
         onTap: () => const ClientAllCategories().launch(context),
       ),
     ];
@@ -707,7 +707,9 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
       child: Column(
         children: _myRecentJobs.map((job) {
           final category = job['categories'] as Map<String, dynamic>?;
-          final isOpen = job['status'] == 'open';
+          final jobStatus = job['status'] as String? ?? 'open';
+          final isOpen = jobStatus == 'open';
+          final (jobStatusFg, _) = StatusColors.jobPost(jobStatus);
           return Padding(
             padding: const EdgeInsets.only(bottom: 10),
             child: GestureDetector(
@@ -735,7 +737,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
                       width: 4,
                       height: 56,
                       decoration: BoxDecoration(
-                        color: isOpen ? kPrimaryColor : kLightNeutralColor,
+                        color: isOpen ? StatusColors.success : StatusColors.neutral,
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
@@ -764,7 +766,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
                               const SizedBox(width: 6),
                               _miniChip(
                                 isOpen ? context.l10n.open : context.l10n.closed,
-                                isOpen ? kSecondaryColor : kLightNeutralColor,
+                                jobStatusFg,
                               ),
                               const SizedBox(width: 6),
                               Expanded(

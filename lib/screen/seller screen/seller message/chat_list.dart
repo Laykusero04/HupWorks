@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:freelancer/core/chat/chat_unread_scope.dart';
+import 'package:freelancer/data/models/chat_inbox_filter.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -22,6 +24,8 @@ class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _searchController = TextEditingController();
 
   List<Conversation> _conversations = [];
+  Map<String, ConversationInboxMeta> _inboxMeta = const {};
+  ChatInboxFilter _filter = ChatInboxFilter.all;
   bool _isLoading = true;
   RealtimeChannel? _conversationChannel;
   String _searchQuery = '';
@@ -32,8 +36,6 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
-    // Defer network work until the first frame is drawn so the skeleton
-    // shows instantly instead of competing with the initial layout.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       _loadConversations();
@@ -53,11 +55,29 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> _loadConversations() async {
     try {
       final data = await ChatService.getConversations();
+      final conversations =
+          data.map((e) => Conversation.fromMap(e)).toList();
+      Map<String, ConversationInboxMeta> meta = const {};
+      if (conversations.isNotEmpty) {
+        meta = await ChatService.getInboxMetaByConversation(
+          conversations: conversations
+              .map(
+                (c) => (
+                  id: c.id,
+                  clientId: c.clientId,
+                  sellerId: c.sellerId,
+                ),
+              )
+              .toList(),
+        );
+      }
       if (mounted) {
         setState(() {
-          _conversations = data.map((e) => Conversation.fromMap(e)).toList();
+          _conversations = conversations;
+          _inboxMeta = meta;
           _isLoading = false;
         });
+        ChatUnreadScope.refreshGlobal();
       }
     } catch (e) {
       if (mounted) {
@@ -94,15 +114,29 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  ConversationInboxMeta _metaFor(Conversation c) =>
+      _inboxMeta[c.id] ?? ConversationInboxMeta.empty;
+
   List<Conversation> get _filteredConversations {
-    if (_searchQuery.trim().isEmpty) return _conversations;
-    final q = _searchQuery.toLowerCase();
-    return _conversations.where((c) {
-      final other = c.getOtherUser(_currentUserId);
-      final name = (other['name'] as String? ?? '').toLowerCase();
-      final last = (c.lastMessage ?? '').toLowerCase();
-      return name.contains(q) || last.contains(q);
-    }).toList();
+    Iterable<Conversation> list = _conversations.where(
+      (c) => _metaFor(c).matches(_filter),
+    );
+
+    if (_searchQuery.trim().isNotEmpty) {
+      final q = _searchQuery.toLowerCase();
+      list = list.where((c) {
+        final other = c.getOtherUser(_currentUserId);
+        final name = (other['name'] as String? ?? '').toLowerCase();
+        final last = (c.lastMessage ?? '').toLowerCase();
+        return name.contains(q) || last.contains(q);
+      });
+    }
+    return list.toList();
+  }
+
+  int _countFor(ChatInboxFilter filter) {
+    if (filter == ChatInboxFilter.all) return _conversations.length;
+    return _conversations.where((c) => _metaFor(c).matches(filter)).length;
   }
 
   @override
@@ -121,13 +155,17 @@ class _ChatScreenState extends State<ChatScreen> {
       body: Column(
         children: [
           _buildSearchBar(),
+          _buildFilterChips(primary),
           Expanded(
             child: _isLoading
                 ? _buildSkeleton()
-                : RefreshIndicator(
-                    color: primary,
-                    onRefresh: _loadConversations,
-                    child: _buildBody(),
+                : ListenableBuilder(
+                    listenable: ChatUnreadScope.of(context),
+                    builder: (context, _) => RefreshIndicator(
+                      color: primary,
+                      onRefresh: _loadConversations,
+                      child: _buildBody(),
+                    ),
                   ),
           ),
         ],
@@ -135,62 +173,107 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  Widget _buildFilterChips(Color primary) {
+    final l10n = context.l10n;
+    final filters = <(ChatInboxFilter, String)>[
+      (ChatInboxFilter.all, l10n.filterAll),
+      (ChatInboxFilter.applications, l10n.chatFilterApplications),
+      (ChatInboxFilter.active, l10n.chatFilterActive),
+      (ChatInboxFilter.past, l10n.chatFilterPast),
+    ];
+
+    return SizedBox(
+      height: 44,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+        itemCount: filters.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        itemBuilder: (context, index) {
+          final (filter, label) = filters[index];
+          final selected = _filter == filter;
+          final count = _countFor(filter);
+          return ChoiceChip(
+            selected: selected,
+            label: Text(
+              count > 0 ? '$label ($count)' : label,
+              style: kTextStyle.copyWith(
+                color: selected ? kWhite : kNeutralColor,
+                fontWeight: FontWeight.w600,
+                fontSize: 12,
+              ),
+            ),
+            selectedColor: primary,
+            backgroundColor: kWhite,
+            side: BorderSide(
+              color: selected ? primary : kBorderColorTextField,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            onSelected: (_) => setState(() => _filter = filter),
+            showCheckmark: false,
+            visualDensity: VisualDensity.compact,
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          );
+        },
+      ),
+    );
+  }
+
   Widget _buildSearchBar() {
     final l10n = context.l10n;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
-        decoration: BoxDecoration(
-          color: kWhite,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            const Icon(Icons.search_rounded,
-                color: kLightNeutralColor, size: 22),
-            const SizedBox(width: 10),
-            Expanded(
-              child: TextField(
-                controller: _searchController,
-                onChanged: (q) => setState(() => _searchQuery = q),
-                style: kTextStyle.copyWith(
-                    color: kNeutralColor, fontSize: 14),
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  isCollapsed: true,
-                  contentPadding:
-                      const EdgeInsets.symmetric(vertical: 14),
-                  hintText: l10n.searchChats,
-                  hintStyle: kTextStyle.copyWith(
-                      color: kLightNeutralColor, fontSize: 14),
-                ),
-              ),
-            ),
-            if (_searchQuery.isNotEmpty)
-              GestureDetector(
-                onTap: () {
-                  _searchController.clear();
-                  setState(() => _searchQuery = '');
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: kDarkWhite,
-                    shape: BoxShape.circle,
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 8),
+      child: TextField(
+        controller: _searchController,
+        onChanged: (q) => setState(() => _searchQuery = q),
+        style: kTextStyle.copyWith(color: kNeutralColor, fontSize: 14),
+        decoration: InputDecoration(
+          hintText: l10n.searchChats,
+          hintStyle: kTextStyle.copyWith(
+            color: kLightNeutralColor,
+            fontSize: 14,
+          ),
+          prefixIcon: const Icon(
+            Icons.search_rounded,
+            color: kLightNeutralColor,
+            size: 20,
+          ),
+          suffixIcon: _searchQuery.isEmpty
+              ? null
+              : IconButton(
+                  tooltip: MaterialLocalizations.of(context).deleteButtonTooltip,
+                  onPressed: () {
+                    _searchController.clear();
+                    setState(() => _searchQuery = '');
+                  },
+                  icon: const Icon(
+                    Icons.close_rounded,
+                    size: 18,
+                    color: kLightNeutralColor,
                   ),
-                  child: const Icon(Icons.close_rounded,
-                      size: 14, color: kNeutralColor),
                 ),
-              ),
-          ],
+          filled: true,
+          fillColor: kDarkWhite,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 10,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.35),
+            ),
+          ),
         ),
       ),
     );
@@ -209,10 +292,15 @@ class _ChatScreenState extends State<ChatScreen> {
     }
 
     if (filtered.isEmpty) {
+      final isFilterEmpty =
+          _filter != ChatInboxFilter.all && _searchQuery.trim().isEmpty;
       return _emptyState(
-        icon: Icons.search_off_rounded,
-        title: l10n.noChatMatches,
-        subtitle: l10n.tryDifferentSearch,
+        icon: isFilterEmpty
+            ? Icons.filter_alt_outlined
+            : Icons.search_off_rounded,
+        title: isFilterEmpty ? l10n.noChatsInFilter : l10n.noChatMatches,
+        subtitle:
+            isFilterEmpty ? l10n.noChatsInFilterHint : l10n.tryDifferentSearch,
       );
     }
 
@@ -241,7 +329,7 @@ class _ChatScreenState extends State<ChatScreen> {
           child: Container(
             padding: const EdgeInsets.all(22),
             decoration: BoxDecoration(
-              color: kPrimaryColor.withOpacity(0.10),
+              color: kPrimaryColor.withValues(alpha: 0.10),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: kPrimaryColor, size: 48),
@@ -274,6 +362,44 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  Widget? _tagChip(ConversationInboxMeta meta) {
+    final tag = meta.primaryTag;
+    if (tag == null) return null;
+    final l10n = context.l10n;
+    late final String label;
+    late final Color fg;
+    late final Color bg;
+    switch (tag) {
+      case ChatInboxTag.applications:
+        label = l10n.chatTagApplication;
+        fg = StatusColors.warning;
+        bg = StatusColors.warningBg;
+      case ChatInboxTag.active:
+        label = l10n.chatTagActive;
+        fg = StatusColors.success;
+        bg = StatusColors.successBg;
+      case ChatInboxTag.past:
+        label = l10n.chatTagPast;
+        fg = StatusColors.neutral;
+        bg = StatusColors.neutralBg;
+    }
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        label,
+        style: kTextStyle.copyWith(
+          color: fg,
+          fontSize: 10,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+  }
+
   Widget _conversationCard(Conversation conversation) {
     final l10n = context.l10n;
     final otherUser = conversation.getOtherUser(_currentUserId);
@@ -281,6 +407,11 @@ class _ChatScreenState extends State<ChatScreen> {
     final imageUrl = otherUser['profile_image_url'] as String? ?? '';
     final lastMessage = conversation.lastMessage?.trim();
     final hasLast = lastMessage != null && lastMessage.isNotEmpty;
+    final unread =
+        ChatUnreadScope.of(context).unreadForConversation(conversation.id);
+    final hasUnread = unread > 0;
+    final meta = _metaFor(conversation);
+    final tag = _tagChip(meta);
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
@@ -288,29 +419,40 @@ class _ChatScreenState extends State<ChatScreen> {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(18),
-          onTap: () {
+          onTap: () async {
             try {
-              ChatInbox(
+              await ChatInbox(
                 conversationId: conversation.id,
                 otherUserName: name,
                 otherUserImage: imageUrl,
                 otherUserId: conversation.getOtherUserId(_currentUserId),
               ).launch(context);
+              if (mounted) {
+                ChatUnreadScope.refreshGlobal();
+                await _loadConversations();
+              }
             } catch (_) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(l10n.couldNotOpenChat)),
-              );
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(l10n.couldNotOpenChat)),
+                );
+              }
             }
           },
           child: Container(
             padding: const EdgeInsets.symmetric(
                 horizontal: 14, vertical: 12),
             decoration: BoxDecoration(
-              color: kWhite,
+              color: hasUnread
+                  ? kPrimaryColor.withValues(alpha: 0.04)
+                  : kWhite,
               borderRadius: BorderRadius.circular(18),
+              border: hasUnread
+                  ? Border.all(color: kPrimaryColor.withValues(alpha: 0.18))
+                  : null,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.03),
+                  color: Colors.black.withValues(alpha: 0.03),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -318,7 +460,7 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
             child: Row(
               children: [
-                _avatar(name, imageUrl),
+                _avatar(name, imageUrl, unread: unread),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -333,37 +475,77 @@ class _ChatScreenState extends State<ChatScreen> {
                               overflow: TextOverflow.ellipsis,
                               style: kTextStyle.copyWith(
                                 color: kNeutralColor,
-                                fontWeight: FontWeight.w700,
+                                fontWeight: hasUnread
+                                    ? FontWeight.w800
+                                    : FontWeight.w700,
                                 fontSize: 14,
                               ),
                             ),
                           ),
                           const SizedBox(width: 8),
-                          Text(
-                            _formatTime(context, conversation.lastMessageAt),
-                            style: kTextStyle.copyWith(
-                              color: kLightNeutralColor,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w500,
+                          if (hasUnread)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 7,
+                                vertical: 3,
+                              ),
+                              decoration: BoxDecoration(
+                                color: kPrimaryColor,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Text(
+                                unread > 9 ? '9+' : '$unread',
+                                style: kTextStyle.copyWith(
+                                  color: kWhite,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            )
+                          else
+                            Text(
+                              _formatTime(context, conversation.lastMessageAt),
+                              style: kTextStyle.copyWith(
+                                color: kLightNeutralColor,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
-                          ),
                         ],
                       ),
+                      if (tag != null) ...[
+                        const SizedBox(height: 4),
+                        tag,
+                      ],
                       const SizedBox(height: 4),
                       Text(
                         hasLast ? lastMessage : l10n.noMessagesYet,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: kTextStyle.copyWith(
-                          color: hasLast
-                              ? kSubTitleColor
-                              : kLightNeutralColor,
+                          color: hasUnread
+                              ? kNeutralColor
+                              : (hasLast
+                                  ? kSubTitleColor
+                                  : kLightNeutralColor),
                           fontSize: 13,
+                          fontWeight:
+                              hasUnread ? FontWeight.w600 : FontWeight.normal,
                           fontStyle: hasLast
                               ? FontStyle.normal
                               : FontStyle.italic,
                         ),
                       ),
+                      if (hasUnread) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          _formatTime(context, conversation.lastMessageAt),
+                          style: kTextStyle.copyWith(
+                            color: kLightNeutralColor,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -375,35 +557,53 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget _avatar(String name, String imageUrl) {
+  Widget _avatar(String name, String imageUrl, {int unread = 0}) {
     final initial =
         name.isNotEmpty ? name.trim()[0].toUpperCase() : '?';
-    return Container(
-      width: 52,
-      height: 52,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: kPrimaryColor.withOpacity(0.10),
-        image: imageUrl.isNotEmpty
-            ? DecorationImage(
-                image: NetworkImage(imageUrl), fit: BoxFit.cover)
-            : null,
-      ),
-      alignment: Alignment.center,
-      child: imageUrl.isEmpty
-          ? Text(
-              initial,
-              style: kTextStyle.copyWith(
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Container(
+          width: 52,
+          height: 52,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: kPrimaryColor.withValues(alpha: 0.10),
+            image: imageUrl.isNotEmpty
+                ? DecorationImage(
+                    image: NetworkImage(imageUrl), fit: BoxFit.cover)
+                : null,
+          ),
+          alignment: Alignment.center,
+          child: imageUrl.isEmpty
+              ? Text(
+                  initial,
+                  style: kTextStyle.copyWith(
+                    color: kPrimaryColor,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 20,
+                  ),
+                )
+              : null,
+        ),
+        if (unread > 0)
+          Positioned(
+            top: -2,
+            right: -2,
+            child: Container(
+              width: 12,
+              height: 12,
+              decoration: BoxDecoration(
                 color: kPrimaryColor,
-                fontWeight: FontWeight.w700,
-                fontSize: 20,
+                shape: BoxShape.circle,
+                border: Border.all(color: kWhite, width: 2),
               ),
-            )
-          : null,
+            ),
+          ),
+      ],
     );
   }
 
-  // ---------------------------------------------------------------- Skeleton
   Widget _buildSkeleton() {
     return _Shimmer(
       child: ListView.builder(
@@ -421,7 +621,7 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
             child: Row(
               children: [
-                _SkeletonBox(width: 52, height: 52, radius: 26),
+                const _SkeletonBox(width: 52, height: 52, radius: 26),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -458,9 +658,6 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 }
 
-// =============================================================
-// Shimmer primitives
-// =============================================================
 class _SkeletonBox extends StatelessWidget {
   final double? width;
   final double height;

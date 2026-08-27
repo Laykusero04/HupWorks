@@ -17,12 +17,20 @@ class SellerJobAlertEditorScreen extends StatefulWidget {
     super.key,
     this.existing,
     this.initialSkillName,
+    this.initialSkillNames,
     this.initialJobType,
+    this.initialCategoryIds,
+    this.initialMaxDistanceKm,
+    this.initialIncludeRemote,
   });
 
   final SellerJobAlertRule? existing;
   final String? initialSkillName;
+  final List<String>? initialSkillNames;
   final String? initialJobType;
+  final List<String>? initialCategoryIds;
+  final double? initialMaxDistanceKm;
+  final bool? initialIncludeRemote;
 
   @override
   State<SellerJobAlertEditorScreen> createState() => _SellerJobAlertEditorScreenState();
@@ -72,10 +80,29 @@ class _SellerJobAlertEditorScreenState extends State<SellerJobAlertEditorScreen>
         _distanceKm = existing.maxDistanceKm!.clamp(5, 100);
       }
     } else {
-      if (widget.initialSkillName != null && widget.initialSkillName!.trim().isNotEmpty) {
-        _skillNames.add(widget.initialSkillName!.trim());
+      final seeded = <String>[
+        ...?widget.initialSkillNames,
+        if (widget.initialSkillName != null) widget.initialSkillName!,
+      ];
+      for (final raw in seeded) {
+        final name = raw.trim();
+        if (name.isEmpty) continue;
+        if (_skillNames.any((s) => s.toLowerCase() == name.toLowerCase())) {
+          continue;
+        }
+        _skillNames.add(name);
       }
       _jobType = widget.initialJobType;
+      if (widget.initialCategoryIds != null) {
+        _categoryIds.addAll(widget.initialCategoryIds!);
+      }
+      if (widget.initialMaxDistanceKm != null) {
+        _useDistance = true;
+        _distanceKm = widget.initialMaxDistanceKm!.clamp(5, 100);
+      }
+      if (widget.initialIncludeRemote != null) {
+        _includeRemote = widget.initialIncludeRemote!;
+      }
     }
     _bootstrap();
   }
@@ -330,6 +357,11 @@ class _SellerJobAlertEditorScreenState extends State<SellerJobAlertEditorScreen>
           ),
           const SizedBox(height: 16),
           _sectionTitle(l10n.jobAlertSkillsSection),
+          Text(
+            'Match jobs that are tagged with these skills.',
+            style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12),
+          ),
+          const SizedBox(height: 8),
           Wrap(
             spacing: 8,
             runSpacing: 8,

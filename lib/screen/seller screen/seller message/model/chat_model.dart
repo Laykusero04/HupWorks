@@ -48,6 +48,8 @@ class Message {
   final String? attachmentUrl;
   final bool isRead;
   final DateTime createdAt;
+  final String messageType;
+  final String? jobOfferId;
   final Map<String, dynamic>? sender;
 
   Message({
@@ -58,6 +60,8 @@ class Message {
     this.attachmentUrl,
     required this.isRead,
     required this.createdAt,
+    this.messageType = 'text',
+    this.jobOfferId,
     this.sender,
   });
 
@@ -70,9 +74,14 @@ class Message {
       attachmentUrl: map['attachment_url'] as String?,
       isRead: (map['read'] as bool?) ?? false,
       createdAt: DateTime.parse(map['created_at'] as String),
+      messageType: (map['message_type'] as String?) ?? 'text',
+      jobOfferId: map['job_offer_id'] as String?,
       sender: map['sender'] != null ? Map<String, dynamic>.from(map['sender']) : null,
     );
   }
+
+  bool get isJobOfferMessage =>
+      messageType == 'job_offer' || messageType == 'counter_offer';
 
   bool isMine(String currentUserId) => senderId == currentUserId;
 

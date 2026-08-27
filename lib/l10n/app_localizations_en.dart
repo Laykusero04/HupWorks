@@ -2138,7 +2138,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get freelancerDefault => 'Freelancer';
 
   @override
-  String get submitOfferTitle => 'Submit offer';
+  String get submitOfferTitle => 'Submit application';
 
   @override
   String get applyAtClientRate => 'Apply at client\'s rate';
@@ -2158,7 +2158,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Application sent at client\'s posted rate';
 
   @override
-  String get offerSentSuccess => 'Your offer has been sent';
+  String get offerSentSuccess => 'Your application has been sent';
 
   @override
   String get successTitle => 'Success';
@@ -2168,7 +2168,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get applyWithoutCounterBody =>
-      'You are applying without a counter-offer. The client sees your application at their posted rate.';
+      'You are applying at the client\'s posted rate. They will see your application at that rate.';
 
   @override
   String get clientPostedRate => 'Client\'s posted rate';
@@ -2192,7 +2192,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get yourOfferAmount => 'Your offer amount';
+  String get yourOfferAmount => 'Your application amount';
 
   @override
   String get enterYourBid => 'Enter your bid';
@@ -2229,11 +2229,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get buyerRequestDetailsTitle => 'Job details';
 
   @override
-  String get submitOfferAction => 'Submit offer';
+  String get submitOfferAction => 'Submit application';
+
+  @override
+  String get cannotSubmitApplication => 'Cannot apply';
+
+  @override
+  String get applicationsReceived => 'Applications';
 
   @override
   String offersCount(int count) {
-    return '$count offers';
+    return '$count applications';
   }
 
   @override
@@ -2293,6 +2299,68 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get bidOfferLabel => 'Bid Offer';
+
+  @override
+  String get counterOfferLabel => 'Counter offer';
+
+  @override
+  String get counterOfferAction => 'Counter offer';
+
+  @override
+  String get counterOfferTitle => 'Send counter offer';
+
+  @override
+  String get counterOfferBody =>
+      'Propose a different rate. The freelancer can submit a revised bid.';
+
+  @override
+  String get counterOfferAmountHint => 'Proposed amount';
+
+  @override
+  String get counterOfferNoteHint => 'Optional note for the freelancer';
+
+  @override
+  String get counterOfferSent => 'Counter offer sent';
+
+  @override
+  String get threadContextTitle => 'Related work';
+
+  @override
+  String get threadContextSubtitle =>
+      'Active jobs and contracts with this person';
+
+  @override
+  String threadContextRelatedCount(int count) {
+    return '$count related items';
+  }
+
+  @override
+  String get threadContextLoading => 'Loading related work…';
+
+  @override
+  String get chatFilterApplications => 'Applications';
+
+  @override
+  String get chatFilterActive => 'Active';
+
+  @override
+  String get chatFilterPast => 'Past';
+
+  @override
+  String get chatTagApplication => 'Application';
+
+  @override
+  String get chatTagActive => 'Active';
+
+  @override
+  String get chatTagPast => 'Past';
+
+  @override
+  String get noChatsInFilter => 'No chats in this filter';
+
+  @override
+  String get noChatsInFilterHint =>
+      'Try another filter or start a conversation from a profile';
 
   @override
   String get proposalCaps => 'PROPOSAL';

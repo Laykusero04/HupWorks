@@ -161,6 +161,60 @@ class JobPostsService {
     return parseWorkersNeeded(raw) >= workersNeededNoLimitSentinel;
   }
 
+  /// Nested select fragment for skill tags on a job post.
+  static const jobPostSkillsSelect =
+      'job_post_skills(skill_name, skill_catalog_id)';
+
+  /// Max skills a client can tag on one job post.
+  static const int maxJobSkills = 8;
+
+  /// Skill tag names from an embedded `job_post_skills` select.
+  static List<String> skillNamesFromJob(Map<String, dynamic>? job) {
+    if (job == null) return const [];
+    final raw = job['job_post_skills'];
+    if (raw is! List) return const [];
+    final names = <String>[];
+    final seen = <String>{};
+    for (final row in raw) {
+      if (row is! Map) continue;
+      final name = (row['skill_name'] as String?)?.trim() ?? '';
+      if (name.isEmpty) continue;
+      final key = name.toLowerCase();
+      if (seen.contains(key)) continue;
+      seen.add(key);
+      names.add(name);
+    }
+    return names;
+  }
+
+  static Future<void> _replaceJobSkills({
+    required String jobPostId,
+    required List<({String name, String? catalogId})> skills,
+  }) async {
+    await _client.from('job_post_skills').delete().eq('job_post_id', jobPostId);
+    if (skills.isEmpty) return;
+
+    final rows = <Map<String, dynamic>>[];
+    final seen = <String>{};
+    for (final s in skills) {
+      final name = s.name.trim();
+      if (name.isEmpty) continue;
+      final key = name.toLowerCase();
+      if (seen.contains(key)) continue;
+      seen.add(key);
+      rows.add({
+        'job_post_id': jobPostId,
+        'skill_name': name,
+        if (s.catalogId != null && s.catalogId!.isNotEmpty)
+          'skill_catalog_id': s.catalogId,
+      });
+      if (rows.length >= maxJobSkills) break;
+    }
+    if (rows.isNotEmpty) {
+      await _client.from('job_post_skills').insert(rows);
+    }
+  }
+
   static int countAcceptedOffers(Iterable<Map<String, dynamic>> offers) {
     var n = 0;
     for (final o in offers) {
@@ -183,7 +237,7 @@ class JobPostsService {
 
     final data = await _client
         .from('job_posts')
-        .select('*, categories(name)')
+        .select('*, categories(name), $jobPostSkillsSelect')
         .eq('client_id', user.id)
         .order('created_at', ascending: false);
     return List<Map<String, dynamic>>.from(data);
@@ -205,6 +259,7 @@ class JobPostsService {
     double? longitude,
     int workersNeeded = 1,
     String? attendanceMode,
+    List<({String name, String? catalogId})> skills = const [],
   }) async {
     final user = _client.auth.currentUser;
     if (user == null) throw Exception('Not logged in');
@@ -228,6 +283,11 @@ class JobPostsService {
       if (attendanceMode != null) 'attendance_mode': attendanceMode,
     }).select().single();
 
+    final jobId = data['id'] as String?;
+    if (jobId != null && skills.isNotEmpty) {
+      await _replaceJobSkills(jobPostId: jobId, skills: skills);
+    }
+
     return data;
   }
 
@@ -235,7 +295,7 @@ class JobPostsService {
   static Future<Map<String, dynamic>> getJobPostDetails(String jobPostId) async {
     final data = await _client
         .from('job_posts')
-        .select('*, categories(name)')
+        .select('*, categories(name), $jobPostSkillsSelect')
         .eq('id', jobPostId)
         .single();
     return data;

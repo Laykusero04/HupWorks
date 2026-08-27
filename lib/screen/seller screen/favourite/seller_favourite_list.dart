@@ -128,6 +128,7 @@ class _SellerFavListState extends State<SellerFavList> {
                           final client = (job['client'] ?? job['profiles']) as Map<String, dynamic>?;
                           final jobId = job['id'] as String? ?? fav['job_post_id'] as String?;
                           final status = (job['status'] as String?) ?? 'open';
+                          final (statusFg, statusBg) = StatusColors.jobPost(status);
 
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 10.0),
@@ -218,16 +219,12 @@ class _SellerFavListState extends State<SellerFavList> {
                                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                             decoration: BoxDecoration(
                                               borderRadius: BorderRadius.circular(20),
-                                              color: status == 'open'
-                                                  ? const Color(0xFFE8F5E9)
-                                                  : kDarkWhite,
+                                              color: statusBg,
                                             ),
                                             child: Text(
                                               status,
                                               style: kTextStyle.copyWith(
-                                                color: status == 'open'
-                                                    ? const Color(0xFF2E7D32)
-                                                    : kSubTitleColor,
+                                                color: statusFg,
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 12,
                                               ),

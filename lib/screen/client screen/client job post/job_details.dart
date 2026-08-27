@@ -405,6 +405,13 @@ class _JobDetailsState extends State<JobDetails> {
                     const SizedBox(height: 15.0),
                     _buildRow('Category', category),
                     const SizedBox(height: 8.0),
+                    if (JobPostsService.skillNamesFromJob(_jobPost).isNotEmpty) ...[
+                      _buildRow(
+                        'Skills',
+                        JobPostsService.skillNamesFromJob(_jobPost).join(', '),
+                      ),
+                      const SizedBox(height: 8.0),
+                    ],
                     if (budgetMin != null || budgetMax != null) ...[
                       _buildRow(
                           'Budget',
@@ -458,7 +465,8 @@ class _JobDetailsState extends State<JobDetails> {
                         final offer = _offers[i];
                         final seller =
                             offer['profiles'] as Map<String, dynamic>?;
-                        final offerStatus = offer['status'] ?? 'pending';
+                                final offerStatus = offer['status'] ?? 'pending';
+                                final (offerFg, offerBg) = StatusColors.application(offerStatus as String?);
 
                         return Container(
                           margin: const EdgeInsets.only(bottom: 10.0),
@@ -507,11 +515,7 @@ class _JobDetailsState extends State<JobDetails> {
                                         horizontal: 8, vertical: 4),
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(12),
-                                      color: offerStatus == 'accepted'
-                                          ? kPrimaryColor.withOpacity(0.1)
-                                          : offerStatus == 'rejected'
-                                              ? Colors.red.withOpacity(0.1)
-                                              : kDarkWhite,
+                                      color: offerBg,
                                     ),
                                     child: Text(
                                       offerStatus
@@ -520,11 +524,7 @@ class _JobDetailsState extends State<JobDetails> {
                                               .toUpperCase() +
                                           offerStatus.toString().substring(1),
                                       style: kTextStyle.copyWith(
-                                        color: offerStatus == 'accepted'
-                                            ? kPrimaryColor
-                                            : offerStatus == 'rejected'
-                                                ? Colors.red
-                                                : kNeutralColor,
+                                        color: offerFg,
                                         fontSize: 12,
                                       ),
                                     ),

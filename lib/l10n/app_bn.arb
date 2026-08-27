@@ -1034,16 +1034,16 @@
   "applicationsSection": "Applications",
   "rejectApplication": "Reject",
   "freelancerDefault": "Freelancer",
-  "submitOfferTitle": "Submit offer",
+  "submitOfferTitle": "Submit application",
   "applyAtClientRate": "Apply at client's rate",
   "agreeToClientRate": "Agree to\nclient's rate",
   "customBid": "Custom\nbid",
   "offerNoPostedRateWarning": "This job has no posted rate to agree to. Enter a custom amount instead.",
   "offerSentAtPostedRate": "Application sent at client's posted rate",
-  "offerSentSuccess": "Your offer has been sent",
+  "offerSentSuccess": "Your application has been sent",
   "successTitle": "Success",
   "headsUp": "Heads up",
-  "applyWithoutCounterBody": "You are applying without a counter-offer. The client sees your application at their posted rate.",
+  "applyWithoutCounterBody": "You are applying at the client's posted rate. They will see your application at that rate.",
   "clientPostedRate": "Client's posted rate",
   "yourApplicationAmount": "Your application: {amount}",
   "@yourApplicationAmount": {
@@ -1063,7 +1063,7 @@
       }
     }
   },
-  "yourOfferAmount": "Your offer amount",
+  "yourOfferAmount": "Your application amount",
   "enterYourBid": "Enter your bid",
   "quoteAsLabel": "Quote as",
   "quoteTotal": "Total",
@@ -1075,8 +1075,10 @@
   "findJobsTitle": "Find Jobs",
   "couldNotLoadSkillsFilter": "Could not load skills filter. Pull to refresh later.",
   "buyerRequestDetailsTitle": "Job details",
-  "submitOfferAction": "Submit offer",
-  "offersCount": "{count} offers",
+  "submitOfferAction": "Submit application",
+  "cannotSubmitApplication": "Cannot apply",
+  "applicationsReceived": "Applications",
+  "offersCount": "{count} applications",
   "@offersCount": {
     "placeholders": {
       "count": {
@@ -1116,6 +1118,30 @@
   "paymentCreditCard": "Credit Card",
   "paymentBkash": "Bkash",
   "bidOfferLabel": "Bid Offer",
+  "counterOfferLabel": "Counter offer",
+  "counterOfferAction": "Counter offer",
+  "counterOfferTitle": "Send counter offer",
+  "counterOfferBody": "Propose a different rate. The freelancer can submit a revised bid.",
+  "counterOfferAmountHint": "Proposed amount",
+  "counterOfferNoteHint": "Optional note for the freelancer",
+  "counterOfferSent": "Counter offer sent",
+  "threadContextTitle": "Related work",
+  "threadContextSubtitle": "Active jobs and contracts with this person",
+  "threadContextRelatedCount": "{count} related items",
+  "@threadContextRelatedCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "threadContextLoading": "Loading related work…",
+  "chatFilterApplications": "Applications",
+  "chatFilterActive": "Active",
+  "chatFilterPast": "Past",
+  "chatTagApplication": "Application",
+  "chatTagActive": "Active",
+  "chatTagPast": "Past",
+  "noChatsInFilter": "No chats in this filter",
+  "noChatsInFilterHint": "Try another filter or start a conversation from a profile",
   "proposalCaps": "PROPOSAL",
   "labelColon": ":",
   "requiredFieldMark": "*",

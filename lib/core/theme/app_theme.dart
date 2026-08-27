@@ -6,7 +6,7 @@ ThemeData appTheme() {
   return ThemeData(
     fontFamily: 'Display',
     primaryColor: kPrimaryColor,
-    scaffoldBackgroundColor: kWhite,
+    scaffoldBackgroundColor: kDarkWhite,
     colorScheme: ColorScheme.light(
       primary: kPrimaryColor,
       secondary: kSecondaryColor,
@@ -18,7 +18,7 @@ ThemeData appTheme() {
       onSurface: kNeutralColor,
     ),
     appBarTheme: const AppBarTheme(
-      backgroundColor: kWhite,
+      backgroundColor: kDarkWhite,
       elevation: 0,
       iconTheme: IconThemeData(color: kNeutralColor),
       titleTextStyle: TextStyle(
@@ -44,7 +44,7 @@ ThemeData appTheme() {
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: Colors.white70,
+      fillColor: kWhite,
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8.0),
         borderSide: const BorderSide(color: kBorderColorTextField, width: 2),

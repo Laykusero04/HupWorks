@@ -137,7 +137,7 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
       final posted = JobPostsService.agreedOfferFromJobPost(_jobPostBudgetMap);
       if (posted == null) {
         _showMessage(
-          'This job has no posted rate to agree to. Enter a custom amount instead.',
+          context.l10n.offerNoPostedRateWarning,
           type: _MessageType.warning,
         );
         return;
@@ -147,7 +147,7 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
     } else {
       amount = double.tryParse(_amountController.text.trim());
       if (amount == null || amount <= 0) {
-        _showMessage('Please enter a valid offer amount', type: _MessageType.warning);
+        _showMessage(context.l10n.pleaseEnterValidAmount, type: _MessageType.warning);
         return;
       }
       basis = _priceBasis;
@@ -168,7 +168,9 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
 
       if (mounted) {
         _showMessage(
-          agreed ? 'Application sent at client\'s posted rate' : 'Your offer has been sent',
+          agreed
+              ? context.l10n.offerSentAtPostedRate
+              : context.l10n.offerSentSuccess,
           type: _MessageType.success,
         );
         await Future.delayed(const Duration(milliseconds: 600));
@@ -225,6 +227,7 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final bottomLift = MediaQuery.paddingOf(context).bottom + 16;
     final postedLabel = JobPostsService.formatBudgetRange(
       widget.budgetMin,
@@ -241,7 +244,7 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
         elevation: 0,
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
-          'Submit offer',
+          l10n.submitOfferTitle,
           style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -254,10 +257,10 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
           padding: EdgeInsets.fromLTRB(20, 8, 20, bottomLift),
           child: ButtonGlobalWithoutIcon(
             buttontext: _isSubmitting
-                ? 'Sending…'
+                ? l10n.sending
                 : isAgree
-                    ? 'Apply at client\'s rate'
-                    : 'Submit offer',
+                    ? l10n.applyAtClientRate
+                    : l10n.submitOfferAction,
             buttonDecoration: kButtonDecoration.copyWith(
               color: _isSubmitting ? kLightNeutralColor : kPrimaryColor,
               borderRadius: BorderRadius.circular(30.0),
@@ -314,13 +317,13 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
                   Row(
                     children: [
                       _modeChip(
-                        label: 'Agree to\nclient\'s rate',
+                        label: l10n.agreeToClientRate,
                         mode: _OfferSubmitMode.agreePosted,
                         icon: Icons.handshake_outlined,
                       ),
                       const SizedBox(width: 10),
                       _modeChip(
-                        label: 'Custom\nbid',
+                        label: l10n.customBid,
                         mode: _OfferSubmitMode.customBid,
                         icon: Icons.edit_outlined,
                       ),
@@ -330,7 +333,7 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
                 ],
                 if (isAgree && postedLabel.isNotEmpty) ...[
                   Text(
-                    'You are applying without a counter-offer. The client sees your application at their posted rate.',
+                    l10n.applyWithoutCounterBody,
                     style: kTextStyle.copyWith(
                       color: kSubTitleColor,
                       fontSize: 13,
@@ -350,7 +353,7 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Client\'s posted rate',
+                          l10n.clientPostedRate,
                           style: kTextStyle.copyWith(
                             color: kSubTitleColor,
                             fontSize: 12,
@@ -368,7 +371,12 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
                         if (agreed != null) ...[
                           const SizedBox(height: 6),
                           Text(
-                            'Your application: ${JobPostsService.formatOfferAmountLine(agreed.price, agreed.basis)}',
+                            l10n.yourApplicationAmount(
+                              JobPostsService.formatOfferAmountLine(
+                                agreed.price,
+                                agreed.basis,
+                              ),
+                            ),
                             style: kTextStyle.copyWith(
                               color: kPrimaryColor,
                               fontSize: 13,
@@ -382,8 +390,8 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
                 ] else ...[
                   Text(
                     _hasPostedBudget
-                        ? 'Enter your own amount if you want to bid differently from the client\'s budget.'
-                        : 'This job has no posted budget — enter the amount you are asking for.',
+                        ? l10n.customBidIntroWithBudget
+                        : l10n.customBidIntroNoBudget,
                     style: kTextStyle.copyWith(
                       color: kSubTitleColor,
                       fontSize: 13,
@@ -393,7 +401,7 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
                   if (_hasPostedBudget && postedLabel.isNotEmpty) ...[
                     const SizedBox(height: 8),
                     Text(
-                      'Client posted: $postedLabel',
+                      l10n.clientPostedPrefix(postedLabel),
                       style: kTextStyle.copyWith(
                         color: kLightNeutralColor,
                         fontSize: 12,
@@ -412,9 +420,9 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
                           ),
                           cursorColor: kNeutralColor,
                           decoration: kInputDecoration.copyWith(
-                            labelText: 'Your offer amount',
+                            labelText: l10n.yourOfferAmount,
                             labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                            hintText: 'Enter your bid',
+                            hintText: l10n.enterYourBid,
                             hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
                             border: const OutlineInputBorder(),
                           ),
@@ -439,7 +447,7 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
                               bottom: 0,
                             ),
                             floatingLabelBehavior: FloatingLabelBehavior.always,
-                            labelText: 'Quote as',
+                            labelText: l10n.quoteAsLabel,
                             labelStyle: kTextStyle.copyWith(
                               color: kNeutralColor,
                               fontSize: 12,
@@ -494,9 +502,9 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
                   cursorColor: kNeutralColor,
                   maxLines: 5,
                   decoration: kInputDecoration.copyWith(
-                    labelText: 'Message (optional)',
+                    labelText: l10n.offerMessageOptional,
                     labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                    hintText: 'Optional note for the client…',
+                    hintText: l10n.offerMessageHint,
                     hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     border: const OutlineInputBorder(),

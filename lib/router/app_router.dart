@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../core/auth/role_cache.dart';
+import '../core/chat/chat_unread_scope.dart';
 import '../core/constants/colors.dart';
 import '../core/utils/app_logger.dart';
 import '../services/auth_service.dart';
@@ -272,7 +273,10 @@ GoRouter createRouter() {
   );
 }
 
-List<BottomNavigationBarItem> _clientNavItems(BuildContext context) {
+List<BottomNavigationBarItem> _clientNavItems(
+  BuildContext context,
+  int chatUnread,
+) {
   final l10n = context.l10n;
   return [
     BottomNavigationBarItem(
@@ -281,8 +285,8 @@ List<BottomNavigationBarItem> _clientNavItems(BuildContext context) {
       label: l10n.home,
     ),
     BottomNavigationBarItem(
-      icon: const Icon(Icons.chat_bubble_outline),
-      activeIcon: const Icon(Icons.chat_bubble),
+      icon: _badgedNavIcon(Icons.chat_bubble_outline, chatUnread),
+      activeIcon: _badgedNavIcon(Icons.chat_bubble, chatUnread),
       label: l10n.message,
     ),
     BottomNavigationBarItem(
@@ -303,7 +307,10 @@ List<BottomNavigationBarItem> _clientNavItems(BuildContext context) {
   ];
 }
 
-List<BottomNavigationBarItem> _sellerNavItems(BuildContext context) {
+List<BottomNavigationBarItem> _sellerNavItems(
+  BuildContext context,
+  int chatUnread,
+) {
   final l10n = context.l10n;
   return [
     BottomNavigationBarItem(
@@ -312,8 +319,8 @@ List<BottomNavigationBarItem> _sellerNavItems(BuildContext context) {
       label: l10n.home,
     ),
     BottomNavigationBarItem(
-      icon: const Icon(Icons.chat_bubble_outline),
-      activeIcon: const Icon(Icons.chat_bubble),
+      icon: _badgedNavIcon(Icons.chat_bubble_outline, chatUnread),
+      activeIcon: _badgedNavIcon(Icons.chat_bubble, chatUnread),
       label: l10n.message,
     ),
     BottomNavigationBarItem(
@@ -327,6 +334,17 @@ List<BottomNavigationBarItem> _sellerNavItems(BuildContext context) {
       label: l10n.contracts,
     ),
   ];
+}
+
+Widget _badgedNavIcon(IconData icon, int count) {
+  if (count <= 0) return Icon(icon);
+  return Badge(
+    label: Text(
+      count > 9 ? '9+' : '$count',
+      style: const TextStyle(fontSize: 10),
+    ),
+    child: Icon(icon),
+  );
 }
 
 /// Shared bottom nav for client and seller shells.
@@ -348,38 +366,46 @@ class _ScaffoldWithNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final items = persona == ShellPersona.client
-        ? _clientNavItems(context)
-        : _sellerNavItems(context);
+    final chatUnread = ChatUnreadScope.of(context);
 
-    return Scaffold(
-      key: scaffoldKey,
-      backgroundColor: kWhite,
-      extendBody: false,
-      drawer: drawer,
-      body: navigationShell,
-      bottomNavigationBar: DecoratedBox(
-        decoration: const BoxDecoration(
-          color: kWhite,
-          border: Border(top: BorderSide(color: kBorderColorTextField)),
-        ),
-        child: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
+    return ListenableBuilder(
+      listenable: chatUnread,
+      builder: (context, _) {
+        final unread = chatUnread.totalUnread;
+        final items = persona == ShellPersona.client
+            ? _clientNavItems(context, unread)
+            : _sellerNavItems(context, unread);
+
+        return Scaffold(
+          key: scaffoldKey,
           backgroundColor: kWhite,
-          elevation: 0,
-          selectedItemColor: _accentColor,
-          unselectedItemColor: kLightNeutralColor,
-          selectedFontSize: 12,
-          unselectedFontSize: 12,
-          showUnselectedLabels: true,
-          currentIndex: navigationShell.currentIndex,
-          onTap: (i) => navigationShell.goBranch(
-            i,
-            initialLocation: i == navigationShell.currentIndex,
+          extendBody: false,
+          drawer: drawer,
+          body: navigationShell,
+          bottomNavigationBar: DecoratedBox(
+            decoration: const BoxDecoration(
+              color: kWhite,
+              border: Border(top: BorderSide(color: kBorderColorTextField)),
+            ),
+            child: BottomNavigationBar(
+              type: BottomNavigationBarType.fixed,
+              backgroundColor: kWhite,
+              elevation: 0,
+              selectedItemColor: _accentColor,
+              unselectedItemColor: kLightNeutralColor,
+              selectedFontSize: 12,
+              unselectedFontSize: 12,
+              showUnselectedLabels: true,
+              currentIndex: navigationShell.currentIndex,
+              onTap: (i) => navigationShell.goBranch(
+                i,
+                initialLocation: i == navigationShell.currentIndex,
+              ),
+              items: items,
+            ),
           ),
-          items: items,
-        ),
-      ),
+        );
+      },
     );
   }
 }

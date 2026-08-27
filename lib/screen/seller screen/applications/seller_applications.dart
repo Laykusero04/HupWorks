@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../widgets/constant.dart';
+import '../buyer request/buyer_request_details.dart';
 import '../seller message/chat_inbox.dart';
 
 class SellerApplications extends StatefulWidget {
@@ -105,14 +106,15 @@ class _SellerApplicationsState extends State<SellerApplications> {
   }
 
   ({Color bg, Color fg, String label}) _statusStyle(String? status) {
+    final (fg, bg) = StatusColors.application(status);
     switch (status) {
       case 'accepted':
-        return (bg: kPrimaryColor.withOpacity(0.1), fg: kPrimaryColor, label: 'Accepted');
+        return (bg: bg, fg: fg, label: 'Accepted');
       case 'rejected':
-        return (bg: const Color(0xFFFFE5E3), fg: const Color(0xFFFF3B30), label: 'Rejected');
+        return (bg: bg, fg: fg, label: 'Rejected');
       case 'pending':
       default:
-        return (bg: const Color(0xFFFFEFE0), fg: const Color(0xFFFF7A00), label: 'Pending');
+        return (bg: bg, fg: fg, label: 'Pending');
     }
   }
 
@@ -165,11 +167,20 @@ class _SellerApplicationsState extends State<SellerApplications> {
 
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 10.0),
-                            child: Container(
+                            child: Material(
+                              color: kWhite,
+                              borderRadius: BorderRadius.circular(10.0),
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(10.0),
+                                onTap: () {
+                                  final id = jobPost?['id'] as String?;
+                                  if (id == null) return;
+                                  BuyerRequestDetails(jobPostId: id).launch(context);
+                                },
+                                child: Container(
                               padding: const EdgeInsets.all(12.0),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10.0),
-                                color: kWhite,
                                 border: Border.all(color: kBorderColorTextField),
                               ),
                               child: Column(
@@ -307,6 +318,8 @@ class _SellerApplicationsState extends State<SellerApplications> {
                                     ),
                                   ],
                                 ],
+                              ),
+                            ),
                               ),
                             ),
                           );

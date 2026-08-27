@@ -7,7 +7,7 @@ abstract final class SupportPresets {
       question: 'What is the difference between Messages and Help & Support?',
       answer:
           'Messages is for chatting with clients or sellers about jobs and orders. '
-          'Help & Support is for contacting the HupWorks team about account, payment, '
+          'Help & Support is for contacting the HupWorks team about account, '
           'or technical issues.',
     ),
     SupportPreset(
@@ -21,13 +21,6 @@ abstract final class SupportPresets {
       answer:
           'Open the menu (profile icon) → My Profile. You can update your name, '
           'photo, and other details from there.',
-    ),
-    SupportPreset(
-      question: 'How do I add money to my wallet?',
-      audience: SupportPresetAudience.client,
-      answer:
-          'Open the profile menu → Deposit → Add Deposit. After adding funds, '
-          'you can use your wallet balance when placing orders or hiring freelancers.',
     ),
     SupportPreset(
       question: 'How do I post a job?',
@@ -59,6 +52,14 @@ abstract final class SupportPresets {
           'For urgent problems, also start a live chat with support.',
     ),
     SupportPreset(
+      question: 'How do payments work?',
+      audience: SupportPresetAudience.client,
+      answer:
+          'Payment happens outside the app (cash, bank transfer, or local e-wallet). '
+          'Agree on the amount in the job or chat, then pay the freelancer directly '
+          'after the work is done.',
+    ),
+    SupportPreset(
       question: 'How do I report a client or job?',
       audience: SupportPresetAudience.seller,
       answer:
@@ -74,11 +75,12 @@ abstract final class SupportPresets {
           'delivery details. The client can accept and start an order from there.',
     ),
     SupportPreset(
-      question: 'How do I withdraw my earnings?',
+      question: 'How do I get paid?',
       audience: SupportPresetAudience.seller,
       answer:
-          'Profile menu → Withdrawals → Withdraw Money. Add a payment method first '
-          'under Payment Methods if you have not already.',
+          'HupWorks does not hold or transfer money. After you finish the work, '
+          'collect payment directly from the client (cash, bank transfer, or local '
+          'e-wallet) based on the agreed amount.',
     ),
     SupportPreset(
       question: 'How does attendance check-in work?',
@@ -86,20 +88,6 @@ abstract final class SupportPresets {
       answer:
           'Profile menu → Attendance. At the job site, scan the QR code provided '
           'by the client to punch in or out for that order.',
-    ),
-    SupportPreset(
-      question: 'How do I add a payment method?',
-      audience: SupportPresetAudience.seller,
-      answer:
-          'Profile menu → Payment Methods. Add PayPal, card, or other supported '
-          'methods so you can receive withdrawals.',
-    ),
-    SupportPreset(
-      question: 'When will I get paid for a completed order?',
-      audience: SupportPresetAudience.seller,
-      answer:
-          'After the client marks the order complete and any review period passes, '
-          'earnings are added to your wallet. Withdraw from Profile → Withdrawals.',
     ),
   ];
 

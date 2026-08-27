@@ -123,21 +123,6 @@ class L10nLabels {
         (title: l10n.privacySectionContactTitle, body: l10n.privacySectionContactBody),
       ];
 
-  static String transactionType(AppLocalizations l10n, String? type) {
-    switch (type) {
-      case 'deposit':
-        return l10n.txnTypeDeposit;
-      case 'withdrawal':
-        return l10n.txnTypeWithdrawal;
-      case 'earning':
-        return l10n.txnTypeEarning;
-      case 'payment':
-        return l10n.txnTypePayment;
-      default:
-        return type ?? '';
-    }
-  }
-
   static String jobTypeLabel(AppLocalizations l10n, String? t) {
     switch (t) {
       case 'full_time':

@@ -95,46 +95,11 @@ class _ClientOrderListState extends State<ClientOrderList> {
   _StatusStyle _statusStyle(String? status) {
     final l10n = context.l10n;
     final label = OrderCancellationReason.statusLabel(status, l10n);
-    switch ((status ?? '').toLowerCase()) {
-      case 'active':
-        return _StatusStyle(label, kPrimaryColor, const Color(0xFFE8F7EE));
-      case 'pending':
-        return _StatusStyle(
-          label,
-          const Color(0xFFD97706),
-          const Color(0xFFFEF3C7),
-        );
-      case 'delivered':
-        return _StatusStyle(
-          label,
-          kSecondaryColor,
-          const Color(0xFFDBEAFE),
-        );
-      case 'completed':
-        return _StatusStyle(
-          label,
-          const Color(0xFF059669),
-          const Color(0xFFD1FAE5),
-        );
-      case 'cancelled':
-        return _StatusStyle(
-          label,
-          const Color(0xFFDC2626),
-          const Color(0xFFFEE2E2),
-        );
-      case 'cancellation_requested':
-        return _StatusStyle(
-          l10n.orderStatusCancellationPending,
-          const Color(0xFFD97706),
-          const Color(0xFFFFF8E1),
-        );
-      default:
-        return _StatusStyle(
-          label,
-          kLightNeutralColor,
-          kDarkWhite,
-        );
+    final (fg, bg) = StatusColors.order(status);
+    if ((status ?? '').toLowerCase() == 'cancellation_requested') {
+      return _StatusStyle(l10n.orderStatusCancellationPending, fg, bg);
     }
+    return _StatusStyle(label, fg, bg);
   }
 
   @override

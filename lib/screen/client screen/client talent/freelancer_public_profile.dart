@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/screen/seller%20screen/seller%20message/chat_inbox.dart';
+import 'package:freelancer/services/chat_service.dart';
 import 'package:freelancer/services/client_home_service.dart';
 import 'package:freelancer/services/profile_service.dart';
 import 'package:freelancer/services/seller_work_trust_service.dart';
@@ -76,6 +78,29 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(context.l10n.noActiveServiceListing)),
       );
+    }
+  }
+
+  Future<void> _handleMessage() async {
+    try {
+      final conversation =
+          await ChatService.getOrCreateConversation(widget.sellerId);
+      if (!mounted || _profile == null) return;
+      final profileImageUrl = _profile!['profile_image_url'] as String? ?? '';
+      final name =
+          _profile!['name'] as String? ?? widget.initialName ?? 'Freelancer';
+      ChatInbox(
+        conversationId: conversation['id'] as String,
+        otherUserName: name,
+        otherUserImage: profileImageUrl,
+        otherUserId: widget.sellerId,
+      ).launch(context);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.couldNotOpenChatWithDetail('$e'))),
+        );
+      }
     }
   }
 
@@ -248,25 +273,53 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
               const SizedBox(height: 16),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 48,
-                  child: FilledButton(
-                    onPressed: _openService,
-                    style: FilledButton.styleFrom(
-                      backgroundColor: kPrimaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: SizedBox(
+                        height: 48,
+                        child: OutlinedButton(
+                          onPressed: _handleMessage,
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: kPrimaryColor,
+                            side: const BorderSide(color: kPrimaryColor),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                          child: Text(
+                            context.l10n.message,
+                            style: kTextStyle.copyWith(
+                              color: kPrimaryColor,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                    child: Text(
-                      'View services',
-                      style: kTextStyle.copyWith(
-                        color: kWhite,
-                        fontWeight: FontWeight.w600,
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: SizedBox(
+                        height: 48,
+                        child: FilledButton(
+                          onPressed: _openService,
+                          style: FilledButton.styleFrom(
+                            backgroundColor: kPrimaryColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                          child: Text(
+                            context.l10n.viewServices,
+                            style: kTextStyle.copyWith(
+                              color: kWhite,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
               ),
               if (bio != null && bio.trim().isNotEmpty) ...[

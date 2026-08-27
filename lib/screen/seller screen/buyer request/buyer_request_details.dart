@@ -177,7 +177,9 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
                   ),
                 ),
               ButtonGlobalWithoutIcon(
-                buttontext: canApply ? 'Submit offer' : 'Cannot submit offer',
+                buttontext: canApply
+                    ? l10n.submitOfferAction
+                    : l10n.cannotSubmitApplication,
                 buttonDecoration: kButtonDecoration.copyWith(
                   color: canApply ? kPrimaryColor : kLightNeutralColor,
                   borderRadius: BorderRadius.circular(30.0),
@@ -233,6 +235,13 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
                 // Details
                 _row('Category', category),
                 const SizedBox(height: 8.0),
+                if (JobPostsService.skillNamesFromJob(_jobPost).isNotEmpty) ...[
+                  _row(
+                    'Skills',
+                    JobPostsService.skillNamesFromJob(_jobPost).join(', '),
+                  ),
+                  const SizedBox(height: 8.0),
+                ],
                 if (budgetMin != null || budgetMax != null) ...[
                   _row('Budget', JobPostsService.formatBudgetRange(budgetMin, budgetMax, _jobPost?['budget_basis'])),
                   const SizedBox(height: 8.0),
@@ -240,7 +249,7 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
                 _buildLocationSection(_jobPost),
                 _row('Workers needed', JobPostsService.workersNeededDetailLabel(_jobPost?['workers_needed'])),
                 const SizedBox(height: 8.0),
-                _row('Offers Sent', '$offerCount'),
+                _row(l10n.applicationsReceived, '$offerCount'),
                 const SizedBox(height: 8.0),
                 _row('Job posted', _formatDate(_jobPost?['created_at'])),
                 SizedBox(height: bottomLift + 24),

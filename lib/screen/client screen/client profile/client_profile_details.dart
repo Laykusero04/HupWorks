@@ -64,13 +64,13 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
     final bio = _profile?['bio'] as String?;
     final city = (_profile?['city'] as String?) ?? '';
     final country = (_profile?['country'] as String?) ?? '';
-    final balance = _profile?['balance'] ?? 0;
     final profileImageUrl = _profile?['profile_image_url'];
     final rating = (_profile?['rating'] as num?)?.toDouble() ?? 0;
     final reviewCount = (_profile?['review_count'] as num?)?.toInt() ?? 0;
 
     final totalJobs = _jobs.length;
     final openJobs = _jobs.where((j) => j['status'] == 'open').length;
+    final closedJobs = totalJobs - openJobs;
 
     final locationParts = [city, country].where((s) => s.isNotEmpty).toList();
     final locationStr = locationParts.join(', ');
@@ -160,7 +160,7 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
                       _statDivider(),
                       _statTile('$openJobs', l10n.open),
                       _statDivider(),
-                      _statTile('$currencySign$balance', l10n.balance),
+                      _statTile('$closedJobs', l10n.closed),
                     ],
                   ),
                 ),
@@ -284,6 +284,7 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
     final l10n = context.l10n;
     final category = job['categories'] as Map<String, dynamic>?;
     final isOpen = job['status'] == 'open';
+    final (jobStatusFg, jobStatusBg) = StatusColors.jobPost(job['status'] as String?);
     final location = job['location'] as String?;
 
     return Padding(
@@ -347,12 +348,12 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
                     padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      color: isOpen ? kPrimaryColor.withValues(alpha: 0.1) : kDarkWhite,
+                      color: jobStatusBg,
                     ),
                     child: Text(
                       isOpen ? l10n.open : l10n.closed,
                       style: kTextStyle.copyWith(
-                        color: isOpen ? kPrimaryColor : kNeutralColor,
+                        color: jobStatusFg,
                         fontSize: 11,
                       ),
                     ),

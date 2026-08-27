@@ -51,7 +51,6 @@ dependencies:
   percent_indicator: ^4.2.3
   textfield_tags: ^3.0.1
   slide_countdown: ^2.0.2
-  flutter_credit_card: ^4.0.1
   flutter_switch: ^0.3.2
   badges: ^3.1.2
   http: ^1.2.2

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:freelancer/core/utils/attendance_mode.dart';
 import 'package:freelancer/core/utils/order_cancellation.dart';
+import 'package:freelancer/core/utils/order_chat_navigation.dart';
 import 'package:freelancer/core/utils/order_contract_display.dart';
+import 'package:freelancer/data/models/chat_order_context.dart';
 import 'package:freelancer/data/models/hire_onboarding_packet_model.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/l10n/l10n_labels.dart';
@@ -14,7 +16,6 @@ import 'package:freelancer/services/orders_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:slide_countdown/slide_countdown.dart';
 
-import '../../seller screen/seller message/chat_list.dart';
 import '../../widgets/client_attendance_today_card.dart';
 import '../../widgets/client_site_setup_panel.dart';
 import '../../widgets/constant.dart';
@@ -324,6 +325,35 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
     if (mounted) await _loadOrder();
   }
 
+  ChatOrderContext _chatOrderContext({required bool isClientViewer}) {
+    return ChatOrderContext(
+      orderId: widget.orderId,
+      title: OrderContractDisplay.title(_order, _service),
+      statusLabel: _statusLabelForUi(_statusKey()),
+      deadlineLabel: _formatDate(_order?['delivery_deadline']),
+      isClientViewer: isClientViewer,
+    );
+  }
+
+  Future<void> _handleMessageSeller() async {
+    final sellerId = _seller?['id'] as String?;
+    if (sellerId == null || sellerId.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.couldNotOpenReviewMissingSeller)),
+        );
+      }
+      return;
+    }
+    await openOrderChat(
+      context,
+      otherUserId: sellerId,
+      otherUserName: _seller?['name'] as String? ?? context.l10n.roleSeller,
+      otherUserImage: _seller?['profile_image_url'] as String? ?? '',
+      orderContext: _chatOrderContext(isClientViewer: true),
+    );
+  }
+
   Widget _buildDeliveredCallout() {
     final l10n = context.l10n;
     return Container(
@@ -408,9 +438,9 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFF8E1),
+        color: StatusColors.warningBg,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFD97706).withValues(alpha: 0.45)),
+        border: Border.all(color: StatusColors.warning.withValues(alpha: 0.45)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -484,7 +514,7 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
                   buttonDecoration: kButtonDecoration.copyWith(
                     color: _cancellationBusy
                         ? kLightNeutralColor
-                        : const Color(0xFFDC2626),
+                        : StatusColors.danger,
                   ),
                   onPressed: _cancellationBusy
                       ? () {}
@@ -691,7 +721,7 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
             ],
             onSelected: (value) {
               if (value == 'message') {
-                const ChatScreen().launch(context);
+                _handleMessageSeller();
               } else if (value == 'report') {
                 final sellerId = _seller?['id'] as String?;
                 ClientReport(

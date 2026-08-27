@@ -29,9 +29,6 @@ class AppRoutes {
   static const clientDashboard = '/client/dashboard';
   static const clientFavourites = '/client/favourites';
   static const clientNotifications = '/client/notifications';
-  static const clientDeposit = '/client/deposit';
-  static const clientDepositHistory = '/client/deposit/history';
-  static const clientTransactions = '/client/transactions';
   static const clientSearch = '/client/search';
   static const clientSettings = '/client/settings';
 
@@ -53,9 +50,6 @@ class AppRoutes {
   static const sellerBuyerRequests = '/seller/buyer-requests';
   static const sellerBuyerRequestDetails = '/seller/buyer-requests/:id';
   static const sellerNotifications = '/seller/notifications';
-  static const sellerTransactions = '/seller/transactions';
-  static const sellerWithdraw = '/seller/withdraw';
-  static const sellerWithdrawHistory = '/seller/withdraw/history';
   static const sellerSettings = '/seller/settings';
 
   // Shared

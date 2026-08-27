@@ -12,7 +12,8 @@ import 'package:nb_utils/nb_utils.dart';
 import '../../widgets/client_shell_app_bar.dart';
 import '../../widgets/shell_tab_header.dart';
 import '../notification/seller_notification.dart';
-import '../transaction/seller_transaction.dart';
+
+const _kSellerHomeMaxWidth = 720.0;
 
 class SellerHomeScreen extends StatefulWidget {
   const SellerHomeScreen({Key? key}) : super(key: key);
@@ -111,12 +112,16 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
                 physics: const AlwaysScrollableScrollPhysics(
                     parent: BouncingScrollPhysics()),
                 padding: const EdgeInsets.fromLTRB(15, 14, 15, 28),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    GestureDetector(
-                      onTap: () => context.go('/seller/find-jobs'),
-                      child: Container(
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: _kSellerHomeMaxWidth),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        GestureDetector(
+                          onTap: () => context.go('/seller/find-jobs'),
+                          child: Container(
                             width: double.infinity,
                             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
                             decoration: BoxDecoration(
@@ -124,10 +129,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
                               gradient: const LinearGradient(
                                 begin: Alignment.centerLeft,
                                 end: Alignment.centerRight,
-                                colors: [
-                                  Color(0xFF144BD6),
-                                  Color(0xFF0EA5E9),
-                                ],
+                                colors: kSellerShellGradient,
                               ),
                               boxShadow: [
                                 BoxShadow(
@@ -179,19 +181,16 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
                         ),
                         const SizedBox(height: 16.0),
 
-                    _buildQuickActions(context),
+                        _buildQuickActions(context),
 
-                    const SizedBox(height: 16.0),
-                    _buildWorkOverviewCard(context),
-                    const SizedBox(height: 12.0),
-                    _buildWalletCard(context),
-                    if (_buildNeedsAttention(context) != null) ...[
-                      const SizedBox(height: 12.0),
-                      _buildNeedsAttention(context)!,
-                    ],
-                    const SizedBox(height: 20.0),
+                        const SizedBox(height: 16.0),
+                        _buildWorkOverviewCard(context),
+                        if (_buildNeedsAttention(context) != null) ...[
+                          const SizedBox(height: 12.0),
+                          _buildNeedsAttention(context)!,
+                        ],
+                        const SizedBox(height: 20.0),
 
-                    // My Applications
                         GestureDetector(
                           onTap: () => context.push('/seller/applications'),
                           child: Row(
@@ -213,9 +212,9 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
                             ],
                           ),
                         ),
-                    const SizedBox(height: 15.0),
-                    _myApplications.isEmpty
-                        ? Container(
+                        const SizedBox(height: 15.0),
+                        _myApplications.isEmpty
+                            ? Container(
                             width: double.infinity,
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
                             decoration: BoxDecoration(
@@ -256,14 +255,14 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
                               ],
                             ),
                           )
-                        : Column(
-                            children: _myApplications.map((app) {
+                            : Column(
+                                children: _myApplications.map((app) {
                               final jobPost = app['job_posts'] as Map<String, dynamic>?;
                               final status = (app['status'] as String?) ?? 'pending';
                               final (Color statusBg, Color statusFg, String statusLabel) = switch (status) {
-                                'accepted' => (kPrimaryColor.withOpacity(0.1), kPrimaryColor, l10n.statusAccepted),
-                                'rejected' => (const Color(0xFFFFE5E3), const Color(0xFFFF3B30), l10n.statusRejected),
-                                _          => (const Color(0xFFFFEFE0), const Color(0xFFFF7A00), l10n.statusPending),
+                                'accepted' => (StatusColors.successBg, StatusColors.success, l10n.statusAccepted),
+                                'rejected' => (StatusColors.dangerBg, StatusColors.danger, l10n.statusRejected),
+                                _          => (StatusColors.warningBg, StatusColors.warning, l10n.statusPending),
                               };
 
                               return Padding(
@@ -318,10 +317,12 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
                                   ),
                                 ),
                               );
-                            }).toList(),
-                          ),
-                    const SizedBox(height: 28),
-                  ],
+                                }).toList(),
+                              ),
+                        const SizedBox(height: 28),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -333,6 +334,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
     final rating = _ovDouble('avg_rating');
     final reviews = _ov('review_count');
     final ratingLabel = reviews > 0 ? rating.toStringAsFixed(1) : '—';
+    final ratingSubtitle = reviews > 0 ? l10n.reviewCount(reviews) : l10n.noReviewsYet;
 
     return _buildCard(
       title: l10n.yourWork,
@@ -340,120 +342,66 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
         l10n.periodLive,
         style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
       ),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: _DashboardMetricCell(
-                  label: l10n.activeContracts,
-                  value: '${_ov('active_contracts')}',
-                  icon: Icons.description_outlined,
-                  color: kSecondaryColor,
-                  onTap: () => context.go('/seller/orders'),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _DashboardMetricCell(
-                  label: l10n.pendingApplications,
-                  value: '${_ov('pending_applications')}',
-                  icon: Icons.outgoing_mail,
-                  color: kPrimaryColor,
-                  onTap: () => context.push('/seller/applications'),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Expanded(
-                child: _DashboardMetricCell(
-                  label: l10n.completedThisMonth,
-                  value: '${_ov('completed_this_month')}',
-                  icon: Icons.check_circle_outline,
-                  color: const Color(0xFF2E7D32),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _DashboardMetricCell(
-                  label: l10n.yourRating,
-                  value: ratingLabel,
-                  icon: Icons.star_outline_rounded,
-                  color: const Color(0xFFFFB300),
-                  subtitle: reviews > 0 ? l10n.reviewCount(reviews) : l10n.noReviewsYet,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          GestureDetector(
-            onTap: () => context.go('/seller/find-jobs'),
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              decoration: BoxDecoration(
-                color: kDarkWhite,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: kBorderColorTextField),
-              ),
+      child: Container(
+        decoration: BoxDecoration(
+          color: kDarkWhite,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          children: [
+            IntrinsicHeight(
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Icon(Icons.work_outline, size: 20, color: kSecondaryColor),
-                  const SizedBox(width: 10),
                   Expanded(
-                    child: Text(
-                      l10n.openJobsToBrowse(_ov('open_jobs_count')),
-                      style: kTextStyle.copyWith(
-                        color: kNeutralColor,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 13,
-                      ),
+                    child: _WorkStatPrimary(
+                      value: '${_ov('active_contracts')}',
+                      label: l10n.activeContracts,
+                      color: kSecondaryColor,
+                      onTap: () => context.go('/seller/orders'),
                     ),
                   ),
-                  const Icon(Icons.chevron_right, color: kSecondaryColor, size: 22),
+                  VerticalDivider(width: 1, thickness: 1, color: kBorderColorTextField),
+                  Expanded(
+                    child: _WorkStatPrimary(
+                      value: '${_ov('pending_applications')}',
+                      label: l10n.pendingApplications,
+                      color: StatusColors.warning,
+                      onTap: () => context.push('/seller/applications'),
+                    ),
+                  ),
                 ],
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildWalletCard(BuildContext context) {
-    final l10n = context.l10n;
-    final balance = _ovDouble('balance');
-    final earned = _ovDouble('earned_this_month');
-
-    return _buildCard(
-      title: l10n.wallet,
-      dropdown: Text(
-        l10n.periodThisMonth,
-        style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
-      ),
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child: _DashboardMetricCell(
-                label: l10n.balance,
-                value: '$currencySign${balance.toStringAsFixed(2)}',
-                icon: Icons.account_balance_wallet_outlined,
-                color: kPrimaryColor,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: _DashboardMetricCell(
-                label: l10n.earned,
-                value: '$currencySign${earned.toStringAsFixed(2)}',
-                icon: Icons.payments_outlined,
-                color: const Color(0xFF06AEF3),
-                onTap: () => const SellerTransaction().launch(context),
+            const Divider(height: 1, thickness: 1, color: kBorderColorTextField),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _WorkStatCompact(
+                      value: '${_ov('completed_this_month')}',
+                      label: l10n.completedThisMonth,
+                      icon: Icons.check_circle_outline,
+                      color: StatusColors.success,
+                    ),
+                  ),
+                  Container(
+                    width: 1,
+                    height: 44,
+                    color: kBorderColorTextField,
+                  ),
+                  Expanded(
+                    child: _WorkStatCompact(
+                      value: ratingLabel,
+                      label: l10n.yourRating,
+                      subtitle: ratingSubtitle,
+                      icon: Icons.star_rounded,
+                      color: ratingBarColor,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -504,27 +452,6 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
     final l10n = context.l10n;
     final shortcuts = [
       (
-        title: l10n.shortcutFindJobs,
-        subtitle: l10n.shortcutFindJobsSub,
-        icon: Icons.work_outline_rounded,
-        color: kSecondaryColor,
-        onTap: () => context.go('/seller/find-jobs'),
-      ),
-      (
-        title: l10n.shortcutMessages,
-        subtitle: l10n.shortcutMessagesSub,
-        icon: Icons.chat_bubble_outline_rounded,
-        color: const Color(0xFF144BD6),
-        onTap: () => context.go('/seller/chat'),
-      ),
-      (
-        title: l10n.shortcutContracts,
-        subtitle: l10n.shortcutContractsSub,
-        icon: Icons.description_outlined,
-        color: const Color(0xFF06AEF3),
-        onTap: () => context.go('/seller/orders'),
-      ),
-      (
         title: l10n.shortcutApplications,
         subtitle: l10n.shortcutApplicationsSub,
         icon: Icons.outgoing_mail,
@@ -535,7 +462,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
         title: l10n.shortcutAttendance,
         subtitle: l10n.shortcutAttendanceSub,
         icon: Icons.qr_code_scanner_rounded,
-        color: const Color(0xFF2E7D32),
+        color: StatusColors.success,
         onTap: () => context.push('/seller/attendance'),
       ),
     ];
@@ -543,20 +470,24 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
     return _buildCard(
       title: l10n.shortcuts,
       dropdown: const SizedBox.shrink(),
-      child: Column(
-        children: [
-          for (var i = 0; i < shortcuts.length; i++) ...[
-            if (i > 0)
-              const Divider(height: 1, thickness: 1, color: kBorderColorTextField),
-            _ShortcutRow(
-              title: shortcuts[i].title,
-              subtitle: shortcuts[i].subtitle,
-              icon: shortcuts[i].icon,
-              color: shortcuts[i].color,
-              onTap: shortcuts[i].onTap,
-            ),
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            for (var i = 0; i < shortcuts.length; i++) ...[
+              if (i > 0) const SizedBox(width: 10),
+              Expanded(
+                child: _ShortcutTile(
+                  title: shortcuts[i].title,
+                  subtitle: shortcuts[i].subtitle,
+                  icon: shortcuts[i].icon,
+                  color: shortcuts[i].color,
+                  onTap: shortcuts[i].onTap,
+                ),
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
@@ -602,56 +533,62 @@ class _SellerHomeLoading extends StatelessWidget {
   Widget build(BuildContext context) {
     final muted = kLightNeutralColor.withOpacity(0.35);
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(15, 14, 15, 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 72,
-            decoration: _card(muted),
+    return Align(
+      alignment: Alignment.topCenter,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: _kSellerHomeMaxWidth),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(15, 14, 15, 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                height: 72,
+                decoration: _card(muted),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                height: 120,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: kBorderColorTextField),
+                ),
+              ),
+              const SizedBox(height: 18),
+              Container(
+                height: 200,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: kBorderColorTextField),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                height: 168,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: kBorderColorTextField),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 16),
-          Container(
-            height: 220,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: kBorderColorTextField),
-            ),
-          ),
-          const SizedBox(height: 18),
-          Container(
-            height: 140,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: kBorderColorTextField),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Container(
-            height: 168,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: kBorderColorTextField),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
 }
 
-class _ShortcutRow extends StatelessWidget {
+class _ShortcutTile extends StatelessWidget {
   final String title;
   final String subtitle;
   final IconData icon;
   final Color color;
   final VoidCallback onTap;
 
-  const _ShortcutRow({
+  const _ShortcutTile({
     required this.title,
     required this.subtitle,
     required this.icon,
@@ -662,13 +599,19 @@ class _ShortcutRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.transparent,
+      color: color.withValues(alpha: 0.06),
+      borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(10),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-          child: Row(
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: color.withValues(alpha: 0.18)),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
                 height: 44,
@@ -679,32 +622,30 @@ class _ShortcutRow extends StatelessWidget {
                 ),
                 child: Icon(icon, color: color, size: 22),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: kTextStyle.copyWith(
-                        color: kNeutralColor,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 14,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      subtitle,
-                      style: kTextStyle.copyWith(
-                        color: kSubTitleColor,
-                        fontSize: 12,
-                        height: 1.25,
-                      ),
-                    ),
-                  ],
+              const SizedBox(height: 10),
+              Text(
+                title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: kTextStyle.copyWith(
+                  color: kNeutralColor,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 13,
                 ),
               ),
-              Icon(Icons.chevron_right_rounded, color: kLightNeutralColor, size: 22),
+              const SizedBox(height: 4),
+              Text(
+                subtitle,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: kTextStyle.copyWith(
+                  color: kSubTitleColor,
+                  fontSize: 11,
+                  height: 1.25,
+                ),
+              ),
             ],
           ),
         ),
@@ -713,17 +654,69 @@ class _ShortcutRow extends StatelessWidget {
   }
 }
 
-class _DashboardMetricCell extends StatelessWidget {
-  final String label;
+class _WorkStatPrimary extends StatelessWidget {
   final String value;
+  final String label;
+  final Color color;
+  final VoidCallback? onTap;
+
+  const _WorkStatPrimary({
+    required this.value,
+    required this.label,
+    required this.color,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+          child: Column(
+            children: [
+              Text(
+                value,
+                style: kTextStyle.copyWith(
+                  color: color,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 32,
+                  height: 1,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                label,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: kTextStyle.copyWith(
+                  color: kSubTitleColor,
+                  fontSize: 12,
+                  height: 1.2,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _WorkStatCompact extends StatelessWidget {
+  final String value;
+  final String label;
   final IconData icon;
   final Color color;
   final String? subtitle;
   final VoidCallback? onTap;
 
-  const _DashboardMetricCell({
-    required this.label,
+  const _WorkStatCompact({
     required this.value,
+    required this.label,
     required this.icon,
     required this.color,
     this.subtitle,
@@ -733,41 +726,63 @@ class _DashboardMetricCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: color.withValues(alpha: 0.06),
-      borderRadius: BorderRadius.circular(10),
+      color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(10),
-        child: Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: color.withValues(alpha: 0.2)),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+          child: Row(
             children: [
-              Icon(icon, size: 18, color: color),
-              const SizedBox(height: 6),
-              Text(
-                value,
-                style: kTextStyle.copyWith(
-                  color: kNeutralColor,
-                  fontWeight: FontWeight.w800,
-                  fontSize: 18,
+              Container(
+                height: 36,
+                width: 36,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, size: 18, color: color),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      value,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: kTextStyle.copyWith(
+                        color: kNeutralColor,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 16,
+                        height: 1.1,
+                      ),
+                    ),
+                    Text(
+                      label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: kTextStyle.copyWith(
+                        color: kSubTitleColor,
+                        fontSize: 11,
+                        height: 1.2,
+                      ),
+                    ),
+                    if (subtitle != null && subtitle!.isNotEmpty)
+                      Text(
+                        subtitle!,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: kTextStyle.copyWith(
+                          color: kLightNeutralColor,
+                          fontSize: 10,
+                          height: 1.1,
+                        ),
+                      ),
+                  ],
                 ),
               ),
-              Text(
-                label,
-                style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 11),
-              ),
-              if (subtitle != null) ...[
-                const SizedBox(height: 2),
-                Text(
-                  subtitle!,
-                  style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 10),
-                ),
-              ],
             ],
           ),
         ),

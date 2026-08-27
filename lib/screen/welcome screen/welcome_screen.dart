@@ -43,19 +43,14 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(24),
-                  child: Image.asset(
-                    AppInfo.logo,
-                    height: 96,
-                    width: 96,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  l10n.appTitle,
-                  style: kTextStyle.copyWith(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 22,
+                  child: ColoredBox(
+                    color: Colors.black,
+                    child: Image.asset(
+                      AppInfo.logo,
+                      height: 140,
+                      width: 140,
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 28),

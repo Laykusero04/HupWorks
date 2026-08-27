@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/utils/shift_schedule.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/services/favourite_service.dart';
 import 'package:freelancer/services/job_posts_service.dart';
@@ -249,6 +250,10 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
                 _buildLocationSection(_jobPost),
                 _row('Workers needed', JobPostsService.workersNeededDetailLabel(_jobPost?['workers_needed'])),
                 const SizedBox(height: 8.0),
+                if (ShiftSchedule.fromMap(_jobPost).displayLabel != null) ...[
+                  _row('Shift', ShiftSchedule.fromMap(_jobPost).displayLabel!),
+                  const SizedBox(height: 8.0),
+                ],
                 _row(l10n.applicationsReceived, '$offerCount'),
                 const SizedBox(height: 8.0),
                 _row('Job posted', _formatDate(_jobPost?['created_at'])),

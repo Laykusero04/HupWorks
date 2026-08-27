@@ -34,6 +34,7 @@ class NotificationNavigation {
           await _openOrder(context, role: role, orderId: refId);
           return;
         case 'attendance':
+        case 'hour_report':
           await _openAttendance(context, role: role, orderId: refId);
           return;
         case 'job_offer':

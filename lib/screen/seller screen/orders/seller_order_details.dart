@@ -4,7 +4,9 @@ import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/core/utils/order_cancellation.dart';
 import 'package:freelancer/core/utils/order_chat_navigation.dart';
 import 'package:freelancer/core/utils/order_contract_display.dart';
+import 'package:freelancer/core/utils/shift_schedule.dart';
 import 'package:freelancer/data/models/chat_order_context.dart';
+import 'package:freelancer/screen/widgets/chat_preferred_contact_banner.dart';
 import 'package:freelancer/data/models/hire_onboarding_packet_model.dart';
 import 'package:freelancer/data/models/order_delivery_model.dart';
 import 'package:freelancer/core/utils/attendance_mode.dart';
@@ -20,6 +22,7 @@ import 'package:nb_utils/nb_utils.dart';
 import 'package:slide_countdown/slide_countdown.dart';
 
 import '../../widgets/constant.dart';
+import '../../widgets/hour_reports_section.dart';
 import '../../widgets/order_delivery_panel.dart';
 import '../report/seller_report.dart';
 import 'seller_deliver_order.dart';
@@ -217,11 +220,14 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
 
   ChatOrderContext _chatOrderContext() {
     final status = ((_order?['status'] as String?) ?? 'pending').toLowerCase();
+    final preferred = preferredContactFromOrder(_order ?? {});
     return ChatOrderContext(
       orderId: widget.orderId,
       title: OrderContractDisplay.title(_order, _service),
       statusLabel: OrderCancellationReason.statusLabel(status, context.l10n),
       deadlineLabel: _formatDate(_order?['delivery_deadline']),
+      preferredContactLabel: preferred.label,
+      isWithinPreferredWindow: preferred.inWindow,
       isClientViewer: false,
     );
   }
@@ -693,6 +699,14 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
                         l10n.deliveryDate,
                         _formatDate(_order?['delivery_deadline']),
                       ),
+                      if (ShiftSchedule.fromOrderMap(_order).displayLabel !=
+                          null) ...[
+                        const SizedBox(height: 8.0),
+                        _row(
+                          'Shift',
+                          ShiftSchedule.fromOrderMap(_order).displayLabel!,
+                        ),
+                      ],
                       if (OrdersService.jobOfferIdFromOrderMap(_order ?? {}) !=
                               null &&
                           !isReadOnlyContract) ...[
@@ -712,6 +726,12 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
                           onChanged: _loadOrder,
                         ),
                       ],
+                      if (!isReadOnlyContract)
+                        HourReportsSection(
+                          orderId: widget.orderId,
+                          isEmployer: false,
+                          onChanged: _loadOrder,
+                        ),
                       SizedBox(height: 15.0 + bottomInset),
                     ],
                   ),

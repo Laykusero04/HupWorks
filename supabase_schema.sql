@@ -198,6 +198,9 @@ create table public.orders (
   price numeric(10,2) not null,
   requirements_response jsonb,
   delivery_deadline timestamptz,
+  work_date date,
+  shift_start time,
+  shift_end time,
   job_offer_id uuid, -- FK added after job_offers is created (see below)
   created_at timestamptz default now(),
   completed_at timestamptz
@@ -262,6 +265,9 @@ create table public.job_posts (
   latitude double precision,
   longitude double precision,
   workers_needed int not null default 1 check (workers_needed >= 1),
+  work_date date,
+  shift_start time,
+  shift_end time,
   created_at timestamptz default now()
 );
 

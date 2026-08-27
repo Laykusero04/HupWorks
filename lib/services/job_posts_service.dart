@@ -1,4 +1,5 @@
 import 'package:freelancer/core/constants/app_constants.dart';
+import 'package:freelancer/core/utils/shift_schedule.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class JobPostsService {
@@ -259,6 +260,9 @@ class JobPostsService {
     double? longitude,
     int workersNeeded = 1,
     String? attendanceMode,
+    DateTime? workDate,
+    String? shiftStart,
+    String? shiftEnd,
     List<({String name, String? catalogId})> skills = const [],
   }) async {
     final user = _client.auth.currentUser;
@@ -281,6 +285,9 @@ class JobPostsService {
       if (longitude != null) 'longitude': longitude,
       'workers_needed': workersNeeded,
       if (attendanceMode != null) 'attendance_mode': attendanceMode,
+      if (workDate != null) 'work_date': ShiftSchedule.dateToDb(workDate),
+      if (shiftStart != null) 'shift_start': shiftStart,
+      if (shiftEnd != null) 'shift_end': shiftEnd,
     }).select().single();
 
     final jobId = data['id'] as String?;

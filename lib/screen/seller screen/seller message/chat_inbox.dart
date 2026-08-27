@@ -16,6 +16,7 @@ import '../../../services/auth_service.dart';
 import '../../../services/chat_service.dart';
 import '../../client screen/client report/client_report.dart';
 import '../../widgets/chat_job_offer_card.dart';
+import '../../widgets/chat_preferred_contact_banner.dart';
 import '../../widgets/chat_thread_context_header.dart';
 import '../report/seller_report.dart';
 import '../seller popUp/seller_popup.dart';
@@ -370,6 +371,10 @@ class _ChatInboxState extends State<ChatInbox> {
             isClientViewer: _isClientViewer,
             highlightedOrderId: widget.orderContext?.orderId,
             isLoading: _threadLoading,
+          ),
+          ChatPreferredContactBanner(
+            items: _threadItems,
+            highlightedOrderId: widget.orderContext?.orderId,
           ),
           Expanded(
             child: _isLoading

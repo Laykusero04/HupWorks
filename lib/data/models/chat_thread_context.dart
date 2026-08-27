@@ -10,6 +10,8 @@ class ChatThreadContextItem {
     required this.statusKey,
     this.deadlineLabel,
     this.jobPostId,
+    this.preferredContactLabel,
+    this.isWithinPreferredWindow = false,
   });
 
   final ChatThreadContextKind kind;
@@ -21,6 +23,10 @@ class ChatThreadContextItem {
 
   /// Present for [ChatThreadContextKind.jobOffer] (and sometimes orders).
   final String? jobPostId;
+
+  /// Soft preferred contact windows from shift ±1h (hired orders only).
+  final String? preferredContactLabel;
+  final bool isWithinPreferredWindow;
 
   bool get isOrder => kind == ChatThreadContextKind.order;
 }

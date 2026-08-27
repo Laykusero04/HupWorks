@@ -18,6 +18,8 @@ class ChatOrderContextBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final deadline = orderContext.deadlineLabel;
+    final preferred = orderContext.preferredContactLabel;
+    final inWindow = orderContext.isWithinPreferredWindow;
 
     return Material(
       color: kWhite,
@@ -75,6 +77,27 @@ class ChatOrderContextBanner extends StatelessWidget {
                 ],
               ],
             ),
+            if (preferred != null && preferred.isNotEmpty) ...[
+              const SizedBox(height: 6),
+              Text(
+                'Preferred contact: $preferred',
+                style: kTextStyle.copyWith(
+                  color: kNeutralColor,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                inWindow
+                    ? 'You are in a preferred window.'
+                    : 'Outside preferred hours — you can still message.',
+                style: kTextStyle.copyWith(
+                  color: kSubTitleColor,
+                  fontSize: 11,
+                ),
+              ),
+            ],
             const SizedBox(height: 2),
             InkWell(
               onTap: onViewContract,

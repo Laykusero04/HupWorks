@@ -3,10 +3,12 @@ import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/core/utils/attendance_mode.dart';
 import 'package:freelancer/core/utils/category_name.dart';
+import 'package:freelancer/core/utils/shift_schedule.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/services/category_service.dart';
 import 'package:freelancer/services/job_posts_service.dart';
 import 'package:freelancer/services/skill_service.dart';
+import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -46,6 +48,9 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
   bool _isLoading = false;
   bool _isCategoriesLoading = true;
   int _step = 0;
+  DateTime? _workDate;
+  TimeOfDay? _shiftStart;
+  TimeOfDay? _shiftEnd;
 
   static const _stepLabels = ['Basics', 'Details', 'Location', 'Budget'];
   static const _jobTypeOptions = <Map<String, String>>[
@@ -192,6 +197,9 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
         if (_descriptionController.text.trim().isEmpty) {
           return l10n.pleaseEnterDescription;
         }
+        if ((_shiftStart == null) != (_shiftEnd == null)) {
+          return 'Set both start and end time, or leave both empty.';
+        }
         return null;
       case 2:
         if (_locationController.text.trim().isEmpty) {
@@ -256,6 +264,9 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
         attendanceMode: _locationType == JobLocationType.onsite
             ? _attendanceMode
             : AttendanceMode.disabled,
+        workDate: _workDate,
+        shiftStart: ShiftSchedule.timeToDb(_shiftStart),
+        shiftEnd: ShiftSchedule.timeToDb(_shiftEnd),
         skills: _skillNames
             .map(
               (n) => (
@@ -550,6 +561,52 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
           ),
         ),
         const SizedBox(height: 20),
+        _sectionHeader(Icons.schedule, 'Shift schedule'),
+        const SizedBox(height: 8),
+        Text(
+          'Optional work day and clock times (e.g. 06:00–15:00). Used later for attendance and timed chat.',
+          style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12, height: 1.35),
+        ),
+        const SizedBox(height: 12),
+        _shiftPickerTile(
+          label: 'Work date',
+          value: _workDate == null
+              ? 'Optional'
+              : DateFormat('d MMM yyyy').format(_workDate!),
+          onTap: _pickWorkDate,
+          onClear: _workDate == null ? null : () => setState(() => _workDate = null),
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            Expanded(
+              child: _shiftPickerTile(
+                label: 'Start',
+                value: _shiftStart == null
+                    ? 'Optional'
+                    : ShiftSchedule.formatTimeOfDay(_shiftStart!),
+                onTap: () => _pickShiftTime(isStart: true),
+                onClear: _shiftStart == null
+                    ? null
+                    : () => setState(() => _shiftStart = null),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: _shiftPickerTile(
+                label: 'End',
+                value: _shiftEnd == null
+                    ? 'Optional'
+                    : ShiftSchedule.formatTimeOfDay(_shiftEnd!),
+                onTap: () => _pickShiftTime(isStart: false),
+                onClear: _shiftEnd == null
+                    ? null
+                    : () => setState(() => _shiftEnd = null),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
         _sectionHeader(IconlyBold.user2, 'Hiring'),
         const SizedBox(height: 12),
         Container(
@@ -764,6 +821,12 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
           location: loc.isEmpty ? '—' : loc,
           locationType: _locationType.label,
           workers: _limitHireCount ? '$_workersNeeded' : 'No limit',
+          shift: ShiftSchedule(
+                workDate: _workDate,
+                shiftStart: _shiftStart,
+                shiftEnd: _shiftEnd,
+              ).displayLabel ??
+              '—',
         ),
         const SizedBox(height: 8),
       ],
@@ -778,6 +841,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
     required String location,
     required String locationType,
     required String workers,
+    required String shift,
   }) {
     return Container(
       width: double.infinity,
@@ -799,6 +863,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
           _reviewLine('Category', category),
           _reviewLine('Skills', skills),
           _reviewLine('Job type', jobType),
+          _reviewLine('Shift', shift),
           _reviewLine('Location', '$locationType · $location'),
           _reviewLine('Workers', workers),
         ],
@@ -823,6 +888,104 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Future<void> _pickWorkDate() async {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _workDate ?? today,
+      firstDate: today.subtract(const Duration(days: 1)),
+      lastDate: today.add(const Duration(days: 365 * 2)),
+    );
+    if (picked != null && mounted) {
+      setState(() => _workDate = DateTime(picked.year, picked.month, picked.day));
+    }
+  }
+
+  Future<void> _pickShiftTime({required bool isStart}) async {
+    final initial = isStart
+        ? (_shiftStart ?? const TimeOfDay(hour: 6, minute: 0))
+        : (_shiftEnd ?? const TimeOfDay(hour: 15, minute: 0));
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: initial,
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: child ?? const SizedBox.shrink(),
+        );
+      },
+    );
+    if (picked != null && mounted) {
+      setState(() {
+        if (isStart) {
+          _shiftStart = picked;
+        } else {
+          _shiftEnd = picked;
+        }
+      });
+    }
+  }
+
+  Widget _shiftPickerTile({
+    required String label,
+    required String value,
+    required VoidCallback onTap,
+    VoidCallback? onClear,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Ink(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: kBorderColorTextField, width: 2),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: kTextStyle.copyWith(
+                        color: kLightNeutralColor,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      value,
+                      style: kTextStyle.copyWith(
+                        color: kNeutralColor,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (onClear != null)
+                IconButton(
+                  visualDensity: VisualDensity.compact,
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                  onPressed: onClear,
+                  icon: const Icon(Icons.close, size: 18, color: kSubTitleColor),
+                )
+              else
+                const Icon(Icons.expand_more, color: kSubTitleColor),
+            ],
+          ),
+        ),
       ),
     );
   }

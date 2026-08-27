@@ -83,7 +83,7 @@ dev_dependencies:
   icons_launcher: ^3.0.0
   change_app_package_name:
 icons_launcher:
-    image_path: "images/hupworks-logo-2.png"
+    image_path: "images/HupWorks.png"
     platforms:
       android:
         enable: true

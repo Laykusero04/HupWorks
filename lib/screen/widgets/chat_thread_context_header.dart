@@ -363,6 +363,17 @@ class _ThreadContextTile extends StatelessWidget {
                         ],
                       ],
                     ),
+                    if (item.preferredContactLabel != null &&
+                        item.preferredContactLabel!.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        'Preferred: ${item.preferredContactLabel}',
+                        style: kTextStyle.copyWith(
+                          color: kSubTitleColor,
+                          fontSize: 11,
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),

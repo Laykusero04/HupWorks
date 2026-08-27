@@ -92,7 +92,7 @@ class OrdersService {
           'seller:profiles!seller_id(id, name, profile_image_url), '
           'job_offers!job_offer_id('
           'id, cover_letter, delivery_time, delivery_time_unit, price_basis, '
-          'job_posts(id, title, description, job_type, location, location_type, attendance_mode, workers_needed)'
+          'job_posts(id, title, description, job_type, location, location_type, attendance_mode, workers_needed, work_date, shift_start, shift_end)'
           '), '
           'reviews(id, reviewer_id, rating, comment, created_at), '
           'order_deliveries(id, order_id, message, attachment_url, delivered_at)',

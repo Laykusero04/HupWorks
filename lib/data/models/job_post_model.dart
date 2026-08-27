@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 
+import '../../core/utils/shift_schedule.dart';
 import '../../services/job_posts_service.dart';
 import 'category_model.dart';
 import 'profile_model.dart';
@@ -15,6 +16,9 @@ class JobPost extends Equatable {
   final String budgetBasis;
   final DateTime? deadline;
   final String status;
+  final DateTime? workDate;
+  final String? shiftStart;
+  final String? shiftEnd;
   final DateTime createdAt;
 
   // Joined data
@@ -32,6 +36,9 @@ class JobPost extends Equatable {
     this.budgetBasis = JobPostsService.budgetBasisFixed,
     this.deadline,
     this.status = 'open',
+    this.workDate,
+    this.shiftStart,
+    this.shiftEnd,
     required this.createdAt,
     this.category,
     this.client,
@@ -52,6 +59,9 @@ class JobPost extends Equatable {
       budgetBasis: JobPostsService.normalizeBudgetBasis(json['budget_basis']),
       deadline: json['deadline'] != null ? DateTime.parse(json['deadline'] as String) : null,
       status: (json['status'] as String?) ?? 'open',
+      workDate: ShiftSchedule.parseDate(json['work_date']),
+      shiftStart: ShiftSchedule.timeToDb(ShiftSchedule.parseTime(json['shift_start'])),
+      shiftEnd: ShiftSchedule.timeToDb(ShiftSchedule.parseTime(json['shift_end'])),
       createdAt: DateTime.parse(json['created_at'] as String),
       category: categoryData is Map<String, dynamic> ? Category.fromJson(categoryData) : null,
       client: clientData is Map<String, dynamic> ? Profile.fromJson(clientData) : null,
@@ -69,9 +79,29 @@ class JobPost extends Equatable {
         'budget_basis': budgetBasis,
         if (deadline != null) 'deadline': deadline!.toIso8601String(),
         'status': status,
+        if (workDate != null) 'work_date': ShiftSchedule.dateToDb(workDate),
+        if (shiftStart != null) 'shift_start': shiftStart,
+        if (shiftEnd != null) 'shift_end': shiftEnd,
         'created_at': createdAt.toIso8601String(),
       };
 
   @override
-  List<Object?> get props => [id, clientId, title, description, categoryId, budgetMin, budgetMax, budgetBasis, deadline, status, createdAt, category, client];
+  List<Object?> get props => [
+        id,
+        clientId,
+        title,
+        description,
+        categoryId,
+        budgetMin,
+        budgetMax,
+        budgetBasis,
+        deadline,
+        status,
+        workDate,
+        shiftStart,
+        shiftEnd,
+        createdAt,
+        category,
+        client,
+      ];
 }

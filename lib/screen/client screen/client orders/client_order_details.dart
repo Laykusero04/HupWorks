@@ -4,7 +4,9 @@ import 'package:freelancer/core/utils/attendance_mode.dart';
 import 'package:freelancer/core/utils/order_cancellation.dart';
 import 'package:freelancer/core/utils/order_chat_navigation.dart';
 import 'package:freelancer/core/utils/order_contract_display.dart';
+import 'package:freelancer/core/utils/shift_schedule.dart';
 import 'package:freelancer/data/models/chat_order_context.dart';
+import 'package:freelancer/screen/widgets/chat_preferred_contact_banner.dart';
 import 'package:freelancer/data/models/hire_onboarding_packet_model.dart';
 import 'package:freelancer/data/models/order_delivery_model.dart';
 import 'package:freelancer/l10n/l10n.dart';
@@ -20,6 +22,7 @@ import 'package:slide_countdown/slide_countdown.dart';
 import '../../widgets/client_attendance_today_card.dart';
 import '../../widgets/client_site_setup_panel.dart';
 import '../../widgets/constant.dart';
+import '../../widgets/hour_reports_section.dart';
 import '../../widgets/order_delivery_panel.dart';
 import '../client report/client_report.dart';
 import '../client review/client_review.dart';
@@ -333,11 +336,14 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
   }
 
   ChatOrderContext _chatOrderContext({required bool isClientViewer}) {
+    final preferred = preferredContactFromOrder(_order ?? {});
     return ChatOrderContext(
       orderId: widget.orderId,
       title: OrderContractDisplay.title(_order, _service),
       statusLabel: _statusLabelForUi(_statusKey()),
       deadlineLabel: _formatDate(_order?['delivery_deadline']),
+      preferredContactLabel: preferred.label,
+      isWithinPreferredWindow: preferred.inWindow,
       isClientViewer: isClientViewer,
     );
   }
@@ -789,6 +795,12 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
                   attendanceToday,
                   const SizedBox(height: 12),
                 ],
+                if (!isCancellationRequested)
+                  HourReportsSection(
+                    orderId: widget.orderId,
+                    isEmployer: true,
+                    onChanged: _loadOrder,
+                  ),
                 Container(
                   padding: const EdgeInsets.all(10.0),
                   width: context.width(),
@@ -889,6 +901,14 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
                       const SizedBox(height: 8.0),
                       _buildRow(l10n.deliveryDate,
                           _formatDate(_order?['delivery_deadline'])),
+                      if (ShiftSchedule.fromOrderMap(_order).displayLabel !=
+                          null) ...[
+                        const SizedBox(height: 8.0),
+                        _buildRow(
+                          'Shift',
+                          ShiftSchedule.fromOrderMap(_order).displayLabel!,
+                        ),
+                      ],
                     ],
                   ),
                 ),

@@ -7,6 +7,7 @@ import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/screen/client%20screen/client%20job%20post/job_details.dart';
 import 'package:freelancer/screen/seller%20screen/buyer%20request/buyer_request_details.dart';
+import 'package:freelancer/screen/widgets/chat_preferred_contact_banner.dart';
 import 'package:freelancer/services/auth_service.dart';
 import 'package:freelancer/services/chat_service.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -27,6 +28,7 @@ Future<List<ChatThreadContextItem>> loadThreadContext({
   for (final order in rows.orders) {
     final status = ((order['status'] as String?) ?? 'pending').toLowerCase();
     final service = order['services'] as Map<String, dynamic>?;
+    final preferred = preferredContactFromOrder(order);
     items.add(
       ChatThreadContextItem(
         kind: ChatThreadContextKind.order,
@@ -38,6 +40,8 @@ Future<List<ChatThreadContextItem>> loadThreadContext({
             : L10nLabels.orderFilterTabLabel(l10n, status),
         deadlineLabel: _formatDeadline(order['delivery_deadline'] as String?),
         jobPostId: OrderContractDisplay.jobPostIdFromOrder(order),
+        preferredContactLabel: preferred.label,
+        isWithinPreferredWindow: preferred.inWindow,
       ),
     );
   }
@@ -98,6 +102,8 @@ Future<void> openThreadContextItem(
         title: item.title,
         statusLabel: item.statusLabel,
         deadlineLabel: item.deadlineLabel,
+        preferredContactLabel: item.preferredContactLabel,
+        isWithinPreferredWindow: item.isWithinPreferredWindow,
         isClientViewer: isClientViewer,
       ),
     );

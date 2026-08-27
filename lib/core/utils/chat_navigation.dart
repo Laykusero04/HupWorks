@@ -7,6 +7,7 @@ import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/screen/seller%20screen/seller%20message/chat_inbox.dart';
 import 'package:freelancer/screen/seller%20screen/seller%20message/model/chat_model.dart';
+import 'package:freelancer/screen/widgets/chat_preferred_contact_banner.dart';
 import 'package:freelancer/services/chat_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -73,6 +74,7 @@ Future<ChatOrderContext?> _resolveOrderContext(
   final title = OrderContractDisplay.title(order, service);
   final deadlineRaw = order['delivery_deadline'] as String?;
   final deadlineLabel = _formatDeadline(deadlineRaw);
+  final preferred = preferredContactFromOrder(order);
 
   return ChatOrderContext(
     orderId: order['id'] as String,
@@ -81,6 +83,8 @@ Future<ChatOrderContext?> _resolveOrderContext(
         ? L10nLabels.clientOrderStatusForUi(l10n, status)
         : L10nLabels.orderFilterTabLabel(l10n, status),
     deadlineLabel: deadlineLabel,
+    preferredContactLabel: preferred.label,
+    isWithinPreferredWindow: preferred.inWindow,
     isClientViewer: isClientViewer,
   );
 }

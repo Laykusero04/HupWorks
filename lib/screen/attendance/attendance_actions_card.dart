@@ -88,10 +88,12 @@ class _AttendanceActionsCardState extends State<AttendanceActionsCard> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            l10n.attendancePunchTodaySummary(
-              AttendanceFormat.punchLabel(result.punchType, l10n),
-              AttendanceFormat.minutesLabel(result.minutesWorkedToday, l10n),
-            ),
+            result.hourReportId != null && result.punchType == 'out'
+                ? '${l10n.attendancePunchTodaySummary(AttendanceFormat.punchLabel(result.punchType, l10n), AttendanceFormat.minutesLabel(result.minutesWorkedToday, l10n))} Hours sent for employer review.'
+                : l10n.attendancePunchTodaySummary(
+                    AttendanceFormat.punchLabel(result.punchType, l10n),
+                    AttendanceFormat.minutesLabel(result.minutesWorkedToday, l10n),
+                  ),
           ),
         ),
       );

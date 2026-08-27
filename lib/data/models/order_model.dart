@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 
+import '../../core/utils/shift_schedule.dart';
 import 'profile_model.dart';
 import 'service_model.dart';
 
@@ -12,6 +13,9 @@ class Order extends Equatable {
   final double price;
   final Map<String, dynamic>? requirementsResponse;
   final DateTime? deliveryDeadline;
+  final DateTime? workDate;
+  final String? shiftStart;
+  final String? shiftEnd;
   final DateTime createdAt;
   final DateTime? completedAt;
 
@@ -29,6 +33,9 @@ class Order extends Equatable {
     required this.price,
     this.requirementsResponse,
     this.deliveryDeadline,
+    this.workDate,
+    this.shiftStart,
+    this.shiftEnd,
     required this.createdAt,
     this.completedAt,
     this.service,
@@ -52,6 +59,9 @@ class Order extends Equatable {
       price: (json['price'] as num).toDouble(),
       requirementsResponse: json['requirements_response'] as Map<String, dynamic>?,
       deliveryDeadline: json['delivery_deadline'] != null ? DateTime.parse(json['delivery_deadline'] as String) : null,
+      workDate: ShiftSchedule.parseDate(json['work_date']),
+      shiftStart: ShiftSchedule.timeToDb(ShiftSchedule.parseTime(json['shift_start'])),
+      shiftEnd: ShiftSchedule.timeToDb(ShiftSchedule.parseTime(json['shift_end'])),
       createdAt: DateTime.parse(json['created_at'] as String),
       completedAt: json['completed_at'] != null ? DateTime.parse(json['completed_at'] as String) : null,
       service: serviceData is Map<String, dynamic> ? ServiceModel.fromJson(serviceData) : null,
@@ -69,10 +79,30 @@ class Order extends Equatable {
         'price': price,
         'requirements_response': requirementsResponse,
         if (deliveryDeadline != null) 'delivery_deadline': deliveryDeadline!.toIso8601String(),
+        if (workDate != null) 'work_date': ShiftSchedule.dateToDb(workDate),
+        if (shiftStart != null) 'shift_start': shiftStart,
+        if (shiftEnd != null) 'shift_end': shiftEnd,
         'created_at': createdAt.toIso8601String(),
         if (completedAt != null) 'completed_at': completedAt!.toIso8601String(),
       };
 
   @override
-  List<Object?> get props => [id, serviceId, clientId, sellerId, status, price, requirementsResponse, deliveryDeadline, createdAt, completedAt, service, seller, client];
+  List<Object?> get props => [
+        id,
+        serviceId,
+        clientId,
+        sellerId,
+        status,
+        price,
+        requirementsResponse,
+        deliveryDeadline,
+        workDate,
+        shiftStart,
+        shiftEnd,
+        createdAt,
+        completedAt,
+        service,
+        seller,
+        client,
+      ];
 }

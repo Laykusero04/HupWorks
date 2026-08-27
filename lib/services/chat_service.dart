@@ -391,8 +391,8 @@ class ChatService {
     return await _client
         .from('orders')
         .select(
-          'id, status, delivery_deadline, '
-          'job_offers(job_posts(title)), services(title)',
+          'id, status, delivery_deadline, work_date, shift_start, shift_end, '
+          'job_offers(job_posts(title, work_date, shift_start, shift_end)), services(title)',
         )
         .eq('client_id', clientId)
         .eq('seller_id', sellerId)
@@ -411,8 +411,8 @@ class ChatService {
     final ordersFuture = _client
         .from('orders')
         .select(
-          'id, status, delivery_deadline, created_at, '
-          'job_offers(id, job_posts(id, title)), services(title)',
+          'id, status, delivery_deadline, work_date, shift_start, shift_end, created_at, '
+          'job_offers(id, job_posts(id, title, work_date, shift_start, shift_end)), services(title)',
         )
         .eq('client_id', clientId)
         .eq('seller_id', sellerId)

@@ -155,6 +155,7 @@ class AttendancePunchRecordResult extends Equatable {
   final double minutesWorkedToday;
   final String jobPostId;
   final String orderId;
+  final String? hourReportId;
 
   const AttendancePunchRecordResult({
     required this.success,
@@ -165,6 +166,7 @@ class AttendancePunchRecordResult extends Equatable {
     required this.minutesWorkedToday,
     required this.jobPostId,
     required this.orderId,
+    this.hourReportId,
   });
 
   factory AttendancePunchRecordResult.fromJson(Map<String, dynamic> json) {
@@ -178,6 +180,7 @@ class AttendancePunchRecordResult extends Equatable {
           (json['minutes_worked_today'] as num?)?.toDouble() ?? 0,
       jobPostId: json['job_post_id'] as String,
       orderId: json['order_id'] as String,
+      hourReportId: json['hour_report_id'] as String?,
     );
   }
 
@@ -191,5 +194,6 @@ class AttendancePunchRecordResult extends Equatable {
         minutesWorkedToday,
         jobPostId,
         orderId,
+        hourReportId,
       ];
 }

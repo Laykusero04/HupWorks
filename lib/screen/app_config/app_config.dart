@@ -3,10 +3,10 @@ class AppInfo {
   static const String appVersion = '1.0.0';
 
   ///------------------------Splash_screen_logo-------------------
-  static const String splashLogo = 'images/hupworks-logo-2.png';
+  static const String splashLogo = 'images/HupWorks.png';
 
   ///------------------------logo-------------------
-  static const String logo = 'images/hupworks-logo-2.png';
+  static const String logo = 'images/HupWorks.png';
 
   ///------------------------Onboard_Images-----------------------
   static const String onBoard1 = 'images/onboard1.png';

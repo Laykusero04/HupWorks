@@ -4,6 +4,7 @@ import 'package:freelancer/core/utils/job_offer_delivery.dart';
 import 'package:freelancer/screen/seller%20screen/seller%20message/chat_inbox.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/core/utils/attendance_mode.dart';
+import 'package:freelancer/core/utils/shift_schedule.dart';
 import 'package:freelancer/services/attendance_service.dart';
 import 'package:freelancer/services/chat_service.dart';
 import 'package:freelancer/services/hire_onboarding_service.dart';
@@ -425,6 +426,13 @@ class _JobDetailsState extends State<JobDetails> {
                         JobPostsService.workersNeededDetailLabel(
                             _jobPost?['workers_needed'])),
                     const SizedBox(height: 8.0),
+                    if (ShiftSchedule.fromMap(_jobPost).displayLabel != null) ...[
+                      _buildRow(
+                        'Shift',
+                        ShiftSchedule.fromMap(_jobPost).displayLabel!,
+                      ),
+                      const SizedBox(height: 8.0),
+                    ],
                     _buildRow(
                         'Status',
                         status.toString().substring(0, 1).toUpperCase() +

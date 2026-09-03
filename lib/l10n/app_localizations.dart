@@ -1186,6 +1186,48 @@ abstract class AppLocalizations {
   /// **'Password reset link sent. Check your email.'**
   String get authResetLinkSent;
 
+  /// No description provided for @authUpdatePasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set New Password'**
+  String get authUpdatePasswordTitle;
+
+  /// No description provided for @authUpdatePasswordBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a new password for your account.'**
+  String get authUpdatePasswordBody;
+
+  /// No description provided for @authNewPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'New password'**
+  String get authNewPassword;
+
+  /// No description provided for @authConfirmPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm password'**
+  String get authConfirmPassword;
+
+  /// No description provided for @authPasswordsDoNotMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get authPasswordsDoNotMatch;
+
+  /// No description provided for @authPasswordUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Password updated successfully.'**
+  String get authPasswordUpdated;
+
+  /// No description provided for @authSavePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Password'**
+  String get authSavePassword;
+
   /// No description provided for @authVerification.
   ///
   /// In en, this message translates to:

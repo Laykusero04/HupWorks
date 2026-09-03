@@ -9,6 +9,7 @@ class AppRoutes {
   static const sellerLogin = '/auth/seller/login';
   static const sellerSignUp = '/auth/seller/signup';
   static const sellerForgotPassword = '/auth/seller/forgot-password';
+  static const updatePassword = '/auth/update-password';
   static const sellerSetupProfile = '/auth/seller/setup-profile';
 
   // Client shell tabs

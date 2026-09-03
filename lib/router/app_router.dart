@@ -34,7 +34,9 @@ import '../screen/seller screen/buyer request/seller_buyer_request.dart';
 import '../screen/seller screen/seller message/chat_list.dart';
 import '../screen/attendance/attendance_scan_screen.dart';
 import '../screen/attendance/seller_attendance_hub_screen.dart';
+import '../screen/widgets/auth/update_password_screen.dart';
 import '../screen/widgets/shell_tab_header.dart';
+import 'route_names.dart';
 
 /// Root navigator for overlays and notification tap navigation.
 final rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -70,9 +72,15 @@ GoRouter createRouter() {
       final loggedIn = session != null;
       final location = state.matchedLocation;
       final isSplash = location == '/';
+      final isUpdatePassword = location == AppRoutes.updatePassword;
       final isPublicAuthRoute = location.startsWith('/onboard') ||
           location.startsWith('/welcome') ||
           location.startsWith('/auth');
+
+      // Password recovery deep link — force the set-password screen first.
+      if (AuthService.passwordRecoveryPending) {
+        return isUpdatePassword ? null : AppRoutes.updatePassword;
+      }
 
       // Not signed in — first-run onboarding, then welcome / auth
       if (!loggedIn) {
@@ -85,6 +93,9 @@ GoRouter createRouter() {
           return '/onboard';
         }
         if (seenOnboarding && location.startsWith('/onboard')) {
+          return '/welcome';
+        }
+        if (isUpdatePassword) {
           return '/welcome';
         }
         return isPublicAuthRoute ? null : '/welcome';
@@ -135,6 +146,10 @@ GoRouter createRouter() {
       GoRoute(path: '/auth/client/signup', builder: (context, state) => const ClientSignUp()),
       GoRoute(path: '/auth/seller/login', builder: (context, state) => const SellerLogIn()),
       GoRoute(path: '/auth/seller/signup', builder: (context, state) => const SellerSignUp()),
+      GoRoute(
+        path: AppRoutes.updatePassword,
+        builder: (context, state) => const UpdatePasswordScreen(),
+      ),
 
       // Client shell with bottom nav
       StatefulShellRoute.indexedStack(
@@ -435,9 +450,14 @@ class _SupabaseAuthRefreshStream extends ChangeNotifier {
   late final StreamSubscription<AuthState> _subscription;
 
   Future<void> _onAuthEvent(AuthState authState) async {
+    if (authState.event == AuthChangeEvent.passwordRecovery) {
+      AuthService.passwordRecoveryPending = true;
+    }
+
     final session = authState.session;
     if (session == null) {
       RoleCache.clear();
+      AuthService.passwordRecoveryPending = false;
       notifyListeners();
       return;
     }

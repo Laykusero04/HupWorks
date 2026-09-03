@@ -6,6 +6,12 @@ import 'profile_service.dart';
 class AuthService {
   static final _client = Supabase.instance.client;
 
+  /// Must also be listed under Supabase Auth → URL Configuration → Redirect URLs.
+  static const passwordResetRedirectTo = 'hupworks://reset-password';
+
+  /// True after [AuthChangeEvent.passwordRecovery] until the new password is saved.
+  static bool passwordRecoveryPending = false;
+
   /// Sign up with email and password
   static Future<AuthResponse> signUp({
     required String email,
@@ -40,15 +46,25 @@ class AuthService {
     return response;
   }
 
-  /// Send password reset email
+  /// Send password reset email (opens app via [passwordResetRedirectTo]).
   static Future<void> resetPassword({required String email}) async {
-    await _client.auth.resetPasswordForEmail(email);
+    await _client.auth.resetPasswordForEmail(
+      email,
+      redirectTo: passwordResetRedirectTo,
+    );
+  }
+
+  /// Set a new password after opening the recovery link.
+  static Future<void> updatePassword({required String password}) async {
+    await _client.auth.updateUser(UserAttributes(password: password));
+    passwordRecoveryPending = false;
   }
 
   /// Sign out
   static Future<void> signOut() async {
     ProfileService.clearProfileCache();
     clearRoleCache();
+    passwordRecoveryPending = false;
     await _client.auth.signOut();
   }
 

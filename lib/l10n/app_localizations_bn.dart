@@ -596,6 +596,28 @@ class AppLocalizationsBn extends AppLocalizations {
   String get authResetLinkSent => 'রিসেট লিঙ্ক পাঠানো হয়েছে। ইমেইল চেক করুন।';
 
   @override
+  String get authUpdatePasswordTitle => 'নতুন পাসওয়ার্ড সেট করুন';
+
+  @override
+  String get authUpdatePasswordBody =>
+      'আপনার অ্যাকাউন্টের জন্য একটি নতুন পাসওয়ার্ড বেছে নিন।';
+
+  @override
+  String get authNewPassword => 'নতুন পাসওয়ার্ড';
+
+  @override
+  String get authConfirmPassword => 'পাসওয়ার্ড নিশ্চিত করুন';
+
+  @override
+  String get authPasswordsDoNotMatch => 'পাসওয়ার্ড মিলছে না';
+
+  @override
+  String get authPasswordUpdated => 'পাসওয়ার্ড সফলভাবে আপডেট হয়েছে।';
+
+  @override
+  String get authSavePassword => 'পাসওয়ার্ড সংরক্ষণ';
+
+  @override
   String get authVerification => 'যাচাইকরণ';
 
   @override

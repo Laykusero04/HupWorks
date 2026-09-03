@@ -597,6 +597,28 @@ class AppLocalizationsNl extends AppLocalizations {
   String get authResetLinkSent => 'Resetlink verzonden. Controleer je e-mail.';
 
   @override
+  String get authUpdatePasswordTitle => 'Nieuw wachtwoord instellen';
+
+  @override
+  String get authUpdatePasswordBody =>
+      'Kies een nieuw wachtwoord voor je account.';
+
+  @override
+  String get authNewPassword => 'Nieuw wachtwoord';
+
+  @override
+  String get authConfirmPassword => 'Bevestig wachtwoord';
+
+  @override
+  String get authPasswordsDoNotMatch => 'Wachtwoorden komen niet overeen';
+
+  @override
+  String get authPasswordUpdated => 'Wachtwoord succesvol bijgewerkt.';
+
+  @override
+  String get authSavePassword => 'Wachtwoord opslaan';
+
+  @override
   String get authVerification => 'Verificatie';
 
   @override

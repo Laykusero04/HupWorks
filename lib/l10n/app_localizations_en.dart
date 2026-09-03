@@ -593,6 +593,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authResetLinkSent => 'Password reset link sent. Check your email.';
 
   @override
+  String get authUpdatePasswordTitle => 'Set New Password';
+
+  @override
+  String get authUpdatePasswordBody =>
+      'Choose a new password for your account.';
+
+  @override
+  String get authNewPassword => 'New password';
+
+  @override
+  String get authConfirmPassword => 'Confirm password';
+
+  @override
+  String get authPasswordsDoNotMatch => 'Passwords do not match';
+
+  @override
+  String get authPasswordUpdated => 'Password updated successfully.';
+
+  @override
+  String get authSavePassword => 'Save Password';
+
+  @override
   String get authVerification => 'Verification';
 
   @override

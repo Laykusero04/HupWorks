@@ -475,7 +475,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authWelcomeHowToUse => 'How will you use HupWorks?';
 
   @override
-  String get authRoleClient => 'Client';
+  String get authRoleClient => 'Employer';
 
   @override
   String get authRoleClientSubtitle => 'Hire talent';
@@ -487,7 +487,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authRoleFreelancerSubtitle => 'Find work';
 
   @override
-  String get authContinueAsClient => 'Continue as Client';
+  String get authContinueAsClient => 'Continue as Employer';
 
   @override
   String get authContinueAsFreelancer => 'Continue as Freelancer';
@@ -550,7 +550,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authCreateAccount => 'Create your account';
 
   @override
-  String get authJoinAsClient => 'Join as a client to hire freelancers.';
+  String get authJoinAsClient => 'Join as an employer to hire freelancers.';
 
   @override
   String get authJoinAsFreelancer => 'Join as a freelancer to find work.';
@@ -1037,7 +1037,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get promoNicheServicesSubtitle => 'Find services across every niche';
 
   @override
-  String get jobTypeGig => 'Gig';
+  String get jobTypeGig => 'Individual services';
 
   @override
   String get recentJobsEmptyHint => 'Tap \"Post Job\" to get started';
@@ -1991,7 +1991,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get roleSeller => 'Seller';
 
   @override
-  String get roleClient => 'Client';
+  String get roleClient => 'Employer';
 
   @override
   String get cancellationRequestSent48h =>

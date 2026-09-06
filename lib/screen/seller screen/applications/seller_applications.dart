@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/services/chat_service.dart';
 import 'package:freelancer/services/attendance_service.dart';
 import 'package:freelancer/services/hire_onboarding_service.dart';
@@ -70,17 +71,7 @@ class _SellerApplicationsState extends State<SellerApplications> {
     return '${d.day} ${m[d.month - 1]} ${d.year}';
   }
 
-  String _jobTypeLabel(String? t) {
-    switch (t) {
-      case 'full_time':
-        return 'Full-time';
-      case 'part_time':
-        return 'Part-time';
-      case 'gig':
-      default:
-        return 'Gig';
-    }
-  }
+  String _jobTypeLabel(String? t) => L10nLabels.jobType(context.l10n, t);
 
   Future<void> _openChatWithClient(Map<String, dynamic> app) async {
     final jobPost = app['job_posts'] as Map<String, dynamic>?;

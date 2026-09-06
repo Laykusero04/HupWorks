@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/core/utils/attendance_mode.dart';
 import 'package:freelancer/core/utils/category_name.dart';
 import 'package:freelancer/core/utils/shift_schedule.dart';
@@ -53,11 +54,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
   TimeOfDay? _shiftEnd;
 
   static const _stepLabels = ['Basics', 'Details', 'Location', 'Budget'];
-  static const _jobTypeOptions = <Map<String, String>>[
-    {'value': 'gig', 'label': 'Gig'},
-    {'value': 'full_time', 'label': 'Full-time'},
-    {'value': 'part_time', 'label': 'Part-time'},
-  ];
+  static const _jobTypeValues = <String>['gig', 'full_time', 'part_time'];
 
   @override
   void initState() {
@@ -154,12 +151,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
     }
   }
 
-  String? _jobTypeLabel() {
-    for (final o in _jobTypeOptions) {
-      if (o['value'] == _selectedJobType) return o['label'];
-    }
-    return _selectedJobType;
-  }
+  String? _jobTypeLabel() => L10nLabels.jobType(context.l10n, _selectedJobType);
 
   String? _selectedCategoryDisplayName() {
     if (_selectedCategoryId == null) return null;
@@ -511,12 +503,12 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
-          children: _jobTypeOptions.map((opt) {
-            final selected = _selectedJobType == opt['value'];
+          children: _jobTypeValues.map((value) {
+            final selected = _selectedJobType == value;
             return ChoiceChip(
-              label: Text(opt['label']!),
+              label: Text(L10nLabels.jobType(context.l10n, value)),
               selected: selected,
-              onSelected: (_) => setState(() => _selectedJobType = opt['value']!),
+              onSelected: (_) => setState(() => _selectedJobType = value),
               selectedColor: kPrimaryColor,
               backgroundColor: kDarkWhite,
               labelStyle: kTextStyle.copyWith(color: selected ? kWhite : kNeutralColor),

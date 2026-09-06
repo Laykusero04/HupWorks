@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/data/models/seller_job_alert_rule_model.dart';
 import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/screen/widgets/map_location_picker_screen.dart';
 import 'package:freelancer/screen/widgets/skill_picker_field.dart';
@@ -57,12 +58,7 @@ class _SellerJobAlertEditorScreenState extends State<SellerJobAlertEditorScreen>
   String? _profileCity;
   String? _profileCountry;
 
-  static const _jobTypes = <Map<String, String?>>[
-    {'value': null, 'label': 'All'},
-    {'value': 'gig', 'label': 'Gig'},
-    {'value': 'full_time', 'label': 'Full-time'},
-    {'value': 'part_time', 'label': 'Part-time'},
-  ];
+  static const _jobTypeValues = <String?>[null, 'gig', 'full_time', 'part_time'];
 
   @override
   void initState() {
@@ -399,11 +395,15 @@ class _SellerJobAlertEditorScreenState extends State<SellerJobAlertEditorScreen>
               fillColor: kWhite,
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             ),
-            items: _jobTypes
+            items: _jobTypeValues
                 .map(
-                  (o) => DropdownMenuItem<String?>(
-                    value: o['value'],
-                    child: Text(o['label']!),
+                  (value) => DropdownMenuItem<String?>(
+                    value: value,
+                    child: Text(
+                      value == null
+                          ? l10n.filterAll
+                          : L10nLabels.jobType(l10n, value),
+                    ),
                   ),
                 )
                 .toList(),

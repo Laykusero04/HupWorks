@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:freelancer/data/models/seller_job_alert_rule_model.dart';
 import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/screen/seller%20screen/job%20alerts/seller_job_alert_editor_screen.dart';
 import 'package:freelancer/services/seller_job_alert_service.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -99,7 +100,7 @@ class _SellerJobAlertsScreenState extends State<SellerJobAlertsScreen> {
       parts.add(l10n.jobAlertCategoriesCount(rule.categoryIds.length));
     }
     if (rule.jobType != null) {
-      parts.add(_jobTypeLabel(rule.jobType!));
+      parts.add(L10nLabels.jobType(l10n, rule.jobType));
     }
     if (rule.maxDistanceKm != null) {
       parts.add(l10n.jobAlertWithinKm(rule.maxDistanceKm!.round()));
@@ -111,17 +112,6 @@ class _SellerJobAlertsScreenState extends State<SellerJobAlertsScreen> {
     }
     if (parts.isEmpty) return l10n.jobAlertMatchesAllJobs;
     return parts.join(' · ');
-  }
-
-  static String _jobTypeLabel(String type) {
-    switch (type) {
-      case 'full_time':
-        return 'Full-time';
-      case 'part_time':
-        return 'Part-time';
-      default:
-        return 'Gig';
-    }
   }
 
   @override

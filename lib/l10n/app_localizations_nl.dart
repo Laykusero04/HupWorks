@@ -198,13 +198,13 @@ class AppLocalizationsNl extends AppLocalizations {
   String get message => 'Bericht';
 
   @override
-  String get contracts => 'Contracten';
+  String get contracts => 'Overeenkomsten';
 
   @override
   String get findJobs => 'Vacatures';
 
   @override
-  String get myJobs => 'Mijn jobs';
+  String get myJobs => 'Shifts';
 
   @override
   String get talent => 'Talent';
@@ -479,10 +479,10 @@ class AppLocalizationsNl extends AppLocalizations {
   String get authWelcomeHowToUse => 'Hoe wil je HupWorks gebruiken?';
 
   @override
-  String get authRoleClient => 'Klant';
+  String get authRoleClient => 'Werkgever';
 
   @override
-  String get authRoleClientSubtitle => 'Talent inhuren';
+  String get authRoleClientSubtitle => 'Talent aannemen';
 
   @override
   String get authRoleFreelancer => 'Freelancer';
@@ -491,7 +491,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get authRoleFreelancerSubtitle => 'Werk vinden';
 
   @override
-  String get authContinueAsClient => 'Doorgaan als klant';
+  String get authContinueAsClient => 'Doorgaan als werkgever';
 
   @override
   String get authContinueAsFreelancer => 'Doorgaan als freelancer';
@@ -554,7 +554,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get authCreateAccount => 'Maak je account aan';
 
   @override
-  String get authJoinAsClient => 'Word klant om freelancers in te huren.';
+  String get authJoinAsClient => 'Word werkgever om freelancers aan te nemen.';
 
   @override
   String get authJoinAsFreelancer => 'Word freelancer om werk te vinden.';
@@ -791,7 +791,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get yourWork => 'Jouw werk';
 
   @override
-  String get activeContracts => 'Actieve contracten';
+  String get activeContracts => 'Actieve overeenkomsten';
 
   @override
   String get wallet => 'Portemonnee';
@@ -826,7 +826,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get shortcutMessagesSub => 'Chat met klanten';
 
   @override
-  String get shortcutContracts => 'Contracten';
+  String get shortcutContracts => 'Overeenkomsten';
 
   @override
   String get shortcutContractsSub => 'Actief werk';
@@ -1044,7 +1044,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get promoNicheServicesSubtitle => 'Vind diensten in elke niche';
 
   @override
-  String get jobTypeGig => 'Gig';
+  String get jobTypeGig => 'Losse diensten';
 
   @override
   String get recentJobsEmptyHint =>
@@ -1817,11 +1817,11 @@ class AppLocalizationsNl extends AppLocalizations {
   String get refreshTooltip => 'Vernieuwen';
 
   @override
-  String get noContractsYet => 'Nog geen contracten';
+  String get noContractsYet => 'Nog geen overeenkomsten';
 
   @override
   String noFilteredContracts(String status) {
-    return 'Geen $status contracten';
+    return 'Geen $status overeenkomsten';
   }
 
   @override
@@ -2005,7 +2005,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get roleSeller => 'Verkoper';
 
   @override
-  String get roleClient => 'Klant';
+  String get roleClient => 'Werkgever';
 
   @override
   String get cancellationRequestSent48h =>
@@ -2106,10 +2106,10 @@ class AppLocalizationsNl extends AppLocalizations {
   String get applicationRejected => 'Sollicitatie afgewezen';
 
   @override
-  String get hireFreelancerTitle => 'Freelancer inhuren?';
+  String get hireFreelancerTitle => 'Freelancer aannemen?';
 
   @override
-  String get hireAction => 'Inhuren';
+  String get hireAction => 'Aannemen';
 
   @override
   String get closeJob => 'Vacature sluiten';

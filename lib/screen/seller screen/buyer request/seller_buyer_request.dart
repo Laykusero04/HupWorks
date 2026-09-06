@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/app_logger.dart';
 import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/screen/seller%20screen/job%20alerts/seller_job_alert_editor_screen.dart';
 import 'package:freelancer/screen/seller%20screen/job%20alerts/seller_job_alerts_screen.dart';
 import 'package:freelancer/screen/widgets/map_location_picker_screen.dart';
@@ -51,12 +52,7 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
   String? _sellerCity;
   String? _sellerCountry;
 
-  static const _employmentTypeOptions = <Map<String, String?>>[
-    {'value': null, 'label': 'All'},
-    {'value': 'gig', 'label': 'Gig'},
-    {'value': 'full_time', 'label': 'Full-time'},
-    {'value': 'part_time', 'label': 'Part-time'},
-  ];
+  static const _employmentTypeValues = <String?>[null, 'gig', 'full_time', 'part_time'];
 
   @override
   void initState() {
@@ -242,16 +238,14 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
 
   bool get _hasActiveFilters => _titleQuery.trim().isNotEmpty || _hasSecondaryFilters;
 
-  static String _jobTypeLabel(String? type) {
-    switch (type) {
-      case 'full_time':
-        return 'Full-time';
-      case 'part_time':
-        return 'Part-time';
-      case 'gig':
-      default:
-        return 'Gig';
-    }
+  String _jobTypeLabel(String? type) {
+    if (type == null) return context.l10n.filterAll;
+    return L10nLabels.jobType(context.l10n, type);
+  }
+
+  String _employmentTypeChipLabel(String? value) {
+    if (value == null) return context.l10n.filterAll;
+    return L10nLabels.jobType(context.l10n, value);
   }
 
   String _formatDate(String? s) {
@@ -524,14 +518,14 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
                                 Wrap(
                                   spacing: 8,
                                   runSpacing: 8,
-                                  children: _employmentTypeOptions.map((opt) {
-                                    final selected = tempJobType == opt['value'];
+                                  children: _employmentTypeValues.map((value) {
+                                    final selected = tempJobType == value;
                                     return ChoiceChip(
-                                      label: Text(opt['label']!),
+                                      label: Text(_employmentTypeChipLabel(value)),
                                       selected: selected,
                                       onSelected: (_) {
                                         setSheetState(
-                                          () => tempJobType = opt['value'],
+                                          () => tempJobType = value,
                                         );
                                       },
                                       selectedColor: primary,

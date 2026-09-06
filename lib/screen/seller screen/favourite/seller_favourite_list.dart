@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/services/favourite_service.dart';
 import 'package:freelancer/services/job_posts_service.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -61,18 +62,7 @@ class _SellerFavListState extends State<SellerFavList> {
     }
   }
 
-  String _jobTypeLabel(String? type) {
-    switch (type) {
-      case 'full_time':
-        return 'Full time';
-      case 'part_time':
-        return 'Part time';
-      case 'gig':
-        return 'Gig';
-      default:
-        return type ?? 'Job';
-    }
-  }
+  String _jobTypeLabel(String? type) => L10nLabels.jobType(context.l10n, type);
 
   @override
   Widget build(BuildContext context) {

@@ -955,7 +955,7 @@ abstract class AppLocalizations {
   /// No description provided for @authRoleClient.
   ///
   /// In en, this message translates to:
-  /// **'Client'**
+  /// **'Employer'**
   String get authRoleClient;
 
   /// No description provided for @authRoleClientSubtitle.
@@ -979,7 +979,7 @@ abstract class AppLocalizations {
   /// No description provided for @authContinueAsClient.
   ///
   /// In en, this message translates to:
-  /// **'Continue as Client'**
+  /// **'Continue as Employer'**
   String get authContinueAsClient;
 
   /// No description provided for @authContinueAsFreelancer.
@@ -1105,7 +1105,7 @@ abstract class AppLocalizations {
   /// No description provided for @authJoinAsClient.
   ///
   /// In en, this message translates to:
-  /// **'Join as a client to hire freelancers.'**
+  /// **'Join as an employer to hire freelancers.'**
   String get authJoinAsClient;
 
   /// No description provided for @authJoinAsFreelancer.
@@ -2041,7 +2041,7 @@ abstract class AppLocalizations {
   /// No description provided for @jobTypeGig.
   ///
   /// In en, this message translates to:
-  /// **'Gig'**
+  /// **'Individual services'**
   String get jobTypeGig;
 
   /// No description provided for @recentJobsEmptyHint.
@@ -3739,7 +3739,7 @@ abstract class AppLocalizations {
   /// No description provided for @roleClient.
   ///
   /// In en, this message translates to:
-  /// **'Client'**
+  /// **'Employer'**
   String get roleClient;
 
   /// No description provided for @cancellationRequestSent48h.

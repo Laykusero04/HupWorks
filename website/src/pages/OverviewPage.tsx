@@ -47,9 +47,9 @@ export function OverviewPage() {
             <strong>Not connected</strong>
             <span>{error}</span>
             <span className="hint">
-              Restart <code>npm run dev</code> after editing <code>website/.env</code>. Need{' '}
-              <code>VITE_SUPABASE_URL</code>, <code>VITE_SUPABASE_ANON_KEY</code>, and{' '}
-              <code>SUPABASE_SECRET_KEY</code>.
+              On Vercel: set <code>SUPABASE_URL</code> + <code>SUPABASE_SECRET_KEY</code>, then
+              redeploy. Locally: put the same in <code>website/.env</code> and restart{' '}
+              <code>npm run dev</code>.
             </span>
           </>
         )}
@@ -59,7 +59,7 @@ export function OverviewPage() {
             <span>{health.projectUrl}</span>
             <span className="hint">
               {health.usingServiceRole
-                ? 'Using service role via /api/admin (dev server only).'
+                ? 'Using service role via /api/admin.'
                 : 'Service role missing — admin queues may fail RLS.'}
             </span>
             {health.schemaHint && (

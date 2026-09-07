@@ -1,5 +1,5 @@
 import type { Plugin } from 'vite'
-import { handleAdminRequest } from './handleAdminRequest'
+import { handleAdminRequest } from '../api/_lib/handleAdminRequest'
 
 async function readJson(req: import('http').IncomingMessage): Promise<unknown> {
   const chunks: Buffer[] = []

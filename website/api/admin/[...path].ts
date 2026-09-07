@@ -1,30 +1,39 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { handleAdminRequest } from '../../server/handleAdminRequest'
+import { handleAdminRequest } from '../_lib/handleAdminRequest'
 
-function pathFromQuery(path: string | string[] | undefined): string {
-  if (!path) return '/api/admin'
-  const parts = Array.isArray(path) ? path : [path]
-  return `/api/admin/${parts.join('/')}`
+export const config = {
+  runtime: 'edge',
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const pathname = pathFromQuery(req.query.path)
-  const searchParams = new URLSearchParams()
-  for (const [key, value] of Object.entries(req.query)) {
-    if (key === 'path' || value == null) continue
-    if (Array.isArray(value)) {
-      for (const item of value) searchParams.append(key, item)
-    } else {
-      searchParams.set(key, value)
+/** Vercel Edge handler — works with Vite `"type": "module"`. */
+export default async function handler(request: Request): Promise<Response> {
+  try {
+    const url = new URL(request.url)
+    let body: unknown = {}
+    if (request.method !== 'GET' && request.method !== 'HEAD') {
+      try {
+        body = await request.json()
+      } catch {
+        body = {}
+      }
     }
+
+    const result = await handleAdminRequest({
+      path: url.pathname.replace(/\/+$/, '') || '/api/admin',
+      method: request.method,
+      searchParams: url.searchParams,
+      body,
+    })
+
+    return new Response(JSON.stringify(result.body), {
+      status: result.status,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    console.error('[api/admin]', err)
+    return new Response(JSON.stringify({ ok: false, error: message }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    })
   }
-
-  const result = await handleAdminRequest({
-    path: pathname,
-    method: req.method ?? 'GET',
-    searchParams,
-    body: req.body ?? {},
-  })
-
-  res.status(result.status).json(result.body)
 }

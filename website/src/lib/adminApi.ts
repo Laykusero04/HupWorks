@@ -107,7 +107,15 @@ export type ReviewTrack = 'profile' | 'identity'
 
 async function getJson<T>(path: string): Promise<T> {
   const res = await fetch(path)
-  const body = (await res.json()) as T & { error?: string }
+  const text = await res.text()
+  let body: T & { error?: string }
+  try {
+    body = JSON.parse(text) as T & { error?: string }
+  } catch {
+    throw new Error(
+      `Admin API returned non-JSON (${res.status}). Open ${path} — if it says "page could not be found" or "server error", redeploy after pushing website/api.`,
+    )
+  }
   if (!res.ok) {
     throw new Error(body.error || `Request failed (${res.status})`)
   }

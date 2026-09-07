@@ -46,6 +46,7 @@ class AppRoutes {
   static const sellerProfileEdit = '/seller/profile/edit';
 
   // Seller non-tab routes
+  static const sellerDashboard = '/seller/dashboard';
   static const sellerMyServices = '/seller/services';
   static const sellerServiceDetails = '/seller/services/:id';
   static const sellerBuyerRequests = '/seller/buyer-requests';

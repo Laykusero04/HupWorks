@@ -18,6 +18,8 @@ class Order extends Equatable {
   final String? shiftEnd;
   final DateTime createdAt;
   final DateTime? completedAt;
+  final DateTime? paymentReceivedAt;
+  final String? paymentReceivedBy;
 
   // Joined data
   final ServiceModel? service;
@@ -38,10 +40,14 @@ class Order extends Equatable {
     this.shiftEnd,
     required this.createdAt,
     this.completedAt,
+    this.paymentReceivedAt,
+    this.paymentReceivedBy,
     this.service,
     this.seller,
     this.client,
   });
+
+  bool get isPaymentReceived => paymentReceivedAt != null;
 
   factory Order.fromJson(Map<String, dynamic> json) {
     // Handle joined service data (can come as 'services' from FK name)
@@ -64,6 +70,10 @@ class Order extends Equatable {
       shiftEnd: ShiftSchedule.timeToDb(ShiftSchedule.parseTime(json['shift_end'])),
       createdAt: DateTime.parse(json['created_at'] as String),
       completedAt: json['completed_at'] != null ? DateTime.parse(json['completed_at'] as String) : null,
+      paymentReceivedAt: json['payment_received_at'] != null
+          ? DateTime.parse(json['payment_received_at'] as String)
+          : null,
+      paymentReceivedBy: json['payment_received_by'] as String?,
       service: serviceData is Map<String, dynamic> ? ServiceModel.fromJson(serviceData) : null,
       seller: sellerData is Map<String, dynamic> ? Profile.fromJson(sellerData) : null,
       client: clientData is Map<String, dynamic> ? Profile.fromJson(clientData) : null,
@@ -84,6 +94,9 @@ class Order extends Equatable {
         if (shiftEnd != null) 'shift_end': shiftEnd,
         'created_at': createdAt.toIso8601String(),
         if (completedAt != null) 'completed_at': completedAt!.toIso8601String(),
+        if (paymentReceivedAt != null)
+          'payment_received_at': paymentReceivedAt!.toIso8601String(),
+        if (paymentReceivedBy != null) 'payment_received_by': paymentReceivedBy,
       };
 
   @override
@@ -101,6 +114,8 @@ class Order extends Equatable {
         shiftEnd,
         createdAt,
         completedAt,
+        paymentReceivedAt,
+        paymentReceivedBy,
         service,
         seller,
         client,

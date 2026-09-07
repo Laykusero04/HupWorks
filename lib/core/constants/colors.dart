@@ -40,10 +40,16 @@ const kSellerShellGradient = [
   kSellerAccent,
 ];
 
-/// Outgoing chat bubbles & small orange accents
+/// Outgoing chat bubbles — orange
 const kChatBubbleGradient = [
   Color(0xFFEA580C),
   Color(0xFFF97316),
+];
+
+/// Incoming chat bubbles — cyan
+const kChatReceivedBubbleGradient = [
+  kSellerPrimaryDeep,
+  kSellerPrimary,
 ];
 
 List<Color> colorList = [

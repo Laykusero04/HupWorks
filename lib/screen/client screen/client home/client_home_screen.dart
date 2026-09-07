@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:freelancer/core/notifications/notification_scope.dart';
+import 'package:freelancer/core/utils/profile_image.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/client%20screen/client%20job%20post/client_job_post.dart';
 import 'package:freelancer/screen/client%20screen/client%20job%20post/job_details.dart';
@@ -15,6 +16,7 @@ import '../../widgets/constant.dart';
 import '../client notification/client_notification.dart';
 import '../search/search.dart';
 import 'package:freelancer/core/utils/category_icons.dart';
+import 'package:freelancer/core/utils/localized_category.dart';
 
 import '../client talent/freelancer_public_profile.dart';
 import 'client_all_categories.dart';
@@ -360,7 +362,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
     return Column(
       children: [
         SizedBox(
-          height: 150,
+          height: 160,
           child: PageView.builder(
             controller: _bannerController,
             itemCount: promos.length,
@@ -419,29 +421,46 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
                             padding: const EdgeInsets.all(18),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      p.title,
-                                      style: kTextStyle.copyWith(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w800,
-                                        fontSize: 18,
-                                        height: 1.2,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 6),
-                                    Text(
-                                      p.subtitle,
-                                      style: kTextStyle.copyWith(
-                                        color: Colors.white.withOpacity(0.85),
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                  ],
+                                Expanded(
+                                  child: LayoutBuilder(
+                                    builder: (context, constraints) {
+                                      return FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        alignment: Alignment.topLeft,
+                                        child: SizedBox(
+                                          width: constraints.maxWidth,
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Text(
+                                                p.title,
+                                                softWrap: true,
+                                                style: kTextStyle.copyWith(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w800,
+                                                  fontSize: 18,
+                                                  height: 1.2,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 6),
+                                              Text(
+                                                p.subtitle,
+                                                softWrap: true,
+                                                style: kTextStyle.copyWith(
+                                                  color: Colors.white
+                                                      .withOpacity(0.85),
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
                                 ),
                                 Container(
                                   padding: const EdgeInsets.symmetric(
@@ -506,7 +525,11 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
   Widget _buildSectionHeader(String title, {VoidCallback? onViewAll}) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
-      child: Row(
+      child: Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
+        alignment: WrapAlignment.spaceBetween,
+        spacing: 8,
+        runSpacing: 6,
         children: [
           Text(
             title,
@@ -516,11 +539,11 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
               fontSize: 16,
             ),
           ),
-          const Spacer(),
           if (onViewAll != null)
             GestureDetector(
               onTap: onViewAll,
               child: Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     context.l10n.seeAll,
@@ -567,9 +590,11 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
         itemCount: visible.length,
         itemBuilder: (_, i) {
           final cat = visible[i];
+          final lang = LocalizedCategory.languageCodeOf(context);
+          final catName = LocalizedCategory.name(cat, lang);
           return GestureDetector(
             onTap: () => ClientAllCategories(
-              initialQuery: cat['name'] as String?,
+              initialQuery: catName,
             ).launch(context),
             child: Column(
               children: [
@@ -609,7 +634,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
                   child: Padding(
                     padding: const EdgeInsets.only(top: 4),
                     child: Text(
-                      cat['name'] ?? '',
+                      catName,
                       textAlign: TextAlign.center,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -771,7 +796,11 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
                               const SizedBox(width: 6),
                               Expanded(
                                 child: Text(
-                                  category?['name'] ?? l10n.categoryGeneral,
+                                  LocalizedCategory.name(
+                                    category,
+                                    LocalizedCategory.languageCodeOf(context),
+                                    fallback: l10n.categoryGeneral,
+                                  ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: kTextStyle.copyWith(
@@ -887,10 +916,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
                           borderRadius: const BorderRadius.vertical(
                               top: Radius.circular(20)),
                           image: DecorationImage(
-                            image: profileImageUrl != null
-                                ? NetworkImage(profileImageUrl)
-                                    as ImageProvider
-                                : const AssetImage('images/dev1.png'),
+                            image: ProfileImage.provider(profileImageUrl),
                             fit: BoxFit.cover,
                           ),
                         ),

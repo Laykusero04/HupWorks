@@ -211,7 +211,7 @@ class SellerOrdersService {
     final data = await _client
         .from('job_posts')
         .select(
-          '*, categories(name), ${JobPostsService.jobPostSkillsSelect}, '
+          '*, categories(name, name_i18n), ${JobPostsService.jobPostSkillsSelect}, '
           'profiles:client_id(id, name, profile_image_url, rating, created_at, country, city, bio)',
         )
         .eq('id', jobPostId)

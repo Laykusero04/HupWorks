@@ -101,6 +101,7 @@ class _SupportChatScreenState extends State<SupportChatScreen>
 
     return Scaffold(
       backgroundColor: kDarkWhite,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: kDarkWhite,
         elevation: 0,
@@ -167,11 +168,18 @@ class _SupportChatScreenState extends State<SupportChatScreen>
   }
 
   Widget _buildChat(String link) {
-    return Tawk(
-      directChatLink: link,
-      visitor: _buildVisitor(),
-      placeholder: const Center(
-        child: CircularProgressIndicator(color: kPrimaryColor),
+    // Tawk's WebView draws its own input bar; without bottom inset it sits
+    // under Android's system navigation (looks like two overlapping bars).
+    final bottomInset = MediaQuery.viewPaddingOf(context).bottom;
+
+    return Padding(
+      padding: EdgeInsets.only(bottom: bottomInset),
+      child: Tawk(
+        directChatLink: link,
+        visitor: _buildVisitor(),
+        placeholder: const Center(
+          child: CircularProgressIndicator(color: kPrimaryColor),
+        ),
       ),
     );
   }

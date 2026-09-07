@@ -56,7 +56,14 @@ class JobPostsService {
   }
 
   /// Shorter line for list cards, e.g. "€10–€50/hr".
-  static String formatBudgetRangeShort(Object? min, Object? max, Object? basis) {
+  static String formatBudgetRangeShort(
+    Object? min,
+    Object? max,
+    Object? basis, {
+    String perHour = '/hr',
+    String perDay = '/day',
+    String perMonth = '/mo',
+  }) {
     final mn = _parseMoney(min);
     final mx = _parseMoney(max);
     if (mn == null && mx == null) return '';
@@ -67,11 +74,11 @@ class JobPostsService {
     final range = (lo - hi).abs() < 0.0001 ? a : '$a–$b';
     switch (normalizeBudgetBasis(basis)) {
       case budgetBasisPerHour:
-        return '$range/hr';
+        return '$range$perHour';
       case budgetBasisPerDay:
-        return '$range/day';
+        return '$range$perDay';
       case budgetBasisPerMonth:
-        return '$range/mo';
+        return '$range$perMonth';
       default:
         return range;
     }
@@ -116,18 +123,25 @@ class JobPostsService {
   }
 
   /// Compact for chips / lists, e.g. "€40/hr" or "€500 total".
-  static String formatOfferAmountShort(Object? priceRaw, Object? basis) {
+  static String formatOfferAmountShort(
+    Object? priceRaw,
+    Object? basis, {
+    String perHour = '/hr',
+    String perDay = '/day',
+    String perMonth = '/mo',
+    String fixed = ' total',
+  }) {
     final p = _parseMoney(priceRaw) ?? 0;
     final s = _formatMoneyAmount(p);
     switch (normalizeBudgetBasis(basis)) {
       case budgetBasisPerHour:
-        return '$s/hr';
+        return '$s$perHour';
       case budgetBasisPerDay:
-        return '$s/day';
+        return '$s$perDay';
       case budgetBasisPerMonth:
-        return '$s/mo';
+        return '$s$perMonth';
       default:
-        return '$s total';
+        return '$s$fixed';
     }
   }
 
@@ -238,7 +252,7 @@ class JobPostsService {
 
     final data = await _client
         .from('job_posts')
-        .select('*, categories(name), $jobPostSkillsSelect')
+        .select('*, categories(name, name_i18n, description, description_i18n), $jobPostSkillsSelect')
         .eq('client_id', user.id)
         .order('created_at', ascending: false);
     return List<Map<String, dynamic>>.from(data);
@@ -302,7 +316,7 @@ class JobPostsService {
   static Future<Map<String, dynamic>> getJobPostDetails(String jobPostId) async {
     final data = await _client
         .from('job_posts')
-        .select('*, categories(name), $jobPostSkillsSelect')
+        .select('*, categories(name, name_i18n, description, description_i18n), $jobPostSkillsSelect')
         .eq('id', jobPostId)
         .single();
     return data;
@@ -357,7 +371,10 @@ class JobPostsService {
 
   /// Fetch categories for dropdown
   static Future<List<Map<String, dynamic>>> getCategories() async {
-    final data = await _client.from('categories').select('id, name').order('name');
+    final data = await _client
+        .from('categories')
+        .select('id, name, name_i18n, description, description_i18n, icon, is_custom')
+        .order('name');
     return List<Map<String, dynamic>>.from(data);
   }
 }

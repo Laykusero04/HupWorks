@@ -3,14 +3,18 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:freelancer/core/utils/profile_avatar_picker.dart';
 import 'package:freelancer/core/utils/seller_skills_validation.dart';
 import 'package:freelancer/data/models/seller_skill_model.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/screen/widgets/seller_skills_editor.dart';
+import 'package:freelancer/screen/widgets/verification_guideline_examples.dart';
+import 'package:freelancer/services/auth_service.dart';
 import 'package:freelancer/services/profile_service.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:freelancer/services/verification_service.dart';
+import 'package:go_router/go_router.dart';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
 
 import '../../widgets/constant.dart';
@@ -25,10 +29,11 @@ class SetupSellerProfile extends StatefulWidget {
 }
 
 class _SetupSellerProfileState extends State<SetupSellerProfile> {
+  static const _totalSteps = 4;
+
   final PageController pageController = PageController(initialPage: 0);
   int currentIndexPage = 0;
 
-  final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _jobTitleController = TextEditingController();
   final _countryController = TextEditingController();
@@ -36,22 +41,24 @@ class _SetupSellerProfileState extends State<SetupSellerProfile> {
   final _cityController = TextEditingController();
   final _stateController = TextEditingController();
   final _postalController = TextEditingController();
+  final _aboutController = TextEditingController();
 
   double? _latitude;
   double? _longitude;
-  final _aboutController = TextEditingController();
+  DateTime? _dateOfBirth;
 
   String _selectedGender = L10nLabels.genderMale;
   List<String> _languages = [];
   List<SellerSkill> _skills = [];
   bool _isSaving = false;
+
   File? _pickedImage;
   String? _uploadedImageUrl;
+  File? _idSelfie;
 
   @override
   void dispose() {
     pageController.dispose();
-    _nameController.dispose();
     _phoneController.dispose();
     _jobTitleController.dispose();
     _countryController.dispose();
@@ -63,147 +70,79 @@ class _SetupSellerProfileState extends State<SetupSellerProfile> {
     super.dispose();
   }
 
-  DropdownButton<String> _genderDropdown(AppLocalizations l10n) {
-    return DropdownButton<String>(
-      icon: const Icon(FeatherIcons.chevronDown),
-      items: L10nLabels.genderValues
-          .map(
-            (des) => DropdownMenuItem(
-              value: des,
-              child: Text(L10nLabels.gender(l10n, des)),
-            ),
-          )
-          .toList(),
-      value: _selectedGender,
-      style: kTextStyle.copyWith(color: kSubTitleColor),
-      onChanged: (value) {
-        if (value == null) return;
-        setState(() => _selectedGender = value);
-      },
-    );
-  }
-
-  Future<void> _pickImage(ImageSource source) async {
-    final picker = ImagePicker();
-    final file = await picker.pickImage(source: source, imageQuality: 85);
+  Future<void> _pickProfilePhoto() async {
+    final file = await ProfileAvatarPicker.pickAndCrop(context);
     if (file == null || !mounted) return;
     setState(() {
-      _pickedImage = File(file.path);
+      _pickedImage = file;
       _uploadedImageUrl = null;
     });
   }
 
-  void _showImportProfilePopUp() {
-    final l10n = context.l10n;
-    showDialog(
-      barrierDismissible: true,
+  Future<void> _pickIdSelfie() async {
+    final file = await ProfileAvatarPicker.pickImage(context);
+    if (file == null || !mounted) return;
+    setState(() => _idSelfie = file);
+  }
+
+  Future<void> _pickDateOfBirth() async {
+    final now = DateTime.now();
+    final initial = _dateOfBirth ?? DateTime(now.year - 25);
+    final picked = await showDatePicker(
       context: context,
-      builder: (dialogContext) {
-        return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-          child: Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      l10n.selectProfileImage,
-                      style: kTextStyle.copyWith(
-                        color: kNeutralColor,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const Spacer(),
-                    GestureDetector(
-                      onTap: () => Navigator.pop(dialogContext),
-                      child: const Icon(FeatherIcons.x, color: kSubTitleColor),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 30.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    GestureDetector(
-                      onTap: () async {
-                        Navigator.pop(dialogContext);
-                        await _pickImage(ImageSource.gallery);
-                      },
-                      child: Column(
-                        children: [
-                          Icon(Icons.photo_library, color: kPrimaryColor, size: 40),
-                          const SizedBox(height: 10.0),
-                          Text(l10n.photoGallery, style: kTextStyle.copyWith(color: kPrimaryColor)),
-                        ],
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () async {
-                        Navigator.pop(dialogContext);
-                        await _pickImage(ImageSource.camera);
-                      },
-                      child: Column(
-                        children: [
-                          Icon(Icons.photo_camera, color: kLightNeutralColor, size: 40),
-                          const SizedBox(height: 10.0),
-                          Text(l10n.takePhoto, style: kTextStyle.copyWith(color: kLightNeutralColor)),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10.0),
-              ],
-            ),
+      initialDate: initial,
+      firstDate: DateTime(1920),
+      lastDate: now,
+    );
+    if (picked != null && mounted) {
+      setState(() => _dateOfBirth = picked);
+    }
+  }
+
+  String _dobLabel() {
+    if (_dateOfBirth == null) return 'Tap to set your birth date (required)';
+    final age = ProfileService.ageFromDateOfBirth(_dateOfBirth!.toIso8601String());
+    if (age != null) return 'Age $age (birth date stays private)';
+    return 'Birth date saved';
+  }
+
+  void _showAddLanguageDialog() {
+    final controller = TextEditingController();
+    showDialog<void>(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: Text(context.l10n.addLanguage),
+          content: TextField(
+            controller: controller,
+            autofocus: true,
+            decoration: InputDecoration(hintText: context.l10n.language),
           ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(context.l10n.cancel),
+            ),
+            TextButton(
+              onPressed: () {
+                final result = controller.text.trim();
+                Navigator.pop(ctx);
+                if (result.isEmpty) return;
+                if (_languages.any((l) => l.toLowerCase() == result.toLowerCase())) {
+                  return;
+                }
+                setState(() => _languages = [..._languages, result]);
+              },
+              child: Text(context.l10n.addNew),
+            ),
+          ],
         );
       },
     );
   }
 
-  Future<void> _showAddLanguageDialog() async {
-    final l10n = context.l10n;
-    String? picked = language.first;
-    final result = await showDialog<String>(
-      context: context,
-      builder: (dialogContext) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            return AlertDialog(
-              title: Text(l10n.addLanguage, style: kTextStyle.copyWith(fontWeight: FontWeight.bold)),
-              content: DropdownButtonFormField<String>(
-                value: picked,
-                items: language
-                    .map((l) => DropdownMenuItem(value: l, child: Text(l)))
-                    .toList(),
-                onChanged: (v) => setDialogState(() => picked = v),
-                decoration: const InputDecoration(border: OutlineInputBorder()),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(dialogContext),
-                  child: Text(l10n.cancel),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.pop(dialogContext, picked),
-                  child: Text(l10n.add),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-    if (result == null) return;
-    if (_languages.any((l) => l.toLowerCase() == result.toLowerCase())) return;
-    setState(() => _languages = [..._languages, result]);
-  }
-
-  void _saveProfilePopUp() {
-    showDialog(
+  Future<void> _saveProfilePopUp() async {
+    await showDialog<void>(
       barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
@@ -226,40 +165,70 @@ class _SetupSellerProfileState extends State<SetupSellerProfile> {
     return parts.join(', ');
   }
 
-  Future<void> _handleSave() async {
-    final l10n = context.l10n;
-    final name = _nameController.text.trim();
-    if (name.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.pleaseEnterName)),
-      );
-      pageController.jumpToPage(0);
-      setState(() => currentIndexPage = 0);
-      return;
-    }
+  void _snack(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  }
 
+  bool _validateStep0() {
+    if (_jobTitleController.text.trim().isEmpty) {
+      _snack('Please enter your job title');
+      return false;
+    }
+    if (_dateOfBirth == null) {
+      _snack('Please set your date of birth');
+      return false;
+    }
+    final age = ProfileService.ageFromDateOfBirth(_dateOfBirth!.toIso8601String());
+    if (age == null || age < 18) {
+      _snack('You must be at least 18 years old');
+      return false;
+    }
+    return true;
+  }
+
+  bool _validateStep1() {
     final skillError = SellerSkillsValidation.validate(_skills);
     if (skillError != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(skillError)));
-      pageController.jumpToPage(1);
-      setState(() => currentIndexPage = 1);
-      return;
+      _snack(skillError);
+      return false;
     }
+    return true;
+  }
+
+  bool _validateStep2() {
+    if (_pickedImage == null && _uploadedImageUrl == null) {
+      _snack('Please upload a clear profile photo');
+      return false;
+    }
+    return true;
+  }
+
+  bool _validateStep3() {
+    if (_idSelfie == null) {
+      _snack('Please upload a selfie holding your ID');
+      return false;
+    }
+    return true;
+  }
+
+  Future<void> _handleFinish() async {
+    if (!_validateStep3()) return;
 
     setState(() => _isSaving = true);
+    final l10n = context.l10n;
     try {
       if (_pickedImage != null && _uploadedImageUrl == null) {
         _uploadedImageUrl = await ProfileService.uploadProfileImage(_pickedImage!);
       }
 
       await ProfileService.updateProfile({
-        'name': name,
         'phone': _phoneController.text.trim(),
         'gender': _selectedGender,
         'country': _countryController.text.trim().isEmpty
             ? null
             : _countryController.text.trim(),
-        'city': _cityController.text.trim().isEmpty ? null : _cityController.text.trim(),
+        'city':
+            _cityController.text.trim().isEmpty ? null : _cityController.text.trim(),
         if (_latitude != null) 'latitude': _latitude,
         if (_longitude != null) 'longitude': _longitude,
       });
@@ -268,6 +237,7 @@ class _SetupSellerProfileState extends State<SetupSellerProfile> {
         jobTitle: _jobTitleController.text.trim(),
         about: _aboutController.text.trim(),
         skills: _skills,
+        dateOfBirth: _dateOfBirth,
         address: _publicAddress(),
         languages: _languages,
         streetAddress: _streetController.text.trim(),
@@ -276,13 +246,14 @@ class _SetupSellerProfileState extends State<SetupSellerProfile> {
         clearPublicCountryCity: false,
       );
 
+      await VerificationService.submitIdSelfie(_idSelfie!);
+      await AuthService.completeSellerOnboarding();
+
       if (!mounted) return;
-      _saveProfilePopUp();
+      await _saveProfilePopUp();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.errorWithDetail(e.toString()))),
-        );
+        _snack(l10n.errorWithDetail(e.toString()));
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -290,20 +261,72 @@ class _SetupSellerProfileState extends State<SetupSellerProfile> {
   }
 
   void _onContinue() {
-    if (currentIndexPage < 2) {
+    if (currentIndexPage == 0 && !_validateStep0()) return;
+    if (currentIndexPage == 1 && !_validateStep1()) return;
+    if (currentIndexPage == 2 && !_validateStep2()) return;
+
+    if (currentIndexPage < _totalSteps - 1) {
       pageController.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
       return;
     }
-    _handleSave();
+    _handleFinish();
   }
 
-  ImageProvider get _avatarImage {
-    if (_pickedImage != null) return FileImage(_pickedImage!);
-    if (_uploadedImageUrl != null) return NetworkImage(_uploadedImageUrl!);
-    return const AssetImage('images/profile3.png');
+  Future<void> _backToLogin() async {
+    final l10n = context.l10n;
+    final leave = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Leave setup?'),
+        content: const Text('Log in again anytime to continue.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.logOut),
+          ),
+        ],
+      ),
+    );
+    if (leave != true || !mounted) return;
+
+    await AuthService.signOut();
+    if (!mounted) return;
+    context.go('/auth/seller/login');
+  }
+
+  void _goPreviousStep() {
+    if (currentIndexPage <= 0 || _isSaving) return;
+    pageController.previousPage(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  DropdownButton<String> _genderDropdown(AppLocalizations l10n) {
+    return DropdownButton<String>(
+      icon: const Icon(FeatherIcons.chevronDown),
+      items: L10nLabels.genderValues
+          .map(
+            (des) => DropdownMenuItem(
+              value: des,
+              child: Text(L10nLabels.gender(l10n, des)),
+            ),
+          )
+          .toList(),
+      value: _selectedGender,
+      style: kTextStyle.copyWith(color: kSubTitleColor),
+      onChanged: (value) {
+        if (value == null) return;
+        setState(() => _selectedGender = value);
+      },
+    );
   }
 
   @override
@@ -313,7 +336,13 @@ class _SetupSellerProfileState extends State<SetupSellerProfile> {
       backgroundColor: kWhite,
       appBar: AppBar(
         elevation: 0,
-        automaticallyImplyLeading: true,
+        automaticallyImplyLeading: false,
+        leading: currentIndexPage > 0
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+                onPressed: _isSaving ? null : _goPreviousStep,
+              )
+            : null,
         iconTheme: const IconThemeData(color: kNeutralColor),
         backgroundColor: kDarkWhite,
         shape: const RoundedRectangleBorder(
@@ -328,21 +357,35 @@ class _SetupSellerProfileState extends State<SetupSellerProfile> {
           l10n.setupProfile,
           style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
+        actions: [
+          TextButton(
+            onPressed: _isSaving ? null : _backToLogin,
+            child: Text(
+              l10n.logOut,
+              style: kTextStyle.copyWith(
+                color: kSecondaryColor,
+                fontWeight: FontWeight.w600,
+                fontSize: 13,
+              ),
+            ),
+          ),
+        ],
       ),
       body: PageView(
         physics: const NeverScrollableScrollPhysics(),
         controller: pageController,
         onPageChanged: (int index) => setState(() => currentIndexPage = index),
         children: [
-          _stepScaffold(child: _buildStepBasics(l10n)),
-          _stepScaffold(child: _buildStepSkills(l10n)),
-          _stepScaffold(child: _buildStepAbout(l10n)),
+          _stepScaffold(child: _buildStepRequired(l10n)),
+          _stepScaffold(child: _buildStepOptional(l10n)),
+          _stepScaffold(child: _buildStepProfilePhoto(l10n)),
+          _stepScaffold(child: _buildStepIdVerification(l10n)),
         ],
       ),
       bottomNavigationBar: ButtonGlobalWithoutIcon(
         buttontext: _isSaving
             ? l10n.saving
-            : currentIndexPage < 2
+            : currentIndexPage < _totalSteps - 1
                 ? l10n.continueLabel
                 : l10n.saveProfile,
         buttonDecoration: kButtonDecoration.copyWith(
@@ -368,18 +411,18 @@ class _SetupSellerProfileState extends State<SetupSellerProfile> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  l10n.stepOf(currentIndexPage + 1, 3),
+                  l10n.stepOf(currentIndexPage + 1, _totalSteps),
                   style: kTextStyle.copyWith(color: kNeutralColor),
                 ),
                 const SizedBox(width: 10.0),
                 Expanded(
                   child: StepProgressIndicator(
-                    totalSteps: 3,
+                    totalSteps: _totalSteps,
                     currentStep: currentIndexPage + 1,
                     size: 8,
                     padding: 0,
                     selectedColor: kPrimaryColor,
-                    unselectedColor: kPrimaryColor.withOpacity(0.2),
+                    unselectedColor: kPrimaryColor.withValues(alpha: 0.2),
                     roundedEdges: const Radius.circular(10),
                   ),
                 ),
@@ -393,54 +436,85 @@ class _SetupSellerProfileState extends State<SetupSellerProfile> {
     );
   }
 
-  Widget _buildStepBasics(AppLocalizations l10n) {
+  Widget _buildStepRequired(AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          l10n.uploadYourPhoto,
-          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+          'Required details',
+          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 16),
         ),
-        const SizedBox(height: 10.0),
-        Center(
-          child: Stack(
-            alignment: Alignment.bottomRight,
-            children: [
-              Container(
-                height: 120,
-                width: 120,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: kPrimaryColor),
-                  image: (_pickedImage != null || _uploadedImageUrl != null)
-                      ? DecorationImage(image: _avatarImage, fit: BoxFit.cover)
-                      : null,
-                ),
-                child: _pickedImage == null && _uploadedImageUrl == null
-                    ? const Icon(IconlyBold.profile, color: kBorderColorTextField, size: 68)
-                    : null,
-              ),
-              GestureDetector(
-                onTap: _showImportProfilePopUp,
-                child: Container(
-                  padding: const EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    color: kWhite,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: kPrimaryColor),
-                  ),
-                  child: const Icon(IconlyBold.camera, color: kPrimaryColor),
-                ),
-              ),
-            ],
-          ),
+        const SizedBox(height: 6),
+        Text(
+          'Job title and age help clients trust your profile. Your name comes from signup.',
+          style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13),
         ),
-        const SizedBox(height: 30.0),
-        _field(_nameController, l10n.userName, l10n.userName),
-        const SizedBox(height: 20.0),
+        const SizedBox(height: 20),
         _field(_jobTitleController, l10n.jobTitle, l10n.jobTitle),
         const SizedBox(height: 20.0),
+        Text(
+          'Age / date of birth',
+          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'Your age is shown on your profile. Birth date stays private.',
+          style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
+        ),
+        const SizedBox(height: 8),
+        InkWell(
+          onTap: _pickDateOfBirth,
+          borderRadius: BorderRadius.circular(8),
+          child: InputDecorator(
+            decoration: kInputDecoration.copyWith(
+              border: const OutlineInputBorder(),
+              labelText: 'Date of birth',
+            ),
+            child: Text(
+              _dobLabel(),
+              style: kTextStyle.copyWith(
+                color: _dateOfBirth == null ? kSubTitleColor : kNeutralColor,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 20.0),
         _field(_phoneController, l10n.phone, l10n.phone, type: TextInputType.phone),
+      ],
+    );
+  }
+
+  Widget _buildStepOptional(AppLocalizations l10n) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Optional details',
+          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          'You can skip these and fill them later in Edit Profile.',
+          style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13),
+        ),
+        const SizedBox(height: 20),
+        FormField(
+          builder: (FormFieldState<dynamic> field) {
+            return InputDecorator(
+              decoration: kInputDecoration.copyWith(
+                enabledBorder: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                  borderSide: BorderSide(color: kBorderColorTextField, width: 2),
+                ),
+                contentPadding: const EdgeInsets.all(7.0),
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+                labelText: l10n.selectGender,
+                labelStyle: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+              ),
+              child: DropdownButtonHideUnderline(child: _genderDropdown(l10n)),
+            );
+          },
+        ),
         const SizedBox(height: 20.0),
         ProfileLocationFields(
           countryController: _countryController,
@@ -466,32 +540,7 @@ class _SetupSellerProfileState extends State<SetupSellerProfile> {
         _field(_stateController, l10n.state, l10n.state),
         const SizedBox(height: 20.0),
         _field(_postalController, l10n.zipCode, l10n.zipCode),
-        const SizedBox(height: 20.0),
-        FormField(
-          builder: (FormFieldState<dynamic> field) {
-            return InputDecorator(
-              decoration: kInputDecoration.copyWith(
-                enabledBorder: const OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                  borderSide: BorderSide(color: kBorderColorTextField, width: 2),
-                ),
-                contentPadding: const EdgeInsets.all(7.0),
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-                labelText: l10n.selectGender,
-                labelStyle: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
-              ),
-              child: DropdownButtonHideUnderline(child: _genderDropdown(l10n)),
-            );
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget _buildStepSkills(AppLocalizations l10n) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+        const SizedBox(height: 28.0),
         GestureDetector(
           onTap: _showAddLanguageDialog,
           child: Row(
@@ -509,10 +558,7 @@ class _SetupSellerProfileState extends State<SetupSellerProfile> {
         ),
         const SizedBox(height: 12.0),
         if (_languages.isEmpty)
-          Text(
-            l10n.noLanguagesYet,
-            style: kTextStyle.copyWith(color: kLightNeutralColor),
-          )
+          Text(l10n.noLanguagesYet, style: kTextStyle.copyWith(color: kLightNeutralColor))
         else
           Wrap(
             spacing: 8,
@@ -538,23 +584,16 @@ class _SetupSellerProfileState extends State<SetupSellerProfile> {
           skills: _skills,
           onChanged: (skills) => setState(() => _skills = skills),
         ),
-      ],
-    );
-  }
-
-  Widget _buildStepAbout(AppLocalizations l10n) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+        const SizedBox(height: 28.0),
         Text(
           l10n.aboutYou,
           style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
-        const SizedBox(height: 15.0),
+        const SizedBox(height: 12.0),
         TextFormField(
           controller: _aboutController,
           keyboardType: TextInputType.multiline,
-          maxLines: 8,
+          maxLines: 6,
           cursorColor: kNeutralColor,
           textInputAction: TextInputAction.newline,
           decoration: kInputDecoration.copyWith(
@@ -562,6 +601,158 @@ class _SetupSellerProfileState extends State<SetupSellerProfile> {
             hintStyle: kTextStyle.copyWith(color: kLightNeutralColor),
             focusColor: kNeutralColor,
             border: const OutlineInputBorder(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStepProfilePhoto(AppLocalizations l10n) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n.uploadYourPhoto,
+          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          'A clear front-facing photo helps verification. Prefer a plain white background.',
+          style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13),
+        ),
+        const SizedBox(height: 16),
+        const VerificationGuidelineExamples(
+          doAsset: 'images/verification/profile_photo_do.png',
+          dontAsset: 'images/verification/profile_photo_dont.png',
+          doLabel: 'Do: front face, clear bg',
+          dontLabel: "Don't: side view / shades",
+          tips: [
+            'Face the camera directly (not a side view)',
+            'Plain / white background, even lighting',
+            'No sunglasses, hat, or heavy filters',
+            'Shoulders visible; one person only',
+          ],
+        ),
+        const SizedBox(height: 24),
+        Center(
+          child: Stack(
+            alignment: Alignment.bottomRight,
+            children: [
+              Container(
+                height: 120,
+                width: 120,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: kPrimaryColor),
+                  image: (_pickedImage != null || _uploadedImageUrl != null)
+                      ? DecorationImage(
+                          image: _pickedImage != null
+                              ? FileImage(_pickedImage!)
+                              : NetworkImage(_uploadedImageUrl!) as ImageProvider,
+                          fit: BoxFit.cover,
+                        )
+                      : null,
+                ),
+                child: _pickedImage == null && _uploadedImageUrl == null
+                    ? const Icon(IconlyBold.profile, color: kBorderColorTextField, size: 68)
+                    : null,
+              ),
+              GestureDetector(
+                onTap: _pickProfilePhoto,
+                child: Container(
+                  padding: const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    color: kWhite,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: kPrimaryColor),
+                  ),
+                  child: const Icon(IconlyBold.camera, color: kPrimaryColor),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        Center(
+          child: TextButton.icon(
+            onPressed: _pickProfilePhoto,
+            icon: const Icon(Icons.add_a_photo_outlined),
+            label: Text(l10n.selectProfileImage),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStepIdVerification(AppLocalizations l10n) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Identity verification',
+          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          'Upload a selfie holding your government ID next to your face. An admin will review face+ID separately from your profile photo — you will see “pending” until each is accepted.',
+          style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13),
+        ),
+        const SizedBox(height: 16),
+        const VerificationGuidelineExamples(
+          doAsset: 'images/verification/id_face_do.png',
+          dontAsset: 'images/verification/id_face_dont.png',
+          doLabel: 'Do: face + ID clear',
+          dontLabel: "Don't: cover ID / glare",
+          tips: [
+            'Hold ID next to your face — both fully visible',
+            'Good lighting; avoid glare on the ID',
+            'All four corners of the ID visible; fingers on edges only',
+            'No hat, sunglasses, or filters',
+          ],
+        ),
+        const SizedBox(height: 24),
+        GestureDetector(
+          onTap: _pickIdSelfie,
+          child: Container(
+            height: 200,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: kBorderColorTextField, width: 2),
+              color: kDarkWhite,
+              image: _idSelfie != null
+                  ? DecorationImage(image: FileImage(_idSelfie!), fit: BoxFit.cover)
+                  : null,
+            ),
+            child: _idSelfie == null
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.badge_outlined, size: 42, color: kPrimaryColor),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Upload ID + face selfie',
+                        style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${l10n.photoGallery} / ${l10n.takePhoto}',
+                        style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12),
+                      ),
+                    ],
+                  )
+                : Align(
+                    alignment: Alignment.bottomRight,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: FloatingActionButton.small(
+                        heroTag: 'retake_id',
+                        onPressed: _pickIdSelfie,
+                        backgroundColor: kWhite,
+                        child: const Icon(Icons.refresh, color: kPrimaryColor),
+                      ),
+                    ),
+                  ),
           ),
         ),
       ],

@@ -4,6 +4,7 @@ import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/core/utils/attendance_mode.dart';
 import 'package:freelancer/core/utils/category_name.dart';
+import 'package:freelancer/core/utils/localized_category.dart';
 import 'package:freelancer/core/utils/shift_schedule.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/services/category_service.dart';
@@ -162,7 +163,12 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
       return raw.isEmpty ? null : raw;
     }
     for (final c in _categories) {
-      if (c['id'] == _selectedCategoryId) return c['name'] as String?;
+      if (c['id'] == _selectedCategoryId) {
+        return LocalizedCategory.name(
+          c,
+          LocalizedCategory.languageCodeOf(context),
+        );
+      }
     }
     return null;
   }

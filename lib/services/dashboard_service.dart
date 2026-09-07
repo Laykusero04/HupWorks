@@ -1,3 +1,4 @@
+import 'package:freelancer/services/seller_home_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DashboardService {
@@ -31,5 +32,10 @@ class DashboardService {
       'completed_orders': completedOrders,
       'incomplete_orders': incompleteOrders,
     };
+  }
+
+  /// Freelancer work-tracker overview (hours + agreed amounts + off-app paid marks).
+  static Future<Map<String, dynamic>> getSellerDashboard() {
+    return SellerHomeService.getWorkOverview();
   }
 }

@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/app_logger.dart';
+import 'package:freelancer/core/utils/localized_category.dart';
+import 'package:freelancer/core/utils/profile_image.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/screen/seller%20screen/job%20alerts/seller_job_alert_editor_screen.dart';
@@ -300,7 +302,10 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
                   shrinkWrap: true,
                   children: _categories.map((c) {
                     final id = c['id'] as String;
-                    final name = c['name'] as String? ?? '';
+                    final name = LocalizedCategory.name(
+                      c,
+                      LocalizedCategory.languageCodeOf(context),
+                    );
                     return CheckboxListTile(
                       value: draft.contains(id),
                       title: Text(name, style: kTextStyle.copyWith(fontSize: 14)),
@@ -955,9 +960,9 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
                 children: [
                   CircleAvatar(
                     radius: 20,
-                    backgroundImage: buyer?['profile_image_url'] != null
-                        ? NetworkImage(buyer!['profile_image_url'])
-                        : const AssetImage('images/profile1.png') as ImageProvider,
+                    backgroundImage: ProfileImage.provider(
+                      buyer?['profile_image_url'] as String?,
+                    ),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
@@ -1075,47 +1080,73 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
               ],
               const SizedBox(height: 10),
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: kDarkWhite,
-                    ),
-                    child: Text(
-                      category?['name'] ?? 'General',
-                      style: kTextStyle.copyWith(color: kNeutralColor),
+                  Expanded(
+                    child: Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            color: kDarkWhite,
+                          ),
+                          child: Text(
+                            LocalizedCategory.name(
+                              category,
+                              LocalizedCategory.languageCodeOf(context),
+                              fallback: 'General',
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: kTextStyle.copyWith(color: kNeutralColor),
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            color: primary.withValues(alpha: 0.08),
+                          ),
+                          child: Text(
+                            _jobTypeLabel(req['job_type'] as String?),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: kTextStyle.copyWith(
+                              color: primary,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(width: 6),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: primary.withValues(alpha: 0.08),
-                    ),
-                    child: Text(
-                      _jobTypeLabel(req['job_type'] as String?),
-                      style: kTextStyle.copyWith(
-                        color: primary,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
-                  const Spacer(),
-                  if (req['budget_min'] != null || req['budget_max'] != null)
+                  if (req['budget_min'] != null || req['budget_max'] != null) ...[
+                    const SizedBox(width: 8),
                     Text(
-                      JobPostsService.formatBudgetRangeShort(
+                      L10nLabels.budgetRangeShort(
+                        context.l10n,
                         req['budget_min'],
                         req['budget_max'],
                         req['budget_basis'],
                       ),
+                      softWrap: false,
                       style: kTextStyle.copyWith(
                         color: primary,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+                  ],
                 ],
               ),
             ],

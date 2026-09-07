@@ -1,4 +1,5 @@
 import 'package:freelancer/core/auth/role_cache.dart';
+import 'package:freelancer/router/route_names.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'profile_service.dart';
@@ -26,9 +27,18 @@ class AuthService {
       data: {
         'name': name,
         'role': role,
-        'phone': phone,
+        if (phone != null && phone.isNotEmpty) 'phone': phone,
       },
     );
+    // New session: ensure profile row exists, then load role for GoRouter.
+    if (response.session != null) {
+      await ensureProfileExists(
+        preferredName: name,
+        preferredRole: role,
+        preferredPhone: phone,
+      );
+      await getUserRole(forceRefresh: true);
+    }
     return response;
   }
 
@@ -42,6 +52,7 @@ class AuthService {
       password: password,
     );
     // Prefer DB role over JWT metadata (can drift for older accounts).
+    await ensureProfileExists();
     await getUserRole(forceRefresh: true);
     return response;
   }
@@ -77,16 +88,30 @@ class AuthService {
   /// Sync [profiles.role] for GoRouter redirects (may be null while loading).
   static String? get cachedRole => RoleCache.roleForUser(currentUser?.id);
 
+  /// Sellers who have not finished SetupSellerProfile.
+  static bool get needsSellerOnboarding {
+    if (cachedRole != 'seller') return false;
+    return !RoleCache.sellerOnboardingCompleted;
+  }
+
+  static void markSellerOnboardingCompleted() {
+    RoleCache.setSellerOnboardingCompleted(true);
+  }
+
   static void clearRoleCache() => RoleCache.clear();
 
   /// Store a normalized role from [profiles].
-  static void setCachedRole(String? role) {
+  static void setCachedRole(String? role, {bool? sellerOnboardingCompleted}) {
     final user = currentUser;
     if (user == null || role == null) {
       clearRoleCache();
       return;
     }
-    RoleCache.set(userId: user.id, role: role);
+    RoleCache.set(
+      userId: user.id,
+      role: role,
+      sellerOnboardingCompleted: sellerOnboardingCompleted,
+    );
   }
 
   /// Get user role from [profiles.role] (source of truth). Caches for sync routing.
@@ -101,17 +126,110 @@ class AuthService {
       return cachedRole;
     }
 
-    final data = await _client
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single();
-    setCachedRole(data['role'] as String?);
+    await ensureProfileExists();
+
+    Map<String, dynamic>? data;
+    try {
+      data = await _client
+          .from('profiles')
+          .select('role, seller_onboarding_completed')
+          .eq('id', user.id)
+          .maybeSingle();
+    } catch (_) {
+      // Column may be missing until migration 0035 is applied.
+      data = await _client
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .maybeSingle();
+    }
+
+    if (data == null) {
+      clearRoleCache();
+      return null;
+    }
+
+    final role = data['role'] as String?;
+    final completed = data['seller_onboarding_completed'] as bool? ??
+        (role != 'seller');
+    setCachedRole(role, sellerOnboardingCompleted: completed);
     return cachedRole;
+  }
+
+  /// Creates [profiles] (+ seller rows) when the DB trigger did not run.
+  static Future<void> ensureProfileExists({
+    String? preferredName,
+    String? preferredRole,
+    String? preferredPhone,
+  }) async {
+    final user = currentUser;
+    if (user == null) return;
+
+    final existing = await _client
+        .from('profiles')
+        .select('id')
+        .eq('id', user.id)
+        .maybeSingle();
+    if (existing != null) return;
+
+    final meta = user.userMetadata ?? {};
+    var role = (preferredRole ?? meta['role'] as String? ?? 'client')
+        .trim()
+        .toLowerCase();
+    if (role != 'client' && role != 'seller') role = 'client';
+
+    final metaName = (meta['name'] as String?)?.trim() ?? '';
+    final preferred = preferredName?.trim() ?? '';
+    final name = preferred.isNotEmpty
+        ? preferred
+        : (metaName.isNotEmpty
+            ? metaName
+            : (user.email?.split('@').first ?? 'User'));
+
+    final phoneRaw = preferredPhone ?? meta['phone'] as String?;
+    final phone = phoneRaw?.trim();
+
+    try {
+      await _client.from('profiles').insert({
+        'id': user.id,
+        'role': role,
+        'name': name,
+        'email': user.email ?? '',
+        if (phone != null && phone.isNotEmpty) 'phone': phone,
+        'seller_onboarding_completed': role != 'seller',
+      });
+    } catch (_) {
+      // Race with DB trigger — profile may already exist.
+      return;
+    }
+
+    if (role == 'seller') {
+      try {
+        await _client.from('seller_profiles').insert({'user_id': user.id});
+      } catch (_) {}
+      try {
+        await _client.from('seller_private_details').insert({'user_id': user.id});
+      } catch (_) {}
+    }
+  }
+
+  /// Persist seller onboarding complete and update cache.
+  static Future<void> completeSellerOnboarding() async {
+    final user = currentUser;
+    if (user == null) throw Exception('Not logged in');
+    await _client.from('profiles').update({
+      'seller_onboarding_completed': true,
+    }).eq('id', user.id);
+    // Always set seller + completed so Done → home works even if cache was empty.
+    setCachedRole('seller', sellerOnboardingCompleted: true);
+    ProfileService.clearProfileCache();
   }
 
   /// Home path for the current cached/DB role.
   static String homePathForRole(String? role) {
+    if (role == 'seller' && needsSellerOnboarding) {
+      return AppRoutes.sellerSetupProfile;
+    }
     return role == 'seller' ? '/seller' : '/client';
   }
 }

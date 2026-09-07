@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/order_cancellation.dart';
 import 'package:freelancer/core/utils/order_contract_display.dart';
+import 'package:freelancer/core/utils/profile_image.dart';
 import 'package:go_router/go_router.dart';
 import 'package:freelancer/services/orders_service.dart';
 import 'package:freelancer/l10n/l10n.dart';
@@ -159,6 +160,8 @@ class _SellerOrderListState extends State<SellerOrderList> {
     final service = order['services'] as Map<String, dynamic>?;
     final client = order['client'] as Map<String, dynamic>?;
     final clientName = (client?['name'] as String?) ?? context.l10n.unknown;
+    final clientImageUrl =
+        ProfileImage.normalize(client?['profile_image_url'] as String?);
     final orderId = order['id'].toString();
     final idShort = orderId.length >= 8 ? orderId.substring(0, 8).toUpperCase() : orderId.toUpperCase();
     final status = _statusStyle(order['status'] as String?);
@@ -224,10 +227,7 @@ class _SellerOrderListState extends State<SellerOrderList> {
                         CircleAvatar(
                           radius: 20,
                           backgroundColor: primary.withValues(alpha: 0.12),
-                          child: Text(
-                            clientName.isNotEmpty ? clientName[0].toUpperCase() : '?',
-                            style: kTextStyle.copyWith(color: primary, fontWeight: FontWeight.bold, fontSize: 15),
-                          ),
+                          backgroundImage: ProfileImage.provider(clientImageUrl),
                         ),
                         10.width,
                         Expanded(

@@ -12,7 +12,8 @@ class SignUpScreen extends StatefulWidget {
   final String heroImage;
   final String Function(AppLocalizations) subtitle;
   final String Function(AppLocalizations) roleLabel;
-  final Widget Function(String email) otpScreenBuilder;
+  /// Called after successful signup. Prefer GoRouter navigation for sellers.
+  final Future<void> Function(BuildContext context, String email) onSignedUp;
 
   const SignUpScreen({
     super.key,
@@ -21,7 +22,7 @@ class SignUpScreen extends StatefulWidget {
     required this.heroImage,
     required this.subtitle,
     required this.roleLabel,
-    required this.otpScreenBuilder,
+    required this.onSignedUp,
   });
 
   @override
@@ -36,7 +37,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
   final _emailController = TextEditingController();
-  final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
 
   @override
@@ -44,7 +44,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _firstNameController.dispose();
     _lastNameController.dispose();
     _emailController.dispose();
-    _phoneController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -54,7 +53,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final firstName = _firstNameController.text.trim();
     final lastName = _lastNameController.text.trim();
     final email = _emailController.text.trim();
-    final phone = _phoneController.text.trim();
     final password = _passwordController.text;
 
     if (firstName.isEmpty || lastName.isEmpty || email.isEmpty || password.isEmpty) {
@@ -86,16 +84,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
         password: password,
         name: '$firstName $lastName',
         role: widget.role,
-        phone: phone.isNotEmpty ? phone : null,
       );
 
       if (mounted) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => widget.otpScreenBuilder(email),
-          ),
-        );
+        await widget.onSignedUp(context, email);
       }
     } catch (e) {
       if (mounted) {
@@ -133,15 +125,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
             label: l10n.authEmail,
             hint: l10n.authEmailHint,
             keyboardType: TextInputType.emailAddress,
-            textInputAction: TextInputAction.next,
-            focusedBorderColor: accent,
-          ),
-          const SizedBox(height: 16),
-          AuthTextField(
-            controller: _phoneController,
-            label: l10n.authPhone,
-            hint: l10n.authPhoneHint,
-            keyboardType: TextInputType.phone,
             textInputAction: TextInputAction.next,
             focusedBorderColor: accent,
           ),

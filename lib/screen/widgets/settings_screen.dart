@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:freelancer/core/locale/locale_controller.dart';
 import 'package:freelancer/core/locale/locale_scope.dart';
+import 'package:freelancer/core/utils/profile_avatar_picker.dart';
+import 'package:freelancer/core/utils/profile_image.dart';
 import 'package:freelancer/core/utils/support_chat_navigation.dart';
 import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/services/profile_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import 'constant.dart';
@@ -27,6 +30,57 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   bool isOn = false;
+  String? _profileImageUrl;
+  bool _uploadingPhoto = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfilePhoto();
+  }
+
+  Future<void> _loadProfilePhoto() async {
+    try {
+      final cached = ProfileService.peekCachedProfile();
+      if (cached != null && mounted) {
+        setState(() {
+          _profileImageUrl =
+              ProfileImage.normalize(cached['profile_image_url'] as String?);
+        });
+      }
+      final profile = await ProfileService.getProfile(forceRefresh: true);
+      if (!mounted) return;
+      setState(() {
+        _profileImageUrl =
+            ProfileImage.normalize(profile?['profile_image_url'] as String?);
+      });
+    } catch (_) {
+      // Keep whatever we already show.
+    }
+  }
+
+  Future<void> _changePhoto() async {
+    final file = await ProfileAvatarPicker.pickAndCrop(context);
+    if (file == null || !mounted) return;
+    setState(() => _uploadingPhoto = true);
+    try {
+      final url = await ProfileService.uploadProfileImage(file);
+      if (!mounted) return;
+      setState(() {
+        _profileImageUrl = url;
+        _uploadingPhoto = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.profileUpdatedShort)),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _uploadingPhoto = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('$e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +118,47 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           child: Column(
             children: [
-              const SizedBox(height: 30.0),
+              const SizedBox(height: 24.0),
+              ListTile(
+                onTap: _uploadingPhoto ? null : _changePhoto,
+                visualDensity: const VisualDensity(vertical: -2),
+                horizontalTitleGap: 12,
+                contentPadding: const EdgeInsets.only(bottom: 12),
+                leading: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    CircleAvatar(
+                      radius: 26,
+                      backgroundColor: kDarkWhite,
+                      backgroundImage: ProfileImage.provider(_profileImageUrl),
+                    ),
+                    if (_uploadingPhoto)
+                      const SizedBox(
+                        width: 28,
+                        height: 28,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                  ],
+                ),
+                title: Text(
+                  l10n.selectProfileImage,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: kTextStyle.copyWith(
+                    color: kNeutralColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                subtitle: Text(
+                  l10n.editProfileSubtitle,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12),
+                ),
+                trailing: const Icon(Icons.chevron_right, color: kLightNeutralColor),
+              ),
+              const Divider(height: 1),
+              const SizedBox(height: 8),
               ListTile(
                 visualDensity: const VisualDensity(vertical: -3),
                 horizontalTitleGap: 10,

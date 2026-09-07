@@ -63,12 +63,14 @@ dependencies:
   go_router: ^14.0.0
   geocoding: ^4.0.0 
   flutter_map: ^8.3.0
-  latlong2: ^0.9.1  
+  latlong2: ^0.9.1
+  geolocator: ^14.0.2
   mobile_scanner: ^7.0.1
   qr_flutter: ^4.1.0
   share_plus: ^11.0.0
   flutter_tawkto: ^0.0.5
   flutter_local_notifications: ^22.2.0
+  image_cropper: ^12.2.1
 
 dev_dependencies:
   flutter_test:
@@ -112,6 +114,8 @@ flutter:
   assets:
    - .env
    - images/
+   - images/rubik_tiles/
+   - images/verification/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/utils/profile_image.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/services/profile_service.dart';
 
@@ -103,7 +104,8 @@ class _ClientPublicProfileState extends State<ClientPublicProfile> {
     final bio = (_profile!['bio'] as String?)?.trim();
     final city = (_profile!['city'] as String?)?.trim() ?? '';
     final country = (_profile!['country'] as String?)?.trim() ?? '';
-    final profileImageUrl = _profile!['profile_image_url'] as String?;
+    final profileImageUrl =
+        ProfileImage.normalize(_profile!['profile_image_url'] as String?);
     final jobCount = (_profile!['job_posts_count'] as num?)?.toInt() ?? 0;
     final memberSince = _formatMemberSince(_profile!['created_at'] as String?);
     final reviewStats = ProfileService.resolveReviewDisplay(
@@ -149,9 +151,7 @@ class _ClientPublicProfileState extends State<ClientPublicProfile> {
                   height: 110,
                   width: 110,
                   decoration: ProfileDetailTheme.avatarDecoration(
-                    profileImageUrl != null && profileImageUrl.isNotEmpty
-                        ? NetworkImage(profileImageUrl) as ImageProvider
-                        : const AssetImage('images/profile1.png'),
+                    ProfileImage.provider(profileImageUrl),
                     accent: kPrimaryColor,
                   ),
                 ),

@@ -1,11 +1,13 @@
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/job_offer_delivery.dart';
+import 'package:freelancer/core/utils/localized_category.dart';
 import 'package:freelancer/screen/seller%20screen/seller%20message/chat_inbox.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/core/utils/attendance_mode.dart';
 import 'package:freelancer/core/utils/shift_schedule.dart';
 import 'package:freelancer/services/attendance_service.dart';
+import 'package:freelancer/services/block_service.dart';
 import 'package:freelancer/services/chat_service.dart';
 import 'package:freelancer/services/hire_onboarding_service.dart';
 import 'package:freelancer/services/job_posts_service.dart';
@@ -206,6 +208,22 @@ class _JobDetailsState extends State<JobDetails> {
 
   Future<void> _handleAcceptOffer(Map<String, dynamic> offer) async {
     final seller = offer['profiles'] as Map<String, dynamic>?;
+    final sellerId = (offer['seller_id'] as String?) ??
+        (seller?['id'] as String?);
+    if (sellerId != null) {
+      try {
+        if (await BlockService.isContactBlocked(sellerId)) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(context.l10n.contactBlocked)),
+          );
+          return;
+        }
+      } catch (_) {
+        // Migration may not be applied yet; allow hire to continue.
+      }
+    }
+    if (!mounted) return;
     final sellerName = seller?['name'] ?? 'this freelancer';
     final priceLabel = JobPostsService.formatOfferAmountShort(
         offer['price'], offer['price_basis']);
@@ -316,9 +334,11 @@ class _JobDetailsState extends State<JobDetails> {
 
     final title = _jobPost?['title'] ?? 'Job Post';
     final description = _jobPost?['description'] ?? '';
-    final category =
-        (_jobPost?['categories'] as Map<String, dynamic>?)?['name'] ??
-            'General';
+    final category = LocalizedCategory.name(
+      _jobPost?['categories'] as Map<String, dynamic>?,
+      LocalizedCategory.languageCodeOf(context),
+      fallback: 'General',
+    );
     final status = _jobPost?['status'] ?? 'open';
     final budgetMin = _jobPost?['budget_min'];
     final budgetMax = _jobPost?['budget_max'];

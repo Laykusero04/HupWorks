@@ -3,6 +3,8 @@ import 'package:freelancer/l10n/l10n.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:freelancer/core/auth_navigation.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
+import 'package:freelancer/services/block_service.dart';
+import 'package:freelancer/services/report_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../widgets/constant.dart';
@@ -56,7 +58,8 @@ class _SaveProfilePopUpState extends State<SaveProfilePopUp> {
               buttonText: l10n.done,
               textColor: kWhite,
               onPressed: () {
-                finish(context);
+                // Do not finish()/pop first — that disposes this context and
+                // AuthNavigation would no-op. It pops overlays itself, then goes home.
                 AuthNavigation.goToHomeAfterAuth(context);
               },
             )
@@ -68,19 +71,110 @@ class _SaveProfilePopUpState extends State<SaveProfilePopUp> {
 }
 
 // ---------------------------------------------------------------------------
-// BlockingReasonPopUp — shown from chat inbox
+// BlockingReasonPopUp — soft-block confirm (chat / profile)
 // ---------------------------------------------------------------------------
 class BlockingReasonPopUp extends StatefulWidget {
-  const BlockingReasonPopUp({Key? key}) : super(key: key);
+  const BlockingReasonPopUp({
+    Key? key,
+    required this.blockedUserId,
+    this.blockedUserName,
+    this.orderId,
+    this.onBlocked,
+  }) : super(key: key);
+
+  final String blockedUserId;
+  final String? blockedUserName;
+  final String? orderId;
+  final VoidCallback? onBlocked;
 
   @override
   State<BlockingReasonPopUp> createState() => _BlockingReasonPopUpState();
 }
 
 class _BlockingReasonPopUpState extends State<BlockingReasonPopUp> {
+  bool _loading = true;
+  bool _submitting = false;
+  bool _hasOpenObligation = false;
+  bool _alsoReportPayment = false;
+  List<String> _openOrderIds = const [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadObligation();
+  }
+
+  Future<void> _loadObligation() async {
+    try {
+      final ids = await BlockService.openOrderIdsWith(widget.blockedUserId);
+      if (!mounted) return;
+      setState(() {
+        _openOrderIds = ids;
+        _hasOpenObligation = ids.isNotEmpty;
+        _alsoReportPayment = ids.isNotEmpty;
+        _loading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _confirmBlock() async {
+    if (_submitting) return;
+    setState(() => _submitting = true);
+    final l10n = context.l10n;
+    try {
+      final result = await BlockService.blockUser(
+        blockedUserId: widget.blockedUserId,
+      );
+
+      if (_alsoReportPayment) {
+        final orderId = widget.orderId?.trim().isNotEmpty == true
+            ? widget.orderId!.trim()
+            : (result.openOrderIds.isNotEmpty
+                ? result.openOrderIds.first
+                : (_openOrderIds.isNotEmpty ? _openOrderIds.first : null));
+        final name = widget.blockedUserName?.trim();
+        try {
+          await ReportService.createReport(
+            reportedUserId: widget.blockedUserId,
+            reason: 'Payment or contract dispute',
+            details: name == null || name.isEmpty
+                ? 'Blocked user while an open or unpaid job may still exist. Please review payment status.'
+                : 'Blocked $name while an open or unpaid job may still exist. Please review payment status.',
+            orderId: orderId,
+          );
+        } catch (_) {
+          // Block already succeeded; report is best-effort for PoC.
+        }
+      }
+
+      if (!mounted) return;
+      final open = result.hasOpenObligation || _hasOpenObligation;
+      final messenger = ScaffoldMessenger.maybeOf(context);
+      widget.onBlocked?.call();
+      finish(context);
+      messenger?.showSnackBar(
+        SnackBar(
+          content: Text(
+            open ? l10n.blockSuccessOpenObligation : l10n.blockSuccess,
+          ),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _submitting = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.errorWithDetail('$e'))),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final name = widget.blockedUserName?.trim();
     return Padding(
       padding: const EdgeInsets.all(15.0),
       child: SingleChildScrollView(
@@ -91,23 +185,63 @@ class _BlockingReasonPopUpState extends State<BlockingReasonPopUp> {
           children: [
             Row(
               children: [
-                Text(
-                  'Block on Messenger',
-                  style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+                Expanded(
+                  child: Text(
+                    l10n.blockUserTitle,
+                    style: kTextStyle.copyWith(
+                      color: kNeutralColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
-                const Spacer(),
                 GestureDetector(
-                  onTap: () => finish(context),
+                  onTap: _submitting ? null : () => finish(context),
                   child: const Icon(FeatherIcons.x, color: kSubTitleColor),
                 ),
               ],
             ),
-            const SizedBox(height: 20.0),
-            Text(
-              'If you\'re friends, blocking will remove this user. The conversation will stay in chats unless you hide it.',
-              style: kTextStyle.copyWith(color: kSubTitleColor),
-            ),
-            const SizedBox(height: 20.0),
+            if (name != null && name.isNotEmpty) ...[
+              const SizedBox(height: 8.0),
+              Text(
+                name,
+                style: kTextStyle.copyWith(
+                  color: kNeutralColor,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+            const SizedBox(height: 16.0),
+            if (_loading)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 12),
+                child: Center(child: CircularProgressIndicator()),
+              )
+            else
+              Text(
+                _hasOpenObligation
+                    ? l10n.blockUserBodyOpenObligation
+                    : l10n.blockUserBody,
+                style: kTextStyle.copyWith(color: kSubTitleColor),
+              ),
+            if (!_loading && _hasOpenObligation) ...[
+              const SizedBox(height: 12.0),
+              CheckboxListTile(
+                contentPadding: EdgeInsets.zero,
+                controlAffinity: ListTileControlAffinity.leading,
+                value: _alsoReportPayment,
+                onChanged: _submitting
+                    ? null
+                    : (v) => setState(() => _alsoReportPayment = v ?? false),
+                title: Text(
+                  l10n.blockAlsoReportPayment,
+                  style: kTextStyle.copyWith(
+                    color: kNeutralColor,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ],
+            const SizedBox(height: 16.0),
             Row(
               children: [
                 Expanded(
@@ -116,20 +250,16 @@ class _BlockingReasonPopUpState extends State<BlockingReasonPopUp> {
                     borderColor: Colors.red,
                     buttonText: l10n.cancel,
                     textColor: Colors.red,
-                    onPressed: () {
-                      finish(context);
-                    },
+                    onPressed: _submitting ? () {} : () => finish(context),
                   ),
                 ),
                 Expanded(
                   child: Button(
                     containerBg: kPrimaryColor,
                     borderColor: Colors.transparent,
-                    buttonText: l10n.block,
+                    buttonText: _submitting ? '…' : l10n.block,
                     textColor: kWhite,
-                    onPressed: () {
-                      finish(context);
-                    },
+                    onPressed: _submitting || _loading ? () {} : _confirmBlock,
                   ),
                 )
               ],

@@ -786,7 +786,81 @@ class AppLocalizationsBn extends AppLocalizations {
   String get statusPending => 'অপেক্ষমাণ';
 
   @override
-  String get yourWork => 'আপনার কাজ';
+  String get budgetSuffixHour => '/hr';
+
+  @override
+  String get budgetSuffixDay => '/day';
+
+  @override
+  String get budgetSuffixMonth => '/mo';
+
+  @override
+  String get budgetSuffixTotal => 'total';
+
+  @override
+  String get yourWork => 'কাজের ট্র্যাকার';
+
+  @override
+  String get hoursWorked => 'কাজের ঘণ্টা';
+
+  @override
+  String get agreedContractValue => 'সম্মত পরিমাণ';
+
+  @override
+  String get jobsCompleted => 'সম্পন্ন কাজ';
+
+  @override
+  String get workOverviewDisclaimer =>
+      'কাজ ও পরিমাণ HupWorks-এ ট্র্যাক হয়। পেমেন্ট অ্যাপের বাইরে — রেকর্ড হিসেবে এখানে পরিশোধিত চিহ্নিত করুন।';
+
+  @override
+  String hoursWorkedFormat(String hours) {
+    return '$hours ঘণ্টা';
+  }
+
+  @override
+  String get paymentReceivedValue => 'পরিশোধিত চিহ্নিত (অ্যাপের বাইরে)';
+
+  @override
+  String get outstandingValue => 'এখনও অপরিশোধিত';
+
+  @override
+  String get paymentReceivedTitle => 'অ্যাপের বাইরে পরিশোধিত চিহ্নিত';
+
+  @override
+  String get paymentOutstandingTitle => 'পেমেন্ট এখনও চিহ্নিত নয়';
+
+  @override
+  String get paymentReceivedBody =>
+      'এটি আপনাদের শেয়ারড রেকর্ড যে পেমেন্ট HupWorks-এর বাইরে হয়েছে (নগদ, ব্যাংক বা ই-ওয়ালেট)। অ্যাপ টাকা সরায় না।';
+
+  @override
+  String get paymentOutstandingSellerBody =>
+      'নিয়োগকর্তা অ্যাপের বাইরে পেমেন্ট করলে এখানে চিহ্নিত করুন। ঘণ্টা সাইন-ইন থেকে; এই চিহ্ন ট্র্যাকিংয়ের পেমেন্ট প্রমাণ।';
+
+  @override
+  String get paymentOutstandingClientBody =>
+      'ফ্রিল্যান্সারকে অ্যাপের বাইরে পেমেন্ট করলে এখানে চিহ্নিত করুন। উপস্থিতির ঘণ্টা কাজের প্রমাণ, এই চিহ্ন পেমেন্ট প্রমাণ।';
+
+  @override
+  String get markPaymentReceived => 'অ্যাপের বাইরে পরিশোধিত চিহ্নিত করুন';
+
+  @override
+  String get markPaymentPaid => 'অ্যাপের বাইরে পরিশোধিত চিহ্নিত করুন';
+
+  @override
+  String get undoPaymentReceived => 'পরিশোধিত চিহ্ন বাতিল';
+
+  @override
+  String get paymentReceivedMarked => 'অ্যাপের বাইরে পরিশোধিত হিসেবে চিহ্নিত।';
+
+  @override
+  String get paymentReceivedCleared => 'পরিশোধিত চিহ্ন মুছে ফেলা হয়েছে।';
+
+  @override
+  String paymentMarkedOn(String date) {
+    return 'চিহ্নিত হয়েছে $date';
+  }
 
   @override
   String get activeContracts => 'সক্রিয় চুক্তি';
@@ -857,6 +931,38 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get block => 'ব্লক';
+
+  @override
+  String get blockUserTitle => 'এই ব্যবহারকারীকে ব্লক করবেন?';
+
+  @override
+  String get blockUserBody =>
+      'নতুন কাজ বা বার্তার জন্য আপনারা একে অপরকে দেখতে পাবেন না। পুরনো চ্যাট ইতিহাস থাকবে।';
+
+  @override
+  String get blockUserBodyOpenObligation =>
+      'আপনাদের এখনও একটি খোলা বা অপরিশোধিত কাজ আছে। ব্লক করলে পেমেন্টের অধিকার বাতিল হয় না — আপনারা কাজ শেষ করতে, পেমেন্ট নিশ্চিত করতে এবং বিরোধ রিপোর্ট করতে পারবেন।';
+
+  @override
+  String get blockAlsoReportPayment =>
+      'পেমেন্ট বা চুক্তি সংক্রান্ত বিরোধও রিপোর্ট করুন';
+
+  @override
+  String get blockSuccess => 'ব্যবহারকারী ব্লক হয়েছে';
+
+  @override
+  String get blockSuccessOpenObligation =>
+      'ব্যবহারকারী ব্লক হয়েছে। আপনি এখনও খোলা কাজ ও পেমেন্ট পরিচালনা করতে পারবেন।';
+
+  @override
+  String get contactBlocked =>
+      'ব্লক থাকা অবস্থায় মেসেজ পাঠানো যায় না। আগে খোলা কাজ শেষ করুন বা আনব্লক করুন।';
+
+  @override
+  String get contactBlockedShort => 'যোগাযোগ ব্লক';
+
+  @override
+  String get unblock => 'আনব্লক';
 
   @override
   String get noMessagesYet => 'এখনও কোনো বার্তা নেই';

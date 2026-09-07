@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/category_icons.dart';
+import 'package:freelancer/core/utils/localized_category.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/services/client_home_service.dart';
 
@@ -28,10 +29,9 @@ class _ClientAllCategoriesState extends State<ClientAllCategories> {
   }
 
   List<Map<String, dynamic>> get _filtered {
-    final q = _query.trim().toLowerCase();
-    if (q.isEmpty) return _categories;
+    final lang = LocalizedCategory.languageCodeOf(context);
     return _categories
-        .where((c) => ((c['name'] as String?) ?? '').toLowerCase().contains(q))
+        .where((c) => LocalizedCategory.matchesSearch(c, _query, lang))
         .toList();
   }
 
@@ -139,8 +139,9 @@ class _ClientAllCategoriesState extends State<ClientAllCategories> {
                       separatorBuilder: (_, __) => const SizedBox(height: 10),
                       itemBuilder: (_, i) {
                         final cat = _filtered[i];
-                        final name = cat['name'] as String? ?? '';
-                        final desc = cat['description'] as String? ?? '';
+                        final lang = LocalizedCategory.languageCodeOf(context);
+                        final name = LocalizedCategory.name(cat, lang);
+                        final desc = LocalizedCategory.description(cat, lang);
                         final icon = cat['icon'] as String?;
                         final color = CategoryIcons.tintColor(i);
 

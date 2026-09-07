@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../router/app_router.dart';
 import '../services/auth_service.dart';
 
 /// Clears imperative [Navigator] pushes and navigates to the role home via GoRouter.
@@ -14,17 +15,19 @@ class AuthNavigation {
   static Future<void> goToHomeAfterAuth(BuildContext context) async {
     if (!context.mounted) return;
 
-    final role = await AuthService.getUserRole();
-    if (!context.mounted) return;
+    // Capture router before any await — dialog contexts unmount after pop.
+    final router = GoRouter.of(context);
 
+    final role = await AuthService.getUserRole(forceRefresh: true);
     final path = AuthService.homePathForRole(role);
 
-    final navigator = Navigator.of(context, rootNavigator: true);
-    while (navigator.canPop()) {
-      navigator.pop();
+    final nav = rootNavigatorKey.currentState;
+    if (nav != null) {
+      while (nav.canPop()) {
+        nav.pop();
+      }
     }
 
-    if (!context.mounted) return;
-    GoRouter.of(context).go(path);
+    router.go(path);
   }
 }

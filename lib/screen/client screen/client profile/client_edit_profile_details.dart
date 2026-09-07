@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:freelancer/core/utils/profile_avatar_picker.dart';
+import 'package:freelancer/core/utils/profile_image.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
+import 'package:freelancer/screen/widgets/editable_profile_avatar.dart';
 import 'package:freelancer/services/profile_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -27,6 +30,7 @@ class _ClientEditProfileState extends State<ClientEditProfile> {
   bool _isLoading = true;
   bool _isSaving = false;
   String? _profileImageUrl;
+  bool _uploadingPhoto = false;
   double? _latitude;
   double? _longitude;
 
@@ -57,7 +61,8 @@ class _ClientEditProfileState extends State<ClientEditProfile> {
           _cityController.text = profile['city'] ?? '';
           _bioController.text = profile['bio'] ?? '';
           _selectedGender = profile['gender'] ?? 'Male';
-          _profileImageUrl = profile['profile_image_url'];
+          _profileImageUrl =
+              ProfileImage.normalize(profile['profile_image_url'] as String?);
           _latitude = ProfileService.latitudeFromProfile(profile);
           _longitude = ProfileService.longitudeFromProfile(profile);
           _isLoading = false;
@@ -67,6 +72,29 @@ class _ClientEditProfileState extends State<ClientEditProfile> {
       }
     } catch (e) {
       if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _changePhoto() async {
+    final file = await ProfileAvatarPicker.pickAndCrop(context);
+    if (file == null || !mounted) return;
+    setState(() => _uploadingPhoto = true);
+    try {
+      final url = await ProfileService.uploadProfileImage(file);
+      if (!mounted) return;
+      setState(() {
+        _profileImageUrl = url;
+        _uploadingPhoto = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.profileUpdatedShort)),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _uploadingPhoto = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+      );
     }
   }
 
@@ -144,38 +172,38 @@ class _ClientEditProfileState extends State<ClientEditProfile> {
                 const SizedBox(height: 20.0),
                 const SizedBox(height: 15.0),
 
-                // Profile image
+                // Profile image — tap to pick, crop, upload
                 Row(
                   children: [
-                    Container(
-                      height: 80,
-                      width: 80,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: kPrimaryColor),
-                        image: DecorationImage(
-                          image: _profileImageUrl != null
-                              ? NetworkImage(_profileImageUrl!) as ImageProvider
-                              : const AssetImage('images/profile3.png'),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
+                    EditableProfileAvatar(
+                      imageUrl: _profileImageUrl,
+                      size: 80,
+                      uploading: _uploadingPhoto,
+                      onTap: _changePhoto,
                     ),
                     const SizedBox(width: 10.0),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          _nameController.text.isEmpty ? l10n.userName : _nameController.text,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 18.0),
-                        ),
-                        Text(
-                          l10n.editProfileSubtitle,
-                          style: kTextStyle.copyWith(color: kSubTitleColor),
-                        ),
-                      ],
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _nameController.text.isEmpty
+                                ? l10n.userName
+                                : _nameController.text,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: kTextStyle.copyWith(
+                              color: kNeutralColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18.0,
+                            ),
+                          ),
+                          Text(
+                            l10n.selectProfileImage,
+                            style: kTextStyle.copyWith(color: kSubTitleColor),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),

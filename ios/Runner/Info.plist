@@ -48,7 +48,13 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>HupWorks uses the camera to scan attendance QR codes at job sites.</string>
+	<string>HupWorks uses the camera for profile photos and to scan attendance QR codes at job sites.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>HupWorks needs photo library access so you can set your profile picture.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>HupWorks may save cropped profile photos to your library.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>HupWorks may use the microphone when taking a profile photo with video-capable cameras.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>HupWorks uses your location to help you pick your city on the map.</string>
 	<key>UIApplicationSceneManifest</key>

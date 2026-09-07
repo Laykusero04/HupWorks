@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:freelancer/core/utils/profile_avatar_picker.dart';
+import 'package:freelancer/core/utils/profile_image.dart';
 import 'package:freelancer/core/utils/seller_skills_validation.dart';
 import 'package:freelancer/data/models/seller_skill_model.dart';
 import 'package:freelancer/l10n/l10n.dart';
-import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
+import 'package:freelancer/screen/widgets/editable_profile_avatar.dart';
 import 'package:freelancer/screen/widgets/seller_skills_editor.dart';
 import 'package:freelancer/services/profile_service.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -30,6 +32,8 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
   List<SellerSkill> _skills = [];
   bool _isLoading = true;
   bool _isSaving = false;
+  String? _profileImageUrl;
+  bool _uploadingPhoto = false;
 
   @override
   void initState() {
@@ -61,6 +65,8 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
           _aboutController.text = ProfileService.sellerAboutFromProfile(profile) ?? '';
           _skills = ProfileService.sellerSkillsFromProfile(profile);
           _dateOfBirth = ProfileService.sellerDateOfBirthFromProfile(profile);
+          _profileImageUrl =
+              ProfileImage.normalize(profile['profile_image_url'] as String?);
           _isLoading = false;
         });
       } else {
@@ -90,6 +96,29 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
     final age = ProfileService.ageFromDateOfBirth(dob.toIso8601String());
     if (age != null) return 'Age $age (birth date is hidden on profile)';
     return 'Birth date saved';
+  }
+
+  Future<void> _changePhoto() async {
+    final file = await ProfileAvatarPicker.pickAndCrop(context);
+    if (file == null || !mounted) return;
+    setState(() => _uploadingPhoto = true);
+    try {
+      final url = await ProfileService.uploadProfileImage(file);
+      if (!mounted) return;
+      setState(() {
+        _profileImageUrl = url;
+        _uploadingPhoto = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.profileUpdatedShort)),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _uploadingPhoto = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+      );
+    }
   }
 
   Future<void> _handleSave() async {
@@ -191,7 +220,23 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 30.0),
+                  const SizedBox(height: 24.0),
+                  Center(
+                    child: EditableProfileAvatar(
+                      imageUrl: _profileImageUrl,
+                      size: 96,
+                      uploading: _uploadingPhoto,
+                      onTap: _changePhoto,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Center(
+                    child: Text(
+                      context.l10n.selectProfileImage,
+                      style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13),
+                    ),
+                  ),
+                  const SizedBox(height: 24.0),
                   _sectionTitle('Basic info'),
                   _field(_nameController, 'Full Name', 'Enter your name'),
                   const SizedBox(height: 20.0),

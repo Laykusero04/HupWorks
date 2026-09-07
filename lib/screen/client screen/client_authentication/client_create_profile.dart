@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:freelancer/core/utils/profile_avatar_picker.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
@@ -86,11 +87,10 @@ class _ClientCreateProfileState extends State<ClientCreateProfile> {
   }
 
   Future<void> _pickImage(ImageSource source) async {
-    final picker = ImagePicker();
-    final file = await picker.pickImage(source: source, imageQuality: 85);
+    final file = await ProfileAvatarPicker.pickFromSourceAndCrop(context, source);
     if (file == null || !mounted) return;
     setState(() {
-      _pickedImage = File(file.path);
+      _pickedImage = file;
       _uploadedImageUrl = null;
     });
   }

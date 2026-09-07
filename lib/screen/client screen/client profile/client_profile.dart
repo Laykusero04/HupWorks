@@ -105,7 +105,10 @@ class _ClientProfileState extends State<ClientProfile> {
                 ProfileMenuListTile(
                   icon: Icons.settings_outlined,
                   title: l10n.settings,
-                  onTap: () => const ClientSetting().launch(context),
+                  onTap: () async {
+                    await const ClientSetting().launch(context);
+                    _loadProfile(forceRefresh: true);
+                  },
                 ),
                 ProfileMenuListTile(
                   icon: Icons.person_add_outlined,

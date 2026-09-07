@@ -32,6 +32,7 @@ import '../screen/seller screen/profile/seller_profile.dart';
 import '../screen/seller screen/applications/seller_applications.dart';
 import '../screen/seller screen/buyer request/seller_buyer_request.dart';
 import '../screen/seller screen/seller message/chat_list.dart';
+import '../screen/seller screen/setup seller profile/setup_profile.dart';
 import '../screen/attendance/attendance_scan_screen.dart';
 import '../screen/attendance/seller_attendance_hub_screen.dart';
 import '../screen/widgets/auth/update_password_screen.dart';
@@ -73,6 +74,7 @@ GoRouter createRouter() {
       final location = state.matchedLocation;
       final isSplash = location == '/';
       final isUpdatePassword = location == AppRoutes.updatePassword;
+      final isSellerSetup = location == AppRoutes.sellerSetupProfile;
       final isPublicAuthRoute = location.startsWith('/onboard') ||
           location.startsWith('/welcome') ||
           location.startsWith('/auth');
@@ -82,13 +84,15 @@ GoRouter createRouter() {
         return isUpdatePassword ? null : AppRoutes.updatePassword;
       }
 
+      // Splash owns its own exit after the Rubik loader animation.
+      if (isSplash) {
+        return null;
+      }
+
       // Not signed in — first-run onboarding, then welcome / auth
       if (!loggedIn) {
         RoleCache.clear();
         final seenOnboarding = OnboardingPrefs.hasSeen;
-        if (isSplash) {
-          return seenOnboarding ? '/welcome' : '/onboard';
-        }
         if (!seenOnboarding && location.startsWith('/welcome')) {
           return '/onboard';
         }
@@ -98,14 +102,28 @@ GoRouter createRouter() {
         if (isUpdatePassword) {
           return '/welcome';
         }
+        // Setup requires a session.
+        if (isSellerSetup) {
+          return '/welcome';
+        }
         return isPublicAuthRoute ? null : '/welcome';
       }
 
       // Source of truth: profiles.role (cached). Never use JWT userMetadata here.
       final role = AuthService.cachedRole;
 
-      // Signed in — bounce splash/auth screens to the correct home
-      if (isSplash || isPublicAuthRoute) {
+      // Freelancer must finish account setup before using the app.
+      if (role == 'seller' && AuthService.needsSellerOnboarding) {
+        return isSellerSetup ? null : AppRoutes.sellerSetupProfile;
+      }
+
+      // Already finished setup — don't stay on the setup screen.
+      if (isSellerSetup) {
+        return AuthService.homePathForRole(role);
+      }
+
+      // Signed in — bounce other auth screens to the correct home (splash navigates itself)
+      if (isPublicAuthRoute && !isSellerSetup) {
         if (role == null) {
           // Role still loading from profiles; stay put until refresh notifies.
           return null;
@@ -146,6 +164,10 @@ GoRouter createRouter() {
       GoRoute(path: '/auth/client/signup', builder: (context, state) => const ClientSignUp()),
       GoRoute(path: '/auth/seller/login', builder: (context, state) => const SellerLogIn()),
       GoRoute(path: '/auth/seller/signup', builder: (context, state) => const SellerSignUp()),
+      GoRoute(
+        path: AppRoutes.sellerSetupProfile,
+        builder: (context, state) => const SetupSellerProfile(),
+      ),
       GoRoute(
         path: AppRoutes.updatePassword,
         builder: (context, state) => const UpdatePasswordScreen(),

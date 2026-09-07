@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../../core/constants/app_map_tiles.dart';
 import '../../core/constants/map_defaults.dart';
 import 'constant.dart';
 import 'map_geocoding.dart';
@@ -58,6 +61,7 @@ class _MapLocationPickerScreenState extends State<MapLocationPickerScreen> {
   final MapController _mapController = MapController();
   late LatLng _center;
   bool _resolving = false;
+  bool _locating = false;
   String? _previewLine;
 
   Color get _accent => widget.accentColor ?? kPrimaryColor;
@@ -76,6 +80,14 @@ class _MapLocationPickerScreenState extends State<MapLocationPickerScreen> {
   }
 
   Future<void> _moveToInitial() async {
+    // Prefer GPS when opening the picker (request permission if needed).
+    final gps = await _currentGpsLatLng(showErrors: false);
+    if (!mounted) return;
+    if (gps != null) {
+      _goTo(gps, zoom: 16);
+      return;
+    }
+
     LatLng? target = widget.initialPosition;
     if (target == null) {
       if (widget.purpose == MapLocationPickerPurpose.profile) {
@@ -95,9 +107,102 @@ class _MapLocationPickerScreenState extends State<MapLocationPickerScreen> {
       }
     }
     if (!mounted || target == null) return;
-    final resolved = target;
-    setState(() => _center = resolved);
-    _mapController.move(resolved, 14);
+    _goTo(target, zoom: 14);
+  }
+
+  Future<void> _goToMyLocation() async {
+    setState(() => _locating = true);
+    try {
+      final gps = await _currentGpsLatLng(showErrors: true);
+      if (!mounted || gps == null) return;
+      _goTo(gps, zoom: 16);
+    } finally {
+      if (mounted) setState(() => _locating = false);
+    }
+  }
+
+  void _goTo(LatLng target, {double zoom = 16}) {
+    setState(() => _center = target);
+    _mapController.move(target, zoom);
+  }
+
+  /// Requests permission + returns current GPS, or null if unavailable.
+  Future<LatLng?> _currentGpsLatLng({required bool showErrors}) async {
+    try {
+      final serviceOn = await Geolocator.isLocationServiceEnabled();
+      if (!serviceOn) {
+        if (showErrors && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Turn on location services to use GPS'),
+              action: SnackBarAction(
+                label: 'Settings',
+                onPressed: () => Geolocator.openLocationSettings(),
+              ),
+            ),
+          );
+        }
+        return null;
+      }
+
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      if (permission == LocationPermission.denied) {
+        if (showErrors && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Location permission is needed to use current GPS'),
+            ),
+          );
+        }
+        return null;
+      }
+      if (permission == LocationPermission.deniedForever) {
+        if (showErrors && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text(
+                'Location permission is blocked. Enable it in App settings.',
+              ),
+              action: SnackBarAction(
+                label: 'Settings',
+                onPressed: () => Geolocator.openAppSettings(),
+              ),
+            ),
+          );
+        }
+        return null;
+      }
+
+      final pos = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          timeLimit: Duration(seconds: 12),
+        ),
+      );
+      return LatLng(pos.latitude, pos.longitude);
+    } on MissingPluginException {
+      if (showErrors && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Location plugin not loaded. Fully stop the app and run a fresh rebuild (not hot restart).',
+            ),
+            duration: Duration(seconds: 6),
+          ),
+        );
+      }
+      return null;
+    } catch (e) {
+      if (showErrors && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not get GPS: $e')),
+        );
+      }
+      return null;
+    }
   }
 
   void _syncCenterFromCamera() {
@@ -179,13 +284,15 @@ class _MapLocationPickerScreenState extends State<MapLocationPickerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final start = widget.initialPosition ?? _center;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title ?? context.l10n.mapPickLocation, style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)),
+        title: Text(
+          widget.title ?? context.l10n.mapPickLocation,
+          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+        ),
         backgroundColor: kDarkWhite,
         elevation: 0,
         iconTheme: const IconThemeData(color: kNeutralColor),
@@ -214,24 +321,17 @@ class _MapLocationPickerScreenState extends State<MapLocationPickerScreen> {
                       maxZoom: 18,
                       backgroundColor: kDarkWhite,
                       onMapEvent: (event) {
-                        if (event is MapEventMoveEnd || event is MapEventFlingAnimationEnd) {
+                        if (event is MapEventMoveEnd ||
+                            event is MapEventFlingAnimationEnd) {
                           _syncCenterFromCamera();
                         }
                       },
                     ),
                     children: [
-                      TileLayer(
-                        urlTemplate: isDark
-                            ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-                            : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-                        subdomains: const ['a', 'b', 'c', 'd'],
-                        userAgentPackageName: 'com.prolancer.app',
-                      ),
+                      AppMapTiles.osm(isDark: isDark),
                       RichAttributionWidget(
                         alignment: AttributionAlignment.bottomRight,
-                        attributions: [
-                          TextSourceAttribution('OpenStreetMap contributors, CARTO'),
-                        ],
+                        attributions: AppMapTiles.attributions(),
                       ),
                     ],
                   ),
@@ -246,11 +346,34 @@ class _MapLocationPickerScreenState extends State<MapLocationPickerScreen> {
                           size: 52,
                           color: _accent,
                           shadows: const [
-                            Shadow(blurRadius: 6, color: Color(0x66000000), offset: Offset(0, 2)),
+                            Shadow(
+                              blurRadius: 6,
+                              color: Color(0x66000000),
+                              offset: Offset(0, 2),
+                            ),
                           ],
                         ),
                       ),
                     ),
+                  ),
+                ),
+                Positioned(
+                  right: 16,
+                  bottom: 16,
+                  child: FloatingActionButton.small(
+                    heroTag: 'map_my_location',
+                    backgroundColor: kWhite,
+                    onPressed: _locating ? null : _goToMyLocation,
+                    child: _locating
+                        ? SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: _accent,
+                            ),
+                          )
+                        : Icon(Icons.my_location, color: _accent),
                   ),
                 ),
               ],
@@ -266,7 +389,10 @@ class _MapLocationPickerScreenState extends State<MapLocationPickerScreen> {
           if (_previewLine != null)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(_previewLine!, style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12)),
+              child: Text(
+                _previewLine!,
+                style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12),
+              ),
             ),
           SafeArea(
             minimum: const EdgeInsets.fromLTRB(16, 8, 16, 16),
@@ -278,13 +404,18 @@ class _MapLocationPickerScreenState extends State<MapLocationPickerScreen> {
                   backgroundColor: _accent,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 child: _resolving
                     ? const SizedBox(
                         height: 22,
                         width: 22,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
                       )
                     : Text(context.l10n.mapUseThisLocation),
               ),

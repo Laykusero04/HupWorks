@@ -101,7 +101,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               label: l10n.authRoleFreelancer,
                               hint: l10n.authRoleFreelancerSubtitle,
                               icon: Icons.work_outline_rounded,
-                              color: kSecondaryColor,
+                              color: kSellerPrimary,
                               selected: _isFreelancer,
                               onTap: () =>
                                   setState(() => _isFreelancer = true),
@@ -116,7 +116,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         child: FilledButton(
                           onPressed: _goToSignUp,
                           style: FilledButton.styleFrom(
-                            backgroundColor: kPrimaryColor,
+                            backgroundColor:
+                                _isFreelancer ? kSellerPrimary : kPrimaryColor,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(14),
                             ),

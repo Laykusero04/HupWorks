@@ -24,6 +24,7 @@ import 'package:slide_countdown/slide_countdown.dart';
 import '../../widgets/constant.dart';
 import '../../widgets/hour_reports_section.dart';
 import '../../widgets/order_delivery_panel.dart';
+import '../../widgets/order_payment_received_card.dart';
 import '../report/seller_report.dart';
 import 'seller_deliver_order.dart';
 import 'seller_order_review.dart';
@@ -580,6 +581,15 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
                 ],
                 if (isCancelled) ...[
                   _buildCancelledSummary(),
+                  const SizedBox(height: 12),
+                ],
+                if (isCompleted) ...[
+                  OrderPaymentReceivedCard(
+                    orderId: widget.orderId,
+                    order: _order,
+                    isSellerView: true,
+                    onChanged: _loadOrder,
+                  ),
                   const SizedBox(height: 12),
                 ],
                 if (deliveries.isNotEmpty) ...[

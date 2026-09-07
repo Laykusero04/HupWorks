@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:freelancer/core/utils/localized_category.dart';
+import 'package:freelancer/core/utils/profile_avatar_picker.dart';
+import 'package:freelancer/core/utils/profile_image.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/services/job_posts_service.dart';
@@ -7,6 +10,7 @@ import 'package:freelancer/services/profile_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../widgets/constant.dart';
+import '../../widgets/editable_profile_avatar.dart';
 import '../../widgets/profile_detail_theme.dart';
 import '../../widgets/profile_rating_summary.dart';
 import '../../widgets/profile_skeleton.dart';
@@ -25,6 +29,7 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
   Map<String, dynamic>? _profile;
   List<Map<String, dynamic>> _jobs = [];
   bool _isLoading = true;
+  bool _uploadingPhoto = false;
 
   @override
   void initState() {
@@ -35,7 +40,7 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
   Future<void> _load() async {
     try {
       final results = await Future.wait([
-        ProfileService.getProfile(),
+        ProfileService.getProfile(forceRefresh: true),
         JobPostsService.getClientJobPosts(),
       ]);
       if (mounted) {
@@ -47,6 +52,32 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
       }
     } catch (e) {
       if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _changePhoto() async {
+    final file = await ProfileAvatarPicker.pickAndCrop(context);
+    if (file == null || !mounted) return;
+    setState(() => _uploadingPhoto = true);
+    try {
+      final url = await ProfileService.uploadProfileImage(file);
+      if (!mounted) return;
+      setState(() {
+        _profile = {
+          ...?_profile,
+          'profile_image_url': url,
+        };
+        _uploadingPhoto = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.profileUpdatedShort)),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _uploadingPhoto = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+      );
     }
   }
 
@@ -64,7 +95,8 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
     final bio = _profile?['bio'] as String?;
     final city = (_profile?['city'] as String?) ?? '';
     final country = (_profile?['country'] as String?) ?? '';
-    final profileImageUrl = _profile?['profile_image_url'];
+    final profileImageUrl =
+        ProfileImage.normalize(_profile?['profile_image_url'] as String?);
     final rating = (_profile?['rating'] as num?)?.toDouble() ?? 0;
     final reviewCount = (_profile?['review_count'] as num?)?.toInt() ?? 0;
 
@@ -97,15 +129,11 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
             children: [
               const SizedBox(height: 16.0),
 
-              // Avatar
-              Container(
-                height: 110,
-                width: 110,
-                decoration: ProfileDetailTheme.avatarDecoration(
-                  profileImageUrl != null
-                      ? NetworkImage(profileImageUrl) as ImageProvider
-                      : const AssetImage('images/profile3.png'),
-                ),
+              // Avatar — tap to change photo
+              EditableProfileAvatar(
+                imageUrl: profileImageUrl,
+                uploading: _uploadingPhoto,
+                onTap: _changePhoto,
               ),
               const SizedBox(height: 10.0),
 
@@ -176,6 +204,7 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
                   child: OutlinedButton.icon(
                     onPressed: () async {
                       await const ClientEditProfile().launch(context);
+                      await ProfileService.getProfile(forceRefresh: true);
                       _load();
                     },
                     icon: const Icon(IconlyBold.edit, size: 18, color: kPrimaryColor),
@@ -360,7 +389,11 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
                   ),
                   const Spacer(),
                   Text(
-                    category?['name'] ?? l10n.categoryGeneral,
+                    LocalizedCategory.name(
+                      category,
+                      LocalizedCategory.languageCodeOf(context),
+                      fallback: l10n.categoryGeneral,
+                    ),
                     style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
                   ),
                 ],

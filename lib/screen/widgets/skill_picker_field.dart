@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/utils/localized_category.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/services/skill_service.dart';
 
@@ -155,17 +156,18 @@ class _SkillPickerSheetState extends State<_SkillPickerSheet> {
   }
 
   Map<String, List<Map<String, dynamic>>> get _grouped {
+    final lang = LocalizedCategory.languageCodeOf(context);
     final q = _query.trim().toLowerCase();
     final filtered = _available.where((s) {
       if (q.isEmpty) return true;
       final name = (s['name'] as String? ?? '').toLowerCase();
-      final cat = (SkillService.categoryName(s) ?? '').toLowerCase();
+      final cat = (SkillService.categoryName(s, languageCode: lang) ?? '').toLowerCase();
       return name.contains(q) || cat.contains(q);
     }).toList();
 
     final groups = <String, List<Map<String, dynamic>>>{};
     for (final skill in filtered) {
-      final cat = SkillService.categoryName(skill) ?? 'Other';
+      final cat = SkillService.categoryName(skill, languageCode: lang) ?? 'Other';
       groups.putIfAbsent(cat, () => []).add(skill);
     }
 

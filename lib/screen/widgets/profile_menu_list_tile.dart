@@ -9,10 +9,12 @@ class ProfileMenuListTile extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.onTap,
+    this.subtitle,
   });
 
   final IconData icon;
   final String title;
+  final String? subtitle;
   final VoidCallback onTap;
 
   @override
@@ -25,6 +27,12 @@ class ProfileMenuListTile extends StatelessWidget {
         title,
         style: kTextStyle.copyWith(color: kNeutralColor, fontSize: 15),
       ),
+      subtitle: subtitle == null
+          ? null
+          : Text(
+              subtitle!,
+              style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12),
+            ),
       trailing: const Icon(Icons.chevron_right, color: kLightNeutralColor, size: 20),
       onTap: onTap,
     );

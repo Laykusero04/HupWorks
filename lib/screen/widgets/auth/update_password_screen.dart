@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/screen/app_config/app_config.dart';
 import 'package:freelancer/services/auth_service.dart';
 import 'package:go_router/go_router.dart';
 
@@ -69,81 +70,56 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return Scaffold(
-      backgroundColor: kWhite,
-      appBar: AppBar(
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        backgroundColor: kDarkWhite,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(50.0),
-            bottomRight: Radius.circular(50.0),
-          ),
-        ),
-        toolbarHeight: 80,
-        centerTitle: true,
-        title: Text(
-          l10n.authUpdatePasswordTitle,
-          style: kTextStyle.copyWith(
-            color: kNeutralColor,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: [
-            Text(
-              l10n.authUpdatePasswordBody,
-              style: kTextStyle.copyWith(color: kLightNeutralColor),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24.0),
-            AuthTextField(
-              controller: _passwordController,
-              label: l10n.authNewPassword,
-              hint: l10n.authPasswordHint,
-              obscureText: _hidePassword,
-              textInputAction: TextInputAction.next,
-              suffixIcon: IconButton(
-                onPressed: () =>
-                    setState(() => _hidePassword = !_hidePassword),
-                icon: Icon(
-                  _hidePassword
-                      ? Icons.visibility_off_outlined
-                      : Icons.visibility_outlined,
-                  color: kLightNeutralColor,
-                ),
+    return AuthScaffold(
+      title: l10n.authUpdatePasswordTitle,
+      subtitle: l10n.authUpdatePasswordBody,
+      accentColor: kPrimaryColor,
+      heroImage: AppInfo.onBoard1,
+      onBack: () => Navigator.of(context).maybePop(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          AuthTextField(
+            controller: _passwordController,
+            label: l10n.authNewPassword,
+            hint: l10n.authPasswordHint,
+            obscureText: _hidePassword,
+            textInputAction: TextInputAction.next,
+            suffixIcon: IconButton(
+              onPressed: () => setState(() => _hidePassword = !_hidePassword),
+              icon: Icon(
+                _hidePassword
+                    ? Icons.visibility_off_outlined
+                    : Icons.visibility_outlined,
+                color: kLightNeutralColor,
               ),
             ),
-            const SizedBox(height: 16.0),
-            AuthTextField(
-              controller: _confirmController,
-              label: l10n.authConfirmPassword,
-              hint: l10n.authPasswordHint,
-              obscureText: _hideConfirm,
-              textInputAction: TextInputAction.done,
-              suffixIcon: IconButton(
-                onPressed: () => setState(() => _hideConfirm = !_hideConfirm),
-                icon: Icon(
-                  _hideConfirm
-                      ? Icons.visibility_off_outlined
-                      : Icons.visibility_outlined,
-                  color: kLightNeutralColor,
-                ),
+          ),
+          const SizedBox(height: 16),
+          AuthTextField(
+            controller: _confirmController,
+            label: l10n.authConfirmPassword,
+            hint: l10n.authPasswordHint,
+            obscureText: _hideConfirm,
+            textInputAction: TextInputAction.done,
+            suffixIcon: IconButton(
+              onPressed: () => setState(() => _hideConfirm = !_hideConfirm),
+              icon: Icon(
+                _hideConfirm
+                    ? Icons.visibility_off_outlined
+                    : Icons.visibility_outlined,
+                color: kLightNeutralColor,
               ),
             ),
-            const Spacer(),
-            AuthPrimaryButton(
-              label: l10n.authSavePassword,
-              onPressed: _handleSave,
-              accentColor: kPrimaryColor,
-              isLoading: _isLoading,
-            ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 24),
+          AuthPrimaryButton(
+            label: l10n.authSavePassword,
+            onPressed: _handleSave,
+            accentColor: kPrimaryColor,
+            isLoading: _isLoading,
+          ),
+        ],
       ),
     );
   }

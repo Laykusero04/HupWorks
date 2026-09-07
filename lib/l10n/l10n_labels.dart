@@ -1,5 +1,6 @@
 import 'package:freelancer/core/utils/order_cancellation.dart';
 import 'package:freelancer/l10n/app_localizations.dart';
+import 'package:freelancer/services/job_posts_service.dart';
 
 /// Localized labels for stored English codes / enums.
 class L10nLabels {
@@ -74,6 +75,37 @@ class L10nLabels {
       default:
         return l10n.jobTypeGig;
     }
+  }
+
+  static String offerAmountShort(
+    AppLocalizations l10n,
+    Object? price,
+    Object? basis,
+  ) {
+    return JobPostsService.formatOfferAmountShort(
+      price,
+      basis,
+      perHour: l10n.budgetSuffixHour,
+      perDay: l10n.budgetSuffixDay,
+      perMonth: l10n.budgetSuffixMonth,
+      fixed: ' ${l10n.budgetSuffixTotal}',
+    );
+  }
+
+  static String budgetRangeShort(
+    AppLocalizations l10n,
+    Object? min,
+    Object? max,
+    Object? basis,
+  ) {
+    return JobPostsService.formatBudgetRangeShort(
+      min,
+      max,
+      basis,
+      perHour: l10n.budgetSuffixHour,
+      perDay: l10n.budgetSuffixDay,
+      perMonth: l10n.budgetSuffixMonth,
+    );
   }
 
   static String orderFilterTabLabel(AppLocalizations l10n, String code) {

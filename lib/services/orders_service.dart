@@ -181,6 +181,25 @@ class OrdersService {
     );
   }
 
+  /// Mark (or clear) off-app payment confirmation on a completed order.
+  static Future<void> setPaymentReceived({
+    required String orderId,
+    required bool received,
+  }) async {
+    await _client.rpc(
+      'set_order_payment_received',
+      params: {
+        'p_order_id': orderId,
+        'p_received': received,
+      },
+    );
+  }
+
+  static bool isPaymentReceived(Map<String, dynamic>? order) {
+    final at = order?['payment_received_at'];
+    return at != null && at.toString().isNotEmpty;
+  }
+
   /// Seller leaves a review for the client on this order.
   static Future<void> submitSellerOrderReview({
     required String orderId,

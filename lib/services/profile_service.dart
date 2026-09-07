@@ -272,7 +272,8 @@ class ProfileService {
     final data = await _client
         .from('profiles')
         .select(
-          'id, name, profile_image_url, bio, rating, created_at, '
+          'id, name, profile_image_url, bio, rating, created_at, verification_status, '
+          'profile_photo_status, profile_photo_rejection_reason, '
           'seller_profiles(job_title, about, skills, address, birth_year, birth_month, birth_day, languages, education, experience)',
         )
         .eq('id', sellerId)
@@ -323,6 +324,8 @@ class ProfileService {
         .select(
           'id, role, name, email, phone, gender, '
           'profile_image_url, bio, rating, balance, created_at, '
+          'verification_status, verification_rejection_reason, '
+          'profile_photo_status, profile_photo_rejection_reason, '
           'seller_profiles(id, job_title, about, skills, address, birth_year, birth_month, birth_day, languages, education, experience), '
           'seller_private_details(date_of_birth, street_address, state, postal_code)',
         )
@@ -534,25 +537,54 @@ class ProfileService {
     final user = _client.auth.currentUser;
     if (user == null) throw Exception('Not logged in');
 
-    final ext = imageFile.path.split('.').last;
-    final path = '${user.id}/avatar.$ext';
+    // Cropper always outputs JPEG; keep a stable object key so upsert replaces.
+    const objectPath = 'avatar.jpg';
+    final storagePath = '${user.id}/$objectPath';
 
-    await _client.storage.from('avatars').upload(
-      path,
-      imageFile,
-      fileOptions: const FileOptions(upsert: true),
-    );
+    try {
+      await _client.storage.from('avatars').upload(
+        storagePath,
+        imageFile,
+        fileOptions: const FileOptions(
+          upsert: true,
+          contentType: 'image/jpeg',
+        ),
+      );
+    } catch (e) {
+      final msg = e.toString();
+      if (msg.contains('row-level security') ||
+          msg.contains('Unauthorized') ||
+          msg.contains('403') ||
+          msg.contains('Bucket not found') ||
+          msg.contains('not found')) {
+        throw Exception(
+          'Photo upload blocked by Supabase. Open SQL Editor and run '
+          'migrations/0033_avatars_storage.sql, then try again.',
+        );
+      }
+      rethrow;
+    }
 
-    final imageUrl = _client.storage.from('avatars').getPublicUrl(path);
+    final imageUrl = _client.storage.from('avatars').getPublicUrl(storagePath);
+    // Stable storage path + upsert can leave ImageCache stale; bust it.
+    final cacheBusted =
+        '${imageUrl.split('?').first}?v=${DateTime.now().millisecondsSinceEpoch}';
 
     await _client.from('profiles').update({
-      'profile_image_url': imageUrl,
+      'profile_image_url': cacheBusted,
+      // New/replaced photo needs a separate admin review from face+ID.
+      'profile_photo_status': 'pending',
+      'profile_photo_reviewed_at': null,
+      'profile_photo_rejection_reason': null,
     }).eq('id', user.id);
 
     if (_profileCache != null && _cacheUserId == user.id) {
-      _profileCache!['profile_image_url'] = imageUrl;
+      _profileCache!['profile_image_url'] = cacheBusted;
+      _profileCache!['profile_photo_status'] = 'pending';
+      _profileCache!['profile_photo_reviewed_at'] = null;
+      _profileCache!['profile_photo_rejection_reason'] = null;
     }
 
-    return imageUrl;
+    return cacheBusted;
   }
 }

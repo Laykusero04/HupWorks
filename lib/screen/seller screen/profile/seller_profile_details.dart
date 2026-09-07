@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:freelancer/core/utils/profile_avatar_picker.dart';
+import 'package:freelancer/core/utils/profile_image.dart';
 import 'package:freelancer/data/models/seller_skill_model.dart';
 import 'package:freelancer/services/profile_service.dart';
+import 'package:freelancer/services/verification_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../widgets/constant.dart';
+import '../../widgets/editable_profile_avatar.dart';
 import '../../widgets/profile_detail_theme.dart';
 import '../../widgets/profile_rating_summary.dart';
 import '../../widgets/profile_skeleton.dart';
 import '../../widgets/seller_skills_display.dart';
+import '../../widgets/verification_score_card.dart';
+import '../../widgets/verification_status_badge.dart';
 import 'seller_edit_profile_details.dart';
+import 'seller_identity_verification_screen.dart';
 
 class SellerProfileDetails extends StatefulWidget {
   const SellerProfileDetails({Key? key}) : super(key: key);
@@ -24,6 +31,7 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
   List<Map<String, dynamic>> _reviews = [];
   List<SellerSkill> _skills = const [];
   bool _isLoading = true;
+  bool _uploadingPhoto = false;
 
   @override
   void initState() {
@@ -48,6 +56,32 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
       });
     } catch (e) {
       if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _changePhoto() async {
+    final file = await ProfileAvatarPicker.pickAndCrop(context);
+    if (file == null || !mounted) return;
+    setState(() => _uploadingPhoto = true);
+    try {
+      final url = await ProfileService.uploadProfileImage(file);
+      if (!mounted) return;
+      setState(() {
+        _profile = {
+          ...?_profile,
+          'profile_image_url': url,
+        };
+        _uploadingPhoto = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.profileUpdatedShort)),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _uploadingPhoto = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+      );
     }
   }
 
@@ -81,8 +115,17 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
     final reviewCount = reviewStats.count;
     final phone = _profile?['phone'] as String? ?? '';
     final gender = _profile?['gender'] as String? ?? '';
+    final verificationStatus =
+        VerificationService.statusFromProfile(_profile);
+    final verificationScore =
+        VerificationService.scoreFromProfile(_profile);
 
     final avgLabel = reviewCount > 0 ? rating.toStringAsFixed(1) : '—';
+
+    Future<void> openVerification() async {
+      await const SellerIdentityVerificationScreen().launch(context);
+      _load();
+    }
 
     final brand = Theme.of(context).colorScheme.primary;
     final pageBg = Theme.of(context).scaffoldBackgroundColor;
@@ -109,14 +152,20 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
             children: [
               const SizedBox(height: 16.0),
 
-              Container(
-                height: 110,
-                width: 110,
-                decoration: ProfileDetailTheme.avatarDecoration(
-                  profileImageUrl != null
-                      ? NetworkImage(profileImageUrl) as ImageProvider
-                      : const AssetImage('images/profile3.png'),
-                  accent: brand,
+              EditableProfileAvatar(
+                imageUrl: ProfileImage.normalize(
+                  profileImageUrl is String ? profileImageUrl : null,
+                ),
+                accent: brand,
+                uploading: _uploadingPhoto,
+                onTap: _changePhoto,
+              ),
+              const SizedBox(height: 10.0),
+              Center(
+                child: VerificationStatusBadge(
+                  status: verificationStatus,
+                  score: verificationScore,
+                  onTap: openVerification,
                 ),
               ),
               const SizedBox(height: 10.0),
@@ -194,9 +243,24 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                       _statDivider(brand),
                       _statTile(avgLabel, 'Avg rating', brand),
                       _statDivider(brand),
-                      _statTile('${_skills.length}', context.l10n.skills, brand),
+                      _statTile(
+                        '${verificationScore.total}',
+                        'Trust',
+                        brand,
+                      ),
                     ],
                   ),
+                ),
+              ),
+
+              const SizedBox(height: 14.0),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: VerificationScoreCard(
+                  score: verificationScore,
+                  accent: brand,
+                  onTap: openVerification,
                 ),
               ),
 

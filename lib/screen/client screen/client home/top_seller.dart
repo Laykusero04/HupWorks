@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:freelancer/core/utils/profile_image.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/services/client_home_service.dart';
 import 'package:freelancer/services/profile_service.dart';
@@ -191,9 +192,7 @@ class _TopSellerState extends State<TopSeller> {
                       child: DecoratedBox(
                         decoration: BoxDecoration(
                           image: DecorationImage(
-                            image: profileImageUrl != null
-                                ? NetworkImage(profileImageUrl) as ImageProvider
-                                : const AssetImage('images/dev1.png'),
+                            image: ProfileImage.provider(profileImageUrl),
                             fit: BoxFit.cover,
                           ),
                         ),

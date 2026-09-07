@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/support_chat_navigation.dart';
 import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/screen/seller%20screen/profile/seller_identity_verification_screen.dart';
 import 'package:freelancer/screen/seller%20screen/profile/seller_profile_details.dart';
+import 'package:freelancer/screen/seller%20screen/seller%20dashboard/seller_dashboard.dart';
 import 'package:freelancer/services/auth_service.dart';
 import 'package:freelancer/services/profile_service.dart';
+import 'package:freelancer/services/verification_service.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -12,6 +15,7 @@ import '../../widgets/profile_menu_list_tile.dart';
 import '../../widgets/profile_skeleton.dart';
 import '../../widgets/shell_drawer_header.dart';
 import '../../widgets/shell_tab_header.dart';
+import '../../widgets/verification_status_badge.dart';
 import '../favourite/seller_favourite_list.dart';
 import '../report/seller_report.dart';
 import '../setting/seller_invite.dart';
@@ -68,6 +72,8 @@ class _SellerProfileState extends State<SellerProfile> {
     final profileImageUrl = _profile?['profile_image_url'] as String?;
     final rating = (_profile?['rating'] as num?)?.toDouble() ?? 0;
     final reviewCount = (_profile?['review_count'] as num?)?.toInt() ?? 0;
+    final verificationStatus =
+        VerificationService.statusFromProfile(_profile);
 
     return Material(
       color: kWhite,
@@ -77,9 +83,20 @@ class _SellerProfileState extends State<SellerProfile> {
             persona: ShellPersona.seller,
             name: name,
             imageUrl: profileImageUrl,
-            fallbackAsset: 'images/profile1.png',
             rating: rating,
             reviewCount: reviewCount,
+            verificationBadge: Padding(
+              padding: const EdgeInsets.only(top: 6),
+              child: VerificationStatusBadge(
+                status: verificationStatus,
+                score: VerificationService.scoreFromProfile(_profile),
+                compact: true,
+                onTap: () async {
+                  await const SellerIdentityVerificationScreen().launch(context);
+                  _loadProfile(forceRefresh: true);
+                },
+              ),
+            ),
           ),
           const Divider(height: 1),
           Expanded(
@@ -91,6 +108,20 @@ class _SellerProfileState extends State<SellerProfile> {
                   title: l10n.myProfile,
                   onTap: () async {
                     await const SellerProfileDetails().launch(context);
+                    _loadProfile(forceRefresh: true);
+                  },
+                ),
+                ProfileMenuListTile(
+                  icon: Icons.dashboard_outlined,
+                  title: l10n.dashboard,
+                  onTap: () => const SellerDashBoard().launch(context),
+                ),
+                ProfileMenuListTile(
+                  icon: Icons.verified_user_outlined,
+                  title: 'Identity verification',
+                  subtitle: '${VerificationService.scoreFromProfile(_profile).total}/100 trust score',
+                  onTap: () async {
+                    await const SellerIdentityVerificationScreen().launch(context);
                     _loadProfile(forceRefresh: true);
                   },
                 ),
@@ -123,7 +154,10 @@ class _SellerProfileState extends State<SellerProfile> {
                 ProfileMenuListTile(
                   icon: Icons.settings_outlined,
                   title: l10n.settings,
-                  onTap: () => const SellerSetting().launch(context),
+                  onTap: () async {
+                    await const SellerSetting().launch(context);
+                    _loadProfile(forceRefresh: true);
+                  },
                 ),
                 ProfileMenuListTile(
                   icon: Icons.person_add_outlined,

@@ -84,6 +84,8 @@ create table public.categories (
   name text not null,
   icon text,
   description text,
+  name_i18n jsonb not null default '{}'::jsonb,
+  description_i18n jsonb not null default '{}'::jsonb,
   is_custom boolean not null default false,
   created_by uuid references public.profiles(id) on delete set null,
   created_at timestamptz default now()
@@ -203,7 +205,9 @@ create table public.orders (
   shift_end time,
   job_offer_id uuid, -- FK added after job_offers is created (see below)
   created_at timestamptz default now(),
-  completed_at timestamptz
+  completed_at timestamptz,
+  payment_received_at timestamptz,
+  payment_received_by uuid references public.profiles(id) on delete set null
 );
 
 alter table public.orders enable row level security;
@@ -884,16 +888,54 @@ $$;
 
 grant execute on function public.accept_job_offer(uuid) to authenticated;
 
+-- ==================
+-- USER REPORTS & SOFT BLOCKS (see migrations 0019, 0023, 0039)
+-- ==================
+-- Full DDL + RPCs live in migrations/0039_user_blocks.sql (includes reports).
+-- Apply that file in Supabase SQL Editor if Reports admin shows schema-cache errors.
+
 -- ============================================
 -- SEED DATA: Default Categories
 -- ============================================
 
-insert into public.categories (name, icon, description) values
-  ('Cleaning & Janitorial', 'cleaning', 'Janitors, cleaners, building maintenance'),
-  ('Factory & Warehouse', 'factory', 'Factory workers, packers, warehouse staff'),
-  ('Skilled Trades', 'trades', 'Craftsmen, carpenters, electricians, plumbers'),
-  ('Beauty & Salon', 'beauty', 'Hairdressers, barbers, nail techs, stylists'),
-  ('Food Service', 'food', 'Waiters, cooks, bakers, kitchen staff'),
-  ('Retail & Sales', 'retail', 'Cashiers, shop assistants, floor staff'),
-  ('Delivery & Driving', 'delivery', 'Drivers, couriers, delivery helpers'),
-  ('General Labor', 'labor', 'Construction helpers, movers, handyman, onsite helpers');
+insert into public.categories (name, icon, description, name_i18n, description_i18n) values
+  (
+    'Cleaning & Janitorial', 'cleaning', 'Janitors, cleaners, building maintenance',
+    '{"en":"Cleaning & Janitorial","nl":"Schoonmaak & Facility","bn":"পরিষ্কার ও জ্যানিটোরিয়াল"}'::jsonb,
+    '{"en":"Janitors, cleaners, building maintenance","nl":"Conciërges, schoonmakers, gebouwonderhoud","bn":"জ্যানিটর, ক্লিনার, বিল্ডিং রক্ষণাবেক্ষণ"}'::jsonb
+  ),
+  (
+    'Factory & Warehouse', 'factory', 'Factory workers, packers, warehouse staff',
+    '{"en":"Factory & Warehouse","nl":"Fabriek & Magazijn","bn":"কারখানা ও গুদাম"}'::jsonb,
+    '{"en":"Factory workers, packers, warehouse staff","nl":"Fabrieksarbeiders, inpakkers, magazijnmedewerkers","bn":"কারখানা শ্রমিক, প্যাকার, গুদাম কর্মী"}'::jsonb
+  ),
+  (
+    'Skilled Trades', 'trades', 'Craftsmen, carpenters, electricians, plumbers',
+    '{"en":"Skilled Trades","nl":"Ambachtelijke beroepen","bn":"দক্ষ ট্রেড"}'::jsonb,
+    '{"en":"Craftsmen, carpenters, electricians, plumbers","nl":"Vakmensen, timmerlieden, elektriciens, loodgieters","bn":"কারিগর, ছুতার, ইলেকট্রিশিয়ান, প্লাম্বার"}'::jsonb
+  ),
+  (
+    'Beauty & Salon', 'beauty', 'Hairdressers, barbers, nail techs, stylists',
+    '{"en":"Beauty & Salon","nl":"Beauty & Salon","bn":"বিউটি ও সেলুন"}'::jsonb,
+    '{"en":"Hairdressers, barbers, nail techs, stylists","nl":"Kappers, barbiers, nagelstylisten, stylisten","bn":"হেয়ারড্রেসার, বারবার, নেইল টেক, স্টাইলিস্ট"}'::jsonb
+  ),
+  (
+    'Food Service', 'food', 'Waiters, cooks, bakers, kitchen staff',
+    '{"en":"Food Service","nl":"Horeca","bn":"খাদ্য সেবা"}'::jsonb,
+    '{"en":"Waiters, cooks, bakers, kitchen staff","nl":"Kelners, koks, bakkers, keukenpersoneel","bn":"ওয়েটার, রাঁধুনি, বেকার, রান্নাঘরের কর্মী"}'::jsonb
+  ),
+  (
+    'Retail & Sales', 'retail', 'Cashiers, shop assistants, floor staff',
+    '{"en":"Retail & Sales","nl":"Retail & Verkoop","bn":"খুচরা ও বিক্রয়"}'::jsonb,
+    '{"en":"Cashiers, shop assistants, floor staff","nl":"Kassamedewerkers, winkelassistenten, vloerpersoneel","bn":"ক্যাশিয়ার, দোকান সহায়ক, ফ্লোর স্টাফ"}'::jsonb
+  ),
+  (
+    'Delivery & Driving', 'delivery', 'Drivers, couriers, delivery helpers',
+    '{"en":"Delivery & Driving","nl":"Bezorging & Rijden","bn":"ডেলিভারি ও ড্রাইভিং"}'::jsonb,
+    '{"en":"Drivers, couriers, delivery helpers","nl":"Chauffeurs, koeriers, bezorghelpers","bn":"ড্রাইভার, কুরিয়ার, ডেলিভারি সহায়ক"}'::jsonb
+  ),
+  (
+    'General Labor', 'labor', 'Construction helpers, movers, handyman, onsite helpers',
+    '{"en":"General Labor","nl":"Algemeen werk","bn":"সাধারণ শ্রম"}'::jsonb,
+    '{"en":"Construction helpers, movers, handyman, onsite helpers","nl":"Bouwhelpers, verhuizers, klusjesmannen, onsite helpers","bn":"নির্মাণ সহায়ক, মুভার, হ্যান্ডম্যান, অনসাইট সহায়ক"}'::jsonb
+  );

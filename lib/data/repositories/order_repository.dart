@@ -57,6 +57,20 @@ class OrderRepository {
     }
   }
 
+  Future<void> setPaymentReceived({
+    required String orderId,
+    required bool received,
+  }) async {
+    try {
+      await OrdersService.setPaymentReceived(
+        orderId: orderId,
+        received: received,
+      );
+    } catch (e) {
+      throw ServerFailure(e.toString());
+    }
+  }
+
   // ── Seller orders ──
 
   Future<List<Order>> getSellerOrders({String? status}) async {

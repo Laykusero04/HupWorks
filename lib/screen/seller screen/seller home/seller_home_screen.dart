@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/notifications/notification_scope.dart';
 import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/core/utils/job_offer_delivery.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
-import 'package:freelancer/services/job_posts_service.dart';
 import 'package:freelancer/services/seller_home_service.dart';
 import 'package:freelancer/services/seller_orders_service.dart';
 import 'package:go_router/go_router.dart';
@@ -92,6 +92,23 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
   int _ov(String key) => (_overview[key] as num?)?.toInt() ?? 0;
 
   double _ovDouble(String key) => (_overview[key] as num?)?.toDouble() ?? 0;
+
+  String _formatHours(BuildContext context) {
+    final minutes = _ovDouble('hours_worked_minutes');
+    final hours = minutes / 60.0;
+    final label = hours == hours.roundToDouble()
+        ? hours.toInt().toString()
+        : hours.toStringAsFixed(1);
+    return context.l10n.hoursWorkedFormat(label);
+  }
+
+  String _formatMoney(String key) {
+    final value = _ovDouble(key);
+    if (value == value.roundToDouble()) {
+      return '$currencySign${value.toInt()}';
+    }
+    return '$currencySign${value.toStringAsFixed(2)}';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -308,7 +325,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
                                           ),
                                           const SizedBox(height: 6),
                                           Text(
-                                            '${JobPostsService.formatOfferAmountShort(app['price'], app['price_basis'])} • ${JobOfferDelivery.formatShort(app['delivery_time'], app['delivery_time_unit'])}',
+                                            '${L10nLabels.offerAmountShort(l10n, app['price'], app['price_basis'])} • ${JobOfferDelivery.formatShort(app['delivery_time'], app['delivery_time_unit'])}',
                                             style: kTextStyle.copyWith(color: kSubTitleColor),
                                           ),
                                         ],
@@ -331,10 +348,6 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
 
   Widget _buildWorkOverviewCard(BuildContext context) {
     final l10n = context.l10n;
-    final rating = _ovDouble('avg_rating');
-    final reviews = _ov('review_count');
-    final ratingLabel = reviews > 0 ? rating.toStringAsFixed(1) : '—';
-    final ratingSubtitle = reviews > 0 ? l10n.reviewCount(reviews) : l10n.noReviewsYet;
 
     return _buildCard(
       title: l10n.yourWork,
@@ -342,70 +355,125 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
         l10n.periodLive,
         style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
       ),
-      child: Container(
-        decoration: BoxDecoration(
-          color: kDarkWhite,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Column(
-          children: [
-            IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(
-                    child: _WorkStatPrimary(
-                      value: '${_ov('active_contracts')}',
-                      label: l10n.activeContracts,
-                      color: kSecondaryColor,
-                      onTap: () => context.go('/seller/orders'),
-                    ),
-                  ),
-                  VerticalDivider(width: 1, thickness: 1, color: kBorderColorTextField),
-                  Expanded(
-                    child: _WorkStatPrimary(
-                      value: '${_ov('pending_applications')}',
-                      label: l10n.pendingApplications,
-                      color: StatusColors.warning,
-                      onTap: () => context.push('/seller/applications'),
-                    ),
-                  ),
-                ],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: kDarkWhite,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: kBorderColorTextField),
+            ),
+            child: Text(
+              l10n.workOverviewDisclaimer,
+              style: kTextStyle.copyWith(
+                color: kSubTitleColor,
+                fontSize: 11.5,
+                height: 1.35,
               ),
             ),
-            const Divider(height: 1, thickness: 1, color: kBorderColorTextField),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: _WorkStatCompact(
-                      value: '${_ov('completed_this_month')}',
-                      label: l10n.completedThisMonth,
-                      icon: Icons.check_circle_outline,
-                      color: StatusColors.success,
-                    ),
-                  ),
-                  Container(
-                    width: 1,
-                    height: 44,
-                    color: kBorderColorTextField,
-                  ),
-                  Expanded(
-                    child: _WorkStatCompact(
-                      value: ratingLabel,
-                      label: l10n.yourRating,
-                      subtitle: ratingSubtitle,
-                      icon: Icons.star_rounded,
-                      color: ratingBarColor,
-                    ),
-                  ),
-                ],
-              ),
+          ),
+          const SizedBox(height: 12),
+          Container(
+            decoration: BoxDecoration(
+              color: kDarkWhite,
+              borderRadius: BorderRadius.circular(12),
             ),
-          ],
-        ),
+            clipBehavior: Clip.antiAlias,
+            child: Column(
+              children: [
+                IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(
+                        child: _WorkStatPrimary(
+                          value: _formatHours(context),
+                          label: l10n.hoursWorked,
+                          color: kSecondaryColor,
+                          onTap: () => context.push('/seller/attendance'),
+                        ),
+                      ),
+                      VerticalDivider(width: 1, thickness: 1, color: kBorderColorTextField),
+                      Expanded(
+                        child: _WorkStatPrimary(
+                          value: _formatMoney('agreed_contract_value'),
+                          label: l10n.agreedContractValue,
+                          color: StatusColors.success,
+                          onTap: () => context.go('/seller/orders'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(height: 1, thickness: 1, color: kBorderColorTextField),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: _WorkStatCompact(
+                          value: _formatMoney('payment_received_value'),
+                          label: l10n.paymentReceivedValue,
+                          icon: Icons.fact_check_outlined,
+                          color: StatusColors.success,
+                          onTap: () => context.go('/seller/orders'),
+                        ),
+                      ),
+                      Container(
+                        width: 1,
+                        height: 44,
+                        color: kBorderColorTextField,
+                      ),
+                      Expanded(
+                        child: _WorkStatCompact(
+                          value: _formatMoney('outstanding_value'),
+                          label: l10n.outstandingValue,
+                          icon: Icons.pending_actions_outlined,
+                          color: StatusColors.warning,
+                          onTap: () => context.go('/seller/orders'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(height: 1, thickness: 1, color: kBorderColorTextField),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: _WorkStatCompact(
+                          value: '${_ov('jobs_completed')}',
+                          label: l10n.jobsCompleted,
+                          icon: Icons.check_circle_outline,
+                          color: StatusColors.success,
+                          onTap: () => context.go('/seller/orders'),
+                        ),
+                      ),
+                      Container(
+                        width: 1,
+                        height: 44,
+                        color: kBorderColorTextField,
+                      ),
+                      Expanded(
+                        child: _WorkStatCompact(
+                          value: '${_ov('active_contracts')}',
+                          label: l10n.activeContracts,
+                          icon: Icons.work_outline_rounded,
+                          color: kSecondaryColor,
+                          onTap: () => context.go('/seller/orders'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -677,13 +745,17 @@ class _WorkStatPrimary extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
           child: Column(
             children: [
-              Text(
-                value,
-                style: kTextStyle.copyWith(
-                  color: color,
-                  fontWeight: FontWeight.w800,
-                  fontSize: 32,
-                  height: 1,
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  value,
+                  maxLines: 1,
+                  style: kTextStyle.copyWith(
+                    color: color,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 28,
+                    height: 1,
+                  ),
                 ),
               ),
               const SizedBox(height: 6),
@@ -711,7 +783,6 @@ class _WorkStatCompact extends StatelessWidget {
   final String label;
   final IconData icon;
   final Color color;
-  final String? subtitle;
   final VoidCallback? onTap;
 
   const _WorkStatCompact({
@@ -719,7 +790,6 @@ class _WorkStatCompact extends StatelessWidget {
     required this.label,
     required this.icon,
     required this.color,
-    this.subtitle,
     this.onTap,
   });
 
@@ -761,7 +831,7 @@ class _WorkStatCompact extends StatelessWidget {
                     ),
                     Text(
                       label,
-                      maxLines: 1,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: kTextStyle.copyWith(
                         color: kSubTitleColor,
@@ -769,17 +839,6 @@ class _WorkStatCompact extends StatelessWidget {
                         height: 1.2,
                       ),
                     ),
-                    if (subtitle != null && subtitle!.isNotEmpty)
-                      Text(
-                        subtitle!,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: kTextStyle.copyWith(
-                          color: kLightNeutralColor,
-                          fontSize: 10,
-                          height: 1.1,
-                        ),
-                      ),
                   ],
                 ),
               ),

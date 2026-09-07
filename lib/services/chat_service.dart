@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:freelancer/data/models/chat_inbox_filter.dart';
+import 'package:freelancer/services/block_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ChatService {
@@ -11,7 +12,8 @@ class ChatService {
     final user = _client.auth.currentUser;
     if (user == null) throw Exception('Not authenticated');
 
-    // Check if conversation already exists between these two users
+    // Soft block: allow opening an existing thread when an open obligation
+    // remains; refuse starting a brand-new conversation when contact is cut.
     final existing = await _client
         .from('conversations')
         .select()
@@ -19,6 +21,10 @@ class ChatService {
         .maybeSingle();
 
     if (existing != null) return existing;
+
+    if (await BlockService.isContactBlocked(otherUserId)) {
+      throw Exception('Contact blocked');
+    }
 
     // Determine who is client and who is seller
     final myProfile = await _client.from('profiles').select('role').eq('id', user.id).single();
@@ -63,6 +69,10 @@ class ChatService {
         .maybeSingle();
 
     if (existing != null) return existing;
+
+    if (await BlockService.isContactBlocked(buyerUserId)) {
+      throw Exception('Contact blocked');
+    }
 
     return await _client.from('conversations').insert({
       'client_id': clientId,
@@ -212,6 +222,20 @@ class ChatService {
   }) async {
     final user = _client.auth.currentUser;
     if (user == null) throw Exception('Not authenticated');
+
+    final conversation = await getConversation(conversationId);
+    if (conversation != null) {
+      final clientId = conversation['client_id'] as String?;
+      final sellerId = conversation['seller_id'] as String?;
+      final otherId = user.id == clientId
+          ? sellerId
+          : user.id == sellerId
+              ? clientId
+              : null;
+      if (otherId != null && await BlockService.isContactBlocked(otherId)) {
+        throw Exception('Contact blocked');
+      }
+    }
 
     final message = await _client.from('messages').insert({
       'conversation_id': conversationId,

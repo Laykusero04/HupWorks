@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/utils/localized_category.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/services/favourite_service.dart';
@@ -184,7 +185,11 @@ class _SellerFavListState extends State<SellerFavList> {
                                               color: kDarkWhite,
                                             ),
                                             child: Text(
-                                              category?['name'] ?? 'General',
+                                              LocalizedCategory.name(
+                                                category,
+                                                LocalizedCategory.languageCodeOf(context),
+                                                fallback: 'General',
+                                              ),
                                               style: kTextStyle.copyWith(color: kNeutralColor, fontSize: 12),
                                             ),
                                           ),
@@ -223,7 +228,8 @@ class _SellerFavListState extends State<SellerFavList> {
                                           const Spacer(),
                                           if (job['budget_min'] != null || job['budget_max'] != null)
                                             Text(
-                                              JobPostsService.formatBudgetRangeShort(
+                                              L10nLabels.budgetRangeShort(
+                                                context.l10n,
                                                 job['budget_min'],
                                                 job['budget_max'],
                                                 job['budget_basis'],

@@ -36,6 +36,14 @@ class DashboardRepository {
 
   // ── Seller dashboard ──
 
+  Future<Map<String, dynamic>> getSellerDashboard() async {
+    try {
+      return await DashboardService.getSellerDashboard();
+    } catch (e) {
+      throw ServerFailure(e.toString());
+    }
+  }
+
   Future<Profile?> getSellerProfile() async {
     try {
       final data = await SellerHomeService.getSellerProfile();

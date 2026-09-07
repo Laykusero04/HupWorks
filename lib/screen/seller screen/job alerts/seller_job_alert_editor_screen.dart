@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/utils/localized_category.dart';
 import 'package:freelancer/data/models/seller_job_alert_rule_model.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/l10n/l10n_labels.dart';
@@ -190,7 +191,10 @@ class _SellerJobAlertEditorScreenState extends State<SellerJobAlertEditorScreen>
                   shrinkWrap: true,
                   children: _categories.map((c) {
                     final id = c['id'] as String;
-                    final name = c['name'] as String? ?? '';
+                    final name = LocalizedCategory.name(
+                      c,
+                      LocalizedCategory.languageCodeOf(context),
+                    );
                     return CheckboxListTile(
                       value: selected.contains(id),
                       title: Text(name, style: kTextStyle.copyWith(fontSize: 14)),

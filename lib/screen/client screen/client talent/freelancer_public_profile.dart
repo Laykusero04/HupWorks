@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/utils/profile_image.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/seller%20screen/seller%20message/chat_inbox.dart';
+import 'package:freelancer/services/block_service.dart';
 import 'package:freelancer/services/chat_service.dart';
 import 'package:freelancer/services/client_home_service.dart';
 import 'package:freelancer/services/profile_service.dart';
 import 'package:freelancer/services/seller_work_trust_service.dart';
+import 'package:freelancer/services/verification_service.dart';
 import 'package:freelancer/data/models/seller_work_trust_model.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -13,6 +16,8 @@ import '../../widgets/profile_detail_theme.dart';
 import '../../widgets/profile_rating_summary.dart';
 import '../../widgets/profile_skeleton.dart';
 import '../../widgets/seller_skills_display.dart';
+import '../../widgets/verification_score_card.dart';
+import '../../widgets/verification_status_badge.dart';
 import '../../widgets/verified_work_trust_section.dart';
 import '../client report/client_report.dart';
 import '../client service details/client_service_details.dart';
@@ -34,6 +39,7 @@ class FreelancerPublicProfile extends StatefulWidget {
 
 class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
   Map<String, dynamic>? _profile;
+  bool _contactBlocked = false;
   List<Map<String, dynamic>> _reviews = [];
   SellerWorkTrust _workTrust = SellerWorkTrust.empty;
   bool _isLoading = true;
@@ -50,12 +56,14 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
         ProfileService.getPublicSellerProfile(widget.sellerId),
         ProfileService.getReviewsReceived(widget.sellerId),
         SellerWorkTrustService.getPublicWorkTrust(widget.sellerId),
+        BlockService.isContactBlocked(widget.sellerId).then((v) => v).catchError((_) => false),
       ]);
       if (!mounted) return;
       setState(() {
         _profile = results[0] as Map<String, dynamic>?;
         _reviews = List<Map<String, dynamic>>.from(results[1] as List<dynamic>? ?? const []);
         _workTrust = results[2] as SellerWorkTrust;
+        _contactBlocked = results[3] as bool;
         _isLoading = false;
       });
     } catch (e) {
@@ -82,6 +90,12 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
   }
 
   Future<void> _handleMessage() async {
+    if (_contactBlocked) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.contactBlocked)),
+      );
+      return;
+    }
     try {
       final conversation =
           await ChatService.getOrCreateConversation(widget.sellerId);
@@ -97,8 +111,11 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
       ).launch(context);
     } catch (e) {
       if (mounted) {
+        final msg = '$e'.contains('Contact blocked')
+            ? context.l10n.contactBlocked
+            : context.l10n.couldNotOpenChatWithDetail('$e');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.couldNotOpenChatWithDetail('$e'))),
+          SnackBar(content: Text(msg)),
         );
       }
     }
@@ -139,9 +156,12 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
     final bio = _profile!['bio'] as String?;
     final profileImageUrl = _profile!['profile_image_url'] as String?;
     final jobTitle = ProfileService.sellerJobTitleFromProfile(_profile!);
+    final verificationStatus =
+        VerificationService.statusFromProfile(_profile);
+    final verificationScore =
+        VerificationService.scoreFromProfile(_profile);
     final about = ProfileService.sellerAboutFromProfile(_profile!);
     final address = ProfileService.sellerAddressFromProfile(_profile!);
-    final age = ProfileService.sellerAgeFromProfile(_profile!);
     final skills = ProfileService.sellerSkillsFromProfile(_profile!);
     final reviewStats = ProfileService.resolveReviewDisplay(
       profile: _profile,
@@ -196,11 +216,16 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
                   height: 110,
                   width: 110,
                   decoration: ProfileDetailTheme.avatarDecoration(
-                    profileImageUrl != null && profileImageUrl.isNotEmpty
-                        ? NetworkImage(profileImageUrl) as ImageProvider
-                        : const AssetImage('images/dev1.png'),
+                    ProfileImage.provider(profileImageUrl),
                     accent: kPrimaryColor,
                   ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Center(
+                child: VerificationStatusBadge(
+                  status: verificationStatus,
+                  score: verificationScore,
                 ),
               ),
               const SizedBox(height: 12),
@@ -266,10 +291,23 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
                       _stat('$reviewCount', 'Reviews'),
                       _divider(),
                       _stat(avgLabel, 'Avg rating'),
+                      _divider(),
+                      _stat('${verificationScore.total}', 'Trust'),
                     ],
                   ),
                 ),
               ),
+              if (verificationScore.total > 0) ...[
+                const SizedBox(height: 14),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: VerificationScoreCard(
+                    score: verificationScore,
+                    accent: kPrimaryColor,
+                    compact: true,
+                  ),
+                ),
+              ],
               const SizedBox(height: 16),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -279,7 +317,7 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
                       child: SizedBox(
                         height: 48,
                         child: OutlinedButton(
-                          onPressed: _handleMessage,
+                          onPressed: _contactBlocked ? null : _handleMessage,
                           style: OutlinedButton.styleFrom(
                             foregroundColor: kPrimaryColor,
                             side: const BorderSide(color: kPrimaryColor),
@@ -288,7 +326,9 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
                             ),
                           ),
                           child: Text(
-                            context.l10n.message,
+                            _contactBlocked
+                                ? context.l10n.contactBlockedShort
+                                : context.l10n.message,
                             style: kTextStyle.copyWith(
                               color: kPrimaryColor,
                               fontWeight: FontWeight.w600,

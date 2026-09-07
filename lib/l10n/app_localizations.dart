@@ -1531,7 +1531,7 @@ abstract class AppLocalizations {
   /// No description provided for @myApplications.
   ///
   /// In en, this message translates to:
-  /// **'My Applications'**
+  /// **'My shifts'**
   String get myApplications;
 
   /// No description provided for @browseJobs.
@@ -1558,11 +1558,143 @@ abstract class AppLocalizations {
   /// **'Pending'**
   String get statusPending;
 
+  /// No description provided for @budgetSuffixHour.
+  ///
+  /// In en, this message translates to:
+  /// **'/hr'**
+  String get budgetSuffixHour;
+
+  /// No description provided for @budgetSuffixDay.
+  ///
+  /// In en, this message translates to:
+  /// **'/day'**
+  String get budgetSuffixDay;
+
+  /// No description provided for @budgetSuffixMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'/mo'**
+  String get budgetSuffixMonth;
+
+  /// No description provided for @budgetSuffixTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'total'**
+  String get budgetSuffixTotal;
+
   /// No description provided for @yourWork.
   ///
   /// In en, this message translates to:
-  /// **'Your work'**
+  /// **'Work tracker'**
   String get yourWork;
+
+  /// No description provided for @hoursWorked.
+  ///
+  /// In en, this message translates to:
+  /// **'Hours worked'**
+  String get hoursWorked;
+
+  /// No description provided for @agreedContractValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Agreed amount'**
+  String get agreedContractValue;
+
+  /// No description provided for @jobsCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Jobs completed'**
+  String get jobsCompleted;
+
+  /// No description provided for @workOverviewDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Work and amounts are tracked in HupWorks. Payment happens outside the app — mark paid here as your record.'**
+  String get workOverviewDisclaimer;
+
+  /// No description provided for @hoursWorkedFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours}h'**
+  String hoursWorkedFormat(String hours);
+
+  /// No description provided for @paymentReceivedValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Marked paid (outside app)'**
+  String get paymentReceivedValue;
+
+  /// No description provided for @outstandingValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Still unpaid'**
+  String get outstandingValue;
+
+  /// No description provided for @paymentReceivedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Marked paid outside the app'**
+  String get paymentReceivedTitle;
+
+  /// No description provided for @paymentOutstandingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment not marked yet'**
+  String get paymentOutstandingTitle;
+
+  /// No description provided for @paymentReceivedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This is your shared record that payment was made outside HupWorks (cash, bank, or e-wallet). The app does not move money.'**
+  String get paymentReceivedBody;
+
+  /// No description provided for @paymentOutstandingSellerBody.
+  ///
+  /// In en, this message translates to:
+  /// **'After the employer pays you outside the app, mark it here. Hours come from sign-in; this mark is your payment proof for tracking.'**
+  String get paymentOutstandingSellerBody;
+
+  /// No description provided for @paymentOutstandingClientBody.
+  ///
+  /// In en, this message translates to:
+  /// **'After you pay the freelancer outside the app, mark it here. Use hours from attendance as work proof and this mark as payment proof.'**
+  String get paymentOutstandingClientBody;
+
+  /// No description provided for @markPaymentReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as paid outside app'**
+  String get markPaymentReceived;
+
+  /// No description provided for @markPaymentPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as paid outside app'**
+  String get markPaymentPaid;
+
+  /// No description provided for @undoPaymentReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo paid mark'**
+  String get undoPaymentReceived;
+
+  /// No description provided for @paymentReceivedMarked.
+  ///
+  /// In en, this message translates to:
+  /// **'Marked as paid outside the app.'**
+  String get paymentReceivedMarked;
+
+  /// No description provided for @paymentReceivedCleared.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid mark cleared.'**
+  String get paymentReceivedCleared;
+
+  /// No description provided for @paymentMarkedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Marked on {date}'**
+  String paymentMarkedOn(String date);
 
   /// No description provided for @activeContracts.
   ///
@@ -1695,6 +1827,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Block'**
   String get block;
+
+  /// No description provided for @blockUserTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Block this user?'**
+  String get blockUserTitle;
+
+  /// No description provided for @blockUserBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You won’t see each other for new work or messages. Existing chat history stays visible.'**
+  String get blockUserBody;
+
+  /// No description provided for @blockUserBodyOpenObligation.
+  ///
+  /// In en, this message translates to:
+  /// **'You still have an open or unpaid job together. Blocking won’t cancel payment rights — you can both finish the job, confirm payment, and report a dispute.'**
+  String get blockUserBodyOpenObligation;
+
+  /// No description provided for @blockAlsoReportPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Also report a payment or contract dispute'**
+  String get blockAlsoReportPayment;
+
+  /// No description provided for @blockSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'User blocked'**
+  String get blockSuccess;
+
+  /// No description provided for @blockSuccessOpenObligation.
+  ///
+  /// In en, this message translates to:
+  /// **'User blocked. You can still manage your open job and payment.'**
+  String get blockSuccessOpenObligation;
+
+  /// No description provided for @contactBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Messaging is unavailable while you are blocked. Finish or settle any open job first, or unblock to continue.'**
+  String get contactBlocked;
+
+  /// No description provided for @contactBlockedShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact blocked'**
+  String get contactBlockedShort;
+
+  /// No description provided for @unblock.
+  ///
+  /// In en, this message translates to:
+  /// **'Unblock'**
+  String get unblock;
 
   /// No description provided for @noMessagesYet.
   ///
@@ -2041,7 +2227,7 @@ abstract class AppLocalizations {
   /// No description provided for @jobTypeGig.
   ///
   /// In en, this message translates to:
-  /// **'Individual services'**
+  /// **'Shift'**
   String get jobTypeGig;
 
   /// No description provided for @recentJobsEmptyHint.
@@ -3853,7 +4039,7 @@ abstract class AppLocalizations {
   /// No description provided for @instructionsReadyTap.
   ///
   /// In en, this message translates to:
-  /// **'Instructions ready — tap to read'**
+  /// **'Instructions ready, read here'**
   String get instructionsReadyTap;
 
   /// No description provided for @rateExperienceWithClient.

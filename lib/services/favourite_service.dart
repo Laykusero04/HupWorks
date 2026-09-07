@@ -57,7 +57,7 @@ class FavouriteService {
           'job_posts!job_post_id('
           'id, title, description, status, job_type, budget_min, budget_max, '
           'budget_basis, location, location_type, created_at, '
-          'categories(name), '
+          'categories(name, name_i18n), '
           'client:profiles!client_id(id, name, profile_image_url)'
           ')',
         )

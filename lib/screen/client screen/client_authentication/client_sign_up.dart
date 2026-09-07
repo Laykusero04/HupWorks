@@ -16,6 +16,14 @@ class ClientSignUp extends StatelessWidget {
         heroImage: AppInfo.onBoard2,
         subtitle: (l10n) => l10n.authJoinAsClient,
         roleLabel: (l10n) => l10n.authRoleClient,
-        otpScreenBuilder: (email) => ClientOtpVerification(email: email),
+        onSignedUp: (context, email) async {
+          if (!context.mounted) return;
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ClientOtpVerification(email: email),
+            ),
+          );
+        },
       );
 }

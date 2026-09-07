@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/constants/colors.dart';
+import '../../core/utils/profile_image.dart';
 import 'constant.dart';
 import 'shell_tab_header.dart';
 
@@ -14,7 +15,8 @@ class ShellDrawerHeader extends StatelessWidget {
     this.balanceLabel,
     this.rating,
     this.reviewCount,
-    this.fallbackAsset = 'images/profile3.png',
+    this.verificationBadge,
+    this.fallbackAsset = ProfileImage.fallbackAsset,
   });
 
   final ShellPersona persona;
@@ -23,6 +25,7 @@ class ShellDrawerHeader extends StatelessWidget {
   final String? balanceLabel;
   final double? rating;
   final int? reviewCount;
+  final Widget? verificationBadge;
   final String fallbackAsset;
 
   Color get _backgroundColor =>
@@ -41,9 +44,10 @@ class ShellDrawerHeader extends StatelessWidget {
             CircleAvatar(
               radius: 28,
               backgroundColor: kWhite.withValues(alpha: 0.2),
-              backgroundImage: imageUrl != null
-                  ? NetworkImage(imageUrl!) as ImageProvider
-                  : AssetImage(fallbackAsset),
+              backgroundImage: ProfileImage.provider(
+                imageUrl,
+                fallback: fallbackAsset,
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -80,6 +84,7 @@ class ShellDrawerHeader extends StatelessWidget {
                       ),
                     ),
                   ],
+                  if (verificationBadge != null) verificationBadge!,
                 ],
               ),
             ),

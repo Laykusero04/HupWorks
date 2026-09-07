@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/utils/localized_category.dart';
 import 'package:freelancer/services/category_service.dart';
 
 import 'constant.dart';
@@ -33,18 +34,18 @@ class _CategoryPickerFieldState extends State<CategoryPickerField> {
   }
 
   List<Map<String, dynamic>> get _filtered {
-    final q = _query.trim().toLowerCase();
-    if (q.isEmpty) return widget.categories;
+    final lang = LocalizedCategory.languageCodeOf(context);
     return widget.categories
-        .where((c) => ((c['name'] as String?) ?? '').toLowerCase().contains(q))
+        .where((c) => LocalizedCategory.matchesSearch(c, _query, lang))
         .toList();
   }
 
   String? get _selectedName {
     final id = widget.selectedCategoryId;
     if (id == null || id == CategoryService.otherCategoryOptionId) return null;
+    final lang = LocalizedCategory.languageCodeOf(context);
     for (final c in widget.categories) {
-      if (c['id'] == id) return c['name'] as String?;
+      if (c['id'] == id) return LocalizedCategory.name(c, lang);
     }
     return null;
   }
@@ -133,7 +134,10 @@ class _CategoryPickerFieldState extends State<CategoryPickerField> {
                   children: [
                     ...filtered.map((cat) {
                       final id = cat['id'] as String?;
-                      final name = cat['name'] as String? ?? '';
+                      final name = LocalizedCategory.name(
+                        cat,
+                        LocalizedCategory.languageCodeOf(context),
+                      );
                       final selected = widget.selectedCategoryId == id;
                       return InkWell(
                         onTap: () => widget.onSelected(id),

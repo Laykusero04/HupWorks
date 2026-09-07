@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:freelancer/core/utils/localized_category.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
@@ -294,9 +295,11 @@ class _JobPostState extends State<JobPost> {
                                                         color: kNeutralColor),
                                                     children: [
                                                       TextSpan(
-                                                        text:
-                                                            category?['name'] ??
-                                                                'General',
+                                                        text: LocalizedCategory.name(
+                                                          category,
+                                                          LocalizedCategory.languageCodeOf(context),
+                                                          fallback: 'General',
+                                                        ),
                                                         style: kTextStyle.copyWith(
                                                             color:
                                                                 kSubTitleColor),

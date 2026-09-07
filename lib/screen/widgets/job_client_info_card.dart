@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/utils/profile_image.dart';
 import 'package:freelancer/screen/client%20screen/client%20talent/client_public_profile.dart';
 import 'package:freelancer/services/profile_service.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -70,7 +71,8 @@ class JobClientInfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final name = clientProfile?['name'] as String? ?? 'Client';
-    final imageUrl = clientProfile?['profile_image_url'] as String?;
+    final imageUrl =
+        ProfileImage.normalize(clientProfile?['profile_image_url'] as String?);
     final city = (clientProfile?['city'] as String?)?.trim() ?? '';
     final country = (clientProfile?['country'] as String?)?.trim() ?? '';
     final location = [city, country].where((s) => s.isNotEmpty).join(', ');
@@ -98,9 +100,7 @@ class JobClientInfoCard extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 22,
-                    backgroundImage: imageUrl != null && imageUrl.isNotEmpty
-                        ? NetworkImage(imageUrl)
-                        : const AssetImage('images/profile1.png') as ImageProvider,
+                    backgroundImage: ProfileImage.provider(imageUrl),
                   ),
                   const SizedBox(width: 10),
                   Expanded(

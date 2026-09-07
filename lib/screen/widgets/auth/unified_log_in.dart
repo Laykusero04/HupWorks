@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/auth/login_credentials_prefs.dart';
 import 'package:freelancer/core/auth_navigation.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/client%20screen/client_authentication/client_forgot_password.dart';
@@ -21,9 +22,27 @@ class UnifiedLogIn extends StatefulWidget {
 class _UnifiedLogInState extends State<UnifiedLogIn> {
   bool _hidePassword = true;
   bool _isLoading = false;
+  bool _savePassword = false;
 
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedCredentials();
+  }
+
+  Future<void> _loadSavedCredentials() async {
+    final saved = await LoginCredentialsPrefs.load();
+    if (!mounted) return;
+    if (!saved.remember) return;
+    setState(() {
+      _savePassword = true;
+      _emailController.text = saved.email;
+      _passwordController.text = saved.password;
+    });
+  }
 
   @override
   void dispose() {
@@ -48,6 +67,11 @@ class _UnifiedLogInState extends State<UnifiedLogIn> {
 
     try {
       await AuthService.signIn(email: email, password: password);
+      if (_savePassword) {
+        await LoginCredentialsPrefs.save(email: email, password: password);
+      } else {
+        await LoginCredentialsPrefs.clear();
+      }
       if (mounted) {
         await AuthNavigation.goToHomeAfterAuth(context);
       }
@@ -99,21 +123,54 @@ class _UnifiedLogInState extends State<UnifiedLogIn> {
             ),
           ),
           const SizedBox(height: 8),
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton(
-              onPressed: () => const ClientForgotPassword().launch(context),
-              child: Text(
-                l10n.authForgotPassword,
-                style: kTextStyle.copyWith(
-                  color: kPrimaryColor,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
+          Row(
+            children: [
+              SizedBox(
+                height: 18,
+                width: 18,
+                child: Checkbox(
+                  value: _savePassword,
+                  onChanged: (v) => setState(() => _savePassword = v ?? false),
+                  activeColor: kPrimaryColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  visualDensity: VisualDensity.compact,
                 ),
               ),
-            ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => setState(() => _savePassword = !_savePassword),
+                  child: Text(
+                    l10n.authSavePassword,
+                    style: kTextStyle.copyWith(
+                      color: kSubTitleColor,
+                      fontSize: 11,
+                    ),
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () => const ClientForgotPassword().launch(context),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: Text(
+                  l10n.authForgotPassword,
+                  style: kTextStyle.copyWith(
+                    color: kPrimaryColor,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 11,
+                  ),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 16),
           AuthPrimaryButton(
             label: l10n.authLogIn,
             accentColor: kPrimaryColor,

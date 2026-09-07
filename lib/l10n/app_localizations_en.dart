@@ -768,7 +768,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Browse open roles and apply in minutes.';
 
   @override
-  String get myApplications => 'My Applications';
+  String get myApplications => 'My shifts';
 
   @override
   String get browseJobs => 'Browse jobs';
@@ -783,7 +783,81 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statusPending => 'Pending';
 
   @override
-  String get yourWork => 'Your work';
+  String get budgetSuffixHour => '/hr';
+
+  @override
+  String get budgetSuffixDay => '/day';
+
+  @override
+  String get budgetSuffixMonth => '/mo';
+
+  @override
+  String get budgetSuffixTotal => 'total';
+
+  @override
+  String get yourWork => 'Work tracker';
+
+  @override
+  String get hoursWorked => 'Hours worked';
+
+  @override
+  String get agreedContractValue => 'Agreed amount';
+
+  @override
+  String get jobsCompleted => 'Jobs completed';
+
+  @override
+  String get workOverviewDisclaimer =>
+      'Work and amounts are tracked in HupWorks. Payment happens outside the app — mark paid here as your record.';
+
+  @override
+  String hoursWorkedFormat(String hours) {
+    return '${hours}h';
+  }
+
+  @override
+  String get paymentReceivedValue => 'Marked paid (outside app)';
+
+  @override
+  String get outstandingValue => 'Still unpaid';
+
+  @override
+  String get paymentReceivedTitle => 'Marked paid outside the app';
+
+  @override
+  String get paymentOutstandingTitle => 'Payment not marked yet';
+
+  @override
+  String get paymentReceivedBody =>
+      'This is your shared record that payment was made outside HupWorks (cash, bank, or e-wallet). The app does not move money.';
+
+  @override
+  String get paymentOutstandingSellerBody =>
+      'After the employer pays you outside the app, mark it here. Hours come from sign-in; this mark is your payment proof for tracking.';
+
+  @override
+  String get paymentOutstandingClientBody =>
+      'After you pay the freelancer outside the app, mark it here. Use hours from attendance as work proof and this mark as payment proof.';
+
+  @override
+  String get markPaymentReceived => 'Mark as paid outside app';
+
+  @override
+  String get markPaymentPaid => 'Mark as paid outside app';
+
+  @override
+  String get undoPaymentReceived => 'Undo paid mark';
+
+  @override
+  String get paymentReceivedMarked => 'Marked as paid outside the app.';
+
+  @override
+  String get paymentReceivedCleared => 'Paid mark cleared.';
+
+  @override
+  String paymentMarkedOn(String date) {
+    return 'Marked on $date';
+  }
 
   @override
   String get activeContracts => 'Active contracts';
@@ -854,6 +928,38 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get block => 'Block';
+
+  @override
+  String get blockUserTitle => 'Block this user?';
+
+  @override
+  String get blockUserBody =>
+      'You won’t see each other for new work or messages. Existing chat history stays visible.';
+
+  @override
+  String get blockUserBodyOpenObligation =>
+      'You still have an open or unpaid job together. Blocking won’t cancel payment rights — you can both finish the job, confirm payment, and report a dispute.';
+
+  @override
+  String get blockAlsoReportPayment =>
+      'Also report a payment or contract dispute';
+
+  @override
+  String get blockSuccess => 'User blocked';
+
+  @override
+  String get blockSuccessOpenObligation =>
+      'User blocked. You can still manage your open job and payment.';
+
+  @override
+  String get contactBlocked =>
+      'Messaging is unavailable while you are blocked. Finish or settle any open job first, or unblock to continue.';
+
+  @override
+  String get contactBlockedShort => 'Contact blocked';
+
+  @override
+  String get unblock => 'Unblock';
 
   @override
   String get noMessagesYet => 'No messages yet';
@@ -1037,7 +1143,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get promoNicheServicesSubtitle => 'Find services across every niche';
 
   @override
-  String get jobTypeGig => 'Individual services';
+  String get jobTypeGig => 'Shift';
 
   @override
   String get recentJobsEmptyHint => 'Tap \"Post Job\" to get started';
@@ -2053,7 +2159,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get openAttendance => 'Open attendance';
 
   @override
-  String get instructionsReadyTap => 'Instructions ready — tap to read';
+  String get instructionsReadyTap => 'Instructions ready, read here';
 
   @override
   String get rateExperienceWithClient =>

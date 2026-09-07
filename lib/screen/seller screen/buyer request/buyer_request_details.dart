@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/utils/localized_category.dart';
 import 'package:freelancer/core/utils/shift_schedule.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/services/favourite_service.dart';
@@ -97,7 +98,11 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
     if (_isLoading) return const Scaffold(backgroundColor: kDarkWhite, body: Center(child: CircularProgressIndicator(color: kPrimaryColor)));
 
     final l10n = context.l10n;
-    final category = (_jobPost?['categories'] as Map<String, dynamic>?)?['name'] ?? 'General';
+    final category = LocalizedCategory.name(
+      _jobPost?['categories'] as Map<String, dynamic>?,
+      LocalizedCategory.languageCodeOf(context),
+      fallback: 'General',
+    );
     final title = _jobPost?['title'] ?? 'Job Post';
     final description = _jobPost?['description'] ?? '';
     final budgetMin = _jobPost?['budget_min'];

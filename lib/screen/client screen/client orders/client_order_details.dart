@@ -24,6 +24,7 @@ import '../../widgets/client_site_setup_panel.dart';
 import '../../widgets/constant.dart';
 import '../../widgets/hour_reports_section.dart';
 import '../../widgets/order_delivery_panel.dart';
+import '../../widgets/order_payment_received_card.dart';
 import '../client report/client_report.dart';
 import '../client review/client_review.dart';
 
@@ -769,6 +770,15 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
                 const SizedBox(height: 15.0),
                 if (isCancellationRequested) ...[
                   _buildCancellationRequestBanner(sellerName),
+                  const SizedBox(height: 16),
+                ],
+                if (isCompleted) ...[
+                  OrderPaymentReceivedCard(
+                    orderId: widget.orderId,
+                    order: _order,
+                    isSellerView: false,
+                    onChanged: _loadOrder,
+                  ),
                   const SizedBox(height: 16),
                 ],
                 if (deliveries.isNotEmpty) ...[

@@ -18,7 +18,10 @@ class SellerHomeService {
     return data;
   }
 
-  /// Job-focused dashboard metrics for the freelancer home screen.
+  /// Work-tracker metrics for freelancers.
+  ///
+  /// Hours = accepted hour reports (sign-in). Amounts = completed order prices.
+  /// Marked paid = optional off-app confirmation; still unpaid = agreed − marked.
   static Future<Map<String, dynamic>> getWorkOverview() async {
     final user = _client.auth.currentUser;
     if (user == null) return {};
@@ -28,13 +31,18 @@ class SellerHomeService {
 
     final orders = await _client
         .from('orders')
-        .select('id, status, price, created_at')
+        .select(
+          'id, status, price, created_at, completed_at, payment_received_at',
+        )
         .eq('seller_id', user.id);
 
     final orderList = List<Map<String, dynamic>>.from(orders);
     int activeContracts = 0;
     int deliveredAwaiting = 0;
     int completedThisMonth = 0;
+    int jobsCompleted = 0;
+    double agreedContractValue = 0;
+    double paymentReceivedValue = 0;
 
     for (final o in orderList) {
       final st = (o['status'] as String?)?.toLowerCase() ?? '';
@@ -44,11 +52,38 @@ class SellerHomeService {
         deliveredAwaiting++;
       }
       if (st == 'completed') {
-        final created = DateTime.tryParse(o['created_at'] as String? ?? '');
-        if (created != null && !created.isBefore(monthStart)) {
+        jobsCompleted++;
+        final price = double.tryParse(o['price'].toString()) ?? 0;
+        agreedContractValue += price;
+        if (o['payment_received_at'] != null) {
+          paymentReceivedValue += price;
+        }
+        final completedAt = DateTime.tryParse(
+              o['completed_at'] as String? ?? '',
+            ) ??
+            DateTime.tryParse(o['created_at'] as String? ?? '');
+        if (completedAt != null && !completedAt.isBefore(monthStart)) {
           completedThisMonth++;
         }
       }
+    }
+
+    final outstandingValue = (agreedContractValue - paymentReceivedValue)
+        .clamp(0.0, double.infinity)
+        .toDouble();
+
+    double hoursWorkedMinutes = 0;
+    try {
+      final hourRows = await _client
+          .from('hour_reports')
+          .select('minutes')
+          .eq('seller_id', user.id)
+          .eq('status', 'accepted');
+      for (final row in List<Map<String, dynamic>>.from(hourRows)) {
+        hoursWorkedMinutes += (row['minutes'] as num?)?.toDouble() ?? 0;
+      }
+    } catch (e, st) {
+      AppLogger.error('SellerHomeService.hoursWorked', e, st);
     }
 
     final offers = await _client
@@ -97,6 +132,11 @@ class SellerHomeService {
       'active_contracts': activeContracts,
       'delivered_awaiting_approval': deliveredAwaiting,
       'completed_this_month': completedThisMonth,
+      'jobs_completed': jobsCompleted,
+      'agreed_contract_value': agreedContractValue,
+      'payment_received_value': paymentReceivedValue,
+      'outstanding_value': outstandingValue,
+      'hours_worked_minutes': hoursWorkedMinutes,
       'pending_applications': pendingApplications,
       'accepted_applications': acceptedApplications,
       'total_applications': offerList.length,

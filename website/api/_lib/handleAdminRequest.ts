@@ -51,7 +51,6 @@ export async function handleAdminRequest(req: AdminRequest): Promise<AdminRespon
         status: 200,
         body: {
           ok: true,
-          projectUrl: process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL,
           usingServiceRole: Boolean(process.env.SUPABASE_SECRET_KEY),
           userReportsReady: !reportsProbe.error,
           userBlocksReady: !blocksProbe.error,
@@ -489,6 +488,117 @@ export async function handleAdminRequest(req: AdminRequest): Promise<AdminRespon
       }
 
       return { status: 200, body: { ok: true, row: data } }
+    }
+
+    if (path === '/api/admin/users' && method === 'GET') {
+      const role = (req.searchParams.get('role') ?? 'all').toLowerCase()
+      const q = (req.searchParams.get('q') ?? '').trim().toLowerCase()
+
+      let query = sb
+        .from('profiles')
+        .select(
+          'id, name, email, phone, role, city, country, bio, profile_image_url, rating, balance, created_at, verification_status, profile_photo_status, seller_onboarding_completed',
+        )
+        .order('created_at', { ascending: false })
+        .limit(300)
+
+      if (role === 'client' || role === 'seller') {
+        query = query.eq('role', role)
+      } else if (role === 'incomplete') {
+        query = query.eq('role', 'seller').eq('seller_onboarding_completed', false)
+      }
+
+      const { data: profiles, error } = await query
+      if (error) throw error
+
+      const rows = profiles ?? []
+      const sellerIds = rows.filter((p) => p.role === 'seller').map((p) => p.id as string)
+
+      const sellerMap = new Map<string, { user_id: string; job_title: string | null }>()
+      if (sellerIds.length) {
+        const { data: sellers, error: sellersError } = await sb
+          .from('seller_profiles')
+          .select('user_id, job_title')
+          .in('user_id', sellerIds)
+        if (sellersError) throw sellersError
+        for (const s of sellers ?? []) {
+          sellerMap.set(s.user_id as string, {
+            user_id: s.user_id as string,
+            job_title: (s.job_title as string | null) ?? null,
+          })
+        }
+      }
+
+      // Auth metadata (last sign-in / confirmed) via Admin Auth API.
+      const authById = new Map<
+        string,
+        {
+          last_sign_in_at: string | null
+          email_confirmed_at: string | null
+          banned_until: string | null
+          providers: string[]
+        }
+      >()
+      try {
+        for (let page = 1; page <= 5; page += 1) {
+          const { data: authPage, error: authError } = await sb.auth.admin.listUsers({
+            page,
+            perPage: 200,
+          })
+          if (authError) throw authError
+          const users = authPage?.users ?? []
+          for (const u of users) {
+            const providers = (u.app_metadata?.providers as string[] | undefined) ??
+              (u.app_metadata?.provider ? [String(u.app_metadata.provider)] : [])
+            authById.set(u.id, {
+              last_sign_in_at: u.last_sign_in_at ?? null,
+              email_confirmed_at: u.email_confirmed_at ?? null,
+              banned_until: (u as { banned_until?: string | null }).banned_until ?? null,
+              providers,
+            })
+          }
+          if (users.length < 200) break
+        }
+      } catch (authErr) {
+        // Profiles still useful if Auth admin listing fails.
+        console.error('[admin/users] auth.listUsers failed', authErr)
+      }
+
+      let enriched = rows.map((p) => {
+        const auth = authById.get(p.id as string) ?? null
+        return {
+          ...p,
+          seller: sellerMap.get(p.id as string) ?? null,
+          auth,
+        }
+      })
+
+      if (q) {
+        enriched = enriched.filter((row) => {
+          const hay = [
+            row.name,
+            row.email,
+            row.phone,
+            row.id,
+            row.city,
+            row.country,
+            row.seller?.job_title,
+          ]
+            .filter(Boolean)
+            .join(' ')
+            .toLowerCase()
+          return hay.includes(q)
+        })
+      }
+
+      return {
+        status: 200,
+        body: {
+          ok: true,
+          rows: enriched,
+          authMatched: authById.size,
+        },
+      }
     }
 
     return { status: 404, body: { ok: false, error: 'Not found' } }

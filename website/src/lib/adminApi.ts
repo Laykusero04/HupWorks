@@ -1,6 +1,5 @@
 export type AdminHealth = {
   ok: boolean
-  projectUrl?: string
   usingServiceRole?: boolean
   userReportsReady?: boolean
   userBlocksReady?: boolean
@@ -153,6 +152,41 @@ export type CategoryRow = {
 
 export function fetchCategories() {
   return getJson<{ ok: boolean; rows: CategoryRow[] }>('/api/admin/categories')
+}
+
+export type AdminUserRow = {
+  id: string
+  name: string | null
+  email: string | null
+  phone: string | null
+  role: string | null
+  city: string | null
+  country: string | null
+  bio: string | null
+  profile_image_url: string | null
+  rating: number | null
+  balance: number | null
+  created_at: string | null
+  verification_status: string | null
+  profile_photo_status: string | null
+  seller_onboarding_completed: boolean | null
+  seller: { user_id: string; job_title: string | null } | null
+  auth: {
+    last_sign_in_at: string | null
+    email_confirmed_at: string | null
+    banned_until: string | null
+    providers: string[]
+  } | null
+}
+
+export function fetchUsers(role = 'all', q = '') {
+  const params = new URLSearchParams()
+  if (role && role !== 'all') params.set('role', role)
+  if (q.trim()) params.set('q', q.trim())
+  const qs = params.toString()
+  return getJson<{ ok: boolean; rows: AdminUserRow[]; authMatched?: number }>(
+    `/api/admin/users${qs ? `?${qs}` : ''}`,
+  )
 }
 
 export async function updateCategory(input: {

@@ -56,7 +56,6 @@ export function OverviewPage() {
         {!loading && !error && health?.ok && (
           <>
             <strong>Connected</strong>
-            <span>{health.projectUrl}</span>
             <span className="hint">
               {health.usingServiceRole
                 ? 'Using service role via /api/admin.'

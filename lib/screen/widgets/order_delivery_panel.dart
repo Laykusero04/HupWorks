@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/utils/app_date_format.dart';
 import 'package:freelancer/data/models/order_delivery_model.dart';
 import 'package:freelancer/l10n/l10n.dart';
 
@@ -17,23 +18,8 @@ class OrderDeliveryPanel extends StatelessWidget {
     this.instruction,
   });
 
-  static String formatSubmittedAt(DateTime date) {
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    return '${date.day} ${months[date.month - 1]} ${date.year}';
-  }
+  static String formatSubmittedAt(DateTime date, [String? locale]) =>
+      AppDateFormat.dMmmY(date, locale);
 
   @override
   Widget build(BuildContext context) {
@@ -135,7 +121,10 @@ class _DeliveryBlock extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          OrderDeliveryPanel.formatSubmittedAt(delivery.deliveredAt.toLocal()),
+          OrderDeliveryPanel.formatSubmittedAt(
+            delivery.deliveredAt.toLocal(),
+            AppDateFormat.localeOf(context),
+          ),
           style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
         ),
         if (message.isNotEmpty) ...[

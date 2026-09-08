@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/utils/app_date_format.dart';
+import 'package:freelancer/core/widgets/empty_state_widget.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/services/chat_service.dart';
@@ -63,11 +65,7 @@ class _SellerApplicationsState extends State<SellerApplications> {
   }
 
   String _formatDate(String? s) {
-    if (s == null) return '';
-    final d = DateTime.tryParse(s);
-    if (d == null) return '';
-    const m = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return '${d.day} ${m[d.month - 1]} ${d.year}';
+    return AppDateFormat.tryDMmmY(s, AppDateFormat.localeOf(context)) ?? '';
   }
 
   String _jobTypeLabel(String? t) => L10nLabels.jobType(context.l10n, t);
@@ -141,11 +139,12 @@ class _SellerApplicationsState extends State<SellerApplications> {
           child: _isLoading
               ? const Center(child: CircularProgressIndicator(color: kPrimaryColor))
               : _applications.isEmpty
-                  ? Center(
-                      child: Text(
-                        l10n.noApplicationsYet,
-                        style: kTextStyle.copyWith(color: kLightNeutralColor),
-                      ),
+                  ? EmptyStateWidget(
+                      message: l10n.noApplicationsYet,
+                      hint: l10n.noApplicationsYetHint,
+                      icon: Icons.outgoing_mail,
+                      actionLabel: l10n.browseJobs,
+                      onAction: () => context.go('/seller/find-jobs'),
                     )
                   : RefreshIndicator(
                       color: kPrimaryColor,

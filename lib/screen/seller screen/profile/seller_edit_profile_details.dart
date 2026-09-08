@@ -73,7 +73,12 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
         setState(() => _isLoading = false);
       }
     } catch (e) {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+        );
+      }
     }
   }
 

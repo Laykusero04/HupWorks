@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:freelancer/core/utils/app_date_format.dart';
 import 'package:freelancer/core/utils/localized_category.dart';
+import 'package:freelancer/core/widgets/empty_state_widget.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
@@ -68,24 +70,11 @@ class _JobPostState extends State<JobPost> {
   }
 
   String _formatDate(String? dateStr) {
-    if (dateStr == null) return '';
-    final date = DateTime.tryParse(dateStr);
-    if (date == null) return '';
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec'
-    ];
-    return '${date.day} ${months[date.month - 1]} ${date.year}';
+    return AppDateFormat.tryDMmmY(
+          dateStr,
+          AppDateFormat.localeOf(context),
+        ) ??
+        '';
   }
 
   @override
@@ -113,33 +102,21 @@ class _JobPostState extends State<JobPost> {
               child: CircularProgressIndicator(color: kPrimaryColor),
             )
           : _jobPosts.isEmpty
-              ? Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: _horizontalPadding),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        height: 213,
-                        width: 269,
-                        decoration: const BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage('images/emptyservice.png'),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+              ? EmptyStateWidget(
+                  message: l10n.noJobsPostedYet,
+                  hint: l10n.noJobsPostedYetHint,
+                  imageAsset: 'images/emptyservice.png',
+                  imageHeight: 213,
+                  imageWidth: 269,
+                  actionLabel: l10n.postAJob,
+                  onAction: () async {
+                    await Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const CreateNewJobPost(),
                       ),
-                      const SizedBox(height: 20.0),
-                      Text(
-                        l10n.noJobsPostedYet,
-                        style: kTextStyle.copyWith(
-                          color: kNeutralColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 24.0,
-                        ),
-                      ),
-                      SizedBox(height: scrollBottomGap),
-                    ],
-                  ),
+                    );
+                    _loadJobPosts();
+                  },
                 )
               : RefreshIndicator(
                   color: kPrimaryColor,

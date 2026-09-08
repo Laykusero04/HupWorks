@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:freelancer/core/locale/locale_controller.dart';
 import 'package:freelancer/core/locale/locale_scope.dart';
+import 'package:freelancer/core/notifications/push_notification_prefs.dart';
 import 'package:freelancer/core/utils/profile_avatar_picker.dart';
 import 'package:freelancer/core/utils/profile_image.dart';
 import 'package:freelancer/core/utils/support_chat_navigation.dart';
 import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/services/local_notification_service.dart';
 import 'package:freelancer/services/profile_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -29,7 +31,8 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  bool isOn = false;
+  bool _pushEnabled = PushNotificationPrefs.enabled;
+  bool _pushBusy = false;
   String? _profileImageUrl;
   bool _uploadingPhoto = false;
 
@@ -37,6 +40,45 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void initState() {
     super.initState();
     _loadProfilePhoto();
+    _loadPushPref();
+  }
+
+  Future<void> _loadPushPref() async {
+    final enabled = await PushNotificationPrefs.isEnabled();
+    if (mounted) setState(() => _pushEnabled = enabled);
+  }
+
+  Future<void> _setPushEnabled(bool value) async {
+    if (_pushBusy) return;
+    setState(() {
+      _pushBusy = true;
+      _pushEnabled = value;
+    });
+    try {
+      await PushNotificationPrefs.setEnabled(value);
+      if (value) {
+        final granted =
+            await LocalNotificationService.instance.requestPermissions();
+        if (!granted && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(context.l10n.pushNotificationsPermissionDenied),
+            ),
+          );
+        }
+      } else {
+        await LocalNotificationService.instance.cancelAll();
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _pushEnabled = !value);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _pushBusy = false);
+    }
   }
 
   Future<void> _loadProfilePhoto() async {
@@ -54,8 +96,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _profileImageUrl =
             ProfileImage.normalize(profile?['profile_image_url'] as String?);
       });
-    } catch (_) {
-      // Keep whatever we already show.
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+        );
+      }
     }
   }
 
@@ -77,7 +123,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       if (!mounted) return;
       setState(() => _uploadingPhoto = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('$e')),
+        SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
       );
     }
   }
@@ -181,12 +227,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   style: kTextStyle.copyWith(color: kNeutralColor),
                 ),
                 trailing: CupertinoSwitch(
-                  value: isOn,
-                  onChanged: (value) {
-                    setState(() {
-                      isOn = value;
-                    });
-                  },
+                  value: _pushEnabled,
+                  onChanged: _pushBusy ? null : _setPushEnabled,
                 ),
               ),
               ListTile(

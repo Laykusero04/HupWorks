@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/utils/app_date_format.dart';
 import 'package:freelancer/core/utils/order_cancellation.dart';
 import 'package:freelancer/core/utils/order_contract_display.dart';
+import 'package:freelancer/core/widgets/empty_state_widget.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/l10n/l10n_labels.dart';
+import 'package:freelancer/screen/client%20screen/client%20job%20post/create_new_job_post.dart';
 import 'package:freelancer/services/orders_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -37,8 +40,8 @@ class _ClientOrderListState extends State<ClientOrderList> {
     _loadOrders();
   }
 
-  Future<void> _loadOrders() async {
-    setState(() => _isLoading = true);
+  Future<void> _loadOrders({bool showLoader = true}) async {
+    if (showLoader && mounted) setState(() => _isLoading = true);
     try {
       await OrdersService.expireStaleCancellationRequests();
       final orders = await OrdersService.getClientOrders(
@@ -72,24 +75,11 @@ class _ClientOrderListState extends State<ClientOrderList> {
   }
 
   String _formatDate(String? dateStr) {
-    if (dateStr == null) return '';
-    final date = DateTime.tryParse(dateStr);
-    if (date == null) return '';
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec'
-    ];
-    return '${date.day} ${months[date.month - 1]} ${date.year}';
+    return AppDateFormat.tryDMmmY(
+          dateStr,
+          AppDateFormat.localeOf(context),
+        ) ??
+        '';
   }
 
   _StatusStyle _statusStyle(String? status) {
@@ -161,23 +151,52 @@ class _ClientOrderListState extends State<ClientOrderList> {
                     ? const Center(
                         child: CircularProgressIndicator(color: kPrimaryColor))
                     : _orders.isEmpty
-                        ? Center(
-                            child: Text(
-                              _selectedStatus == 'all'
-                                  ? l10n.noContractsYet
-                                  : l10n.noFilteredContracts(
-                                      L10nLabels.orderFilterTabLabel(
-                                        l10n,
-                                        _selectedStatus,
-                                      ).toLowerCase(),
-                                    ),
-                              style: kTextStyle.copyWith(
-                                  color: kLightNeutralColor),
+                        ? RefreshIndicator(
+                            color: kPrimaryColor,
+                            onRefresh: () => _loadOrders(showLoader: false),
+                            child: ListView(
+                              physics: const AlwaysScrollableScrollPhysics(
+                                parent: BouncingScrollPhysics(),
+                              ),
+                              children: [
+                                SizedBox(
+                                  height:
+                                      MediaQuery.sizeOf(context).height * 0.2,
+                                ),
+                                EmptyStateWidget(
+                                  message: _selectedStatus == 'all'
+                                      ? l10n.noContractsYet
+                                      : l10n.noFilteredContracts(
+                                          L10nLabels.orderFilterTabLabel(
+                                            l10n,
+                                            _selectedStatus,
+                                          ).toLowerCase(),
+                                        ),
+                                  hint: _selectedStatus == 'all'
+                                      ? l10n.noContractsYetClientHint
+                                      : l10n.noFilteredContractsHint,
+                                  icon: Icons.description_outlined,
+                                  actionLabel: _selectedStatus == 'all'
+                                      ? l10n.postAJob
+                                      : l10n.clearFilters,
+                                  onAction: _selectedStatus == 'all'
+                                      ? () async {
+                                          await const CreateNewJobPost()
+                                              .launch(context);
+                                          _loadOrders(showLoader: false);
+                                        }
+                                      : () {
+                                          setState(
+                                              () => _selectedStatus = 'all');
+                                          _loadOrders();
+                                        },
+                                ),
+                              ],
                             ),
                           )
                         : RefreshIndicator(
                             color: kPrimaryColor,
-                            onRefresh: _loadOrders,
+                            onRefresh: () => _loadOrders(showLoader: false),
                             child: ListView.builder(
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 14, vertical: 6),
@@ -213,8 +232,9 @@ class _ClientOrderListState extends State<ClientOrderList> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: GestureDetector(
-        onTap: () {
-          ClientOrderDetails(orderId: order['id']).launch(context);
+        onTap: () async {
+          await ClientOrderDetails(orderId: order['id']).launch(context);
+          if (mounted) await _loadOrders(showLoader: false);
         },
         child: Container(
           decoration: BoxDecoration(

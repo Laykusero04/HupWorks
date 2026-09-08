@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:freelancer/core/utils/attendance_mode.dart';
+import 'package:freelancer/core/utils/app_date_format.dart';
 import 'package:freelancer/core/utils/order_cancellation.dart';
 import 'package:freelancer/core/utils/order_chat_navigation.dart';
 import 'package:freelancer/core/utils/order_contract_display.dart';
@@ -92,33 +93,9 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
   }
 
   String _formatDate(String? dateStr) {
-    if (dateStr == null) return '';
-    final date = DateTime.tryParse(dateStr);
+    final date = DateTime.tryParse(dateStr ?? '');
     if (date == null) return '';
-    const days = [
-      'Monday',
-      'Tuesday',
-      'Wednesday',
-      'Thursday',
-      'Friday',
-      'Saturday',
-      'Sunday'
-    ];
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec'
-    ];
-    return '${days[date.weekday - 1]}, ${date.day} ${months[date.month - 1]} ${date.year}';
+    return AppDateFormat.eeeeDMmmY(date, AppDateFormat.localeOf(context));
   }
 
   Future<void> _respondToCancellation({required bool approve}) async {
@@ -763,8 +740,13 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
               topRight: Radius.circular(30.0),
             ),
           ),
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
+          child: RefreshIndicator(
+            color: kPrimaryColor,
+            onRefresh: _loadOrder,
+            child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
+            ),
             child: Column(
               children: [
                 const SizedBox(height: 15.0),
@@ -925,6 +907,7 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
                 SizedBox(height: 15.0 + bottomInset),
               ],
             ),
+          ),
           ),
         ),
       ),

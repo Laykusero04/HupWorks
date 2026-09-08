@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:freelancer/core/utils/app_date_format.dart';
 
 /// Job/order shift window: optional [workDate] + [shiftStart]/[shiftEnd] clock times.
 class ShiftSchedule {
@@ -98,7 +98,7 @@ class ShiftSchedule {
   static String? formatDateRaw(dynamic raw) {
     final d = parseDate(raw);
     if (d == null) return null;
-    return DateFormat('d MMM yyyy').format(d);
+    return AppDateFormat.dMmmY(d);
   }
 
   /// e.g. `06:00–15:00` or null if incomplete.
@@ -110,7 +110,7 @@ class ShiftSchedule {
   /// e.g. `28 Aug 2026 · 06:00–15:00` or just the time window / date.
   String? get displayLabel {
     final datePart =
-        workDate == null ? null : DateFormat('d MMM yyyy').format(workDate!);
+        workDate == null ? null : AppDateFormat.dMmmY(workDate!);
     final timePart = timeWindowLabel;
     if (datePart != null && timePart != null) return '$datePart · $timePart';
     return datePart ?? timePart;

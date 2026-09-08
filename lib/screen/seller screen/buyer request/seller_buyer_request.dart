@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/utils/app_date_format.dart';
 import 'package:freelancer/core/utils/app_logger.dart';
 import 'package:freelancer/core/utils/localized_category.dart';
 import 'package:freelancer/core/utils/profile_image.dart';
@@ -251,24 +252,7 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
   }
 
   String _formatDate(String? s) {
-    if (s == null) return '';
-    final d = DateTime.tryParse(s);
-    if (d == null) return '';
-    const m = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec'
-    ];
-    return '${d.day} ${m[d.month - 1]} ${d.year}';
+    return AppDateFormat.tryDMmmY(s, AppDateFormat.localeOf(context)) ?? '';
   }
 
   Future<void> _clearSecondaryFilters() async {

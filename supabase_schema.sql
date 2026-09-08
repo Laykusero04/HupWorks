@@ -469,6 +469,35 @@ create policy "Users can remove favourites"
   on favourites for delete using (auth.uid() = user_id);
 
 -- ==================
+-- 14b. SAVED SELLERS (client saved talent)
+-- ==================
+
+create table public.saved_sellers (
+  id uuid default gen_random_uuid() primary key,
+  client_id uuid not null references public.profiles(id) on delete cascade,
+  seller_id uuid not null references public.profiles(id) on delete cascade,
+  created_at timestamptz not null default now(),
+  unique (client_id, seller_id),
+  check (client_id <> seller_id)
+);
+
+create index if not exists saved_sellers_client_id_idx
+  on public.saved_sellers (client_id);
+create index if not exists saved_sellers_seller_id_idx
+  on public.saved_sellers (seller_id);
+
+alter table public.saved_sellers enable row level security;
+
+create policy "Users can view their saved sellers"
+  on saved_sellers for select using (auth.uid() = client_id);
+
+create policy "Users can save sellers"
+  on saved_sellers for insert with check (auth.uid() = client_id);
+
+create policy "Users can remove saved sellers"
+  on saved_sellers for delete using (auth.uid() = client_id);
+
+-- ==================
 -- 15. NOTIFICATIONS
 -- ==================
 

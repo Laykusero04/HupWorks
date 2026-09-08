@@ -6,6 +6,7 @@ import 'package:freelancer/core/utils/job_offer_delivery.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
 import 'package:freelancer/services/seller_home_service.dart';
 import 'package:freelancer/services/seller_orders_service.dart';
+import 'package:freelancer/router/route_names.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -137,7 +138,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         GestureDetector(
-                          onTap: () => context.go('/seller/find-jobs'),
+                          onTap: () => context.go(AppRoutes.sellerFindJobs),
                           child: Container(
                             width: double.infinity,
                             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
@@ -209,7 +210,10 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
                         const SizedBox(height: 20.0),
 
                         GestureDetector(
-                          onTap: () => context.push('/seller/applications'),
+                          onTap: () async {
+                            await context.push(AppRoutes.sellerApplications);
+                            if (mounted) _loadData();
+                          },
                           child: Row(
                             children: [
                               Text(
@@ -266,7 +270,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
                                     padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                                   ),
-                                  onPressed: () => context.go('/seller/find-jobs'),
+                                  onPressed: () => context.go(AppRoutes.sellerFindJobs),
                                   child: Text(l10n.browseJobs, style: kTextStyle.copyWith(fontWeight: FontWeight.w700)),
                                 ),
                               ],
@@ -288,7 +292,10 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
                                   color: Colors.transparent,
                                   child: InkWell(
                                     borderRadius: BorderRadius.circular(12),
-                                    onTap: () => context.push('/seller/applications'),
+                                    onTap: () async {
+                                      await context.push(AppRoutes.sellerApplications);
+                                      if (mounted) _loadData();
+                                    },
                                     child: Ink(
                                       padding: const EdgeInsets.all(12.0),
                                       decoration: BoxDecoration(
@@ -393,7 +400,10 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
                           value: _formatHours(context),
                           label: l10n.hoursWorked,
                           color: kSecondaryColor,
-                          onTap: () => context.push('/seller/attendance'),
+                          onTap: () async {
+                            await context.push(AppRoutes.sellerAttendance);
+                            if (mounted) _loadData();
+                          },
                         ),
                       ),
                       VerticalDivider(width: 1, thickness: 1, color: kBorderColorTextField),
@@ -509,7 +519,10 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
               text: onsite == 1
                   ? l10n.attentionOnsiteOne
                   : l10n.attentionOnsiteMany(onsite),
-              onTap: () => context.push('/seller/attendance'),
+              onTap: () async {
+                await context.push(AppRoutes.sellerAttendance);
+                if (mounted) _loadData();
+              },
             ),
         ],
       ),
@@ -524,14 +537,20 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
         subtitle: l10n.shortcutApplicationsSub,
         icon: Icons.outgoing_mail,
         color: kPrimaryColor,
-        onTap: () => context.push('/seller/applications'),
+        onTap: () async {
+          await context.push(AppRoutes.sellerApplications);
+          if (mounted) _loadData();
+        },
       ),
       (
         title: l10n.shortcutAttendance,
         subtitle: l10n.shortcutAttendanceSub,
         icon: Icons.qr_code_scanner_rounded,
         color: StatusColors.success,
-        onTap: () => context.push('/seller/attendance'),
+        onTap: () async {
+          await context.push(AppRoutes.sellerAttendance);
+          if (mounted) _loadData();
+        },
       ),
     ];
 

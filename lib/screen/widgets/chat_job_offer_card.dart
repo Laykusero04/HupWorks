@@ -169,10 +169,13 @@ class _ChatJobOfferCardState extends State<ChatJobOfferCard> {
   Future<void> _handleReject() async {
     final offerId = widget.message.jobOfferId ?? _offer?['id'] as String?;
     if (offerId == null) return;
+    final seller = _offer?['profiles'] as Map<String, dynamic>?;
+    final sellerName = seller?['name'] as String?;
     setState(() => _actionBusy = true);
     await JobOfferChatActions.rejectOffer(
       context,
       offerId: offerId,
+      sellerName: sellerName,
       onComplete: () async {
         await _loadOffer();
         if (mounted) setState(() => _actionBusy = false);

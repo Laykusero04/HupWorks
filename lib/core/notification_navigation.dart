@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:freelancer/core/utils/chat_navigation.dart';
 import 'package:freelancer/data/models/notification_model.dart';
-import 'package:freelancer/screen/client%20screen/client%20job%20post/job_details.dart';
-import 'package:freelancer/screen/client%20screen/client%20orders/client_order_details.dart';
-import 'package:freelancer/screen/seller%20screen/applications/seller_applications.dart';
-import 'package:freelancer/screen/seller%20screen/buyer%20request/buyer_request_details.dart';
+import 'package:freelancer/router/route_names.dart';
+import 'package:freelancer/core/utils/chat_navigation.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nb_utils/nb_utils.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 enum NotificationUserRole { client, seller }
@@ -45,7 +41,8 @@ class NotificationNavigation {
             _showSnack(context, 'Unable to open this notification.');
             return;
           }
-          await BuyerRequestDetails(jobPostId: refId).launch(context);
+          if (!context.mounted) return;
+          context.push(AppRoutes.sellerBuyerRequestDetailsOf(refId));
           return;
         case 'review':
           await _openOrder(context, role: role, orderId: refId);
@@ -74,9 +71,11 @@ class NotificationNavigation {
     if (!context.mounted) return;
     switch (role) {
       case NotificationUserRole.client:
-        await ClientOrderDetails(orderId: orderId).launch(context);
+        context.push(AppRoutes.clientOrderDetailsOf(orderId));
+        return;
       case NotificationUserRole.seller:
-        context.push('/seller/orders/$orderId');
+        context.push(AppRoutes.sellerOrderDetailsOf(orderId));
+        return;
     }
   }
 
@@ -112,12 +111,14 @@ class NotificationNavigation {
     switch (role) {
       case NotificationUserRole.client:
         if (jobPostId != null) {
-          await JobDetails(jobPostId: jobPostId).launch(context);
+          context.push(AppRoutes.clientJobDetailsOf(jobPostId));
         } else {
           await _openOrder(context, role: role, orderId: orderId);
         }
+        return;
       case NotificationUserRole.seller:
-        context.push('/seller/orders/$orderId');
+        context.push(AppRoutes.sellerOrderDetailsOf(orderId));
+        return;
     }
   }
 
@@ -144,12 +145,14 @@ class NotificationNavigation {
     switch (role) {
       case NotificationUserRole.client:
         if (jobPostId != null) {
-          await JobDetails(jobPostId: jobPostId).launch(context);
+          context.push(AppRoutes.clientJobDetailsOf(jobPostId));
         } else {
           _showSnack(context, 'Job post not found.');
         }
+        return;
       case NotificationUserRole.seller:
-        await const SellerApplications().launch(context);
+        context.push(AppRoutes.sellerApplications);
+        return;
     }
   }
 

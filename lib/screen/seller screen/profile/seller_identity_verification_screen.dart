@@ -58,8 +58,13 @@ class _SellerIdentityVerificationScreenState
         _submittedSelfieUrl = signedUrl;
         _loading = false;
       });
-    } catch (_) {
-      if (mounted) setState(() => _loading = false);
+    } catch (e) {
+      if (mounted) {
+        setState(() => _loading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+        );
+      }
     }
   }
 

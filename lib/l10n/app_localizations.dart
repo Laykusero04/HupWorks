@@ -352,6 +352,18 @@ abstract class AppLocalizations {
   /// **'Log Out'**
   String get logOut;
 
+  /// No description provided for @logOutConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Log out?'**
+  String get logOutConfirmTitle;
+
+  /// No description provided for @logOutConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ll need to sign in again to use your account.'**
+  String get logOutConfirmBody;
+
   /// No description provided for @sellerReport.
   ///
   /// In en, this message translates to:
@@ -399,6 +411,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Create Profile'**
   String get createProfile;
+
+  /// No description provided for @completeYourProfileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete your profile'**
+  String get completeYourProfileTitle;
+
+  /// No description provided for @completeYourProfileBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a photo and contact details so freelancers trust your jobs.'**
+  String get completeYourProfileBody;
+
+  /// No description provided for @completeProfileAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete profile'**
+  String get completeProfileAction;
+
+  /// No description provided for @skipForNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip for now'**
+  String get skipForNow;
 
   /// No description provided for @setupProfile.
   ///
@@ -453,6 +489,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Push Notifications'**
   String get pushNotifications;
+
+  /// No description provided for @pushNotificationsPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification permission was denied. Enable it in system settings to receive alerts.'**
+  String get pushNotificationsPermissionDenied;
 
   /// No description provided for @notifications.
   ///
@@ -913,38 +955,62 @@ abstract class AppLocalizations {
   /// No description provided for @appOnboardPage1Title.
   ///
   /// In en, this message translates to:
-  /// **'Post jobs. Hire locally.'**
+  /// **'Sign up and create an account'**
   String get appOnboardPage1Title;
 
   /// No description provided for @appOnboardPage1Body.
   ///
   /// In en, this message translates to:
-  /// **'Create a job post, browse freelancers near you, and hire the right person for cleaning, warehouse, trades, and more.'**
+  /// **'Join as an Employer or Freelancer.'**
   String get appOnboardPage1Body;
 
   /// No description provided for @appOnboardPage2Title.
   ///
   /// In en, this message translates to:
-  /// **'Find work that fits.'**
+  /// **'Post or search'**
   String get appOnboardPage2Title;
 
   /// No description provided for @appOnboardPage2Body.
   ///
   /// In en, this message translates to:
-  /// **'Discover open jobs, apply in a few taps, and chat with clients so you know exactly what\'s expected.'**
+  /// **'Post a job, or browse and apply.'**
   String get appOnboardPage2Body;
 
   /// No description provided for @appOnboardPage3Title.
   ///
   /// In en, this message translates to:
-  /// **'Show up. Track hours. Get paid.'**
+  /// **'Chat and align'**
   String get appOnboardPage3Title;
 
   /// No description provided for @appOnboardPage3Body.
   ///
   /// In en, this message translates to:
-  /// **'Manage contracts, clock in on site, and keep hour reports clear—so both sides stay aligned from start to finish.'**
+  /// **'Message in the app and agree on the details.'**
   String get appOnboardPage3Body;
+
+  /// No description provided for @appOnboardPage4Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Check for shift updates'**
+  String get appOnboardPage4Title;
+
+  /// No description provided for @appOnboardPage4Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Use on-site attendance or QR.'**
+  String get appOnboardPage4Body;
+
+  /// No description provided for @appOnboardPage5Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrap up and leave a review'**
+  String get appOnboardPage5Title;
+
+  /// No description provided for @appOnboardPage5Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish the job and share your experience.'**
+  String get appOnboardPage5Body;
 
   /// No description provided for @authWelcomeHowToUse.
   ///
@@ -2038,6 +2104,36 @@ abstract class AppLocalizations {
   /// **'No saved jobs yet'**
   String get noFavouritesYet;
 
+  /// No description provided for @savedTalentList.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved talent'**
+  String get savedTalentList;
+
+  /// No description provided for @noSavedTalentYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved talent yet'**
+  String get noSavedTalentYet;
+
+  /// No description provided for @noSavedTalentYetHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse freelancers and tap the bookmark to save them here.'**
+  String get noSavedTalentYetHint;
+
+  /// No description provided for @addedToSavedTalent.
+  ///
+  /// In en, this message translates to:
+  /// **'Talent saved'**
+  String get addedToSavedTalent;
+
+  /// No description provided for @removedFromSavedTalent.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed from saved talent'**
+  String get removedFromSavedTalent;
+
   /// No description provided for @noReviewsYet.
   ///
   /// In en, this message translates to:
@@ -2277,6 +2373,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Browse open jobs and send a clear offer to stand out.'**
   String get noApplicationsYetHint;
+
+  /// No description provided for @noClientApplicationsYetHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Applications to your jobs show up here. Post a job to start receiving them.'**
+  String get noClientApplicationsYetHint;
 
   /// No description provided for @pendingApplications.
   ///
@@ -2980,6 +3082,12 @@ abstract class AppLocalizations {
   /// **'No jobs posted yet'**
   String get noJobsPostedYet;
 
+  /// No description provided for @noJobsPostedYetHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Post a job to start receiving applications from freelancers.'**
+  String get noJobsPostedYetHint;
+
   /// No description provided for @postAJob.
   ///
   /// In en, this message translates to:
@@ -3610,6 +3718,24 @@ abstract class AppLocalizations {
   /// **'No contracts yet'**
   String get noContractsYet;
 
+  /// No description provided for @noContractsYetClientHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Hire someone on a job to start a contract here.'**
+  String get noContractsYetClientHint;
+
+  /// No description provided for @noContractsYetSellerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply to jobs and get hired — contracts will show up here.'**
+  String get noContractsYetSellerHint;
+
+  /// No description provided for @noFilteredContractsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Try another status filter, or clear filters to see all contracts.'**
+  String get noFilteredContractsHint;
+
   /// No description provided for @noFilteredContracts.
   ///
   /// In en, this message translates to:
@@ -4114,6 +4240,30 @@ abstract class AppLocalizations {
   /// **'Hire'**
   String get hireAction;
 
+  /// No description provided for @rejectApplicationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject application?'**
+  String get rejectApplicationTitle;
+
+  /// No description provided for @rejectApplicationConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject {name}\'s application? This can\'t be undone.'**
+  String rejectApplicationConfirmBody(String name);
+
+  /// No description provided for @closeJobTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Close this job?'**
+  String get closeJobTitle;
+
+  /// No description provided for @closeJobConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This job will close to new applicants. Existing applications stay on your list.'**
+  String get closeJobConfirmBody;
+
   /// No description provided for @closeJob.
   ///
   /// In en, this message translates to:
@@ -4305,6 +4455,241 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Next'**
   String get nextStep;
+
+  /// No description provided for @maxJobSkillsSnackbar.
+  ///
+  /// In en, this message translates to:
+  /// **'You can add up to {max} skills.'**
+  String maxJobSkillsSnackbar(int max);
+
+  /// No description provided for @shiftTimesBothOrNeither.
+  ///
+  /// In en, this message translates to:
+  /// **'Set both start and end time, or leave both empty.'**
+  String get shiftTimesBothOrNeither;
+
+  /// No description provided for @createJobBasicsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Title, category, skills, and job type.'**
+  String get createJobBasicsSubtitle;
+
+  /// No description provided for @createJobDetailsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe the work and how many people you need.'**
+  String get createJobDetailsSubtitle;
+
+  /// No description provided for @createJobLocationSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'On-site or remote, and where the work happens.'**
+  String get createJobLocationSubtitle;
+
+  /// No description provided for @createJobBudgetSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional pay range, then review and post.'**
+  String get createJobBudgetSubtitle;
+
+  /// No description provided for @savedAsCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved as: {name}'**
+  String savedAsCategory(String name);
+
+  /// No description provided for @jobSkillsTagHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag skills freelancers need for this job (optional).'**
+  String get jobSkillsTagHint;
+
+  /// No description provided for @shiftSchedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Shift schedule'**
+  String get shiftSchedule;
+
+  /// No description provided for @shiftScheduleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional work day and clock times (e.g. 06:00–15:00). Used later for attendance and timed chat.'**
+  String get shiftScheduleHint;
+
+  /// No description provided for @workDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Work date'**
+  String get workDateLabel;
+
+  /// No description provided for @optionalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional'**
+  String get optionalLabel;
+
+  /// No description provided for @shiftStartLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get shiftStartLabel;
+
+  /// No description provided for @shiftEndLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'End'**
+  String get shiftEndLabel;
+
+  /// No description provided for @hiringSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Hiring'**
+  String get hiringSection;
+
+  /// No description provided for @numberToHire.
+  ///
+  /// In en, this message translates to:
+  /// **'Number to hire'**
+  String get numberToHire;
+
+  /// No description provided for @noCapUntilCloseJob.
+  ///
+  /// In en, this message translates to:
+  /// **'No cap until you close the job'**
+  String get noCapUntilCloseJob;
+
+  /// No description provided for @budgetAppliesAs.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget applies as'**
+  String get budgetAppliesAs;
+
+  /// No description provided for @reviewSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Review'**
+  String get reviewSection;
+
+  /// No description provided for @categoryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get categoryLabel;
+
+  /// No description provided for @shiftLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Shift'**
+  String get shiftLabel;
+
+  /// No description provided for @workersLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Workers'**
+  String get workersLabel;
+
+  /// No description provided for @noLimitLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'No limit'**
+  String get noLimitLabel;
+
+  /// No description provided for @locationOnSite.
+  ///
+  /// In en, this message translates to:
+  /// **'On-site'**
+  String get locationOnSite;
+
+  /// No description provided for @locationRemote.
+  ///
+  /// In en, this message translates to:
+  /// **'Remote'**
+  String get locationRemote;
+
+  /// No description provided for @thisFreelancer.
+  ///
+  /// In en, this message translates to:
+  /// **'this freelancer'**
+  String get thisFreelancer;
+
+  /// No description provided for @hireConfirmUnlimited.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept {name}\'s offer ({price})? The job stays open so you can hire more freelancers until you close it.'**
+  String hireConfirmUnlimited(String name, String price);
+
+  /// No description provided for @hireConfirmFillsAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept {name}\'s offer ({price})? This fills your last hire spot ({filled} of {cap}). The job will close to new applicants. Other applications stay on your list as pending — reject them only if you do not want them.'**
+  String hireConfirmFillsAll(String name, String price, int filled, int cap);
+
+  /// No description provided for @hireConfirmRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept {name}\'s offer ({price})? After this hire you will have {remaining} more open spots ({filled} of {cap} filled). Other pending applications stay open.'**
+  String hireConfirmRemaining(
+      String name, String price, int remaining, int filled, int cap);
+
+  /// No description provided for @hiredJobFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Hired! This job is now full and closed to new applicants.'**
+  String get hiredJobFull;
+
+  /// No description provided for @hiredContractCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Hired! Contract created.'**
+  String get hiredContractCreated;
+
+  /// No description provided for @jobPostFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Job Post'**
+  String get jobPostFallback;
+
+  /// No description provided for @budgetLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget'**
+  String get budgetLabel;
+
+  /// No description provided for @dateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get dateLabel;
+
+  /// No description provided for @areaLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Area'**
+  String get areaLabel;
+
+  /// No description provided for @applicationsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Applications ({count})'**
+  String applicationsCount(int count);
+
+  /// No description provided for @messageFreelancerTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Message freelancer'**
+  String get messageFreelancerTooltip;
+
+  /// No description provided for @attendanceQrShort.
+  ///
+  /// In en, this message translates to:
+  /// **'QR'**
+  String get attendanceQrShort;
+
+  /// No description provided for @stepProgressWithLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {current} of {total} · {label}'**
+  String stepProgressWithLabel(int current, int total, String label);
 
   /// No description provided for @totalJobPostCount.
   ///

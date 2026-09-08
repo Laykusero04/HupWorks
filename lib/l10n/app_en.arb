@@ -47,6 +47,8 @@
   "settings": "Setting",
   "helpSupport": "Help & Support",
   "logOut": "Log Out",
+  "logOutConfirmTitle": "Log out?",
+  "logOutConfirmBody": "You'll need to sign in again to use your account.",
   "sellerReport": "Seller Report",
   "favorite": "Save",
   "transaction": "Transaction",
@@ -55,6 +57,10 @@
   "profileUpdated": "Profile updated successfully!",
   "pleaseEnterName": "Please enter your name",
   "createProfile": "Create Profile",
+  "completeYourProfileTitle": "Complete your profile",
+  "completeYourProfileBody": "Add a photo and contact details so freelancers trust your jobs.",
+  "completeProfileAction": "Complete profile",
+  "skipForNow": "Skip for now",
   "setupProfile": "Setup Profile",
   "saveProfile": "Save Profile",
   "continueLabel": "Continue",
@@ -69,6 +75,7 @@
   "couldNotOpenChat": "Could not open chat",
   "pleaseFillAllFields": "Please fill in all fields",
   "pushNotifications": "Push Notifications",
+  "pushNotificationsPermissionDenied": "Notification permission was denied. Enable it in system settings to receive alerts.",
   "notifications": "Notifications",
   "message": "Message",
   "contracts": "Contracts",
@@ -170,12 +177,16 @@
   "appOnboardGetStarted": "Get started",
   "appOnboardLanguageTitle": "Choose your language",
   "appOnboardLanguageSubtitle": "We'll show the app in the language you pick. You can change it later in Settings.",
-  "appOnboardPage1Title": "Post jobs. Hire locally.",
-  "appOnboardPage1Body": "Create a job post, browse freelancers near you, and hire the right person for cleaning, warehouse, trades, and more.",
-  "appOnboardPage2Title": "Find work that fits.",
-  "appOnboardPage2Body": "Discover open jobs, apply in a few taps, and chat with clients so you know exactly what's expected.",
-  "appOnboardPage3Title": "Show up. Track hours. Get paid.",
-  "appOnboardPage3Body": "Manage contracts, clock in on site, and keep hour reports clear—so both sides stay aligned from start to finish.",
+  "appOnboardPage1Title": "Sign up and create an account",
+  "appOnboardPage1Body": "Join as an Employer or Freelancer.",
+  "appOnboardPage2Title": "Post or search",
+  "appOnboardPage2Body": "Post a job, or browse and apply.",
+  "appOnboardPage3Title": "Chat and align",
+  "appOnboardPage3Body": "Message in the app and agree on the details.",
+  "appOnboardPage4Title": "Check for shift updates",
+  "appOnboardPage4Body": "Use on-site attendance or QR.",
+  "appOnboardPage5Title": "Wrap up and leave a review",
+  "appOnboardPage5Body": "Finish the job and share your experience.",
   "authWelcomeHowToUse": "How will you use HupWorks?",
   "authRoleClient": "Employer",
   "authRoleClientSubtitle": "Hire talent",
@@ -389,6 +400,11 @@
   "favourites": "Saved",
   "reviews": "Reviews",
   "noFavouritesYet": "No saved jobs yet",
+  "savedTalentList": "Saved talent",
+  "noSavedTalentYet": "No saved talent yet",
+  "noSavedTalentYetHint": "Browse freelancers and tap the bookmark to save them here.",
+  "addedToSavedTalent": "Talent saved",
+  "removedFromSavedTalent": "Removed from saved talent",
   "noReviewsYet": "No reviews yet",
   "mapPickLocation": "Pick location",
   "mapConfirmLocation": "Confirm location",
@@ -440,6 +456,7 @@
   "proBadge": "Pro",
   "noApplicationsYet": "No applications yet",
   "noApplicationsYetHint": "Browse open jobs and send a clear offer to stand out.",
+  "noClientApplicationsYetHint": "Applications to your jobs show up here. Post a job to start receiving them.",
   "pendingApplications": "Pending applications",
   "completedThisMonth": "Completed this month",
   "yourRating": "Your rating",
@@ -640,6 +657,7 @@
     }
   },
   "noJobsPostedYet": "No jobs posted yet",
+  "noJobsPostedYetHint": "Post a job to start receiving applications from freelancers.",
   "postAJob": "Post a job",
   "avgRating": "Avg rating",
   "about": "About",
@@ -785,6 +803,9 @@
   "filterAll": "All",
   "refreshTooltip": "Refresh",
   "noContractsYet": "No contracts yet",
+  "noContractsYetClientHint": "Hire someone on a job to start a contract here.",
+  "noContractsYetSellerHint": "Apply to jobs and get hired — contracts will show up here.",
+  "noFilteredContractsHint": "Try another status filter, or clear filters to see all contracts.",
   "noFilteredContracts": "No {status} contracts",
   "@noFilteredContracts": {
     "placeholders": {
@@ -941,6 +962,15 @@
   "applicationRejected": "Application rejected",
   "hireFreelancerTitle": "Hire freelancer?",
   "hireAction": "Hire",
+  "rejectApplicationTitle": "Reject application?",
+  "rejectApplicationConfirmBody": "Reject {name}'s application? This can't be undone.",
+  "@rejectApplicationConfirmBody": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "closeJobTitle": "Close this job?",
+  "closeJobConfirmBody": "This job will close to new applicants. Existing applications stay on your list.",
   "closeJob": "Close Job",
   "attendanceSettingsUpdated": "Attendance settings updated",
   "jobPostedSuccess": "Job posted successfully!",
@@ -973,6 +1003,90 @@
   "postingEllipsis": "Posting…",
   "reviewAndPost": "Review & post",
   "nextStep": "Next",
+  "maxJobSkillsSnackbar": "You can add up to {max} skills.",
+  "@maxJobSkillsSnackbar": {
+    "placeholders": {
+      "max": { "type": "int" }
+    }
+  },
+  "shiftTimesBothOrNeither": "Set both start and end time, or leave both empty.",
+  "createJobBasicsSubtitle": "Title, category, skills, and job type.",
+  "createJobDetailsSubtitle": "Describe the work and how many people you need.",
+  "createJobLocationSubtitle": "On-site or remote, and where the work happens.",
+  "createJobBudgetSubtitle": "Optional pay range, then review and post.",
+  "savedAsCategory": "Saved as: {name}",
+  "@savedAsCategory": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "jobSkillsTagHint": "Tag skills freelancers need for this job (optional).",
+  "shiftSchedule": "Shift schedule",
+  "shiftScheduleHint": "Optional work day and clock times (e.g. 06:00–15:00). Used later for attendance and timed chat.",
+  "workDateLabel": "Work date",
+  "optionalLabel": "Optional",
+  "shiftStartLabel": "Start",
+  "shiftEndLabel": "End",
+  "hiringSection": "Hiring",
+  "numberToHire": "Number to hire",
+  "noCapUntilCloseJob": "No cap until you close the job",
+  "budgetAppliesAs": "Budget applies as",
+  "reviewSection": "Review",
+  "categoryLabel": "Category",
+  "shiftLabel": "Shift",
+  "workersLabel": "Workers",
+  "noLimitLabel": "No limit",
+  "locationOnSite": "On-site",
+  "locationRemote": "Remote",
+  "thisFreelancer": "this freelancer",
+  "hireConfirmUnlimited": "Accept {name}'s offer ({price})? The job stays open so you can hire more freelancers until you close it.",
+  "@hireConfirmUnlimited": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "price": { "type": "String" }
+    }
+  },
+  "hireConfirmFillsAll": "Accept {name}'s offer ({price})? This fills your last hire spot ({filled} of {cap}). The job will close to new applicants. Other applications stay on your list as pending — reject them only if you do not want them.",
+  "@hireConfirmFillsAll": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "price": { "type": "String" },
+      "filled": { "type": "int" },
+      "cap": { "type": "int" }
+    }
+  },
+  "hireConfirmRemaining": "Accept {name}'s offer ({price})? After this hire you will have {remaining} more open spots ({filled} of {cap} filled). Other pending applications stay open.",
+  "@hireConfirmRemaining": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "price": { "type": "String" },
+      "remaining": { "type": "int" },
+      "filled": { "type": "int" },
+      "cap": { "type": "int" }
+    }
+  },
+  "hiredJobFull": "Hired! This job is now full and closed to new applicants.",
+  "hiredContractCreated": "Hired! Contract created.",
+  "jobPostFallback": "Job Post",
+  "budgetLabel": "Budget",
+  "dateLabel": "Date",
+  "areaLabel": "Area",
+  "applicationsCount": "Applications ({count})",
+  "@applicationsCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "messageFreelancerTooltip": "Message freelancer",
+  "attendanceQrShort": "QR",
+  "stepProgressWithLabel": "Step {current} of {total} · {label}",
+  "@stepProgressWithLabel": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" },
+      "label": { "type": "String" }
+    }
+  },
   "totalJobPostCount": "Total Job Post ({count})",
   "@totalJobPostCount": {
     "placeholders": {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/core/utils/app_date_format.dart';
 import 'package:freelancer/core/utils/order_cancellation.dart';
 import 'package:freelancer/core/utils/order_chat_navigation.dart';
 import 'package:freelancer/core/utils/order_contract_display.dart';
@@ -105,33 +106,9 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
   }
 
   String _formatDate(String? s) {
-    if (s == null) return '';
-    final d = DateTime.tryParse(s);
+    final d = DateTime.tryParse(s ?? '');
     if (d == null) return '';
-    const days = [
-      'Monday',
-      'Tuesday',
-      'Wednesday',
-      'Thursday',
-      'Friday',
-      'Saturday',
-      'Sunday',
-    ];
-    const m = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    return '${days[d.weekday - 1]}, ${d.day} ${m[d.month - 1]} ${d.year}';
+    return AppDateFormat.eeeeDMmmY(d, AppDateFormat.localeOf(context));
   }
 
   Future<void> _requestCancellation() async {
@@ -570,8 +547,13 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
               topRight: Radius.circular(30.0),
             ),
           ),
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
+          child: RefreshIndicator(
+            color: Theme.of(context).colorScheme.primary,
+            onRefresh: _loadOrder,
+            child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
+            ),
             child: Column(
               children: [
                 const SizedBox(height: 15.0),
@@ -748,6 +730,7 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
                 ),
               ],
             ),
+          ),
           ),
         ),
       ),

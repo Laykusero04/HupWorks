@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/l10n/app_localizations.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Persists and notifies app UI locale changes.
@@ -31,6 +32,7 @@ class LocaleController extends ChangeNotifier {
   static Future<LocaleController> create() async {
     final controller = LocaleController._();
     await controller._load();
+    controller._syncIntlLocale();
     return controller;
   }
 
@@ -46,12 +48,17 @@ class LocaleController extends ChangeNotifier {
     }
   }
 
+  void _syncIntlLocale() {
+    Intl.defaultLocale = _locale.toString();
+  }
+
   Future<void> setLocale(Locale locale) async {
     final supported =
         supportedLocales.any((l) => l.languageCode == locale.languageCode);
     if (!supported) return;
     if (_locale.languageCode == locale.languageCode) return;
     _locale = Locale(locale.languageCode);
+    _syncIntlLocale();
     notifyListeners();
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_prefsKey, _locale.languageCode);

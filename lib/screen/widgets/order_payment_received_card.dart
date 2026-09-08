@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/utils/app_date_format.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
 import 'package:freelancer/services/orders_service.dart';
-import 'package:intl/intl.dart';
 
 /// Off-app payment mark for a completed order (work tracker proof, not a PSP).
 class OrderPaymentReceivedCard extends StatefulWidget {
@@ -37,7 +37,7 @@ class _OrderPaymentReceivedCardState extends State<OrderPaymentReceivedCard> {
     if (raw == null || raw.isEmpty) return null;
     final dt = DateTime.tryParse(raw);
     if (dt == null) return null;
-    return DateFormat.yMMMd().format(dt.toLocal());
+    return AppDateFormat.mmmDY(dt, AppDateFormat.localeOf(context));
   }
 
   Future<void> _setReceived(bool received) async {

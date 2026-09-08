@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/utils/app_date_format.dart';
 import 'package:freelancer/core/utils/profile_image.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/seller%20screen/seller%20message/chat_inbox.dart';
@@ -6,6 +7,7 @@ import 'package:freelancer/services/block_service.dart';
 import 'package:freelancer/services/chat_service.dart';
 import 'package:freelancer/services/client_home_service.dart';
 import 'package:freelancer/services/profile_service.dart';
+import 'package:freelancer/services/saved_talent_service.dart';
 import 'package:freelancer/services/seller_work_trust_service.dart';
 import 'package:freelancer/services/verification_service.dart';
 import 'package:freelancer/data/models/seller_work_trust_model.dart';
@@ -43,6 +45,8 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
   List<Map<String, dynamic>> _reviews = [];
   SellerWorkTrust _workTrust = SellerWorkTrust.empty;
   bool _isLoading = true;
+  bool _isSaved = false;
+  bool _saveBusy = false;
 
   @override
   void initState() {
@@ -57,6 +61,7 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
         ProfileService.getReviewsReceived(widget.sellerId),
         SellerWorkTrustService.getPublicWorkTrust(widget.sellerId),
         BlockService.isContactBlocked(widget.sellerId).then((v) => v).catchError((_) => false),
+        SavedTalentService.isSaved(widget.sellerId).catchError((_) => false),
       ]);
       if (!mounted) return;
       setState(() {
@@ -64,6 +69,7 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
         _reviews = List<Map<String, dynamic>>.from(results[1] as List<dynamic>? ?? const []);
         _workTrust = results[2] as SellerWorkTrust;
         _contactBlocked = results[3] as bool;
+        _isSaved = results[4] as bool;
         _isLoading = false;
       });
     } catch (e) {
@@ -71,6 +77,35 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(context.l10n.couldNotLoadProfile('$e'))),
+        );
+      }
+    }
+  }
+
+  Future<void> _toggleSaved() async {
+    if (_saveBusy) return;
+    setState(() => _saveBusy = true);
+    try {
+      final next = await SavedTalentService.toggle(widget.sellerId);
+      if (!mounted) return;
+      setState(() {
+        _isSaved = next;
+        _saveBusy = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            next
+                ? context.l10n.addedToSavedTalent
+                : context.l10n.removedFromSavedTalent,
+          ),
+        ),
+      );
+    } catch (e) {
+      if (mounted) {
+        setState(() => _saveBusy = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
     }
@@ -121,16 +156,8 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
     }
   }
 
-  static String _formatReviewDate(String? iso) {
-    if (iso == null || iso.isEmpty) return '';
-    final d = DateTime.tryParse(iso);
-    if (d == null) return '';
-    const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-    ];
-    return '${months[d.month - 1]} ${d.day}, ${d.year}';
-  }
+  static String _formatReviewDate(String? iso, [String? locale]) =>
+      AppDateFormat.tryMmmDY(iso, locale) ?? '';
 
   @override
   Widget build(BuildContext context) {
@@ -187,6 +214,16 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
         ),
         centerTitle: true,
         actions: [
+          IconButton(
+            tooltip: _isSaved
+                ? context.l10n.removedFromSavedTalent
+                : context.l10n.favorite,
+            onPressed: _saveBusy ? null : _toggleSaved,
+            icon: Icon(
+              _isSaved ? Icons.bookmark : Icons.bookmark_border,
+              color: _isSaved ? kPrimaryColor : kNeutralColor,
+            ),
+          ),
           IconButton(
             tooltip: context.l10n.report,
             onPressed: () {
@@ -486,7 +523,7 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
     final imageUrl = (reviewer?['profile_image_url'] as String?)?.trim();
     final who =
         (reviewerName != null && reviewerName.isNotEmpty) ? reviewerName : 'Client';
-    final dateStr = _formatReviewDate(created);
+    final dateStr = _formatReviewDate(created, AppDateFormat.localeOf(context));
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),

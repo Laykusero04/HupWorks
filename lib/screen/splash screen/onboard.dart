@@ -20,7 +20,7 @@ class _OnBoardState extends State<OnBoard> {
   final _pageController = PageController();
   int _index = 0;
 
-  static const _contentPageCount = 3;
+  static const _contentPageCount = 5;
   static const _pageCount = _contentPageCount + 1;
 
   @override
@@ -63,6 +63,18 @@ class _OnBoardState extends State<OnBoard> {
           image: AppInfo.onBoard3,
           title: l10n.appOnboardPage3Title,
           body: l10n.appOnboardPage3Body,
+          accent: kPrimaryColor,
+        ),
+        _OnboardPageData(
+          image: AppInfo.onBoard2,
+          title: l10n.appOnboardPage4Title,
+          body: l10n.appOnboardPage4Body,
+          accent: kSecondaryColor,
+        ),
+        _OnboardPageData(
+          image: AppInfo.onBoard3,
+          title: l10n.appOnboardPage5Title,
+          body: l10n.appOnboardPage5Body,
           accent: kPrimaryColor,
         ),
       ];

@@ -332,6 +332,23 @@ class JobPostsService {
     return List<Map<String, dynamic>>.from(data);
   }
 
+  /// All applications on the current client's job posts (newest first).
+  static Future<List<Map<String, dynamic>>> getClientApplications() async {
+    final user = _client.auth.currentUser;
+    if (user == null) return [];
+
+    final data = await _client
+        .from('job_offers')
+        .select(
+          '*, '
+          'profiles:seller_id(id, name, profile_image_url, rating), '
+          'job_posts!inner(id, title, status, job_type, workers_needed, client_id)',
+        )
+        .eq('job_posts.client_id', user.id)
+        .order('created_at', ascending: false);
+    return List<Map<String, dynamic>>.from(data);
+  }
+
   /// Accept or reject an offer.
   /// For "accepted" prefer [acceptJobOffer], which atomically also creates
   /// the contract and closes the job post.

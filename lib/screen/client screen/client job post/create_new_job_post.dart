@@ -3,6 +3,7 @@ import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/core/utils/attendance_mode.dart';
+import 'package:freelancer/core/utils/app_date_format.dart';
 import 'package:freelancer/core/utils/category_name.dart';
 import 'package:freelancer/core/utils/localized_category.dart';
 import 'package:freelancer/core/utils/shift_schedule.dart';
@@ -10,7 +11,6 @@ import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/services/category_service.dart';
 import 'package:freelancer/services/job_posts_service.dart';
 import 'package:freelancer/services/skill_service.dart';
-import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -54,8 +54,15 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
   TimeOfDay? _shiftStart;
   TimeOfDay? _shiftEnd;
 
-  static const _stepLabels = ['Basics', 'Details', 'Location', 'Budget'];
+  static const _stepCount = 4;
   static const _jobTypeValues = <String>['gig', 'full_time', 'part_time'];
+
+  List<String> _stepLabels(AppLocalizations l10n) => [
+        l10n.createJobStepBasics,
+        l10n.createJobStepDetails,
+        l10n.createJobStepLocation,
+        l10n.createJobStepBudget,
+      ];
 
   @override
   void initState() {
@@ -87,7 +94,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'You can add up to ${JobPostsService.maxJobSkills} skills.',
+            context.l10n.maxJobSkillsSnackbar(JobPostsService.maxJobSkills),
           ),
         ),
       );
@@ -196,7 +203,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
           return l10n.pleaseEnterDescription;
         }
         if ((_shiftStart == null) != (_shiftEnd == null)) {
-          return 'Set both start and end time, or leave both empty.';
+          return l10n.shiftTimesBothOrNeither;
         }
         return null;
       case 2:
@@ -216,7 +223,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(err)));
       return;
     }
-    if (_step < _stepLabels.length - 1) {
+    if (_step < _stepCount - 1) {
       setState(() => _step++);
     }
   }
@@ -227,7 +234,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
   }
 
   Future<void> _handlePost() async {
-    for (var s = 0; s < _stepLabels.length; s++) {
+    for (var s = 0; s < _stepCount; s++) {
       final err = _validateStep(s);
       if (err != null) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(err)));
@@ -294,7 +301,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
 
   @override
   Widget build(BuildContext context) {
-    final isLastStep = _step == _stepLabels.length - 1;
+    final isLastStep = _step == _stepCount - 1;
 
     return PopScope(
       canPop: _step == 0,
@@ -308,7 +315,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
           elevation: 0,
           iconTheme: const IconThemeData(color: kNeutralColor),
           title: Text(
-            'Post a Job',
+            context.l10n.postAJob,
             style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
           ),
           centerTitle: true,
@@ -362,18 +369,19 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
   }
 
   Widget _buildStepHeader() {
+    final labels = _stepLabels(context.l10n);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Step ${_step + 1} of ${_stepLabels.length} · ${_stepLabels[_step]}',
+          context.l10n.stepProgressWithLabel(_step + 1, labels.length, labels[_step]),
           style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13),
         ),
         const SizedBox(height: 10),
         ClipRRect(
           borderRadius: BorderRadius.circular(6),
           child: LinearProgressIndicator(
-            value: (_step + 1) / _stepLabels.length,
+            value: (_step + 1) / _stepCount,
             minHeight: 6,
             backgroundColor: kBorderColorTextField,
             color: kPrimaryColor,
@@ -404,10 +412,10 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
           flex: _step > 0 ? 2 : 1,
           child: ButtonGlobalWithoutIcon(
             buttontext: _isLoading
-                ? 'Posting…'
+                ? context.l10n.postingEllipsis
                 : isLastStep
-                    ? 'Post Job'
-                    : 'Continue',
+                    ? context.l10n.postJob
+                    : context.l10n.continueLabel,
             buttonDecoration: kButtonDecoration.copyWith(
               color: _isLoading ? kLightNeutralColor : kPrimaryColor,
               borderRadius: BorderRadius.circular(30.0),
@@ -421,13 +429,14 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
   }
 
   Widget _buildStepBasics() {
+    final l10n = context.l10n;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _sectionHeader(IconlyBold.paper, 'Basics'),
+        _sectionHeader(IconlyBold.paper, l10n.createJobStepBasics),
         const SizedBox(height: 8),
         Text(
-          'Title, category, skills, and job type.',
+          l10n.createJobBasicsSubtitle,
           style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12, height: 1.35),
         ),
         const SizedBox(height: 14),
@@ -437,9 +446,9 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
           cursorColor: kNeutralColor,
           textInputAction: TextInputAction.next,
           decoration: kInputDecoration.copyWith(
-            labelText: 'Job Title',
+            labelText: l10n.jobTitle,
             labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-            hintText: 'Short title for the work',
+            hintText: l10n.shortJobTitleHint,
             hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
             floatingLabelBehavior: FloatingLabelBehavior.always,
             border: const OutlineInputBorder(),
@@ -463,9 +472,9 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
             textCapitalization: TextCapitalization.words,
             cursorColor: kNeutralColor,
             decoration: kInputDecoration.copyWith(
-              labelText: 'Category name',
+              labelText: l10n.categoryNameLabel,
               labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-              hintText: 'e.g. Janitor, Baker, Waiter',
+              hintText: l10n.categoryNameHint,
               hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
               floatingLabelBehavior: FloatingLabelBehavior.always,
               border: const OutlineInputBorder(),
@@ -474,16 +483,16 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
           if (_customCategoryPreview != null) ...[
             const SizedBox(height: 6),
             Text(
-              'Saved as: $_customCategoryPreview',
+              l10n.savedAsCategory(_customCategoryPreview!),
               style: kTextStyle.copyWith(color: kPrimaryColor, fontSize: 12, fontWeight: FontWeight.w600),
             ),
           ],
         ],
         const SizedBox(height: 18),
-        _label(context.l10n.skills),
+        _label(l10n.skills),
         const SizedBox(height: 4),
         Text(
-          'Tag skills freelancers need for this job (optional).',
+          l10n.jobSkillsTagHint,
           style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12),
         ),
         const SizedBox(height: 8),
@@ -499,20 +508,20 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
             ),
             ActionChip(
               avatar: const Icon(Icons.add, size: 18),
-              label: Text(context.l10n.jobAlertAddSkill),
+              label: Text(l10n.jobAlertAddSkill),
               onPressed: _addSkill,
             ),
           ],
         ),
         const SizedBox(height: 18),
-        _label('Job Type'),
+        _label(l10n.jobAlertJobTypeSection),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
           children: _jobTypeValues.map((value) {
             final selected = _selectedJobType == value;
             return ChoiceChip(
-              label: Text(L10nLabels.jobType(context.l10n, value)),
+              label: Text(L10nLabels.jobType(l10n, value)),
               selected: selected,
               onSelected: (_) => setState(() => _selectedJobType = value),
               selectedColor: kPrimaryColor,
@@ -531,13 +540,14 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
   }
 
   Widget _buildStepDetails() {
+    final l10n = context.l10n;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _sectionHeader(IconlyBold.document, 'Details'),
+        _sectionHeader(IconlyBold.document, l10n.createJobStepDetails),
         const SizedBox(height: 8),
         Text(
-          'Describe the work and how many people you need.',
+          l10n.createJobDetailsSubtitle,
           style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12, height: 1.35),
         ),
         const SizedBox(height: 14),
@@ -549,9 +559,9 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
           maxLines: 6,
           minLines: 4,
           decoration: kInputDecoration.copyWith(
-            labelText: 'Describe the job',
+            labelText: l10n.describeJobLabel,
             labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-            hintText: 'Scope, timeline, and expectations',
+            hintText: l10n.describeJobHint,
             hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
             floatingLabelBehavior: FloatingLabelBehavior.always,
             alignLabelWithHint: true,
@@ -559,18 +569,21 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
           ),
         ),
         const SizedBox(height: 20),
-        _sectionHeader(Icons.schedule, 'Shift schedule'),
+        _sectionHeader(Icons.schedule, l10n.shiftSchedule),
         const SizedBox(height: 8),
         Text(
-          'Optional work day and clock times (e.g. 06:00–15:00). Used later for attendance and timed chat.',
+          l10n.shiftScheduleHint,
           style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12, height: 1.35),
         ),
         const SizedBox(height: 12),
         _shiftPickerTile(
-          label: 'Work date',
+          label: l10n.workDateLabel,
           value: _workDate == null
-              ? 'Optional'
-              : DateFormat('d MMM yyyy').format(_workDate!),
+              ? l10n.optionalLabel
+              : AppDateFormat.dMmmY(
+                  _workDate!,
+                  AppDateFormat.localeOf(context),
+                ),
           onTap: _pickWorkDate,
           onClear: _workDate == null ? null : () => setState(() => _workDate = null),
         ),
@@ -579,9 +592,9 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
           children: [
             Expanded(
               child: _shiftPickerTile(
-                label: 'Start',
+                label: l10n.shiftStartLabel,
                 value: _shiftStart == null
-                    ? 'Optional'
+                    ? l10n.optionalLabel
                     : ShiftSchedule.formatTimeOfDay(_shiftStart!),
                 onTap: () => _pickShiftTime(isStart: true),
                 onClear: _shiftStart == null
@@ -592,9 +605,9 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
             const SizedBox(width: 10),
             Expanded(
               child: _shiftPickerTile(
-                label: 'End',
+                label: l10n.shiftEndLabel,
                 value: _shiftEnd == null
-                    ? 'Optional'
+                    ? l10n.optionalLabel
                     : ShiftSchedule.formatTimeOfDay(_shiftEnd!),
                 onTap: () => _pickShiftTime(isStart: false),
                 onClear: _shiftEnd == null
@@ -605,7 +618,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
           ],
         ),
         const SizedBox(height: 20),
-        _sectionHeader(IconlyBold.user2, 'Hiring'),
+        _sectionHeader(IconlyBold.user2, l10n.hiringSection),
         const SizedBox(height: 12),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -624,12 +637,12 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Workers needed',
+                          l10n.workersNeeded,
                           style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          _limitHireCount ? 'Number to hire' : 'No cap until you close the job',
+                          _limitHireCount ? l10n.numberToHire : l10n.noCapUntilCloseJob,
                           style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
                         ),
                       ],
@@ -680,13 +693,14 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
   }
 
   Widget _buildStepLocation() {
+    final l10n = context.l10n;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _sectionHeader(IconlyBold.location, 'Location'),
+        _sectionHeader(IconlyBold.location, l10n.createJobStepLocation),
         const SizedBox(height: 8),
         Text(
-          'On-site or remote, and where the work happens.',
+          l10n.createJobLocationSubtitle,
           style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12, height: 1.35),
         ),
         const SizedBox(height: 14),
@@ -717,16 +731,20 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
   }
 
   Widget _buildStepBudget() {
+    final l10n = context.l10n;
     final cat = _selectedCategoryDisplayName();
     final loc = _locationController.text.trim();
+    final locationTypeLabel = _locationType == JobLocationType.onsite
+        ? l10n.locationOnSite
+        : l10n.locationRemote;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _sectionHeader(IconlyBold.wallet, 'Budget'),
+        _sectionHeader(IconlyBold.wallet, l10n.createJobStepBudget),
         const SizedBox(height: 8),
         Text(
-          'Optional pay range, then review and post.',
+          l10n.createJobBudgetSubtitle,
           style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12, height: 1.35),
         ),
         const SizedBox(height: 14),
@@ -738,9 +756,9 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
                 keyboardType: TextInputType.number,
                 cursorColor: kNeutralColor,
                 decoration: kInputDecoration.copyWith(
-                  labelText: 'Min',
+                  labelText: l10n.budgetMinLabel,
                   labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                  hintText: 'Min (optional)',
+                  hintText: l10n.budgetMinHint,
                   hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                   prefixText: '$currencySign ',
@@ -755,9 +773,9 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
                 keyboardType: TextInputType.number,
                 cursorColor: kNeutralColor,
                 decoration: kInputDecoration.copyWith(
-                  labelText: 'Max',
+                  labelText: l10n.budgetMaxLabel,
                   labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                  hintText: 'Max (optional)',
+                  hintText: l10n.budgetMaxHint,
                   hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                   prefixText: '$currencySign ',
@@ -768,7 +786,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
           ],
         ),
         const SizedBox(height: 16),
-        _label('Budget applies as'),
+        _label(l10n.budgetAppliesAs),
         const SizedBox(height: 8),
         InputDecorator(
           decoration: kInputDecoration.copyWith(
@@ -778,7 +796,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
             ),
             contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             floatingLabelBehavior: FloatingLabelBehavior.always,
-            labelText: 'Rate type',
+            labelText: l10n.rateTypeLabel,
             labelStyle: kTextStyle.copyWith(color: kNeutralColor),
           ),
           child: DropdownButtonHideUnderline(
@@ -789,19 +807,19 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
               items: [
                 DropdownMenuItem(
                   value: JobPostsService.budgetBasisFixed,
-                  child: Text(context.l10n.budgetBasisFixed, style: kTextStyle.copyWith(color: kNeutralColor)),
+                  child: Text(l10n.budgetBasisFixed, style: kTextStyle.copyWith(color: kNeutralColor)),
                 ),
                 DropdownMenuItem(
                   value: JobPostsService.budgetBasisPerHour,
-                  child: Text(context.l10n.budgetBasisPerHour, style: kTextStyle.copyWith(color: kNeutralColor)),
+                  child: Text(l10n.budgetBasisPerHour, style: kTextStyle.copyWith(color: kNeutralColor)),
                 ),
                 DropdownMenuItem(
                   value: JobPostsService.budgetBasisPerDay,
-                  child: Text(context.l10n.budgetBasisPerDay, style: kTextStyle.copyWith(color: kNeutralColor)),
+                  child: Text(l10n.budgetBasisPerDay, style: kTextStyle.copyWith(color: kNeutralColor)),
                 ),
                 DropdownMenuItem(
                   value: JobPostsService.budgetBasisPerMonth,
-                  child: Text(context.l10n.budgetBasisPerMonth, style: kTextStyle.copyWith(color: kNeutralColor)),
+                  child: Text(l10n.budgetBasisPerMonth, style: kTextStyle.copyWith(color: kNeutralColor)),
                 ),
               ],
               onChanged: (v) {
@@ -817,8 +835,8 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
           skills: _skillNames.isEmpty ? '—' : _skillNames.join(', '),
           jobType: _jobTypeLabel() ?? '—',
           location: loc.isEmpty ? '—' : loc,
-          locationType: _locationType.label,
-          workers: _limitHireCount ? '$_workersNeeded' : 'No limit',
+          locationType: locationTypeLabel,
+          workers: _limitHireCount ? '$_workersNeeded' : l10n.noLimitLabel,
           shift: ShiftSchedule(
                 workDate: _workDate,
                 shiftStart: _shiftStart,
@@ -841,6 +859,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
     required String workers,
     required String shift,
   }) {
+    final l10n = context.l10n;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(14),
@@ -853,17 +872,17 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Review',
+            l10n.reviewSection,
             style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold, fontSize: 13),
           ),
           const SizedBox(height: 10),
-          _reviewLine('Title', title),
-          _reviewLine('Category', category),
-          _reviewLine('Skills', skills),
-          _reviewLine('Job type', jobType),
-          _reviewLine('Shift', shift),
-          _reviewLine('Location', '$locationType · $location'),
-          _reviewLine('Workers', workers),
+          _reviewLine(l10n.labelTitle, title),
+          _reviewLine(l10n.categoryLabel, category),
+          _reviewLine(l10n.skills, skills),
+          _reviewLine(l10n.jobAlertJobTypeSection, jobType),
+          _reviewLine(l10n.shiftLabel, shift),
+          _reviewLine(l10n.locationLabel, '$locationType · $location'),
+          _reviewLine(l10n.workersLabel, workers),
         ],
       ),
     );

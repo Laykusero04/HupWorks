@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/utils/app_date_format.dart';
 import 'package:freelancer/core/utils/order_cancellation.dart';
 import 'package:freelancer/core/utils/order_contract_display.dart';
 import 'package:freelancer/core/utils/profile_image.dart';
+import 'package:freelancer/core/widgets/empty_state_widget.dart';
 import 'package:go_router/go_router.dart';
 import 'package:freelancer/services/orders_service.dart';
 import 'package:freelancer/l10n/l10n.dart';
@@ -38,8 +40,8 @@ class _SellerOrderListState extends State<SellerOrderList> {
     _loadOrders();
   }
 
-  Future<void> _loadOrders() async {
-    setState(() => _isLoading = true);
+  Future<void> _loadOrders({bool showLoader = true}) async {
+    if (showLoader && mounted) setState(() => _isLoading = true);
     try {
       await OrdersService.expireStaleCancellationRequests();
       final orders = await SellerOrdersService.getSellerOrders(
@@ -61,11 +63,7 @@ class _SellerOrderListState extends State<SellerOrderList> {
   }
 
   String _formatDate(String? s) {
-    if (s == null) return '';
-    final d = DateTime.tryParse(s);
-    if (d == null) return '';
-    const m = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    return '${d.day} ${m[d.month-1]} ${d.year}';
+    return AppDateFormat.tryDMmmY(s, AppDateFormat.localeOf(context)) ?? '';
   }
 
   String _formatRemaining(Duration d) =>
@@ -129,19 +127,47 @@ class _SellerOrderListState extends State<SellerOrderList> {
                 child: _isLoading
                     ? Center(child: CircularProgressIndicator(color: primary))
                     : _orders.isEmpty
-                        ? Center(child: Text(
-                            _selectedStatus == 'all'
-                                ? l10n.noContractsYet
-                                : l10n.noFilteredContracts(
-                                    L10nLabels.orderFilterTabLabel(
-                                      l10n,
-                                      _selectedStatus,
-                                    ).toLowerCase(),
-                                  ),
-                            style: kTextStyle.copyWith(color: kLightNeutralColor),
-                          ))
+                        ? RefreshIndicator(
+                            color: primary,
+                            onRefresh: () => _loadOrders(showLoader: false),
+                            child: ListView(
+                              physics: const AlwaysScrollableScrollPhysics(
+                                parent: BouncingScrollPhysics(),
+                              ),
+                              children: [
+                                SizedBox(
+                                  height:
+                                      MediaQuery.sizeOf(context).height * 0.2,
+                                ),
+                                EmptyStateWidget(
+                                  message: _selectedStatus == 'all'
+                                      ? l10n.noContractsYet
+                                      : l10n.noFilteredContracts(
+                                          L10nLabels.orderFilterTabLabel(
+                                            l10n,
+                                            _selectedStatus,
+                                          ).toLowerCase(),
+                                        ),
+                                  hint: _selectedStatus == 'all'
+                                      ? l10n.noContractsYetSellerHint
+                                      : l10n.noFilteredContractsHint,
+                                  icon: Icons.description_outlined,
+                                  actionLabel: _selectedStatus == 'all'
+                                      ? l10n.browseJobs
+                                      : l10n.clearFilters,
+                                  onAction: _selectedStatus == 'all'
+                                      ? () => context.go('/seller/find-jobs')
+                                      : () {
+                                          setState(
+                                              () => _selectedStatus = 'all');
+                                          _loadOrders();
+                                        },
+                                ),
+                              ],
+                            ),
+                          )
                         : RefreshIndicator(
-                            color: primary, onRefresh: _loadOrders,
+                            color: primary, onRefresh: () => _loadOrders(showLoader: false),
                             child: ListView.builder(
                               physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
                               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
@@ -177,7 +203,7 @@ class _SellerOrderListState extends State<SellerOrderList> {
           final id = order['id'] as String?;
           if (id != null) {
             context.push('/seller/orders/$id').then((_) {
-              if (mounted) _loadOrders();
+              if (mounted) _loadOrders(showLoader: false);
             });
           }
         },

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/utils/app_date_format.dart';
 import 'package:freelancer/core/utils/order_chat_navigation.dart';
 import 'package:freelancer/core/utils/order_contract_display.dart';
 import 'package:freelancer/data/models/chat_order_context.dart';
@@ -78,16 +79,7 @@ String _offerStatusLabel(AppLocalizations l10n, String status) {
   }
 }
 
-String? _formatDeadline(String? iso) {
-  if (iso == null || iso.isEmpty) return null;
-  final date = DateTime.tryParse(iso);
-  if (date == null) return null;
-  const months = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-  ];
-  return '${months[date.month - 1]} ${date.day}, ${date.year}';
-}
+String? _formatDeadline(String? iso) => AppDateFormat.tryMmmDY(iso);
 
 Future<void> openThreadContextItem(
   BuildContext context,

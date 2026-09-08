@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:freelancer/core/locale/locale_controller.dart';
+import 'package:freelancer/core/notifications/push_notification_prefs.dart';
 import 'package:freelancer/core/onboarding/onboarding_prefs.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -16,6 +17,7 @@ Future<void> main() async {
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
 
+  await PushNotificationPrefs.load();
   await initLocalNotifications();
   await OnboardingPrefs.load();
 

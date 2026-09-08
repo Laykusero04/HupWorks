@@ -138,6 +138,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get logOut => 'Log Out';
 
   @override
+  String get logOutConfirmTitle => 'Log out?';
+
+  @override
+  String get logOutConfirmBody =>
+      'You\'ll need to sign in again to use your account.';
+
+  @override
   String get sellerReport => 'Seller Report';
 
   @override
@@ -160,6 +167,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get createProfile => 'Create Profile';
+
+  @override
+  String get completeYourProfileTitle => 'Complete your profile';
+
+  @override
+  String get completeYourProfileBody =>
+      'Add a photo and contact details so freelancers trust your jobs.';
+
+  @override
+  String get completeProfileAction => 'Complete profile';
+
+  @override
+  String get skipForNow => 'Skip for now';
 
   @override
   String get setupProfile => 'Setup Profile';
@@ -189,6 +209,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pushNotifications => 'Push Notifications';
+
+  @override
+  String get pushNotificationsPermissionDenied =>
+      'Notification permission was denied. Enable it in system settings to receive alerts.';
 
   @override
   String get notifications => 'Notifications';
@@ -451,25 +475,35 @@ class AppLocalizationsEn extends AppLocalizations {
       'We\'ll show the app in the language you pick. You can change it later in Settings.';
 
   @override
-  String get appOnboardPage1Title => 'Post jobs. Hire locally.';
+  String get appOnboardPage1Title => 'Sign up and create an account';
 
   @override
-  String get appOnboardPage1Body =>
-      'Create a job post, browse freelancers near you, and hire the right person for cleaning, warehouse, trades, and more.';
+  String get appOnboardPage1Body => 'Join as an Employer or Freelancer.';
 
   @override
-  String get appOnboardPage2Title => 'Find work that fits.';
+  String get appOnboardPage2Title => 'Post or search';
 
   @override
-  String get appOnboardPage2Body =>
-      'Discover open jobs, apply in a few taps, and chat with clients so you know exactly what\'s expected.';
+  String get appOnboardPage2Body => 'Post a job, or browse and apply.';
 
   @override
-  String get appOnboardPage3Title => 'Show up. Track hours. Get paid.';
+  String get appOnboardPage3Title => 'Chat and align';
 
   @override
   String get appOnboardPage3Body =>
-      'Manage contracts, clock in on site, and keep hour reports clear—so both sides stay aligned from start to finish.';
+      'Message in the app and agree on the details.';
+
+  @override
+  String get appOnboardPage4Title => 'Check for shift updates';
+
+  @override
+  String get appOnboardPage4Body => 'Use on-site attendance or QR.';
+
+  @override
+  String get appOnboardPage5Title => 'Wrap up and leave a review';
+
+  @override
+  String get appOnboardPage5Body => 'Finish the job and share your experience.';
 
   @override
   String get authWelcomeHowToUse => 'How will you use HupWorks?';
@@ -1044,6 +1078,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noFavouritesYet => 'No saved jobs yet';
 
   @override
+  String get savedTalentList => 'Saved talent';
+
+  @override
+  String get noSavedTalentYet => 'No saved talent yet';
+
+  @override
+  String get noSavedTalentYetHint =>
+      'Browse freelancers and tap the bookmark to save them here.';
+
+  @override
+  String get addedToSavedTalent => 'Talent saved';
+
+  @override
+  String get removedFromSavedTalent => 'Removed from saved talent';
+
+  @override
   String get noReviewsYet => 'No reviews yet';
 
   @override
@@ -1169,6 +1219,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get noApplicationsYetHint =>
       'Browse open jobs and send a clear offer to stand out.';
+
+  @override
+  String get noClientApplicationsYetHint =>
+      'Applications to your jobs show up here. Post a job to start receiving them.';
 
   @override
   String get pendingApplications => 'Pending applications';
@@ -1572,6 +1626,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noJobsPostedYet => 'No jobs posted yet';
 
   @override
+  String get noJobsPostedYetHint =>
+      'Post a job to start receiving applications from freelancers.';
+
+  @override
   String get postAJob => 'Post a job';
 
   @override
@@ -1912,6 +1970,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noContractsYet => 'No contracts yet';
 
   @override
+  String get noContractsYetClientHint =>
+      'Hire someone on a job to start a contract here.';
+
+  @override
+  String get noContractsYetSellerHint =>
+      'Apply to jobs and get hired — contracts will show up here.';
+
+  @override
+  String get noFilteredContractsHint =>
+      'Try another status filter, or clear filters to see all contracts.';
+
+  @override
   String noFilteredContracts(String status) {
     return 'No $status contracts';
   }
@@ -2202,6 +2272,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hireAction => 'Hire';
 
   @override
+  String get rejectApplicationTitle => 'Reject application?';
+
+  @override
+  String rejectApplicationConfirmBody(String name) {
+    return 'Reject $name\'s application? This can\'t be undone.';
+  }
+
+  @override
+  String get closeJobTitle => 'Close this job?';
+
+  @override
+  String get closeJobConfirmBody =>
+      'This job will close to new applicants. Existing applications stay on your list.';
+
+  @override
   String get closeJob => 'Close Job';
 
   @override
@@ -2296,6 +2381,146 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get nextStep => 'Next';
+
+  @override
+  String maxJobSkillsSnackbar(int max) {
+    return 'You can add up to $max skills.';
+  }
+
+  @override
+  String get shiftTimesBothOrNeither =>
+      'Set both start and end time, or leave both empty.';
+
+  @override
+  String get createJobBasicsSubtitle =>
+      'Title, category, skills, and job type.';
+
+  @override
+  String get createJobDetailsSubtitle =>
+      'Describe the work and how many people you need.';
+
+  @override
+  String get createJobLocationSubtitle =>
+      'On-site or remote, and where the work happens.';
+
+  @override
+  String get createJobBudgetSubtitle =>
+      'Optional pay range, then review and post.';
+
+  @override
+  String savedAsCategory(String name) {
+    return 'Saved as: $name';
+  }
+
+  @override
+  String get jobSkillsTagHint =>
+      'Tag skills freelancers need for this job (optional).';
+
+  @override
+  String get shiftSchedule => 'Shift schedule';
+
+  @override
+  String get shiftScheduleHint =>
+      'Optional work day and clock times (e.g. 06:00–15:00). Used later for attendance and timed chat.';
+
+  @override
+  String get workDateLabel => 'Work date';
+
+  @override
+  String get optionalLabel => 'Optional';
+
+  @override
+  String get shiftStartLabel => 'Start';
+
+  @override
+  String get shiftEndLabel => 'End';
+
+  @override
+  String get hiringSection => 'Hiring';
+
+  @override
+  String get numberToHire => 'Number to hire';
+
+  @override
+  String get noCapUntilCloseJob => 'No cap until you close the job';
+
+  @override
+  String get budgetAppliesAs => 'Budget applies as';
+
+  @override
+  String get reviewSection => 'Review';
+
+  @override
+  String get categoryLabel => 'Category';
+
+  @override
+  String get shiftLabel => 'Shift';
+
+  @override
+  String get workersLabel => 'Workers';
+
+  @override
+  String get noLimitLabel => 'No limit';
+
+  @override
+  String get locationOnSite => 'On-site';
+
+  @override
+  String get locationRemote => 'Remote';
+
+  @override
+  String get thisFreelancer => 'this freelancer';
+
+  @override
+  String hireConfirmUnlimited(String name, String price) {
+    return 'Accept $name\'s offer ($price)? The job stays open so you can hire more freelancers until you close it.';
+  }
+
+  @override
+  String hireConfirmFillsAll(String name, String price, int filled, int cap) {
+    return 'Accept $name\'s offer ($price)? This fills your last hire spot ($filled of $cap). The job will close to new applicants. Other applications stay on your list as pending — reject them only if you do not want them.';
+  }
+
+  @override
+  String hireConfirmRemaining(
+      String name, String price, int remaining, int filled, int cap) {
+    return 'Accept $name\'s offer ($price)? After this hire you will have $remaining more open spots ($filled of $cap filled). Other pending applications stay open.';
+  }
+
+  @override
+  String get hiredJobFull =>
+      'Hired! This job is now full and closed to new applicants.';
+
+  @override
+  String get hiredContractCreated => 'Hired! Contract created.';
+
+  @override
+  String get jobPostFallback => 'Job Post';
+
+  @override
+  String get budgetLabel => 'Budget';
+
+  @override
+  String get dateLabel => 'Date';
+
+  @override
+  String get areaLabel => 'Area';
+
+  @override
+  String applicationsCount(int count) {
+    return 'Applications ($count)';
+  }
+
+  @override
+  String get messageFreelancerTooltip => 'Message freelancer';
+
+  @override
+  String get attendanceQrShort => 'QR';
+
+  @override
+  String stepProgressWithLabel(int current, int total, String label) {
+    return 'Step $current of $total · $label';
+  }
 
   @override
   String totalJobPostCount(int count) {

@@ -7,6 +7,7 @@ import 'package:freelancer/screen/seller%20screen/seller%20dashboard/seller_dash
 import 'package:freelancer/services/auth_service.dart';
 import 'package:freelancer/services/profile_service.dart';
 import 'package:freelancer/services/verification_service.dart';
+import 'package:freelancer/router/route_names.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -17,7 +18,6 @@ import '../../widgets/shell_drawer_header.dart';
 import '../../widgets/shell_tab_header.dart';
 import '../../widgets/verification_status_badge.dart';
 import '../favourite/seller_favourite_list.dart';
-import '../report/seller_report.dart';
 import '../setting/seller_invite.dart';
 import '../setting/seller_setting.dart';
 
@@ -53,11 +53,38 @@ class _SellerProfileState extends State<SellerProfile> {
         });
       }
     } catch (e) {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+        );
+      }
     }
   }
 
   Future<void> _handleLogout() async {
+    final l10n = context.l10n;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.logOutConfirmTitle),
+        content: Text(l10n.logOutConfirmBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel,
+                style: kTextStyle.copyWith(color: kSubTitleColor)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.logOut,
+                style: kTextStyle.copyWith(
+                    color: Colors.red, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
     await AuthService.signOut();
   }
 
@@ -130,7 +157,7 @@ class _SellerProfileState extends State<SellerProfile> {
                   title: l10n.attendance,
                   onTap: () {
                     Navigator.pop(context);
-                    context.push('/seller/attendance');
+                    context.push(AppRoutes.sellerAttendance);
                   },
                 ),
                 ProfileMenuListTile(
@@ -138,18 +165,13 @@ class _SellerProfileState extends State<SellerProfile> {
                   title: l10n.myApplications,
                   onTap: () {
                     Navigator.pop(context);
-                    context.push('/seller/applications');
+                    context.push(AppRoutes.sellerApplications);
                   },
                 ),
                 ProfileMenuListTile(
                   icon: Icons.bookmark_border,
                   title: l10n.favourites,
                   onTap: () => const SellerFavList().launch(context),
-                ),
-                ProfileMenuListTile(
-                  icon: Icons.description_outlined,
-                  title: l10n.report,
-                  onTap: () => const SellerReport().launch(context),
                 ),
                 ProfileMenuListTile(
                   icon: Icons.settings_outlined,

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:freelancer/core/auth_navigation.dart';
 import 'package:freelancer/core/utils/profile_avatar_picker.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/l10n/l10n_labels.dart';
@@ -26,15 +27,11 @@ class _ClientCreateProfileState extends State<ClientCreateProfile> {
   final _phoneController = TextEditingController();
   final _countryController = TextEditingController();
   final _cityController = TextEditingController();
-  final _streetController = TextEditingController();
-  final _stateController = TextEditingController();
-  final _postalController = TextEditingController();
 
   double? _latitude;
   double? _longitude;
 
   String _selectedGender = L10nLabels.genderMale;
-  String _selectedLanguage = 'English';
   bool _isSaving = false;
   File? _pickedImage;
   String? _uploadedImageUrl;
@@ -45,9 +42,6 @@ class _ClientCreateProfileState extends State<ClientCreateProfile> {
     _phoneController.dispose();
     _countryController.dispose();
     _cityController.dispose();
-    _streetController.dispose();
-    _stateController.dispose();
-    _postalController.dispose();
     super.dispose();
   }
 
@@ -67,21 +61,6 @@ class _ClientCreateProfileState extends State<ClientCreateProfile> {
       onChanged: (value) {
         if (value == null) return;
         setState(() => _selectedGender = value);
-      },
-    );
-  }
-
-  DropdownButton<String> _languageDropdown() {
-    return DropdownButton<String>(
-      icon: const Icon(FeatherIcons.chevronDown),
-      items: language
-          .map((des) => DropdownMenuItem(value: des, child: Text(des)))
-          .toList(),
-      value: _selectedLanguage,
-      style: kTextStyle.copyWith(color: kSubTitleColor),
-      onChanged: (value) {
-        if (value == null) return;
-        setState(() => _selectedLanguage = value);
       },
     );
   }
@@ -195,7 +174,6 @@ class _ClientCreateProfileState extends State<ClientCreateProfile> {
         _uploadedImageUrl = await ProfileService.uploadProfileImage(_pickedImage!);
       }
 
-      // Street/state/zip have no client profile columns — keep city/country only.
       await ProfileService.updateProfile({
         'name': name,
         'phone': _phoneController.text.trim(),
@@ -337,69 +315,6 @@ class _ClientCreateProfileState extends State<ClientCreateProfile> {
                 },
               ),
               const SizedBox(height: 20.0),
-              TextFormField(
-                controller: _streetController,
-                keyboardType: TextInputType.streetAddress,
-                cursorColor: kNeutralColor,
-                textInputAction: TextInputAction.next,
-                decoration: kInputDecoration.copyWith(
-                  labelText: l10n.streetAddress,
-                  labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                  hintText: l10n.streetAddress,
-                  hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
-                  focusColor: kNeutralColor,
-                  border: const OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 20.0),
-              TextFormField(
-                controller: _stateController,
-                keyboardType: TextInputType.name,
-                cursorColor: kNeutralColor,
-                textInputAction: TextInputAction.next,
-                decoration: kInputDecoration.copyWith(
-                  labelText: l10n.state,
-                  labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                  hintText: l10n.state,
-                  hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
-                  focusColor: kNeutralColor,
-                  border: const OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 20.0),
-              TextFormField(
-                controller: _postalController,
-                keyboardType: TextInputType.text,
-                cursorColor: kNeutralColor,
-                textInputAction: TextInputAction.next,
-                decoration: kInputDecoration.copyWith(
-                  labelText: l10n.zipCode,
-                  labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                  hintText: l10n.zipCode,
-                  hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
-                  focusColor: kNeutralColor,
-                  border: const OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 20.0),
-              FormField(
-                builder: (FormFieldState<dynamic> field) {
-                  return InputDecorator(
-                    decoration: InputDecoration(
-                      enabledBorder: const OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                        borderSide: BorderSide(color: kBorderColorTextField, width: 2),
-                      ),
-                      contentPadding: const EdgeInsets.all(7.0),
-                      floatingLabelBehavior: FloatingLabelBehavior.always,
-                      labelText: l10n.selectLanguage,
-                      labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                    ),
-                    child: DropdownButtonHideUnderline(child: _languageDropdown()),
-                  );
-                },
-              ),
-              const SizedBox(height: 20.0),
               FormField(
                 builder: (FormFieldState<dynamic> field) {
                   return InputDecorator(
@@ -422,14 +337,34 @@ class _ClientCreateProfileState extends State<ClientCreateProfile> {
           ),
         ),
       ),
-      bottomNavigationBar: ButtonGlobalWithoutIcon(
-        buttontext: _isSaving ? l10n.saving : l10n.saveProfile,
-        buttonDecoration: kButtonDecoration.copyWith(
-          color: _isSaving ? kLightNeutralColor : kPrimaryColor,
-          borderRadius: BorderRadius.circular(30.0),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              ButtonGlobalWithoutIcon(
+                buttontext: _isSaving ? l10n.saving : l10n.saveProfile,
+                buttonDecoration: kButtonDecoration.copyWith(
+                  color: _isSaving ? kLightNeutralColor : kPrimaryColor,
+                  borderRadius: BorderRadius.circular(30.0),
+                ),
+                onPressed: _isSaving ? null : _handleSave,
+                buttonTextColor: kWhite,
+              ),
+              TextButton(
+                onPressed: _isSaving
+                    ? null
+                    : () => AuthNavigation.goToHomeAfterAuth(context),
+                child: Text(
+                  l10n.skipForNow,
+                  style: kTextStyle.copyWith(color: kSubTitleColor),
+                ),
+              ),
+            ],
+          ),
         ),
-        onPressed: _isSaving ? null : _handleSave,
-        buttonTextColor: kWhite,
       ),
     );
   }

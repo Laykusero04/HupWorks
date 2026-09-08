@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:freelancer/core/notifications/notification_payload.dart';
+import 'package:freelancer/core/notifications/push_notification_prefs.dart';
 import 'package:freelancer/core/utils/app_logger.dart';
 import 'package:freelancer/data/models/notification_model.dart';
 
@@ -74,14 +75,12 @@ class LocalNotificationService {
       final android =
           _plugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
       await android?.createNotificationChannel(_androidChannel);
-      if (defaultTargetPlatform == TargetPlatform.android) {
-        await android?.requestNotificationsPermission();
-      }
-
-      final ios = _plugin.resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>();
-      await ios?.requestPermissions(alert: true, badge: true, sound: true);
 
       _initialized = true;
+
+      if (await PushNotificationPrefs.isEnabled()) {
+        await requestPermissions();
+      }
     } on MissingPluginException catch (e, st) {
       AppLogger.error(
         'LocalNotificationService.initialize',
@@ -90,6 +89,37 @@ class LocalNotificationService {
       );
     } catch (e, st) {
       AppLogger.error('LocalNotificationService.initialize', e, st);
+    }
+  }
+
+  Future<bool> requestPermissions() async {
+    if (!_targetsMobile) return false;
+    if (!_initialized) await initialize(onTap: _onTap);
+
+    try {
+      final android =
+          _plugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+      if (defaultTargetPlatform == TargetPlatform.android) {
+        final granted = await android?.requestNotificationsPermission();
+        return granted ?? false;
+      }
+
+      final ios =
+          _plugin.resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>();
+      final result = await ios?.requestPermissions(alert: true, badge: true, sound: true);
+      return result ?? false;
+    } catch (e, st) {
+      AppLogger.error('LocalNotificationService.requestPermissions', e, st);
+      return false;
+    }
+  }
+
+  Future<void> cancelAll() async {
+    if (!_initialized) return;
+    try {
+      await _plugin.cancelAll();
+    } catch (e, st) {
+      AppLogger.error('LocalNotificationService.cancelAll', e, st);
     }
   }
 
@@ -107,6 +137,7 @@ class LocalNotificationService {
 
   Future<void> show(AppNotification notification) async {
     if (!_initialized) return;
+    if (!await PushNotificationPrefs.isEnabled()) return;
 
     final payload = NotificationPayload.fromNotification(notification);
     final id = notification.id.hashCode & 0x7fffffff;

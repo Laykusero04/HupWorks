@@ -42,6 +42,8 @@
   "settings": "Instellingen",
   "helpSupport": "Help & ondersteuning",
   "logOut": "Uitloggen",
+  "logOutConfirmTitle": "Uitloggen?",
+  "logOutConfirmBody": "Je moet opnieuw inloggen om je account te gebruiken.",
   "sellerReport": "Verkoper melden",
   "favorite": "Opslaan",
   "transaction": "Transactie",
@@ -50,6 +52,10 @@
   "profileUpdated": "Profiel succesvol bijgewerkt!",
   "pleaseEnterName": "Vul je naam in",
   "createProfile": "Profiel aanmaken",
+  "completeYourProfileTitle": "Rond je profiel af",
+  "completeYourProfileBody": "Voeg een foto en contactgegevens toe zodat freelancers je vacatures vertrouwen.",
+  "completeProfileAction": "Profiel afronden",
+  "skipForNow": "Nu overslaan",
   "setupProfile": "Profiel instellen",
   "saveProfile": "Profiel opslaan",
   "continueLabel": "Doorgaan",
@@ -59,6 +65,7 @@
   "couldNotOpenChat": "Chat kon niet worden geopend",
   "pleaseFillAllFields": "Vul alle velden in",
   "pushNotifications": "Pushmeldingen",
+  "pushNotificationsPermissionDenied": "Meldingstoestemming is geweigerd. Schakel deze in bij de systeeminstellingen om alerts te ontvangen.",
   "notifications": "Meldingen",
   "message": "Bericht",
   "contracts": "Overeenkomsten",
@@ -145,12 +152,16 @@
   "appOnboardGetStarted": "Aan de slag",
   "appOnboardLanguageTitle": "Kies je taal",
   "appOnboardLanguageSubtitle": "We tonen de app in de taal die je kiest. Je kunt dit later wijzigen in Instellingen.",
-  "appOnboardPage1Title": "Plaats opdrachten. Huur lokaal in.",
-  "appOnboardPage1Body": "Maak een vacature, zoek freelancers bij jou in de buurt en huur de juiste persoon in voor schoonmaak, magazijn, vakwerk en meer.",
-  "appOnboardPage2Title": "Vind werk dat bij je past.",
-  "appOnboardPage2Body": "Ontdek openstaande opdrachten, solliciteer in een paar tikken en chat met klanten zodat je precies weet wat er verwacht wordt.",
-  "appOnboardPage3Title": "Kom opdagen. Registreer uren. Krijg betaald.",
-  "appOnboardPage3Body": "Beheer contracten, check in op locatie en houd urenregistratie helder—zodat beide kanten van begin tot eind op één lijn blijven.",
+  "appOnboardPage1Title": "Schrijf je in en maak een account",
+  "appOnboardPage1Body": "Meld je aan als Werkgever of Freelancer.",
+  "appOnboardPage2Title": "Plaats of zoek",
+  "appOnboardPage2Body": "Plaats een klus, of blader en solliciteer.",
+  "appOnboardPage3Title": "Chat en stem af",
+  "appOnboardPage3Body": "Bericht in de app en spreek de opties af.",
+  "appOnboardPage4Title": "Check voor updates van de shift",
+  "appOnboardPage4Body": "Gebruik op locatie aanwezigheid of QR.",
+  "appOnboardPage5Title": "Rond af en laat een review achter",
+  "appOnboardPage5Body": "Sluit de klus af en deel je ervaring.",
   "authWelcomeHowToUse": "Hoe wil je HupWorks gebruiken?",
   "authRoleClient": "Werkgever",
   "authRoleClientSubtitle": "Talent aannemen",
@@ -333,6 +344,11 @@
   "favourites": "Opgeslagen",
   "reviews": "Reviews",
   "noFavouritesYet": "Nog geen opgeslagen jobs",
+  "savedTalentList": "Opgeslagen talent",
+  "noSavedTalentYet": "Nog geen opgeslagen talent",
+  "noSavedTalentYetHint": "Blader door freelancers en tik op de bladwijzer om ze hier op te slaan.",
+  "addedToSavedTalent": "Talent opgeslagen",
+  "removedFromSavedTalent": "Verwijderd uit opgeslagen talent",
   "noReviewsYet": "Nog geen reviews",
   "mapPickLocation": "Kies locatie",
   "mapConfirmLocation": "Bevestig locatie",
@@ -373,6 +389,7 @@
   "proBadge": "Pro",
   "noApplicationsYet": "Nog geen aanmeldingen",
   "noApplicationsYetHint": "Blader door open jobs en stuur een duidelijk voorstel.",
+  "noClientApplicationsYetHint": "Aanmeldingen op jouw jobs verschijnen hier. Plaats een job om er te ontvangen.",
   "pendingApplications": "Openstaande aanmeldingen",
   "completedThisMonth": "Deze maand afgerond",
   "yourRating": "Jouw beoordeling",
@@ -504,6 +521,9 @@
   "filterAll": "Alles",
   "refreshTooltip": "Vernieuwen",
   "noContractsYet": "Nog geen overeenkomsten",
+  "noContractsYetClientHint": "Neem iemand aan op een vacature om hier een overeenkomst te starten.",
+  "noContractsYetSellerHint": "Solliciteer op jobs en word aangenomen — overeenkomsten verschijnen hier.",
+  "noFilteredContractsHint": "Probeer een andere statusfilter, of wis filters om alle overeenkomsten te zien.",
   "noFilteredContracts": "Geen {status} overeenkomsten",
   "contractOverdue": "Te laat",
   "deadlineDaysHoursLeft": "{days}d {hours}u resterend",
@@ -588,6 +608,15 @@
   "applicationRejected": "Aanmelding afgewezen",
   "hireFreelancerTitle": "Freelancer aannemen?",
   "hireAction": "Aannemen",
+  "rejectApplicationTitle": "Aanmelding afwijzen?",
+  "rejectApplicationConfirmBody": "Aanmelding van {name} afwijzen? Dit kan niet ongedaan worden gemaakt.",
+  "@rejectApplicationConfirmBody": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "closeJobTitle": "Deze vacature sluiten?",
+  "closeJobConfirmBody": "Deze vacature wordt gesloten voor nieuwe sollicitanten. Bestaande aanmeldingen blijven op je lijst.",
   "closeJob": "Vacature sluiten",
   "attendanceSettingsUpdated": "Aanwezigheidsinstellingen bijgewerkt",
   "jobPostedSuccess": "Vacature succesvol geplaatst!",
@@ -620,6 +649,90 @@
   "postingEllipsis": "Plaatsen…",
   "reviewAndPost": "Controleren & plaatsen",
   "nextStep": "Volgende",
+  "maxJobSkillsSnackbar": "Je kunt maximaal {max} vaardigheden toevoegen.",
+  "@maxJobSkillsSnackbar": {
+    "placeholders": {
+      "max": { "type": "int" }
+    }
+  },
+  "shiftTimesBothOrNeither": "Stel zowel start- als eindtijd in, of laat beide leeg.",
+  "createJobBasicsSubtitle": "Titel, categorie, vaardigheden en jobtype.",
+  "createJobDetailsSubtitle": "Beschrijf het werk en hoeveel mensen je nodig hebt.",
+  "createJobLocationSubtitle": "Op locatie of remote, en waar het werk plaatsvindt.",
+  "createJobBudgetSubtitle": "Optioneel salarisbereik, daarna controleren en plaatsen.",
+  "savedAsCategory": "Opgeslagen als: {name}",
+  "@savedAsCategory": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "jobSkillsTagHint": "Tag vaardigheden die freelancers nodig hebben (optioneel).",
+  "shiftSchedule": "Dienstrooster",
+  "shiftScheduleHint": "Optionele werkdag en tijden (bijv. 06:00–15:00). Later gebruikt voor aanwezigheid en timed chat.",
+  "workDateLabel": "Werkdatum",
+  "optionalLabel": "Optioneel",
+  "shiftStartLabel": "Start",
+  "shiftEndLabel": "Einde",
+  "hiringSection": "Werving",
+  "numberToHire": "Aantal te werven",
+  "noCapUntilCloseJob": "Geen limiet tot je de vacature sluit",
+  "budgetAppliesAs": "Budget geldt als",
+  "reviewSection": "Controleren",
+  "categoryLabel": "Categorie",
+  "shiftLabel": "Dienst",
+  "workersLabel": "Werkers",
+  "noLimitLabel": "Geen limiet",
+  "locationOnSite": "Op locatie",
+  "locationRemote": "Remote",
+  "thisFreelancer": "deze freelancer",
+  "hireConfirmUnlimited": "Aanbod van {name} ({price}) accepteren? De vacature blijft open zodat je meer freelancers kunt aannemen tot je hem sluit.",
+  "@hireConfirmUnlimited": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "price": { "type": "String" }
+    }
+  },
+  "hireConfirmFillsAll": "Aanbod van {name} ({price}) accepteren? Dit vult je laatste plek ({filled} van {cap}). De vacature sluit voor nieuwe sollicitanten. Andere aanmeldingen blijven open — wijs ze alleen af als je ze niet wilt.",
+  "@hireConfirmFillsAll": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "price": { "type": "String" },
+      "filled": { "type": "int" },
+      "cap": { "type": "int" }
+    }
+  },
+  "hireConfirmRemaining": "Aanbod van {name} ({price}) accepteren? Na deze hire heb je nog {remaining} open plekken ({filled} van {cap} gevuld). Andere openstaande aanmeldingen blijven open.",
+  "@hireConfirmRemaining": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "price": { "type": "String" },
+      "remaining": { "type": "int" },
+      "filled": { "type": "int" },
+      "cap": { "type": "int" }
+    }
+  },
+  "hiredJobFull": "Aangenomen! Deze vacature is vol en gesloten voor nieuwe sollicitanten.",
+  "hiredContractCreated": "Aangenomen! Contract aangemaakt.",
+  "jobPostFallback": "Vacature",
+  "budgetLabel": "Budget",
+  "dateLabel": "Datum",
+  "areaLabel": "Gebied",
+  "applicationsCount": "Aanmeldingen ({count})",
+  "@applicationsCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "messageFreelancerTooltip": "Bericht freelancer",
+  "attendanceQrShort": "QR",
+  "stepProgressWithLabel": "Stap {current} van {total} · {label}",
+  "@stepProgressWithLabel": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" },
+      "label": { "type": "String" }
+    }
+  },
   "totalJobPostCount": "Totaal vacatures ({count})",
   "applicationsSection": "Aanmeldingen",
   "rejectApplication": "Afwijzen",
@@ -715,6 +828,7 @@
     }
   },
   "noJobsPostedYet": "Nog geen vacatures geplaatst",
+  "noJobsPostedYetHint": "Plaats een vacature om aanmeldingen van freelancers te ontvangen.",
   "postAJob": "Vacature plaatsen",
   "avgRating": "Gem. beoordeling",
   "about": "Over",

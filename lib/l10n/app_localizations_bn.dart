@@ -138,6 +138,13 @@ class AppLocalizationsBn extends AppLocalizations {
   String get logOut => 'লগ আউট';
 
   @override
+  String get logOutConfirmTitle => 'Log out?';
+
+  @override
+  String get logOutConfirmBody =>
+      'You\'ll need to sign in again to use your account.';
+
+  @override
   String get sellerReport => 'বিক্রেতা রিপোর্ট';
 
   @override
@@ -160,6 +167,19 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get createProfile => 'প্রোফাইল তৈরি করুন';
+
+  @override
+  String get completeYourProfileTitle => 'Complete your profile';
+
+  @override
+  String get completeYourProfileBody =>
+      'Add a photo and contact details so freelancers trust your jobs.';
+
+  @override
+  String get completeProfileAction => 'Complete profile';
+
+  @override
+  String get skipForNow => 'Skip for now';
 
   @override
   String get setupProfile => 'প্রোফাইল সেটআপ';
@@ -189,6 +209,10 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get pushNotifications => 'পুশ নোটিফিকেশন';
+
+  @override
+  String get pushNotificationsPermissionDenied =>
+      'বিজ্ঞপ্তির অনুমতি প্রত্যাখ্যান করা হয়েছে। সতর্কতা পেতে সিস্টেম সেটিংসে এটি চালু করুন।';
 
   @override
   String get notifications => 'নোটিফিকেশন';
@@ -451,27 +475,37 @@ class AppLocalizationsBn extends AppLocalizations {
       'আপনি যে ভাষা বেছে নেবেন, অ্যাপ সেই ভাষায় দেখাবে। পরে সেটিংস থেকে পরিবর্তন করতে পারবেন।';
 
   @override
-  String get appOnboardPage1Title =>
-      'কাজ পোস্ট করুন। স্থানীয়ভাবে নিয়োগ করুন।';
+  String get appOnboardPage1Title => 'সাইন আপ করুন এবং অ্যাকাউন্ট তৈরি করুন';
 
   @override
   String get appOnboardPage1Body =>
-      'একটি জব পোস্ট তৈরি করুন, কাছাকাছি ফ্রিল্যান্সার খুঁজুন এবং পরিষ্কার-পরিচ্ছন্নতা, গুদাম, ট্রেডসসহ আরও অনেক কাজে সঠিক ব্যক্তিকে নিয়োগ করুন।';
+      'ক্লায়েন্ট বা ফ্রিল্যান্সার হিসেবে যোগ দিন।';
 
   @override
-  String get appOnboardPage2Title => 'মানানসই কাজ খুঁজুন।';
+  String get appOnboardPage2Title => 'পোস্ট করুন বা খুঁজুন';
 
   @override
   String get appOnboardPage2Body =>
-      'খোলা কাজ আবিষ্কার করুন, কয়েকটি ট্যাপে আবেদন করুন এবং ক্লায়েন্টদের সাথে চ্যাট করুন যাতে কী প্রত্যাশা করা হচ্ছে তা স্পষ্ট থাকে।';
+      'একটি কাজ পোস্ট করুন, অথবা ব্রাউজ করে আবেদন করুন।';
 
   @override
-  String get appOnboardPage3Title =>
-      'উপস্থিত হন। ঘণ্টা ট্র্যাক করুন। পেমেন্ট পান।';
+  String get appOnboardPage3Title => 'চ্যাট করুন এবং সমন্বয় করুন';
 
   @override
-  String get appOnboardPage3Body =>
-      'চুক্তি পরিচালনা করুন, সাইটে ক্লক ইন করুন এবং ঘণ্টার রিপোর্ট স্পষ্ট রাখুন—যাতে দুই পক্ষ শুরু থেকে শেষ পর্যন্ত একমত থাকে।';
+  String get appOnboardPage3Body => 'অ্যাপে মেসেজ করুন এবং বিস্তারিত সম্মত হন।';
+
+  @override
+  String get appOnboardPage4Title => 'শিফট আপডেট চেক করুন';
+
+  @override
+  String get appOnboardPage4Body => 'লোকেশনে উপস্থিতি বা QR ব্যবহার করুন।';
+
+  @override
+  String get appOnboardPage5Title => 'শেষ করুন এবং রিভিউ দিন';
+
+  @override
+  String get appOnboardPage5Body =>
+      'কাজ শেষ করুন এবং আপনার অভিজ্ঞতা শেয়ার করুন।';
 
   @override
   String get authWelcomeHowToUse => 'আপনি HupWorks কীভাবে ব্যবহার করবেন?';
@@ -1047,6 +1081,22 @@ class AppLocalizationsBn extends AppLocalizations {
   String get noFavouritesYet => 'এখনও কোনো সংরক্ষিত কাজ নেই';
 
   @override
+  String get savedTalentList => 'সংরক্ষিত ট্যালেন্ট';
+
+  @override
+  String get noSavedTalentYet => 'এখনও কোনো সংরক্ষিত ট্যালেন্ট নেই';
+
+  @override
+  String get noSavedTalentYetHint =>
+      'ফ্রিল্যান্সার দেখুন এবং বুকমার্ক ট্যাপ করে এখানে সংরক্ষণ করুন।';
+
+  @override
+  String get addedToSavedTalent => 'ট্যালেন্ট সংরক্ষিত হয়েছে';
+
+  @override
+  String get removedFromSavedTalent => 'সংরক্ষিত ট্যালেন্ট থেকে সরানো হয়েছে';
+
+  @override
   String get noReviewsYet => 'এখনও কোনো রিভিউ নেই';
 
   @override
@@ -1173,6 +1223,10 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get noApplicationsYetHint =>
       'খোলা জব ব্রাউজ করুন এবং স্পষ্ট অফার পাঠান।';
+
+  @override
+  String get noClientApplicationsYetHint =>
+      'আপনার জবে আবেদন এখানে দেখা যাবে। আবেদন পেতে একটি জব পোস্ট করুন।';
 
   @override
   String get pendingApplications => 'মুলতুবি আবেদন';
@@ -1575,6 +1629,10 @@ class AppLocalizationsBn extends AppLocalizations {
   String get noJobsPostedYet => 'এখনও কোনো জব পোস্ট নেই';
 
   @override
+  String get noJobsPostedYetHint =>
+      'ফ্রিল্যান্সারদের আবেদন পেতে একটি জব পোস্ট করুন।';
+
+  @override
   String get postAJob => 'জব পোস্ট করুন';
 
   @override
@@ -1917,6 +1975,18 @@ class AppLocalizationsBn extends AppLocalizations {
   String get noContractsYet => 'No contracts yet';
 
   @override
+  String get noContractsYetClientHint =>
+      'Hire someone on a job to start a contract here.';
+
+  @override
+  String get noContractsYetSellerHint =>
+      'Apply to jobs and get hired — contracts will show up here.';
+
+  @override
+  String get noFilteredContractsHint =>
+      'Try another status filter, or clear filters to see all contracts.';
+
+  @override
   String noFilteredContracts(String status) {
     return 'No $status contracts';
   }
@@ -2207,6 +2277,21 @@ class AppLocalizationsBn extends AppLocalizations {
   String get hireAction => 'Hire';
 
   @override
+  String get rejectApplicationTitle => 'Reject application?';
+
+  @override
+  String rejectApplicationConfirmBody(String name) {
+    return 'Reject $name\'s application? This can\'t be undone.';
+  }
+
+  @override
+  String get closeJobTitle => 'Close this job?';
+
+  @override
+  String get closeJobConfirmBody =>
+      'This job will close to new applicants. Existing applications stay on your list.';
+
+  @override
   String get closeJob => 'Close Job';
 
   @override
@@ -2301,6 +2386,146 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get nextStep => 'Next';
+
+  @override
+  String maxJobSkillsSnackbar(int max) {
+    return 'You can add up to $max skills.';
+  }
+
+  @override
+  String get shiftTimesBothOrNeither =>
+      'Set both start and end time, or leave both empty.';
+
+  @override
+  String get createJobBasicsSubtitle =>
+      'Title, category, skills, and job type.';
+
+  @override
+  String get createJobDetailsSubtitle =>
+      'Describe the work and how many people you need.';
+
+  @override
+  String get createJobLocationSubtitle =>
+      'On-site or remote, and where the work happens.';
+
+  @override
+  String get createJobBudgetSubtitle =>
+      'Optional pay range, then review and post.';
+
+  @override
+  String savedAsCategory(String name) {
+    return 'Saved as: $name';
+  }
+
+  @override
+  String get jobSkillsTagHint =>
+      'Tag skills freelancers need for this job (optional).';
+
+  @override
+  String get shiftSchedule => 'Shift schedule';
+
+  @override
+  String get shiftScheduleHint =>
+      'Optional work day and clock times (e.g. 06:00–15:00). Used later for attendance and timed chat.';
+
+  @override
+  String get workDateLabel => 'Work date';
+
+  @override
+  String get optionalLabel => 'Optional';
+
+  @override
+  String get shiftStartLabel => 'Start';
+
+  @override
+  String get shiftEndLabel => 'End';
+
+  @override
+  String get hiringSection => 'Hiring';
+
+  @override
+  String get numberToHire => 'Number to hire';
+
+  @override
+  String get noCapUntilCloseJob => 'No cap until you close the job';
+
+  @override
+  String get budgetAppliesAs => 'Budget applies as';
+
+  @override
+  String get reviewSection => 'Review';
+
+  @override
+  String get categoryLabel => 'Category';
+
+  @override
+  String get shiftLabel => 'Shift';
+
+  @override
+  String get workersLabel => 'Workers';
+
+  @override
+  String get noLimitLabel => 'No limit';
+
+  @override
+  String get locationOnSite => 'On-site';
+
+  @override
+  String get locationRemote => 'Remote';
+
+  @override
+  String get thisFreelancer => 'this freelancer';
+
+  @override
+  String hireConfirmUnlimited(String name, String price) {
+    return 'Accept $name\'s offer ($price)? The job stays open so you can hire more freelancers until you close it.';
+  }
+
+  @override
+  String hireConfirmFillsAll(String name, String price, int filled, int cap) {
+    return 'Accept $name\'s offer ($price)? This fills your last hire spot ($filled of $cap). The job will close to new applicants. Other applications stay on your list as pending — reject them only if you do not want them.';
+  }
+
+  @override
+  String hireConfirmRemaining(
+      String name, String price, int remaining, int filled, int cap) {
+    return 'Accept $name\'s offer ($price)? After this hire you will have $remaining more open spots ($filled of $cap filled). Other pending applications stay open.';
+  }
+
+  @override
+  String get hiredJobFull =>
+      'Hired! This job is now full and closed to new applicants.';
+
+  @override
+  String get hiredContractCreated => 'Hired! Contract created.';
+
+  @override
+  String get jobPostFallback => 'Job Post';
+
+  @override
+  String get budgetLabel => 'Budget';
+
+  @override
+  String get dateLabel => 'Date';
+
+  @override
+  String get areaLabel => 'Area';
+
+  @override
+  String applicationsCount(int count) {
+    return 'Applications ($count)';
+  }
+
+  @override
+  String get messageFreelancerTooltip => 'Message freelancer';
+
+  @override
+  String get attendanceQrShort => 'QR';
+
+  @override
+  String stepProgressWithLabel(int current, int total, String label) {
+    return 'Step $current of $total · $label';
+  }
 
   @override
   String totalJobPostCount(int count) {

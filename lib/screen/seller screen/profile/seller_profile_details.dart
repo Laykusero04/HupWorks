@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:freelancer/core/utils/app_date_format.dart';
 import 'package:freelancer/core/utils/profile_avatar_picker.dart';
 import 'package:freelancer/core/utils/profile_image.dart';
 import 'package:freelancer/data/models/seller_skill_model.dart';
@@ -55,7 +56,12 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
         _isLoading = false;
       });
     } catch (e) {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+        );
+      }
     }
   }
 
@@ -85,13 +91,8 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
     }
   }
 
-  static String _formatReviewDate(String? iso) {
-    if (iso == null || iso.isEmpty) return '';
-    final d = DateTime.tryParse(iso);
-    if (d == null) return '';
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return '${months[d.month - 1]} ${d.day}, ${d.year}';
-  }
+  static String _formatReviewDate(String? iso, [String? locale]) =>
+      AppDateFormat.tryMmmDY(iso, locale) ?? '';
 
   @override
   Widget build(BuildContext context) {
@@ -506,7 +507,7 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
     final reviewerName = (reviewer?['name'] as String?)?.trim();
     final imageUrl = (reviewer?['profile_image_url'] as String?)?.trim();
     final who = (reviewerName != null && reviewerName.isNotEmpty) ? reviewerName : 'Client';
-    final dateStr = _formatReviewDate(created);
+    final dateStr = _formatReviewDate(created, AppDateFormat.localeOf(context));
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),

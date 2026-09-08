@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/utils/app_date_format.dart';
 import 'package:freelancer/core/utils/profile_image.dart';
 import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/screen/seller%20screen/report/seller_report.dart';
 import 'package:freelancer/services/profile_service.dart';
+import 'package:nb_utils/nb_utils.dart';
 
 import '../../widgets/constant.dart';
 import '../../widgets/profile_detail_theme.dart';
@@ -58,27 +61,15 @@ class _ClientPublicProfileState extends State<ClientPublicProfile> {
     }
   }
 
-  static String _formatMemberSince(String? iso) {
+  static String _formatMemberSince(String? iso, [String? locale]) {
     if (iso == null || iso.isEmpty) return '—';
     final d = DateTime.tryParse(iso);
     if (d == null) return '—';
-    const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-    ];
-    return '${months[d.month - 1]} ${d.day}, ${d.year}';
+    return AppDateFormat.mmmDY(d, locale);
   }
 
-  static String _formatReviewDate(String? iso) {
-    if (iso == null || iso.isEmpty) return '';
-    final d = DateTime.tryParse(iso);
-    if (d == null) return '';
-    const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-    ];
-    return '${months[d.month - 1]} ${d.day}, ${d.year}';
-  }
+  static String _formatReviewDate(String? iso, [String? locale]) =>
+      AppDateFormat.tryMmmDY(iso, locale) ?? '';
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +98,10 @@ class _ClientPublicProfileState extends State<ClientPublicProfile> {
     final profileImageUrl =
         ProfileImage.normalize(_profile!['profile_image_url'] as String?);
     final jobCount = (_profile!['job_posts_count'] as num?)?.toInt() ?? 0;
-    final memberSince = _formatMemberSince(_profile!['created_at'] as String?);
+    final memberSince = _formatMemberSince(
+      _profile!['created_at'] as String?,
+      AppDateFormat.localeOf(context),
+    );
     final reviewStats = ProfileService.resolveReviewDisplay(
       profile: _profile,
       reviews: _reviews,
@@ -133,6 +127,18 @@ class _ClientPublicProfileState extends State<ClientPublicProfile> {
           ),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            tooltip: context.l10n.report,
+            onPressed: () {
+              SellerReport(
+                reportedUserId: widget.clientId,
+                reportedUserName: name,
+              ).launch(context);
+            },
+            icon: const Icon(Icons.flag_outlined, color: kNeutralColor),
+          ),
+        ],
       ),
       body: RefreshIndicator(
         color: kPrimaryColor,
@@ -335,7 +341,10 @@ class _ClientPublicProfileState extends State<ClientPublicProfile> {
                           ],
                           const SizedBox(height: 4),
                           Text(
-                            _formatReviewDate(r['created_at'] as String?),
+                            _formatReviewDate(
+                              r['created_at'] as String?,
+                              AppDateFormat.localeOf(context),
+                            ),
                             style: kTextStyle.copyWith(
                               color: kLightNeutralColor,
                               fontSize: 11,

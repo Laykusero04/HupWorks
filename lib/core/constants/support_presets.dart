@@ -63,9 +63,8 @@ abstract final class SupportPresets {
       question: 'How do I report a client or job?',
       audience: SupportPresetAudience.seller,
       answer:
-          'Open the job, contract, or chat and tap the report (flag) icon. '
-          'Choose a reason, describe what happened, and submit. '
-          'You can also use Report in your profile menu.',
+          'Open the job, contract, client profile, or chat and tap the report (flag) icon. '
+          'Choose a reason, describe what happened, and submit.',
     ),
     SupportPreset(
       question: 'How do I apply to a job?',

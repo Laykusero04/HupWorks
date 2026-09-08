@@ -16,8 +16,35 @@ class JobOfferChatActions {
   static Future<void> rejectOffer(
     BuildContext context, {
     required String offerId,
+    String? sellerName,
     VoidCallback? onComplete,
   }) async {
+    final l10n = context.l10n;
+    final name = sellerName?.trim().isNotEmpty == true
+        ? sellerName!.trim()
+        : l10n.thisFreelancer;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.rejectApplicationTitle),
+        content: Text(l10n.rejectApplicationConfirmBody(name)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel,
+                style: kTextStyle.copyWith(color: kSubTitleColor)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.rejectApplication,
+                style: kTextStyle.copyWith(
+                    color: Colors.red, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) return;
+
     try {
       await JobPostsService.updateOfferStatus(offerId, 'rejected');
       if (!context.mounted) return;
@@ -41,7 +68,8 @@ class JobOfferChatActions {
     VoidCallback? onComplete,
   }) async {
     final seller = offer['profiles'] as Map<String, dynamic>?;
-    final sellerName = seller?['name'] ?? 'this freelancer';
+    final l10n = context.l10n;
+    final sellerName = seller?['name'] ?? l10n.thisFreelancer;
     final priceLabel = JobPostsService.formatOfferAmountShort(
       offer['price'],
       offer['price_basis'],
@@ -58,20 +86,25 @@ class JobOfferChatActions {
 
     final String bodyText;
     if (unlimited) {
-      bodyText =
-          "Accept $sellerName's offer ($priceLabel)? The job stays open so you can hire more freelancers until you close it.";
+      bodyText = l10n.hireConfirmUnlimited(sellerName.toString(), priceLabel);
     } else if (fillsAll) {
-      bodyText =
-          "Accept $sellerName's offer ($priceLabel)? This fills your last hire spot (${accepted + 1} of $cap). "
-          'The job will close to new applicants.';
+      bodyText = l10n.hireConfirmFillsAll(
+        sellerName.toString(),
+        priceLabel,
+        accepted + 1,
+        cap,
+      );
     } else {
       final remaining = cap - accepted - 1;
-      bodyText =
-          "Accept $sellerName's offer ($priceLabel)? After this hire you will have $remaining more open spot${remaining == 1 ? '' : 's'} "
-          '(${accepted + 1} of $cap filled).';
+      bodyText = l10n.hireConfirmRemaining(
+        sellerName.toString(),
+        priceLabel,
+        remaining,
+        accepted + 1,
+        cap,
+      );
     }
 
-    final l10n = context.l10n;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -102,9 +135,7 @@ class JobOfferChatActions {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            fillsAll
-                ? 'Hired! This job is now full and closed to new applicants.'
-                : 'Hired! Contract created.',
+            fillsAll ? l10n.hiredJobFull : l10n.hiredContractCreated,
           ),
           action: SnackBarAction(
             label: l10n.openContract,

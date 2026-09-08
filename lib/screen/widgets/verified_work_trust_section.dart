@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/utils/app_date_format.dart';
 import 'package:freelancer/data/models/seller_work_trust_model.dart';
 import 'package:freelancer/l10n/l10n.dart';
 
@@ -16,7 +17,11 @@ class VerifiedWorkTrustSection extends StatelessWidget {
   final SellerWorkTrust trust;
   final Color accentColor;
 
-  static String formatCompletedMonth(AppLocalizations l10n, String yearMonth) {
+  static String formatCompletedMonth(
+    AppLocalizations l10n,
+    String yearMonth, [
+    String? locale,
+  ]) {
     final parts = yearMonth.split('-');
     if (parts.length != 2) return yearMonth;
     final year = int.tryParse(parts[0]);
@@ -24,11 +29,8 @@ class VerifiedWorkTrustSection extends StatelessWidget {
     if (year == null || month == null || month < 1 || month > 12) {
       return yearMonth;
     }
-    const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-    ];
-    return l10n.workTrustCompletedMonthLabel(months[month - 1], year);
+    final label = AppDateFormat.mmm(DateTime(year, month), locale);
+    return l10n.workTrustCompletedMonthLabel(label, year);
   }
 
   @override
@@ -134,7 +136,7 @@ class VerifiedWorkTrustSection extends StatelessWidget {
   Widget _highlightRow(BuildContext context, WorkTrustHighlight h) {
     final l10n = context.l10n;
     final monthLabel = h.completedMonth.isNotEmpty
-        ? formatCompletedMonth(l10n, h.completedMonth)
+        ? formatCompletedMonth(l10n, h.completedMonth, AppDateFormat.localeOf(context))
         : '';
 
     return Padding(

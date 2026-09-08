@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
+import 'package:freelancer/core/utils/app_date_format.dart';
 import 'package:freelancer/core/utils/attendance_format.dart';
 import 'package:freelancer/core/utils/shift_schedule.dart';
-import 'package:intl/intl.dart';
 
 class HourReport extends Equatable {
   static const pending = 'pending';
@@ -77,7 +77,7 @@ class HourReport extends Equatable {
 
   String get minutesLabel => AttendanceFormat.minutesLabel(minutes);
 
-  String get workDateLabel => DateFormat('d MMM yyyy').format(workDate);
+  String get workDateLabel => AppDateFormat.dMmmY(workDate);
 
   String get statusLabel {
     switch (status) {

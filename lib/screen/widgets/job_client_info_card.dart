@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/utils/app_date_format.dart';
 import 'package:freelancer/core/utils/profile_image.dart';
 import 'package:freelancer/screen/client%20screen/client%20talent/client_public_profile.dart';
 import 'package:freelancer/services/profile_service.dart';
@@ -37,11 +38,7 @@ class JobClientInfoCard extends StatelessWidget {
     if (created != null) {
       final d = DateTime.tryParse(created);
       if (d != null) {
-        const m = [
-          'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-          'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-        ];
-        since = '${m[d.month - 1]} ${d.year}';
+        since = AppDateFormat.mmmY(d);
       }
     }
 

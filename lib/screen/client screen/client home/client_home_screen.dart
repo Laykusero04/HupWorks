@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:freelancer/core/notifications/notification_scope.dart';
+import 'package:freelancer/core/utils/client_profile_completeness.dart';
 import 'package:freelancer/core/utils/profile_image.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/client%20screen/client%20job%20post/client_job_post.dart';
+import 'package:freelancer/screen/client%20screen/client%20job%20post/create_new_job_post.dart';
 import 'package:freelancer/screen/client%20screen/client%20job%20post/job_details.dart';
+import 'package:freelancer/screen/client%20screen/client%20profile/client_edit_profile_details.dart';
 import 'package:freelancer/services/client_home_service.dart';
 import 'package:freelancer/services/job_posts_service.dart';
+import 'package:freelancer/services/profile_service.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -33,6 +37,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
   List<Map<String, dynamic>> _myRecentJobs = [];
   List<Map<String, dynamic>> _topSellers = [];
   bool _isLoading = true;
+  bool _showProfileNudge = false;
 
   final PageController _bannerController =
       PageController(viewportFraction: 0.9);
@@ -61,14 +66,23 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
         ClientHomeService.getCategories(),
         JobPostsService.getClientJobPosts(),
         ClientHomeService.getTopSellers(),
+        ProfileService.getProfile(),
+        ClientProfileCompleteness.isNudgeDismissed(),
       ]);
 
       if (mounted) {
         final myJobs = results[1] as List<Map<String, dynamic>>;
+        final profile = results[3] as Map<String, dynamic>?;
+        final dismissed = results[4] as bool;
+        final incomplete = ClientProfileCompleteness.isIncomplete(profile);
+        if (!incomplete) {
+          await ClientProfileCompleteness.clearNudgeDismissed();
+        }
         setState(() {
           _categories = results[0] as List<Map<String, dynamic>>;
           _myRecentJobs = myJobs.take(3).toList();
           _topSellers = results[2] as List<Map<String, dynamic>>;
+          _showProfileNudge = incomplete && !dismissed;
           _isLoading = false;
         });
       }
@@ -80,6 +94,16 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
         );
       }
     }
+  }
+
+  Future<void> _dismissProfileNudge() async {
+    await ClientProfileCompleteness.dismissNudge();
+    if (mounted) setState(() => _showProfileNudge = false);
+  }
+
+  Future<void> _openCompleteProfile() async {
+    await const ClientEditProfile().launch(context);
+    if (mounted) await _loadData();
   }
 
   String _jobTypeLabel(String? t) {
@@ -144,6 +168,10 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
                     parent: BouncingScrollPhysics()),
                 slivers: [
                   SliverToBoxAdapter(child: _buildSearchBar()),
+                  if (_showProfileNudge) ...[
+                    const SliverToBoxAdapter(child: SizedBox(height: 14)),
+                    SliverToBoxAdapter(child: _buildProfileNudge()),
+                  ],
                   const SliverToBoxAdapter(child: SizedBox(height: 16)),
                   SliverToBoxAdapter(child: _buildQuickActions()),
                   const SliverToBoxAdapter(child: SizedBox(height: 22)),
@@ -161,7 +189,10 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
                   SliverToBoxAdapter(
                     child: _buildSectionHeader(
                       l10n.yourRecentJobs,
-                      onViewAll: () => const JobPost().launch(context),
+                      onViewAll: () async {
+                        await const JobPost().launch(context);
+                        if (mounted) _loadData();
+                      },
                     ),
                   ),
                   SliverToBoxAdapter(child: _buildRecentJobs()),
@@ -208,6 +239,81 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
     ];
   }
 
+  Widget _buildProfileNudge() {
+    final l10n = context.l10n;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Material(
+        color: kWhite,
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: _openCompleteProfile,
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(14, 12, 8, 12),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: kPrimaryColor.withValues(alpha: 0.35)),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: kPrimaryColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(Icons.person_outline_rounded,
+                      color: kPrimaryColor, size: 22),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.completeYourProfileTitle,
+                        style: kTextStyle.copyWith(
+                          color: kNeutralColor,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        l10n.completeYourProfileBody,
+                        style: kTextStyle.copyWith(
+                          color: kSubTitleColor,
+                          fontSize: 12.5,
+                          height: 1.35,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        l10n.completeProfileAction,
+                        style: kTextStyle.copyWith(
+                          color: kPrimaryColor,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  tooltip: l10n.later,
+                  onPressed: _dismissProfileNudge,
+                  icon: const Icon(Icons.close, size: 18, color: kLightNeutralColor),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildSearchBar() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
@@ -250,7 +356,10 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
         label: l10n.postJob,
         icon: Icons.add_business_rounded,
         color: kPrimaryColor,
-        onTap: () => const JobPost().launch(context),
+        onTap: () async {
+          await const CreateNewJobPost().launch(context);
+          if (mounted) _loadData();
+        },
       ),
       _QuickAction(
         label: l10n.findTalent,
@@ -259,10 +368,10 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
         onTap: () => context.go(AppRoutes.clientTalent),
       ),
       _QuickAction(
-        label: l10n.categories,
-        icon: Icons.category_rounded,
+        label: l10n.applications,
+        icon: Icons.assignment_outlined,
         color: kAccentColor,
-        onTap: () => const ClientAllCategories().launch(context),
+        onTap: () => context.push(AppRoutes.clientApplications),
       ),
       _QuickAction(
         label: l10n.contracts,
@@ -348,7 +457,10 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
         subtitle: l10n.promoProposalsSubtitle,
         cta: l10n.postNow,
         gradient: const [Color(0xFFEA580C), Color(0xFFF97316)],
-        onTap: () => const JobPost().launch(context),
+        onTap: () async {
+          await const CreateNewJobPost().launch(context);
+          if (mounted) _loadData();
+        },
       ),
       _Promo(
         title: l10n.browseCategories,
@@ -703,7 +815,10 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
                 ),
               ),
               GestureDetector(
-                onTap: () => const JobPost().launch(context),
+                onTap: () async {
+                  await const CreateNewJobPost().launch(context);
+                  if (mounted) _loadData();
+                },
                 child: Container(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 12, vertical: 8),
@@ -741,7 +856,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
               onTap: () async {
                 await JobDetails(jobPostId: job['id'] as String)
                     .launch(context);
-                _loadData();
+                if (mounted) await _loadData();
               },
               child: Container(
                 padding: const EdgeInsets.all(14),

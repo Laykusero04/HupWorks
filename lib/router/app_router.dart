@@ -23,15 +23,32 @@ import '../screen/client screen/client home/top_seller.dart';
 import '../screen/client screen/client orders/client_orders.dart';
 import '../screen/client screen/client profile/client_profile.dart';
 import '../screen/client screen/client job post/client_job_post.dart';
+import '../screen/client screen/client job post/create_new_job_post.dart';
+import '../screen/client screen/client job post/job_details.dart';
+import '../screen/client screen/client orders/client_order_details.dart';
+import '../screen/client screen/applications/client_applications.dart';
+import '../screen/client screen/client favourite/client_favourite_list.dart';
+import '../screen/client screen/client notification/client_notification.dart';
+import '../screen/client screen/client_setting/client_setting.dart';
+import '../screen/client screen/client dashboard/client_dashboard.dart';
+import '../screen/client screen/client profile/client_profile_details.dart';
+import '../screen/client screen/client profile/client_edit_profile_details.dart';
 import '../screen/seller screen/seller authentication/seller_log_in.dart';
 import '../screen/seller screen/seller authentication/seller_sign_up.dart';
 import '../screen/seller screen/seller home/seller_home_screen.dart';
 import '../screen/seller screen/orders/seller_orders.dart';
 import '../screen/seller screen/orders/seller_order_details.dart';
 import '../screen/seller screen/profile/seller_profile.dart';
+import '../screen/seller screen/profile/seller_profile_details.dart';
+import '../screen/seller screen/profile/seller_edit_profile_details.dart';
 import '../screen/seller screen/applications/seller_applications.dart';
 import '../screen/seller screen/buyer request/seller_buyer_request.dart';
+import '../screen/seller screen/buyer request/buyer_request_details.dart';
 import '../screen/seller screen/seller message/chat_list.dart';
+import '../screen/seller screen/seller message/chat_inbox_route.dart';
+import '../screen/seller screen/notification/seller_notification.dart';
+import '../screen/seller screen/setting/seller_setting.dart';
+import '../screen/seller screen/seller dashboard/seller_dashboard.dart';
 import '../screen/seller screen/setup seller profile/setup_profile.dart';
 import '../screen/attendance/attendance_scan_screen.dart';
 import '../screen/attendance/seller_attendance_hub_screen.dart';
@@ -144,6 +161,9 @@ GoRouter createRouter() {
       // Seller menu is the shell drawer (removed tab route).
       if (location == '/seller/profile') {
         return '/seller';
+      }
+      if (location == '/client/profile') {
+        return '/client';
       }
 
       return null;
@@ -288,33 +308,135 @@ GoRouter createRouter() {
         ],
       ),
 
+      // Client — Applications inbox (outside shell so it pushes over bottom nav).
+      GoRoute(
+        path: AppRoutes.clientApplications,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const ClientApplications(),
+      ),
+      GoRoute(
+        path: AppRoutes.clientJobCreate,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const CreateNewJobPost(),
+      ),
+      GoRoute(
+        path: AppRoutes.clientJobDetails,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => JobDetails(
+          jobPostId: state.pathParameters['id']!,
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.clientOrderDetails,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => ClientOrderDetails(
+          orderId: state.pathParameters['id']!,
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.clientChatInbox,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => ChatInboxRoute(
+          conversationId: state.pathParameters['id']!,
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.clientFavourites,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const ClientFavList(),
+      ),
+      GoRoute(
+        path: AppRoutes.clientNotifications,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const ClientNotification(),
+      ),
+      GoRoute(
+        path: AppRoutes.clientSettings,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const ClientSetting(),
+      ),
+      GoRoute(
+        path: AppRoutes.clientDashboard,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const ClientDashBoard(),
+      ),
+      GoRoute(
+        path: AppRoutes.clientProfileDetails,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const ClientProfileDetails(),
+      ),
+      GoRoute(
+        path: AppRoutes.clientProfileEdit,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const ClientEditProfile(),
+      ),
+
       // Seller — My Applications (sub-screen, outside the shell so it pushes
       // on top of the bottom-nav scaffold).
       GoRoute(
-        path: '/seller/applications',
+        path: AppRoutes.sellerApplications,
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const SellerApplications(),
       ),
       GoRoute(
-        path: '/seller/orders/:id',
+        path: AppRoutes.sellerOrderDetails,
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => SellerOrderDetails(
           orderId: state.pathParameters['id']!,
         ),
       ),
       GoRoute(
-        path: '/seller/attendance',
+        path: AppRoutes.sellerBuyerRequestDetails,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => BuyerRequestDetails(
+          jobPostId: state.pathParameters['id']!,
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.sellerChatInbox,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => ChatInboxRoute(
+          conversationId: state.pathParameters['id']!,
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.sellerAttendance,
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => SellerAttendanceHubScreen(
           highlightJobPostId: state.uri.queryParameters['jobPostId'],
         ),
       ),
       GoRoute(
-        path: '/seller/attendance/scan',
+        path: AppRoutes.sellerAttendanceScan,
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => AttendanceScanScreen(
           hintJobPostId: state.uri.queryParameters['jobPostId'],
         ),
+      ),
+      GoRoute(
+        path: AppRoutes.sellerNotifications,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const SellerNotification(),
+      ),
+      GoRoute(
+        path: AppRoutes.sellerSettings,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const SellerSetting(),
+      ),
+      GoRoute(
+        path: AppRoutes.sellerDashboard,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const SellerDashBoard(),
+      ),
+      GoRoute(
+        path: AppRoutes.sellerProfileDetails,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const SellerProfileDetails(),
+      ),
+      GoRoute(
+        path: AppRoutes.sellerProfileEdit,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const SellerEditProfile(),
       ),
     ],
   );

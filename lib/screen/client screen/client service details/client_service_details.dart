@@ -1,6 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:freelancer/core/utils/app_date_format.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
@@ -563,7 +564,7 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
     final comment = review['comment'] ?? '';
     final createdAt = review['created_at'] != null ? DateTime.tryParse(review['created_at']) : null;
     final dateStr = createdAt != null
-        ? '${createdAt.day}, ${_monthName(createdAt.month)} ${createdAt.year}'
+        ? AppDateFormat.dMmmY(createdAt, AppDateFormat.localeOf(context))
         : '';
 
     return Container(
@@ -621,10 +622,5 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
         ],
       ),
     );
-  }
-
-  String _monthName(int month) {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return months[month - 1];
   }
 }

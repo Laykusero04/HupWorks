@@ -6,26 +6,12 @@ class AttendanceFormat {
 
   static String timeOfDay(DateTime dt, [String? localeName]) {
     final local = dt.toLocal();
-    if (localeName != null && localeName.isNotEmpty) {
-      return DateFormat.jm(localeName).format(local);
-    }
-    final hour = local.hour;
-    final minute = local.minute.toString().padLeft(2, '0');
-    final period = hour >= 12 ? 'PM' : 'AM';
-    final displayHour = hour == 0 ? 12 : (hour > 12 ? hour - 12 : hour);
-    return '$displayHour:$minute $period';
+    return DateFormat.jm(localeName).format(local);
   }
 
   static String dateTime(DateTime dt, [String? localeName]) {
     final local = dt.toLocal();
-    if (localeName != null && localeName.isNotEmpty) {
-      return '${DateFormat.yMMMd(localeName).format(local)} • ${timeOfDay(local, localeName)}';
-    }
-    const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-    ];
-    return '${months[local.month - 1]} ${local.day}, ${local.year} • ${timeOfDay(local)}';
+    return '${DateFormat.yMMMd(localeName).format(local)} • ${timeOfDay(local, localeName)}';
   }
 
   static String punchLabel(String punchType, [AppLocalizations? l10n]) =>

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/support_chat_navigation.dart';
 import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/router/route_names.dart';
 import 'package:freelancer/services/auth_service.dart';
 import 'package:freelancer/services/profile_service.dart';
+import 'package:go_router/go_router.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../widgets/constant.dart';
@@ -11,8 +13,8 @@ import '../../widgets/profile_skeleton.dart';
 import '../../widgets/shell_drawer_header.dart';
 import '../../widgets/shell_tab_header.dart';
 import '../client dashboard/client_dashboard.dart';
+import '../client favourite/client_favourite_list.dart';
 import '../client invite/client_invite.dart';
-import '../client report/client_report.dart';
 import '../client_setting/client_setting.dart';
 import 'client_profile_details.dart';
 
@@ -48,11 +50,38 @@ class _ClientProfileState extends State<ClientProfile> {
         });
       }
     } catch (e) {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+        );
+      }
     }
   }
 
   Future<void> _handleLogout() async {
+    final l10n = context.l10n;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.logOutConfirmTitle),
+        content: Text(l10n.logOutConfirmBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel,
+                style: kTextStyle.copyWith(color: kSubTitleColor)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.logOut,
+                style: kTextStyle.copyWith(
+                    color: Colors.red, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
     await AuthService.signOut();
   }
 
@@ -98,9 +127,17 @@ class _ClientProfileState extends State<ClientProfile> {
                   onTap: () => const ClientDashBoard().launch(context),
                 ),
                 ProfileMenuListTile(
-                  icon: Icons.description_outlined,
-                  title: l10n.sellerReport,
-                  onTap: () => const ClientReport().launch(context),
+                  icon: Icons.bookmark_border,
+                  title: l10n.favourites,
+                  onTap: () => const ClientFavList().launch(context),
+                ),
+                ProfileMenuListTile(
+                  icon: Icons.assignment_outlined,
+                  title: l10n.applications,
+                  onTap: () {
+                    Navigator.pop(context);
+                    context.push(AppRoutes.clientApplications);
+                  },
                 ),
                 ProfileMenuListTile(
                   icon: Icons.settings_outlined,

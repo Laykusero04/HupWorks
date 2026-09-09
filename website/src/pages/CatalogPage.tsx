@@ -1,4 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Badge, Button, Collapse, Form } from 'react-bootstrap'
+import { EmptyState, LoadingState } from '../components/LoadingState'
+import { PageHeader } from '../components/PageHeader'
+import { PageSection } from '../components/PageSection'
+import { QueueToolbar } from '../components/QueueToolbar'
+import { StatusAlert } from '../components/StatusAlert'
 import {
   fetchCategories,
   updateCategory,
@@ -128,62 +134,37 @@ export function CatalogPage() {
   }
 
   return (
-    <div className="page queue-page">
-      <div className="queue-top">
-        <div>
-          <h1>Catalog</h1>
-          <p className="lede tight">
-            Edit category names and descriptions for English, Dutch, and Bengali. The English name
-            stays the canonical key used for matching.
-          </p>
-        </div>
-        <div className="queue-tools">
-          <input
-            className="search-input"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search categories…"
-          />
-          <button type="button" className="btn ghost" onClick={() => void load()} disabled={loading}>
-            Refresh
-          </button>
-        </div>
-      </div>
+    <div>
+      <PageHeader
+        title="Catalog"
+        subtitle="Edit category names and descriptions for English, Dutch, and Bengali."
+      />
 
-      <div className="tabs">
-        {(
-          [
-            ['all', 'All'],
-            ['preset', 'Presets'],
-            ['custom', 'Custom'],
-            ['incomplete', 'Missing translation'],
-          ] as const
-        ).map(([key, label]) => (
-          <button
-            key={key}
-            type="button"
-            className={filter === key ? 'tab active' : 'tab'}
-            onClick={() => setFilter(key)}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
+      <QueueToolbar
+        search={query}
+        onSearchChange={setQuery}
+        searchPlaceholder="Search categories…"
+        onRefresh={() => void load()}
+        refreshing={loading}
+        tabs={[
+          { key: 'all', label: 'All' },
+          { key: 'preset', label: 'Presets' },
+          { key: 'custom', label: 'Custom' },
+          { key: 'incomplete', label: 'Missing translation' },
+        ]}
+        activeTab={filter}
+        onTabChange={(key) => setFilter(key as typeof filter)}
+      />
 
-      {error && (
-        <section className="status-banner bad">
-          <strong>Error</strong>
-          <span>{error}</span>
-        </section>
-      )}
+      {error && <StatusAlert title="Error">{error}</StatusAlert>}
 
-      {loading && <section className="panel empty">Loading categories…</section>}
+      {loading && <LoadingState label="Loading categories…" />}
 
       {!loading && !error && filtered.length === 0 && (
-        <section className="panel empty">No categories match.</section>
+        <EmptyState>No categories match.</EmptyState>
       )}
 
-      <div className="card-list">
+      <div className="d-flex flex-column gap-2">
         {filtered.map((row) => {
           const draft = drafts[row.id] ?? toDraft(row)
           const open = expandedId === row.id
@@ -191,90 +172,105 @@ export function CatalogPage() {
           const busy = savingId === row.id
 
           return (
-            <article key={row.id} className="panel catalog-card">
+            <PageSection key={row.id} bodyClassName="py-3">
               <button
                 type="button"
-                className="catalog-summary"
+                className="btn btn-link text-decoration-none text-start text-body p-0 w-100"
                 onClick={() => setExpandedId(open ? null : row.id)}
+                aria-expanded={open}
               >
-                <div>
-                  <h2>{draft.nameI18n.en || row.name}</h2>
-                  <p className="muted">
-                    {row.is_custom ? 'Custom' : 'Preset'}
-                    {row.icon ? ` · icon ${row.icon}` : ''}
-                    {missing.length
-                      ? ` · missing ${missing.join(', ').toUpperCase()}`
-                      : ' · en / nl / bn complete'}
-                  </p>
+                <div className="d-flex justify-content-between gap-3">
+                  <div className="min-w-0">
+                    <div className="fw-semibold">{draft.nameI18n.en || row.name}</div>
+                    <div className="d-flex flex-wrap gap-1 mt-2">
+                      <Badge bg={row.is_custom ? 'info' : 'secondary'}>
+                        {row.is_custom ? 'Custom' : 'Preset'}
+                      </Badge>
+                      {row.icon ? <Badge bg="light" text="dark">icon {row.icon}</Badge> : null}
+                      {missing.length ? (
+                        <Badge bg="warning" text="dark">
+                          missing {missing.join(', ').toUpperCase()}
+                        </Badge>
+                      ) : (
+                        <Badge bg="success">en / nl / bn complete</Badge>
+                      )}
+                    </div>
+                  </div>
+                  <span className="small text-secondary flex-shrink-0">{open ? 'Hide' : 'Edit'}</span>
                 </div>
-                <span className="muted">{open ? 'Hide' : 'Edit'}</span>
               </button>
 
-              {open && (
-                <div className="catalog-editor">
-                  <label className="field">
-                    <span>Icon key</span>
-                    <input
-                      value={draft.icon}
-                      onChange={(e) =>
-                        patchDraft(row.id, (prev) => ({ ...prev, icon: e.target.value }))
-                      }
-                      placeholder="cleaning, factory, trades…"
-                    />
-                  </label>
+              <Collapse in={open}>
+                <div>
+                  <hr className="my-3" />
+                  <Form
+                    onSubmit={(e) => {
+                      e.preventDefault()
+                      void onSave(row.id)
+                    }}
+                  >
+                    <Form.Group className="mb-3" controlId={`icon-${row.id}`}>
+                      <Form.Label>Icon key</Form.Label>
+                      <Form.Control
+                        value={draft.icon}
+                        onChange={(e) =>
+                          patchDraft(row.id, (prev) => ({ ...prev, icon: e.target.value }))
+                        }
+                        placeholder="cleaning, factory, trades…"
+                      />
+                    </Form.Group>
 
-                  {LOCALES.map((locale) => (
-                    <fieldset key={locale.code} className="locale-block">
-                      <legend>
-                        {locale.label} <code>{locale.code}</code>
-                        {locale.code === 'en' ? ' (required)' : ''}
-                      </legend>
-                      <label className="field">
-                        <span>Name</span>
-                        <input
-                          value={draft.nameI18n[locale.code]}
-                          onChange={(e) =>
-                            patchDraft(row.id, (prev) => ({
-                              ...prev,
-                              nameI18n: { ...prev.nameI18n, [locale.code]: e.target.value },
-                            }))
-                          }
-                          placeholder={`Category name (${locale.code})`}
-                        />
-                      </label>
-                      <label className="field">
-                        <span>Description</span>
-                        <textarea
-                          rows={2}
-                          value={draft.descriptionI18n[locale.code]}
-                          onChange={(e) =>
-                            patchDraft(row.id, (prev) => ({
-                              ...prev,
-                              descriptionI18n: {
-                                ...prev.descriptionI18n,
-                                [locale.code]: e.target.value,
-                              },
-                            }))
-                          }
-                          placeholder={`Short description (${locale.code})`}
-                        />
-                      </label>
-                    </fieldset>
-                  ))}
+                    {LOCALES.map((locale) => (
+                      <fieldset key={locale.code} className="border rounded p-3 mb-3">
+                        <legend className="float-none w-auto px-2 fs-6 mb-0">
+                          {locale.label} <code>{locale.code}</code>
+                          {locale.code === 'en' ? ' (required)' : ''}
+                        </legend>
+                        <Form.Group className="mb-2" controlId={`name-${row.id}-${locale.code}`}>
+                          <Form.Label>Name</Form.Label>
+                          <Form.Control
+                            value={draft.nameI18n[locale.code]}
+                            onChange={(e) =>
+                              patchDraft(row.id, (prev) => ({
+                                ...prev,
+                                nameI18n: { ...prev.nameI18n, [locale.code]: e.target.value },
+                              }))
+                            }
+                            placeholder={`Category name (${locale.code})`}
+                          />
+                        </Form.Group>
+                        <Form.Group controlId={`desc-${row.id}-${locale.code}`}>
+                          <Form.Label>Description</Form.Label>
+                          <Form.Control
+                            as="textarea"
+                            rows={2}
+                            value={draft.descriptionI18n[locale.code]}
+                            onChange={(e) =>
+                              patchDraft(row.id, (prev) => ({
+                                ...prev,
+                                descriptionI18n: {
+                                  ...prev.descriptionI18n,
+                                  [locale.code]: e.target.value,
+                                },
+                              }))
+                            }
+                            placeholder={`Short description (${locale.code})`}
+                          />
+                        </Form.Group>
+                      </fieldset>
+                    ))}
 
-                  <div className="actions">
-                    <button
-                      type="button"
-                      className="btn good"
+                    <Button
+                      type="submit"
+                      variant="success"
                       disabled={busy || !draft.nameI18n.en.trim()}
-                      onClick={() => void onSave(row.id)}
                     >
                       {busy ? 'Saving…' : 'Save translations'}
-                    </button>
-                  </div>
+                    </Button>
+                  </Form>
                 </div>
-              )}
-            </article>
+              </Collapse>
+            </PageSection>
           )
         })}
       </div>

@@ -1,4 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Badge, Collapse } from 'react-bootstrap'
+import { EmptyState, LoadingState } from '../components/LoadingState'
+import { PageHeader } from '../components/PageHeader'
+import { PageSection } from '../components/PageSection'
+import { QueueToolbar } from '../components/QueueToolbar'
+import { StatusAlert } from '../components/StatusAlert'
 import { fetchUsers, statusLabel, type AdminUserRow } from '../lib/adminApi'
 
 type RoleFilter = 'all' | 'client' | 'seller' | 'incomplete'
@@ -10,6 +16,13 @@ function formatWhen(value: string | null | undefined) {
   } catch {
     return value
   }
+}
+
+function statusVariant(status: string | null | undefined) {
+  if (status === 'verified') return 'success'
+  if (status === 'rejected') return 'danger'
+  if (status === 'pending') return 'warning'
+  return 'secondary'
 }
 
 export function UsersPage() {
@@ -49,160 +62,160 @@ export function UsersPage() {
   }, [rows])
 
   return (
-    <div className="page queue-page">
-      <div className="queue-top">
-        <div>
-          <h1>Users</h1>
-          <p className="lede tight">
-            Clients and sellers from <code>profiles</code>, plus Auth sign-in info when available.
-          </p>
-        </div>
-        <div className="queue-tools">
-          <input
-            className="search-input"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search name, email, phone, id…"
-          />
-          <button type="button" className="btn ghost" onClick={() => void load()} disabled={loading}>
-            Refresh
-          </button>
-        </div>
-      </div>
+    <div>
+      <PageHeader
+        title="Users"
+        subtitle="Clients and sellers from profiles, plus Auth sign-in info when available."
+      />
 
-      <div className="tabs">
-        {(
-          [
-            ['all', 'All'],
-            ['client', 'Clients'],
-            ['seller', 'Sellers'],
-            ['incomplete', 'Incomplete onboarding'],
-          ] as const
-        ).map(([key, label]) => (
-          <button
-            key={key}
-            type="button"
-            className={role === key ? 'tab active' : 'tab'}
-            onClick={() => {
-              setRole(key)
-              setExpandedId(null)
-            }}
-          >
-            {label}
-            {key === role && !loading ? ` · ${rows.length}` : ''}
-          </button>
-        ))}
-      </div>
+      <QueueToolbar
+        search={query}
+        onSearchChange={setQuery}
+        searchPlaceholder="Search name, email, phone, id…"
+        onRefresh={() => void load()}
+        refreshing={loading}
+        tabs={[
+          { key: 'all', label: 'All', count: role === 'all' && !loading ? rows.length : undefined },
+          { key: 'client', label: 'Clients', count: role === 'client' && !loading ? rows.length : undefined },
+          { key: 'seller', label: 'Sellers', count: role === 'seller' && !loading ? rows.length : undefined },
+          {
+            key: 'incomplete',
+            label: 'Incomplete onboarding',
+            count: role === 'incomplete' && !loading ? rows.length : undefined,
+          },
+        ]}
+        activeTab={role}
+        onTabChange={(key) => {
+          setRole(key as RoleFilter)
+          setExpandedId(null)
+        }}
+      />
 
-      {error && (
-        <section className="status-banner bad">
-          <strong>Error</strong>
-          <span>{error}</span>
-        </section>
-      )}
+      {error && <StatusAlert title="Error">{error}</StatusAlert>}
 
-      {loading && <section className="panel empty">Loading users…</section>}
+      {loading && <LoadingState label="Loading users…" />}
 
-      {!loading && !error && rows.length === 0 && (
-        <section className="panel empty">No users match.</section>
-      )}
+      {!loading && !error && rows.length === 0 && <EmptyState>No users match.</EmptyState>}
 
       {!loading && !error && rows.length > 0 && (
-        <p className="muted" style={{ marginBottom: '0.75rem' }}>
-          Showing {rows.length}
-          {role === 'all' ? ` · ${counts.clients} clients · ${counts.sellers} sellers` : ''}
-        </p>
+        <>
+          <p className="text-secondary small mb-2">
+            Showing {rows.length}
+            {role === 'all' ? ` · ${counts.clients} clients · ${counts.sellers} sellers` : ''}
+          </p>
+          <div className="d-flex flex-column gap-2">
+            {rows.map((row) => {
+              const open = expandedId === row.id
+              const roleLabel =
+                row.role === 'seller' ? 'Seller' : row.role === 'client' ? 'Client' : row.role
+              return (
+                <PageSection key={row.id} bodyClassName="py-3">
+                  <button
+                    type="button"
+                    className="btn btn-link text-decoration-none text-start text-body p-0 w-100"
+                    onClick={() => setExpandedId(open ? null : row.id)}
+                    aria-expanded={open}
+                  >
+                    <div className="d-flex justify-content-between gap-3">
+                      <div className="min-w-0">
+                        <div className="fw-semibold">{row.name || row.email || row.id}</div>
+                        <div className="small text-secondary text-truncate">
+                          {roleLabel}
+                          {row.email ? ` · ${row.email}` : ''}
+                          {row.city || row.country
+                            ? ` · ${[row.city, row.country].filter(Boolean).join(', ')}`
+                            : ''}
+                        </div>
+                        <div className="d-flex flex-wrap gap-1 mt-2">
+                          <Badge bg={statusVariant(row.profile_photo_status)} text={row.profile_photo_status === 'pending' ? 'dark' : undefined}>
+                            Photo {statusLabel(row.profile_photo_status)}
+                          </Badge>
+                          <Badge bg={statusVariant(row.verification_status)} text={row.verification_status === 'pending' ? 'dark' : undefined}>
+                            ID {statusLabel(row.verification_status)}
+                          </Badge>
+                          {row.role === 'seller' && (
+                            <Badge bg={row.seller_onboarding_completed ? 'success' : 'secondary'}>
+                              Onboarding {row.seller_onboarding_completed ? 'done' : 'incomplete'}
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                      <span className="small text-secondary flex-shrink-0">{open ? 'Hide' : 'Details'}</span>
+                    </div>
+                  </button>
+
+                  <Collapse in={open}>
+                    <div>
+                      <hr className="my-3" />
+                      <div className="row g-3 small">
+                        <div className="col-md-6">
+                          <div className="text-secondary">User id</div>
+                          <code className="mono-id" title={row.id}>
+                            {row.id}
+                          </code>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="text-secondary">Phone</div>
+                          <div>{row.phone || '—'}</div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="text-secondary">Joined</div>
+                          <div>{formatWhen(row.created_at)}</div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="text-secondary">Rating / balance</div>
+                          <div>
+                            {row.rating ?? '—'} / {row.balance ?? '—'}
+                          </div>
+                        </div>
+                        {row.seller?.job_title && (
+                          <div className="col-md-6">
+                            <div className="text-secondary">Job title</div>
+                            <div>{row.seller.job_title}</div>
+                          </div>
+                        )}
+                        {row.bio && (
+                          <div className="col-12">
+                            <div className="text-secondary">Bio</div>
+                            <div>{row.bio}</div>
+                          </div>
+                        )}
+                        <div className="col-md-6">
+                          <div className="text-secondary">Auth email confirmed</div>
+                          <div>{formatWhen(row.auth?.email_confirmed_at)}</div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="text-secondary">Auth providers</div>
+                          <div>{row.auth?.providers?.length ? row.auth.providers.join(', ') : '—'}</div>
+                        </div>
+                        {row.auth?.last_sign_in_at && (
+                          <div className="col-md-6">
+                            <div className="text-secondary">Last sign-in</div>
+                            <div>{formatWhen(row.auth.last_sign_in_at)}</div>
+                          </div>
+                        )}
+                        {row.auth?.banned_until && (
+                          <div className="col-md-6">
+                            <div className="text-secondary">Banned until</div>
+                            <div>{formatWhen(row.auth.banned_until)}</div>
+                          </div>
+                        )}
+                        {row.profile_image_url && (
+                          <div className="col-12">
+                            <a href={row.profile_image_url} target="_blank" rel="noreferrer">
+                              Open profile image
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </Collapse>
+                </PageSection>
+              )
+            })}
+          </div>
+        </>
       )}
-
-      <div className="card-list">
-        {rows.map((row) => {
-          const open = expandedId === row.id
-          const roleLabel = row.role === 'seller' ? 'Seller' : row.role === 'client' ? 'Client' : row.role
-          return (
-            <article key={row.id} className="panel catalog-card">
-              <button
-                type="button"
-                className="catalog-summary"
-                onClick={() => setExpandedId(open ? null : row.id)}
-              >
-                <div>
-                  <h2>{row.name || row.email || row.id}</h2>
-                  <p className="muted">
-                    {roleLabel}
-                    {row.email ? ` · ${row.email}` : ''}
-                    {row.city || row.country
-                      ? ` · ${[row.city, row.country].filter(Boolean).join(', ')}`
-                      : ''}
-                  </p>
-                  <p className="muted">
-                    Photo {statusLabel(row.profile_photo_status)} · ID{' '}
-                    {statusLabel(row.verification_status)}
-                    {row.role === 'seller'
-                      ? ` · onboarding ${row.seller_onboarding_completed ? 'done' : 'incomplete'}`
-                      : ''}
-                    {row.auth?.last_sign_in_at
-                      ? ` · last sign-in ${formatWhen(row.auth.last_sign_in_at)}`
-                      : row.auth
-                        ? ' · never signed in'
-                        : ''}
-                  </p>
-                </div>
-                <span className="muted">{open ? 'Hide' : 'Details'}</span>
-              </button>
-
-              {open && (
-                <div className="catalog-editor">
-                  <p>
-                    <strong>User id</strong>
-                    <br />
-                    <code>{row.id}</code>
-                  </p>
-                  <p>
-                    <strong>Phone</strong> {row.phone || '—'}
-                  </p>
-                  <p>
-                    <strong>Joined</strong> {formatWhen(row.created_at)}
-                  </p>
-                  <p>
-                    <strong>Rating / balance</strong>{' '}
-                    {row.rating ?? '—'} / {row.balance ?? '—'}
-                  </p>
-                  {row.seller?.job_title && (
-                    <p>
-                      <strong>Job title</strong> {row.seller.job_title}
-                    </p>
-                  )}
-                  {row.bio && (
-                    <p>
-                      <strong>Bio</strong> {row.bio}
-                    </p>
-                  )}
-                  <p>
-                    <strong>Auth email confirmed</strong>{' '}
-                    {formatWhen(row.auth?.email_confirmed_at)}
-                  </p>
-                  <p>
-                    <strong>Auth providers</strong>{' '}
-                    {row.auth?.providers?.length ? row.auth.providers.join(', ') : '—'}
-                  </p>
-                  {row.auth?.banned_until && (
-                    <p>
-                      <strong>Banned until</strong> {formatWhen(row.auth.banned_until)}
-                    </p>
-                  )}
-                  {row.profile_image_url && (
-                    <p>
-                      <a href={row.profile_image_url} target="_blank" rel="noreferrer">
-                        Open profile image
-                      </a>
-                    </p>
-                  )}
-                </div>
-              )}
-            </article>
-          )
-        })}
-      </div>
     </div>
   )
 }

@@ -1,4 +1,9 @@
 import { useEffect, useState } from 'react'
+import { Card, Col, Row, Spinner } from 'react-bootstrap'
+import { Link } from 'react-router-dom'
+import { EmptyState, LoadingState } from '../components/LoadingState'
+import { PageHeader } from '../components/PageHeader'
+import { StatusAlert } from '../components/StatusAlert'
 import { fetchHealth, fetchOverview, type AdminHealth, type AdminOverview } from '../lib/adminApi'
 
 export function OverviewPage() {
@@ -33,67 +38,87 @@ export function OverviewPage() {
     }
   }, [])
 
+  const showServiceRoleWarning = !loading && !error && health?.ok && !health.usingServiceRole
+
   return (
-    <div className="page">
-      <h1>Overview</h1>
-      <p className="lede">
-        Live ops snapshot from the same Supabase project as the Flutter app.
-      </p>
+    <div>
+      <PageHeader
+        title="Overview"
+        subtitle="Live ops snapshot from the same Supabase project as the Flutter app."
+      />
 
-      <section className={`status-banner ${error ? 'bad' : health?.ok ? 'good' : 'pending'}`}>
-        {loading && <strong>Connecting to Supabase…</strong>}
-        {!loading && error && (
-          <>
-            <strong>Not connected</strong>
-            <span>{error}</span>
-            <span className="hint">
-              On Vercel: set <code>SUPABASE_URL</code> + <code>SUPABASE_SECRET_KEY</code>, then
-              redeploy. Locally: put the same in <code>website/.env</code> and restart{' '}
-              <code>npm run dev</code>.
-            </span>
-          </>
-        )}
-        {!loading && !error && health?.ok && (
-          <>
-            <strong>Connected</strong>
-            <span className="hint">
-              {health.usingServiceRole
-                ? 'Using service role via /api/admin.'
-                : 'Service role missing — admin queues may fail RLS.'}
-            </span>
-            {health.schemaHint && (
-              <span className="hint">Schema: {health.schemaHint}</span>
-            )}
-          </>
-        )}
-      </section>
+      {loading && (
+        <StatusAlert variant="info" title="Connecting">
+          <span className="d-inline-flex align-items-center gap-2">
+            <Spinner animation="border" size="sm" /> Connecting to Supabase…
+          </span>
+        </StatusAlert>
+      )}
 
-      <div className="kpi-grid">
-        <div className="kpi">
-          <span>Pending reviews (photo + ID)</span>
-          <strong>{loading ? '…' : (overview?.pendingVerification ?? '—')}</strong>
-        </div>
-        <div className="kpi">
-          <span>Open reports</span>
-          <strong>{loading ? '…' : (overview?.openReports ?? '—')}</strong>
-        </div>
-        <div className="kpi">
-          <span>Unpaid completed orders</span>
-          <strong>{loading ? '…' : (overview?.unpaidCompleted ?? '—')}</strong>
-        </div>
-        <div className="kpi">
-          <span>Active contracts</span>
-          <strong>{loading ? '…' : (overview?.activeContracts ?? '—')}</strong>
-        </div>
-      </div>
+      {!loading && error && (
+        <StatusAlert variant="danger" title="Not connected">
+          <p className="mb-2">{error}</p>
+          <p className="mb-0">
+            On Vercel: set <code>SUPABASE_URL</code> + <code>SUPABASE_SECRET_KEY</code>, then
+            redeploy. Locally: put the same in <code>website/.env</code> and restart{' '}
+            <code>npm run dev</code>.
+          </p>
+        </StatusAlert>
+      )}
 
-      <section className="panel">
-        <h2>Next queues</h2>
-        <ul>
-          <li>Verification — approve / reject pending ID selfies</li>
-          <li>Reports — moderate open / reviewing abuse reports</li>
-        </ul>
-      </section>
+      {showServiceRoleWarning && (
+        <StatusAlert variant="warning" title="Service role missing">
+          Admin queues may fail RLS until <code>SUPABASE_SECRET_KEY</code> is configured.
+          {health?.schemaHint ? (
+            <span className="d-block mt-1">Schema: {health.schemaHint}</span>
+          ) : null}
+        </StatusAlert>
+      )}
+
+      {loading ? (
+        <LoadingState label="Loading overview…" />
+      ) : error ? (
+        <EmptyState>Fix the connection above to load KPIs.</EmptyState>
+      ) : (
+        <Row className="g-3">
+          <Col sm={6} xl={3}>
+            <Card as={Link} to="/verification" className="kpi-card border-0 shadow-sm h-100">
+              <Card.Body>
+                <div className="text-secondary small mb-1">Pending reviews</div>
+                <div className="kpi-value">{overview?.pendingVerification ?? '—'}</div>
+                <div className="text-secondary small mt-1">Photo + ID</div>
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col sm={6} xl={3}>
+            <Card as={Link} to="/reports" className="kpi-card border-0 shadow-sm h-100">
+              <Card.Body>
+                <div className="text-secondary small mb-1">Open reports</div>
+                <div className="kpi-value">{overview?.openReports ?? '—'}</div>
+                <div className="text-secondary small mt-1">Abuse queue</div>
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col sm={6} xl={3}>
+            <Card className="border-0 shadow-sm h-100">
+              <Card.Body>
+                <div className="text-secondary small mb-1">Unpaid completed</div>
+                <div className="kpi-value">{overview?.unpaidCompleted ?? '—'}</div>
+                <div className="text-secondary small mt-1">Orders</div>
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col sm={6} xl={3}>
+            <Card className="border-0 shadow-sm h-100">
+              <Card.Body>
+                <div className="text-secondary small mb-1">Active contracts</div>
+                <div className="kpi-value">{overview?.activeContracts ?? '—'}</div>
+                <div className="text-secondary small mt-1">In progress</div>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+      )}
     </div>
   )
 }

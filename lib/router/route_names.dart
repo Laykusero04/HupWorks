@@ -56,6 +56,7 @@ class AppRoutes {
   static const sellerDashboard = '/seller/dashboard';
   static const sellerProfileDetails = '/seller/profile/details';
   static const sellerProfileEdit = '/seller/profile/edit';
+  static const sellerProfileVerify = '/seller/profile/verify';
 
   // Path helpers for deep links / notifications
   static String clientJobDetailsOf(String id) => '/client/jobs/$id';

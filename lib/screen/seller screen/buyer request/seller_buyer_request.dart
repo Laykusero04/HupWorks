@@ -5,6 +5,7 @@ import 'package:freelancer/core/utils/app_date_format.dart';
 import 'package:freelancer/core/utils/app_logger.dart';
 import 'package:freelancer/core/utils/localized_category.dart';
 import 'package:freelancer/core/utils/profile_image.dart';
+import 'package:freelancer/core/widgets/empty_state_widget.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/screen/seller%20screen/job%20alerts/seller_job_alert_editor_screen.dart';
@@ -34,6 +35,7 @@ class SellerBuyerRequest extends StatefulWidget {
 
 class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
   final _searchController = TextEditingController();
+  final _scrollController = ScrollController();
   Timer? _titleDebounce;
 
   List<Map<String, dynamic>> _requests = [];
@@ -43,6 +45,9 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
   final Set<String> _saveBusyIds = {};
   bool _isLoading = true;
   bool _isRefreshing = false;
+  bool _isLoadingMore = false;
+  bool _hasMore = true;
+  int _nextOffset = 0;
   String _titleQuery = '';
   String? _jobTypeFilter;
   final List<String> _skillNames = [];
@@ -60,6 +65,7 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_onScroll);
     _loadRequests();
     _loadFilterMeta();
   }
@@ -67,6 +73,8 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
   @override
   void dispose() {
     _titleDebounce?.cancel();
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
     _searchController.dispose();
     super.dispose();
   }
@@ -140,6 +148,31 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
     }
   }
 
+  void _onScroll() {
+    if (!_hasMore || _isLoadingMore || _isLoading || _isRefreshing) return;
+    if (!_scrollController.hasClients) return;
+    if (_scrollController.position.pixels <
+        _scrollController.position.maxScrollExtent - 280) {
+      return;
+    }
+    unawaited(_loadMore());
+  }
+
+  Future<List<Map<String, dynamic>>> _fetchJobsPage({required int offset}) {
+    return SellerOrdersService.getBuyerRequests(
+      titleQuery: _titleQuery,
+      categoryIds: _categoryIds.toList(),
+      skillNames: List<String>.from(_skillNames),
+      jobType: _jobTypeFilter,
+      maxDistanceKm: _useDistance ? _distanceKm : null,
+      includeRemote: _includeRemote,
+      sellerLat: _sellerLat,
+      sellerLng: _sellerLng,
+      limit: SellerOrdersService.browsePageSize,
+      offset: offset,
+    );
+  }
+
   Future<void> _loadRequests({bool showSpinner = false}) async {
     if (showSpinner) {
       setState(() => _isLoading = true);
@@ -148,34 +181,55 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
     }
     try {
       final results = await Future.wait([
-        SellerOrdersService.getBuyerRequests(
-          titleQuery: _titleQuery,
-          categoryIds: _categoryIds.toList(),
-          skillNames: List<String>.from(_skillNames),
-          jobType: _jobTypeFilter,
-          maxDistanceKm: _useDistance ? _distanceKm : null,
-          includeRemote: _includeRemote,
-          sellerLat: _sellerLat,
-          sellerLng: _sellerLng,
-        ),
+        _fetchJobsPage(offset: 0),
         FavouriteService.getFavouritedJobPostIds(),
       ]);
       if (mounted) {
+        final page = results[0] as List<Map<String, dynamic>>;
         setState(() {
-          _requests = results[0] as List<Map<String, dynamic>>;
+          _requests = page;
+          _nextOffset = page.length;
+          _hasMore = page.length >= SellerOrdersService.browsePageSize;
+          _isLoadingMore = false;
           _savedJobIds
             ..clear()
             ..addAll(results[1] as Set<String>);
           _isLoading = false;
           _isRefreshing = false;
         });
+        if (_scrollController.hasClients) {
+          _scrollController.jumpTo(0);
+        }
       }
     } catch (e) {
       if (mounted) {
         setState(() {
           _isLoading = false;
           _isRefreshing = false;
+          _isLoadingMore = false;
         });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+        );
+      }
+    }
+  }
+
+  Future<void> _loadMore() async {
+    if (!_hasMore || _isLoadingMore || _isLoading || _isRefreshing) return;
+    setState(() => _isLoadingMore = true);
+    try {
+      final page = await _fetchJobsPage(offset: _nextOffset);
+      if (!mounted) return;
+      setState(() {
+        _requests.addAll(page);
+        _nextOffset += page.length;
+        _hasMore = page.length >= SellerOrdersService.browsePageSize;
+        _isLoadingMore = false;
+      });
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoadingMore = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
@@ -387,7 +441,7 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          'Filter jobs',
+                          l10n.filterJobs,
                           style: kTextStyle.copyWith(
                             color: kNeutralColor,
                             fontWeight: FontWeight.bold,
@@ -444,7 +498,7 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  'Match jobs tagged with these skills.',
+                                  l10n.matchJobsWithSkills,
                                   style: kTextStyle.copyWith(
                                     color: kSubTitleColor,
                                     fontSize: 12,
@@ -722,6 +776,7 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
   }
 
   Widget _buildSearchRow(Color primary) {
+    final l10n = context.l10n;
     return Row(
       children: [
         Expanded(
@@ -730,7 +785,7 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
             onChanged: _onTitleQueryChanged,
             style: kTextStyle.copyWith(color: kNeutralColor, fontSize: 14),
             decoration: InputDecoration(
-              hintText: 'Search job title...',
+              hintText: l10n.searchJobTitleHint,
               hintStyle:
                   kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 14),
               prefixIcon: const Icon(Icons.search, color: kLightNeutralColor),
@@ -875,7 +930,7 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
             ),
           if (!_includeRemote)
             chip(
-              'On-site only',
+              l10n.onSiteOnly,
               () {
                 setState(() => _includeRemote = true);
                 _loadRequests();
@@ -884,7 +939,7 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
           GestureDetector(
             onTap: _clearSecondaryFilters,
             child: Text(
-              'Clear all',
+              l10n.clearAll,
               style: kTextStyle.copyWith(
                 color: primary,
                 fontWeight: FontWeight.w600,
@@ -905,7 +960,7 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
         _buildActiveFilterChips(primary),
         const SizedBox(height: 12),
         Text(
-          '${_requests.length} job${_requests.length == 1 ? '' : 's'}',
+          context.l10n.jobsCount(_requests.length),
           style: kTextStyle.copyWith(
             color: kNeutralColor,
             fontWeight: FontWeight.bold,
@@ -1140,59 +1195,39 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
     );
   }
 
+  Future<void> _clearAllFiltersAndReload() async {
+    _searchController.clear();
+    _titleDebounce?.cancel();
+    setState(() {
+      _titleQuery = '';
+      _jobTypeFilter = null;
+      _skillNames.clear();
+      _categoryIds.clear();
+      _useDistance = false;
+      _distanceKm = 25;
+      _includeRemote = true;
+    });
+    await _loadRequests();
+  }
+
   Widget _buildEmptyState() {
-    if (_requests.isEmpty) {
-      return Center(
-        child: Text(
-          'No open jobs right now',
-          style: kTextStyle.copyWith(color: kLightNeutralColor),
-        ),
+    final l10n = context.l10n;
+    if (_hasActiveFilters) {
+      return EmptyStateWidget(
+        message: l10n.noJobsMatchFilters,
+        hint: l10n.tryAdjustingFilters,
+        icon: Icons.search_off_outlined,
+        actionLabel: l10n.clearFilters,
+        onAction: _clearAllFiltersAndReload,
       );
     }
 
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'No jobs match your filters',
-              textAlign: TextAlign.center,
-              style: kTextStyle.copyWith(
-                color: kNeutralColor,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Try adjusting category, job type, distance, or remote.',
-              textAlign: TextAlign.center,
-              style: kTextStyle.copyWith(color: kLightNeutralColor),
-            ),
-            if (_hasActiveFilters) ...[
-              const SizedBox(height: 16),
-              TextButton(
-                onPressed: () async {
-                  _searchController.clear();
-                  _titleDebounce?.cancel();
-                  setState(() {
-                    _titleQuery = '';
-                    _jobTypeFilter = null;
-                    _skillNames.clear();
-                    _categoryIds.clear();
-                    _useDistance = false;
-                    _distanceKm = 25;
-                    _includeRemote = true;
-                  });
-                  await _loadRequests();
-                },
-                child: Text(context.l10n.clearFilters),
-              ),
-            ],
-          ],
-        ),
-      ),
+    return EmptyStateWidget(
+      message: l10n.noOpenJobsRightNow,
+      hint: l10n.noOpenJobsRightNowHint,
+      icon: Icons.work_outline,
+      actionLabel: l10n.jobAlertsTitle,
+      onAction: () => const SellerJobAlertsScreen().launch(context),
     );
   }
 
@@ -1230,6 +1265,7 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
                     onRefresh: _loadRequests,
                     child: visible.isEmpty
                         ? ListView(
+                            controller: _scrollController,
                             physics: const AlwaysScrollableScrollPhysics(
                               parent: BouncingScrollPhysics(),
                             ),
@@ -1241,11 +1277,13 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
                             ],
                           )
                         : ListView.builder(
+                            controller: _scrollController,
                             physics: const AlwaysScrollableScrollPhysics(
                               parent: BouncingScrollPhysics(),
                             ),
                             padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
-                            itemCount: visible.length + 1,
+                            itemCount:
+                                visible.length + 1 + (_isLoadingMore ? 1 : 0),
                             itemBuilder: (_, i) {
                               if (i == 0) {
                                 return Padding(
@@ -1253,7 +1291,23 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
                                   child: _buildFilters(primary),
                                 );
                               }
-                              return _buildJobCard(visible[i - 1], primary);
+                              final jobIndex = i - 1;
+                              if (jobIndex >= visible.length) {
+                                return const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 20),
+                                  child: Center(
+                                    child: SizedBox(
+                                      width: 28,
+                                      height: 28,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2.5,
+                                        color: kPrimaryColor,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }
+                              return _buildJobCard(visible[jobIndex], primary);
                             },
                           ),
                   ),

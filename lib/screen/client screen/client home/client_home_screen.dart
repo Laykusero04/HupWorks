@@ -17,7 +17,6 @@ import 'package:nb_utils/nb_utils.dart';
 import '../../../router/route_names.dart';
 import '../../widgets/client_shell_app_bar.dart';
 import '../../widgets/constant.dart';
-import '../client notification/client_notification.dart';
 import '../search/search.dart';
 import 'package:freelancer/core/utils/category_icons.dart';
 import 'package:freelancer/core/utils/localized_category.dart';
@@ -221,7 +220,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
           return IconButton(
             tooltip: context.l10n.notifications,
             onPressed: () async {
-              await const ClientNotification().launch(context);
+              await context.push(AppRoutes.clientNotifications);
               if (mounted) await notifications.refreshUnreadCount();
             },
             icon: count > 0

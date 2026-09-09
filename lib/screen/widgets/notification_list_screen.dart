@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:freelancer/core/notifications/notification_scope.dart';
 import 'package:freelancer/core/notification_navigation.dart';
+import 'package:freelancer/core/widgets/empty_state_widget.dart';
 import 'package:freelancer/data/models/notification_model.dart';
 import 'package:freelancer/data/repositories/notification_repository.dart';
 import 'package:freelancer/l10n/l10n.dart';
@@ -192,17 +193,26 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
             padding: const EdgeInsets.only(left: 15.0, right: 15.0),
             child: _isLoading
                 ? const NotificationListSkeleton()
-                : _notifications.isEmpty
-                    ? Center(
-                        child: Text(
-                          l10n.noNotifications,
-                          style: kTextStyle.copyWith(color: kLightNeutralColor),
-                        ),
-                      )
-                    : RefreshIndicator(
-                        color: kPrimaryColor,
-                        onRefresh: _loadInitial,
-                        child: ListView.builder(
+                : RefreshIndicator(
+                    color: kPrimaryColor,
+                    onRefresh: _loadInitial,
+                    child: _notifications.isEmpty
+                        ? ListView(
+                            physics: const AlwaysScrollableScrollPhysics(
+                              parent: BouncingScrollPhysics(),
+                            ),
+                            children: [
+                              SizedBox(
+                                height: MediaQuery.sizeOf(context).height * 0.15,
+                              ),
+                              EmptyStateWidget(
+                                message: l10n.noNotifications,
+                                hint: l10n.noNotificationsHint,
+                                icon: Icons.notifications_none_outlined,
+                              ),
+                            ],
+                          )
+                        : ListView.builder(
                           controller: _scrollController,
                           physics: const AlwaysScrollableScrollPhysics(
                             parent: BouncingScrollPhysics(),

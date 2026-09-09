@@ -152,6 +152,8 @@ class _ChatJobOfferCardState extends State<ChatJobOfferCard> {
         return l10n.statusAccepted;
       case 'rejected':
         return l10n.statusRejected;
+      case 'withdrawn':
+        return l10n.statusWithdrawn;
       case 'pending':
         return l10n.statusPending;
       default:

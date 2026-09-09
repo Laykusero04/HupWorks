@@ -113,6 +113,25 @@ class L10nLabels {
     return OrderCancellationReason.statusLabel(code, l10n);
   }
 
+  static String applicationStatus(AppLocalizations l10n, String? status) {
+    switch ((status ?? '').toLowerCase()) {
+      case 'accepted':
+        return l10n.statusAccepted;
+      case 'rejected':
+        return l10n.statusRejected;
+      case 'withdrawn':
+        return l10n.statusWithdrawn;
+      case 'pending':
+      default:
+        return l10n.statusPending;
+    }
+  }
+
+  static String applicationFilterTabLabel(AppLocalizations l10n, String code) {
+    if (code == 'all') return l10n.filterAll;
+    return applicationStatus(l10n, code);
+  }
+
   static String clientOrderStatusForUi(AppLocalizations l10n, String status) {
     switch (status.toLowerCase()) {
       case 'delivered':

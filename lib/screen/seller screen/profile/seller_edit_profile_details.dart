@@ -5,6 +5,7 @@ import 'package:freelancer/core/utils/profile_image.dart';
 import 'package:freelancer/core/utils/seller_skills_validation.dart';
 import 'package:freelancer/data/models/seller_skill_model.dart';
 import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/screen/widgets/editable_profile_avatar.dart';
 import 'package:freelancer/screen/widgets/seller_skills_editor.dart';
@@ -27,7 +28,7 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
   final _jobTitleController = TextEditingController();
   final _aboutController = TextEditingController();
 
-  String _selectedGender = 'Male';
+  String _selectedGender = L10nLabels.genderMale;
   DateTime? _dateOfBirth;
   List<SellerSkill> _skills = [];
   bool _isLoading = true;
@@ -60,7 +61,7 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
           _nameController.text = profile['name'] ?? '';
           _phoneController.text = profile['phone'] ?? '';
           _addressController.text = ProfileService.sellerAddressFromProfile(profile) ?? '';
-          _selectedGender = profile['gender'] ?? 'Male';
+          _selectedGender = profile['gender'] ?? L10nLabels.genderMale;
           _jobTitleController.text = ProfileService.sellerJobTitleFromProfile(profile) ?? '';
           _aboutController.text = ProfileService.sellerAboutFromProfile(profile) ?? '';
           _skills = ProfileService.sellerSkillsFromProfile(profile);
@@ -96,11 +97,11 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
     }
   }
 
-  String _formatDobPickerLabel(DateTime? dob) {
-    if (dob == null) return 'Tap to set your birth date';
+  String _formatDobPickerLabel(DateTime? dob, AppLocalizations l10n) {
+    if (dob == null) return l10n.tapSetBirthDate;
     final age = ProfileService.ageFromDateOfBirth(dob.toIso8601String());
-    if (age != null) return 'Age $age (birth date is hidden on profile)';
-    return 'Birth date saved';
+    if (age != null) return l10n.ageHiddenOnProfile(age);
+    return l10n.birthDateSaved;
   }
 
   Future<void> _changePhoto() async {
@@ -172,6 +173,7 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     if (_isLoading) {
       return const Scaffold(
         backgroundColor: kDarkWhite,
@@ -188,7 +190,7 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
         elevation: 0,
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
-          'Edit Profile',
+          l10n.editProfile,
           style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -199,7 +201,7 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
           decoration: const BoxDecoration(color: kWhite),
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
           child: ButtonGlobalWithoutIcon(
-            buttontext: _isSaving ? 'Updating...' : 'Update Profile',
+            buttontext: _isSaving ? l10n.updating : l10n.updateProfile,
             buttonTextColor: kWhite,
             buttonDecoration: kButtonDecoration.copyWith(
               color: _isSaving ? kLightNeutralColor : kPrimaryColor,
@@ -237,15 +239,15 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
                   const SizedBox(height: 8),
                   Center(
                     child: Text(
-                      context.l10n.selectProfileImage,
+                      l10n.selectProfileImage,
                       style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13),
                     ),
                   ),
                   const SizedBox(height: 24.0),
-                  _sectionTitle('Basic info'),
-                  _field(_nameController, 'Full Name', 'Enter your name'),
+                  _sectionTitle(l10n.basicInfo),
+                  _field(_nameController, l10n.fullName, l10n.enterYourName),
                   const SizedBox(height: 20.0),
-                  _field(_phoneController, 'Phone No.', 'Enter Phone No.', type: TextInputType.phone),
+                  _field(_phoneController, l10n.phoneNo, l10n.enterPhoneNo, type: TextInputType.phone),
                   const SizedBox(height: 20.0),
                   TextFormField(
                     controller: _addressController,
@@ -254,8 +256,8 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
                     cursorColor: kNeutralColor,
                     textInputAction: TextInputAction.newline,
                     decoration: kInputDecoration.copyWith(
-                      labelText: 'Address',
-                      hintText: 'Enter your full address',
+                      labelText: l10n.address,
+                      hintText: l10n.enterFullAddress,
                       alignLabelWithHint: true,
                       border: const OutlineInputBorder(),
                     ),
@@ -270,15 +272,22 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
                         ),
                         contentPadding: const EdgeInsets.all(7.0),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
-                        labelText: 'Select Gender',
+                        labelText: l10n.selectGender,
                         labelStyle: kTextStyle.copyWith(color: kNeutralColor),
                       ),
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton<String>(
                           icon: const Icon(FeatherIcons.chevronDown),
-                          value: gender.contains(_selectedGender) ? _selectedGender : gender.first,
+                          value: L10nLabels.genderValues.contains(_selectedGender)
+                              ? _selectedGender
+                              : L10nLabels.genderMale,
                           style: kTextStyle.copyWith(color: kSubTitleColor),
-                          items: gender.map((g) => DropdownMenuItem(value: g, child: Text(g))).toList(),
+                          items: L10nLabels.genderValues
+                              .map((g) => DropdownMenuItem(
+                                    value: g,
+                                    child: Text(L10nLabels.gender(l10n, g)),
+                                  ))
+                              .toList(),
                           onChanged: (v) => setState(() => _selectedGender = v!),
                         ),
                       ),
@@ -286,12 +295,12 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
                   ),
                   const SizedBox(height: 20.0),
                   Text(
-                    'Age',
+                    l10n.ageLabel,
                     style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 14),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Your age is shown on your profile. Your birth date is never displayed.',
+                    l10n.agePrivacyHint,
                     style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
                   ),
                   const SizedBox(height: 8),
@@ -299,18 +308,18 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
                     onTap: _pickDateOfBirth,
                     child: InputDecorator(
                       decoration: kInputDecoration.copyWith(
-                        labelText: 'Date of birth',
+                        labelText: l10n.dateOfBirth,
                         border: const OutlineInputBorder(),
                       ),
                       child: Text(
-                        _formatDobPickerLabel(_dateOfBirth),
+                        _formatDobPickerLabel(_dateOfBirth, l10n),
                         style: kTextStyle.copyWith(color: kSubTitleColor),
                       ),
                     ),
                   ),
                   const SizedBox(height: 32.0),
-                  _sectionTitle('Professional'),
-                  _field(_jobTitleController, 'Job title', 'e.g. Factory Worker'),
+                  _sectionTitle(l10n.professional),
+                  _field(_jobTitleController, l10n.jobTitle, l10n.jobTitleHint),
                   const SizedBox(height: 20.0),
                   TextFormField(
                     controller: _aboutController,
@@ -318,20 +327,20 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
                     maxLines: 6,
                     cursorColor: kNeutralColor,
                     decoration: kInputDecoration.copyWith(
-                      labelText: 'Profile description',
-                      hintText: 'Write a brief description about you…',
+                      labelText: l10n.profileDescription,
+                      hintText: l10n.profileDescriptionHint,
                       alignLabelWithHint: true,
                       border: const OutlineInputBorder(),
                     ),
                   ),
                   const SizedBox(height: 32.0),
                   Text(
-                    'Your skills',
+                    l10n.yourSkills,
                     style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Optional — add skills to help clients find you.',
+                    l10n.skillsOptionalHint,
                     style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
                   ),
                   const SizedBox(height: 12),

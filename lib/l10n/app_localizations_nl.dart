@@ -2578,7 +2578,14 @@ class AppLocalizationsNl extends AppLocalizations {
   String get successTitle => 'Gelukt';
 
   @override
+  String get somethingWentWrong => 'Er ging iets mis';
+
+  @override
   String get headsUp => 'Let op';
+
+  @override
+  String get youAreOffline =>
+      'Je bent offline. Sommige acties werken mogelijk niet.';
 
   @override
   String get applyWithoutCounterBody =>
@@ -2631,6 +2638,21 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get offerMessageHint => 'Optionele notitie voor de klant…';
+
+  @override
+  String offerMessageMinHint(int count) {
+    return 'Als je een bericht toevoegt, gebruik dan minstens $count tekens';
+  }
+
+  @override
+  String offerMessageMinChars(int count) {
+    return 'Schrijf minstens $count tekens in je bericht';
+  }
+
+  @override
+  String offerMessageCharCount(int current, int min) {
+    return '$current / $min tekens minimum';
+  }
 
   @override
   String get findJobsTitle => 'Jobs zoeken';
@@ -2918,4 +2940,328 @@ class AppLocalizationsNl extends AppLocalizations {
   String workTrustCompletedMonthLabel(String month, int year) {
     return '$month $year';
   }
+
+  @override
+  String get tapSetBirthDateRequired =>
+      'Tik om je geboortedatum in te stellen (verplicht)';
+
+  @override
+  String ageBirthDateStaysPrivate(int age) {
+    return 'Leeftijd $age (geboortedatum blijft privé)';
+  }
+
+  @override
+  String get pleaseSetDateOfBirth => 'Stel je geboortedatum in';
+
+  @override
+  String get mustBeAtLeast18 => 'Je moet minstens 18 jaar oud zijn';
+
+  @override
+  String get pleaseUploadClearProfilePhoto =>
+      'Upload een duidelijke profielfoto';
+
+  @override
+  String get pleaseUploadIdSelfie => 'Upload een selfie met je ID in de hand';
+
+  @override
+  String get leaveSetupTitle => 'Setup verlaten?';
+
+  @override
+  String get leaveSetupMessage => 'Log later opnieuw in om verder te gaan.';
+
+  @override
+  String get requiredDetails => 'Verplichte gegevens';
+
+  @override
+  String get requiredDetailsHint =>
+      'Functietitel en leeftijd helpen klanten je te vertrouwen. Je naam komt van je registratie.';
+
+  @override
+  String get ageDateOfBirth => 'Leeftijd / geboortedatum';
+
+  @override
+  String get ageShownBirthPrivate =>
+      'Je leeftijd wordt op je profiel getoond. Je geboortedatum blijft privé.';
+
+  @override
+  String get optionalDetails => 'Optionele gegevens';
+
+  @override
+  String get optionalDetailsHint =>
+      'Je kunt deze overslaan en later invullen via Profiel bewerken.';
+
+  @override
+  String get profilePhotoGuidelineHint =>
+      'Een duidelijke foto van voren helpt bij verificatie. Bij voorkeur een effen witte achtergrond.';
+
+  @override
+  String get photoDoLabel => 'Wel: gezicht van voren, heldere achtergrond';
+
+  @override
+  String get photoDontLabel => 'Niet: zijaanzicht / zonnebril';
+
+  @override
+  String get photoTipFaceCamera => 'Kijk recht in de camera (geen zijaanzicht)';
+
+  @override
+  String get photoTipBackground =>
+      'Effen / witte achtergrond, gelijkmatige belichting';
+
+  @override
+  String get photoTipNoAccessories => 'Geen zonnebril, pet of zware filters';
+
+  @override
+  String get photoTipShoulders => 'Schouders zichtbaar; slechts één persoon';
+
+  @override
+  String get identityVerification => 'Identiteitsverificatie';
+
+  @override
+  String get identityVerificationSetupHint =>
+      'Upload een selfie met je officiële ID naast je gezicht. Een beheerder beoordeelt gezicht+ID apart van je profielfoto — je ziet “in behandeling” tot elk is goedgekeurd.';
+
+  @override
+  String get idDoLabel => 'Wel: gezicht + ID duidelijk';
+
+  @override
+  String get idDontLabel => 'Niet: ID bedekken / schittering';
+
+  @override
+  String get idTipHoldNextToFace =>
+      'Houd ID naast je gezicht — beide volledig zichtbaar';
+
+  @override
+  String get idTipGoodLighting =>
+      'Goede belichting; vermijd schittering op het ID';
+
+  @override
+  String get idTipFourCorners =>
+      'Alle vier hoeken van het ID zichtbaar; vingers alleen op de randen';
+
+  @override
+  String get idTipNoAccessories => 'Geen pet, zonnebril of filters';
+
+  @override
+  String get uploadIdFaceSelfie => 'Upload ID + gezicht-selfie';
+
+  @override
+  String get submittedPendingAdminReview => 'Ingediend — wacht op beoordeling';
+
+  @override
+  String get updateAndSubmitForReview => 'Bijwerken & indienen ter beoordeling';
+
+  @override
+  String get submitForReview => 'Indienen ter beoordeling';
+
+  @override
+  String get faceIdPendingHint =>
+      'Gezicht+ID is ingediend maar nog niet goedgekeurd (+50 pts na acceptatie). Profielfoto wordt apart beoordeeld.';
+
+  @override
+  String get faceIdVerifiedHint =>
+      'Gezicht+ID geaccepteerd. Een nieuwe selfie reset alleen de gezicht+ID-beoordeling.';
+
+  @override
+  String get selfieWithId => 'Selfie met ID';
+
+  @override
+  String get selfieWithIdHint =>
+      'Houd je officiële ID naast je gezicht. Een beheerder beoordeelt dit later.';
+
+  @override
+  String get yourSubmittedPhoto => 'Je ingediende foto';
+
+  @override
+  String get newPhotoSelectedTapToChange =>
+      'Nieuwe foto geselecteerd — tik om te wijzigen';
+
+  @override
+  String get tapToChangePhoto => 'Tik om foto te wijzigen';
+
+  @override
+  String trustScoreSubtitle(int score) {
+    return '$score/100 betrouwbaarheidsscore';
+  }
+
+  @override
+  String get fullyVerified => 'Volledig geverifieerd';
+
+  @override
+  String get awaitingAdminReview => 'Wacht op beoordeling';
+
+  @override
+  String get completeVerification => 'Verificatie afronden';
+
+  @override
+  String get verificationScoreHint =>
+      'Profielfoto en gezicht+ID worden apart beoordeeld (elk 50 pts).';
+
+  @override
+  String get profilePhotoLabel => 'Profielfoto';
+
+  @override
+  String get faceIdSelfieLabel => 'Gezicht + ID-selfie';
+
+  @override
+  String get acceptedByAdmin => 'Geaccepteerd door beheerder';
+
+  @override
+  String get rejectedPleaseUpdatePhoto => 'Afgewezen — update je foto';
+
+  @override
+  String get rejectedPleaseUpdateSelfie => 'Afgewezen — update je selfie';
+
+  @override
+  String get submittedAwaitingAdmin => 'Ingediend — wacht op beheerder';
+
+  @override
+  String get notUploadedYet => 'Nog niet geüpload';
+
+  @override
+  String get statusVerified => 'Geverifieerd';
+
+  @override
+  String get notVerified => 'Niet geverifieerd';
+
+  @override
+  String get uploadFileOrImage => 'Bestand of afbeelding uploaden';
+
+  @override
+  String get tapToAttachFile => 'Tik om een bestand toe te voegen';
+
+  @override
+  String get describeDeliveryDetails => 'Beschrijf je levering in detail';
+
+  @override
+  String get enterDeliveryDetailsHint => 'Voer je leveringsdetails in...';
+
+  @override
+  String get filterJobs => 'Vacatures filteren';
+
+  @override
+  String get matchJobsWithSkills => 'Match vacatures met deze vaardigheden.';
+
+  @override
+  String get searchJobTitleHint => 'Zoek vacaturetitel...';
+
+  @override
+  String get onSiteOnly => 'Alleen on-site';
+
+  @override
+  String get clearAll => 'Alles wissen';
+
+  @override
+  String jobsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count vacatures',
+      one: '1 vacature',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get noOpenJobsRightNow => 'Nu geen open vacatures';
+
+  @override
+  String get noOpenJobsRightNowHint =>
+      'Kom later terug, of stel een vacaturemelding in zodat je een seintje krijgt bij passend werk.';
+
+  @override
+  String get noJobsMatchFilters =>
+      'Geen vacatures komen overeen met je filters';
+
+  @override
+  String get tryAdjustingFilters =>
+      'Pas categorie, type, afstand of remote aan.';
+
+  @override
+  String get leaveDeliveryDraftTitle => 'Vertrekken met concept?';
+
+  @override
+  String get leaveDeliveryDraftMessage =>
+      'Je leveringsbericht en bijlage worden niet opgeslagen als je vertrekt.';
+
+  @override
+  String get leaveAnyway => 'Vertrekken';
+
+  @override
+  String get keepEditing => 'Blijven bewerken';
+
+  @override
+  String get chooseFile => 'Bestand kiezen';
+
+  @override
+  String get attachmentTooLarge => 'Bestand is groter dan de limiet van 1 GB';
+
+  @override
+  String get searchApplicationsHint => 'Zoek op vacaturetitel...';
+
+  @override
+  String get statusWithdrawn => 'Ingetrokken';
+
+  @override
+  String get withdrawApplication => 'Intrekken';
+
+  @override
+  String get withdrawApplicationTitle => 'Sollicitatie intrekken?';
+
+  @override
+  String get withdrawApplicationConfirmBody =>
+      'De werkgever ziet dit niet meer als openstaande sollicitatie. Je kunt later opnieuw solliciteren.';
+
+  @override
+  String get applicationWithdrawn => 'Sollicitatie ingetrokken';
+
+  @override
+  String get noFilteredApplications => 'Geen sollicitaties gevonden';
+
+  @override
+  String get noFilteredApplicationsHint =>
+      'Probeer een andere status of wis je zoekopdracht.';
+
+  @override
+  String get trustScoreLabel => 'Vertrouwen';
+
+  @override
+  String get genderLabel => 'Geslacht';
+
+  @override
+  String get notificationMissingLink =>
+      'Deze melding heeft geen gekoppeld item.';
+
+  @override
+  String get notificationUnableToOpen =>
+      'Deze melding kan niet worden geopend.';
+
+  @override
+  String notificationOpenFailed(String detail) {
+    return 'Openen mislukt: $detail';
+  }
+
+  @override
+  String get notificationContractUnavailable =>
+      'Contract is niet meer beschikbaar.';
+
+  @override
+  String get notificationApplicationUnavailable =>
+      'Sollicitatie is niet meer beschikbaar.';
+
+  @override
+  String get notificationJobNotFound => 'Vacature niet gevonden.';
+
+  @override
+  String get noFavouritesYetHint =>
+      'Bekijk open vacatures en tik op het bladwijzerpictogram om ze hier op te slaan.';
+
+  @override
+  String get noNotificationsHint =>
+      'Updates over vacatures, contracten en berichten verschijnen hier.';
+
+  @override
+  String get noJobAlertsYet => 'Nog geen vacaturemeldingen';
+
+  @override
+  String get totalOrders => 'Totaal contracten';
 }

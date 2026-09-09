@@ -41,6 +41,7 @@ import '../screen/seller screen/orders/seller_order_details.dart';
 import '../screen/seller screen/profile/seller_profile.dart';
 import '../screen/seller screen/profile/seller_profile_details.dart';
 import '../screen/seller screen/profile/seller_edit_profile_details.dart';
+import '../screen/seller screen/profile/seller_identity_verification_screen.dart';
 import '../screen/seller screen/applications/seller_applications.dart';
 import '../screen/seller screen/buyer request/seller_buyer_request.dart';
 import '../screen/seller screen/buyer request/buyer_request_details.dart';
@@ -437,6 +438,11 @@ GoRouter createRouter() {
         path: AppRoutes.sellerProfileEdit,
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const SellerEditProfile(),
+      ),
+      GoRoute(
+        path: AppRoutes.sellerProfileVerify,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const SellerIdentityVerificationScreen(),
       ),
     ],
   );

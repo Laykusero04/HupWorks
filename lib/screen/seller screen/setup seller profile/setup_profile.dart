@@ -99,11 +99,11 @@ class _SetupSellerProfileState extends State<SetupSellerProfile> {
     }
   }
 
-  String _dobLabel() {
-    if (_dateOfBirth == null) return 'Tap to set your birth date (required)';
+  String _dobLabel(AppLocalizations l10n) {
+    if (_dateOfBirth == null) return l10n.tapSetBirthDateRequired;
     final age = ProfileService.ageFromDateOfBirth(_dateOfBirth!.toIso8601String());
-    if (age != null) return 'Age $age (birth date stays private)';
-    return 'Birth date saved';
+    if (age != null) return l10n.ageBirthDateStaysPrivate(age);
+    return l10n.birthDateSaved;
   }
 
   void _showAddLanguageDialog() {
@@ -170,17 +170,18 @@ class _SetupSellerProfileState extends State<SetupSellerProfile> {
   }
 
   bool _validateStep0() {
+    final l10n = context.l10n;
     if (_jobTitleController.text.trim().isEmpty) {
-      _snack('Please enter your job title');
+      _snack(l10n.pleaseEnterJobTitle);
       return false;
     }
     if (_dateOfBirth == null) {
-      _snack('Please set your date of birth');
+      _snack(l10n.pleaseSetDateOfBirth);
       return false;
     }
     final age = ProfileService.ageFromDateOfBirth(_dateOfBirth!.toIso8601String());
     if (age == null || age < 18) {
-      _snack('You must be at least 18 years old');
+      _snack(l10n.mustBeAtLeast18);
       return false;
     }
     return true;
@@ -197,7 +198,7 @@ class _SetupSellerProfileState extends State<SetupSellerProfile> {
 
   bool _validateStep2() {
     if (_pickedImage == null && _uploadedImageUrl == null) {
-      _snack('Please upload a clear profile photo');
+      _snack(context.l10n.pleaseUploadClearProfilePhoto);
       return false;
     }
     return true;
@@ -205,7 +206,7 @@ class _SetupSellerProfileState extends State<SetupSellerProfile> {
 
   bool _validateStep3() {
     if (_idSelfie == null) {
-      _snack('Please upload a selfie holding your ID');
+      _snack(context.l10n.pleaseUploadIdSelfie);
       return false;
     }
     return true;
@@ -280,8 +281,8 @@ class _SetupSellerProfileState extends State<SetupSellerProfile> {
     final leave = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Leave setup?'),
-        content: const Text('Log in again anytime to continue.'),
+        title: Text(l10n.leaveSetupTitle),
+        content: Text(l10n.leaveSetupMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -441,24 +442,24 @@ class _SetupSellerProfileState extends State<SetupSellerProfile> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Required details',
+          l10n.requiredDetails,
           style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 16),
         ),
         const SizedBox(height: 6),
         Text(
-          'Job title and age help clients trust your profile. Your name comes from signup.',
+          l10n.requiredDetailsHint,
           style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13),
         ),
         const SizedBox(height: 20),
         _field(_jobTitleController, l10n.jobTitle, l10n.jobTitle),
         const SizedBox(height: 20.0),
         Text(
-          'Age / date of birth',
+          l10n.ageDateOfBirth,
           style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 4),
         Text(
-          'Your age is shown on your profile. Birth date stays private.',
+          l10n.ageShownBirthPrivate,
           style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
         ),
         const SizedBox(height: 8),
@@ -468,10 +469,10 @@ class _SetupSellerProfileState extends State<SetupSellerProfile> {
           child: InputDecorator(
             decoration: kInputDecoration.copyWith(
               border: const OutlineInputBorder(),
-              labelText: 'Date of birth',
+              labelText: l10n.dateOfBirth,
             ),
             child: Text(
-              _dobLabel(),
+              _dobLabel(l10n),
               style: kTextStyle.copyWith(
                 color: _dateOfBirth == null ? kSubTitleColor : kNeutralColor,
               ),
@@ -489,12 +490,12 @@ class _SetupSellerProfileState extends State<SetupSellerProfile> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Optional details',
+          l10n.optionalDetails,
           style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 16),
         ),
         const SizedBox(height: 6),
         Text(
-          'You can skip these and fill them later in Edit Profile.',
+          l10n.optionalDetailsHint,
           style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13),
         ),
         const SizedBox(height: 20),
@@ -617,20 +618,20 @@ class _SetupSellerProfileState extends State<SetupSellerProfile> {
         ),
         const SizedBox(height: 6),
         Text(
-          'A clear front-facing photo helps verification. Prefer a plain white background.',
+          l10n.profilePhotoGuidelineHint,
           style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13),
         ),
         const SizedBox(height: 16),
-        const VerificationGuidelineExamples(
+        VerificationGuidelineExamples(
           doAsset: 'images/verification/profile_photo_do.png',
           dontAsset: 'images/verification/profile_photo_dont.png',
-          doLabel: 'Do: front face, clear bg',
-          dontLabel: "Don't: side view / shades",
+          doLabel: l10n.photoDoLabel,
+          dontLabel: l10n.photoDontLabel,
           tips: [
-            'Face the camera directly (not a side view)',
-            'Plain / white background, even lighting',
-            'No sunglasses, hat, or heavy filters',
-            'Shoulders visible; one person only',
+            l10n.photoTipFaceCamera,
+            l10n.photoTipBackground,
+            l10n.photoTipNoAccessories,
+            l10n.photoTipShoulders,
           ],
         ),
         const SizedBox(height: 24),
@@ -689,25 +690,25 @@ class _SetupSellerProfileState extends State<SetupSellerProfile> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Identity verification',
+          l10n.identityVerification,
           style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 16),
         ),
         const SizedBox(height: 6),
         Text(
-          'Upload a selfie holding your government ID next to your face. An admin will review face+ID separately from your profile photo — you will see “pending” until each is accepted.',
+          l10n.identityVerificationSetupHint,
           style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13),
         ),
         const SizedBox(height: 16),
-        const VerificationGuidelineExamples(
+        VerificationGuidelineExamples(
           doAsset: 'images/verification/id_face_do.png',
           dontAsset: 'images/verification/id_face_dont.png',
-          doLabel: 'Do: face + ID clear',
-          dontLabel: "Don't: cover ID / glare",
+          doLabel: l10n.idDoLabel,
+          dontLabel: l10n.idDontLabel,
           tips: [
-            'Hold ID next to your face — both fully visible',
-            'Good lighting; avoid glare on the ID',
-            'All four corners of the ID visible; fingers on edges only',
-            'No hat, sunglasses, or filters',
+            l10n.idTipHoldNextToFace,
+            l10n.idTipGoodLighting,
+            l10n.idTipFourCorners,
+            l10n.idTipNoAccessories,
           ],
         ),
         const SizedBox(height: 24),
@@ -731,7 +732,7 @@ class _SetupSellerProfileState extends State<SetupSellerProfile> {
                       const Icon(Icons.badge_outlined, size: 42, color: kPrimaryColor),
                       const SizedBox(height: 8),
                       Text(
-                        'Upload ID + face selfie',
+                        l10n.uploadIdFaceSelfie,
                         style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.w600),
                       ),
                       const SizedBox(height: 4),

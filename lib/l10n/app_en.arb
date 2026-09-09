@@ -1104,7 +1104,9 @@
   "offerSentAtPostedRate": "Application sent at client's posted rate",
   "offerSentSuccess": "Your application has been sent",
   "successTitle": "Success",
+  "somethingWentWrong": "Something went wrong",
   "headsUp": "Heads up",
+  "youAreOffline": "You're offline. Some actions may not work.",
   "applyWithoutCounterBody": "You are applying at the client's posted rate. They will see your application at that rate.",
   "clientPostedRate": "Client's posted rate",
   "yourApplicationAmount": "Your application: {amount}",
@@ -1130,6 +1132,25 @@
   "quotePerMonth": "/ month",
   "offerMessageOptional": "Message (optional)",
   "offerMessageHint": "Optional note for the client…",
+  "offerMessageMinHint": "If you include a message, use at least {count} characters",
+  "@offerMessageMinHint": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "offerMessageMinChars": "Please write at least {count} characters in your message",
+  "@offerMessageMinChars": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "offerMessageCharCount": "{current} / {min} characters minimum",
+  "@offerMessageCharCount": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "min": { "type": "int" }
+    }
+  },
   "findJobsTitle": "Find Jobs",
   "couldNotLoadSkillsFilter": "Could not load skills filter. Pull to refresh later.",
   "buyerRequestDetailsTitle": "Job details",
@@ -1257,5 +1278,120 @@
       "month": { "type": "String" },
       "year": { "type": "int" }
     }
-  }
+  },
+
+  "tapSetBirthDateRequired": "Tap to set your birth date (required)",
+  "ageBirthDateStaysPrivate": "Age {age} (birth date stays private)",
+  "@ageBirthDateStaysPrivate": {
+    "placeholders": {
+      "age": { "type": "int" }
+    }
+  },
+  "pleaseSetDateOfBirth": "Please set your date of birth",
+  "mustBeAtLeast18": "You must be at least 18 years old",
+  "pleaseUploadClearProfilePhoto": "Please upload a clear profile photo",
+  "pleaseUploadIdSelfie": "Please upload a selfie holding your ID",
+  "leaveSetupTitle": "Leave setup?",
+  "leaveSetupMessage": "Log in again anytime to continue.",
+  "requiredDetails": "Required details",
+  "requiredDetailsHint": "Job title and age help clients trust your profile. Your name comes from signup.",
+  "ageDateOfBirth": "Age / date of birth",
+  "ageShownBirthPrivate": "Your age is shown on your profile. Birth date stays private.",
+  "optionalDetails": "Optional details",
+  "optionalDetailsHint": "You can skip these and fill them later in Edit Profile.",
+  "profilePhotoGuidelineHint": "A clear front-facing photo helps verification. Prefer a plain white background.",
+  "photoDoLabel": "Do: front face, clear bg",
+  "photoDontLabel": "Don't: side view / shades",
+  "photoTipFaceCamera": "Face the camera directly (not a side view)",
+  "photoTipBackground": "Plain / white background, even lighting",
+  "photoTipNoAccessories": "No sunglasses, hat, or heavy filters",
+  "photoTipShoulders": "Shoulders visible; one person only",
+  "identityVerification": "Identity verification",
+  "identityVerificationSetupHint": "Upload a selfie holding your government ID next to your face. An admin will review face+ID separately from your profile photo — you will see “pending” until each is accepted.",
+  "idDoLabel": "Do: face + ID clear",
+  "idDontLabel": "Don't: cover ID / glare",
+  "idTipHoldNextToFace": "Hold ID next to your face — both fully visible",
+  "idTipGoodLighting": "Good lighting; avoid glare on the ID",
+  "idTipFourCorners": "All four corners of the ID visible; fingers on edges only",
+  "idTipNoAccessories": "No hat, sunglasses, or filters",
+  "uploadIdFaceSelfie": "Upload ID + face selfie",
+  "submittedPendingAdminReview": "Submitted — pending admin review",
+  "updateAndSubmitForReview": "Update & submit for review",
+  "submitForReview": "Submit for review",
+  "faceIdPendingHint": "Face+ID is submitted but not accepted yet (+50 pts after accept). Profile photo is reviewed separately.",
+  "faceIdVerifiedHint": "Face+ID accepted. Replacing this selfie resets only the face+ID review.",
+  "selfieWithId": "Selfie with ID",
+  "selfieWithIdHint": "Hold your government ID next to your face. An admin will review this later.",
+  "yourSubmittedPhoto": "Your submitted photo",
+  "newPhotoSelectedTapToChange": "New photo selected — tap to change",
+  "tapToChangePhoto": "Tap to change photo",
+  "trustScoreSubtitle": "{score}/100 trust score",
+  "@trustScoreSubtitle": {
+    "placeholders": {
+      "score": { "type": "int" }
+    }
+  },
+  "fullyVerified": "Fully verified",
+  "awaitingAdminReview": "Awaiting admin review",
+  "completeVerification": "Complete verification",
+  "verificationScoreHint": "Profile photo and face+ID are reviewed separately (50 pts each).",
+  "profilePhotoLabel": "Profile photo",
+  "faceIdSelfieLabel": "Face + ID selfie",
+  "acceptedByAdmin": "Accepted by admin",
+  "rejectedPleaseUpdatePhoto": "Rejected — please update photo",
+  "rejectedPleaseUpdateSelfie": "Rejected — please update selfie",
+  "submittedAwaitingAdmin": "Submitted — awaiting admin",
+  "notUploadedYet": "Not uploaded yet",
+  "statusVerified": "Verified",
+  "notVerified": "Not verified",
+  "uploadFileOrImage": "Upload File or Image",
+  "tapToAttachFile": "Tap to attach a file",
+  "describeDeliveryDetails": "Describe your delivery in details",
+  "enterDeliveryDetailsHint": "Enter your delivery details...",
+  "filterJobs": "Filter jobs",
+  "matchJobsWithSkills": "Match jobs tagged with these skills.",
+  "searchJobTitleHint": "Search job title...",
+  "onSiteOnly": "On-site only",
+  "clearAll": "Clear all",
+  "jobsCount": "{count, plural, =1{1 job} other{{count} jobs}}",
+  "@jobsCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "noOpenJobsRightNow": "No open jobs right now",
+  "noOpenJobsRightNowHint": "Check back soon, or set a job alert to get notified when matching work is posted.",
+  "noJobsMatchFilters": "No jobs match your filters",
+  "tryAdjustingFilters": "Try adjusting category, job type, distance, or remote.",
+  "leaveDeliveryDraftTitle": "Leave with draft?",
+  "leaveDeliveryDraftMessage": "Your delivery message and attachment won’t be saved if you leave.",
+  "leaveAnyway": "Leave",
+  "keepEditing": "Keep editing",
+  "chooseFile": "Choose file",
+  "attachmentTooLarge": "File exceeds the 1 GB limit",
+  "searchApplicationsHint": "Search by job title...",
+  "statusWithdrawn": "Withdrawn",
+  "withdrawApplication": "Withdraw",
+  "withdrawApplicationTitle": "Withdraw application?",
+  "withdrawApplicationConfirmBody": "The employer will no longer see this as a pending offer. You can apply again later.",
+  "applicationWithdrawn": "Application withdrawn",
+  "noFilteredApplications": "No applications match",
+  "noFilteredApplicationsHint": "Try another status or clear your search.",
+  "trustScoreLabel": "Trust",
+  "genderLabel": "Gender",
+  "notificationMissingLink": "This notification has no linked item.",
+  "notificationUnableToOpen": "Unable to open this notification.",
+  "notificationOpenFailed": "Could not open: {detail}",
+  "@notificationOpenFailed": {
+    "placeholders": {
+      "detail": { "type": "String" }
+    }
+  },
+  "notificationContractUnavailable": "Contract no longer available.",
+  "notificationApplicationUnavailable": "Application no longer available.",
+  "notificationJobNotFound": "Job post not found.",
+  "noFavouritesYetHint": "Browse open jobs and tap the bookmark to save them here.",
+  "noNotificationsHint": "Updates about jobs, contracts, and messages will show up here.",
+  "noJobAlertsYet": "No job alerts yet",
+  "totalOrders": "Total orders"
 }

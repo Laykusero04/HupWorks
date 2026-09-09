@@ -106,24 +106,31 @@ class _ClientFavListState extends State<ClientFavList> {
           ),
           child: _isLoading
               ? const Center(child: CircularProgressIndicator(color: kPrimaryColor))
-              : _saved.isEmpty
-                  ? EmptyStateWidget(
-                      message: l10n.noSavedTalentYet,
-                      hint: l10n.noSavedTalentYetHint,
-                      icon: Icons.bookmark_border,
-                      actionLabel: l10n.findTalent,
-                      onAction: () {
-                        Navigator.of(context).pop();
-                        context.go(AppRoutes.clientTalent);
-                      },
-                    )
-                  : RefreshIndicator(
-                      color: kPrimaryColor,
-                      onRefresh: () async {
-                        setState(() => _isLoading = true);
-                        await _load();
-                      },
-                      child: ListView.builder(
+              : RefreshIndicator(
+                  color: kPrimaryColor,
+                  onRefresh: _load,
+                  child: _saved.isEmpty
+                      ? ListView(
+                          physics: const AlwaysScrollableScrollPhysics(
+                            parent: BouncingScrollPhysics(),
+                          ),
+                          children: [
+                            SizedBox(
+                              height: MediaQuery.sizeOf(context).height * 0.15,
+                            ),
+                            EmptyStateWidget(
+                              message: l10n.noSavedTalentYet,
+                              hint: l10n.noSavedTalentYetHint,
+                              icon: Icons.bookmark_border,
+                              actionLabel: l10n.findTalent,
+                              onAction: () {
+                                Navigator.of(context).pop();
+                                context.go(AppRoutes.clientTalent);
+                              },
+                            ),
+                          ],
+                        )
+                      : ListView.builder(
                         physics: const AlwaysScrollableScrollPhysics(
                           parent: BouncingScrollPhysics(),
                         ),

@@ -153,6 +153,9 @@ class SellerOrdersService {
     }
   }
 
+  /// Default page size for Find Jobs (`browse_open_job_posts` caps at 100).
+  static const int browsePageSize = 50;
+
   /// Fetch open job posts for Find Jobs, filtered on the server.
   ///
   /// Uses [browse_open_job_posts] so clients do not download every open post.
@@ -165,7 +168,7 @@ class SellerOrdersService {
     bool includeRemote = true,
     double? sellerLat,
     double? sellerLng,
-    int limit = 50,
+    int limit = browsePageSize,
     int offset = 0,
   }) async {
     final title = titleQuery?.trim();
@@ -386,5 +389,13 @@ class SellerOrdersService {
         .eq('seller_id', user.id)
         .order('created_at', ascending: false);
     return List<Map<String, dynamic>>.from(data);
+  }
+
+  /// Freelancer withdraws a pending application (job offer).
+  static Future<void> withdrawOffer(String offerId) async {
+    await _client.rpc(
+      'withdraw_job_offer',
+      params: {'p_offer_id': offerId},
+    );
   }
 }

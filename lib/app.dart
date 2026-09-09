@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'core/connectivity/connectivity_scope.dart';
 import 'core/locale/locale_controller.dart';
 import 'core/locale/locale_scope.dart';
 import 'core/chat/chat_unread_scope.dart';
@@ -27,45 +30,63 @@ class HupWorksApp extends StatefulWidget {
 
 class _HupWorksAppState extends State<HupWorksApp> {
   late final GoRouter _router;
+  late final ConnectivityController _connectivity;
 
   @override
   void initState() {
     super.initState();
     _router = createRouter();
+    _connectivity = ConnectivityController();
+    unawaited(_connectivity.start());
+  }
+
+  @override
+  void dispose() {
+    _connectivity.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return LocaleScope(
       controller: widget.localeController,
-      child: MultiRepositoryProvider(
-        providers: [
-          RepositoryProvider(create: (_) => ProfileRepository()),
-          RepositoryProvider(create: (_) => CategoryRepository()),
-          RepositoryProvider(create: (_) => OrderRepository()),
-          RepositoryProvider(create: (_) => ChatRepository()),
-          RepositoryProvider(create: (_) => JobPostRepository()),
-          RepositoryProvider(create: (_) => NotificationRepository()),
-          RepositoryProvider(create: (_) => DashboardRepository()),
-        ],
-        // Auth uses AuthService + GoRouter session today.
-        // AuthBloc / AuthRepository live under lib/features/auth and
-        // lib/data/repositories/auth_repository.dart — parked until screens migrate.
-        child: NotificationScope(
-          child: ChatUnreadScope(
-            child: ListenableBuilder(
-              listenable: widget.localeController,
-              builder: (context, _) {
-                return MaterialApp.router(
-                  onGenerateTitle: (ctx) => AppLocalizations.of(ctx).appTitle,
-                  debugShowCheckedModeBanner: false,
-                  theme: appTheme(),
-                  routerConfig: _router,
-                  locale: widget.localeController.locale,
-                  supportedLocales: AppLocalizations.supportedLocales,
-                  localizationsDelegates: AppLocalizations.localizationsDelegates,
-                );
-              },
+      child: ConnectivityScope(
+        controller: _connectivity,
+        child: MultiRepositoryProvider(
+          providers: [
+            RepositoryProvider(create: (_) => ProfileRepository()),
+            RepositoryProvider(create: (_) => CategoryRepository()),
+            RepositoryProvider(create: (_) => OrderRepository()),
+            RepositoryProvider(create: (_) => ChatRepository()),
+            RepositoryProvider(create: (_) => JobPostRepository()),
+            RepositoryProvider(create: (_) => NotificationRepository()),
+            RepositoryProvider(create: (_) => DashboardRepository()),
+          ],
+          // Auth uses AuthService + GoRouter session today.
+          // AuthBloc / AuthRepository live under lib/features/auth and
+          // lib/data/repositories/auth_repository.dart — parked until screens migrate.
+          child: NotificationScope(
+            child: ChatUnreadScope(
+              child: ListenableBuilder(
+                listenable: widget.localeController,
+                builder: (context, _) {
+                  return MaterialApp.router(
+                    onGenerateTitle: (ctx) => AppLocalizations.of(ctx).appTitle,
+                    debugShowCheckedModeBanner: false,
+                    theme: appTheme(),
+                    routerConfig: _router,
+                    locale: widget.localeController.locale,
+                    supportedLocales: AppLocalizations.supportedLocales,
+                    localizationsDelegates:
+                        AppLocalizations.localizationsDelegates,
+                    builder: (context, child) {
+                      return OfflineAware(
+                        child: child ?? const SizedBox.shrink(),
+                      );
+                    },
+                  );
+                },
+              ),
             ),
           ),
         ),
@@ -73,3 +94,4 @@ class _HupWorksAppState extends State<HupWorksApp> {
     );
   }
 }
+

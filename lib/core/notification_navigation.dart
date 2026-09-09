@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/data/models/notification_model.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/router/route_names.dart';
 import 'package:freelancer/core/utils/chat_navigation.dart';
 import 'package:go_router/go_router.dart';
@@ -15,15 +16,39 @@ class NotificationNavigation {
     required NotificationUserRole role,
     required AppNotification notification,
   }) async {
-    final refId = notification.referenceId;
-    if (refId == null || refId.isEmpty) {
-      _showSnack(context, 'This notification has no linked item.');
-      return;
-    }
-
+    final l10n = context.l10n;
     final type = (notification.type ?? '').toLowerCase();
+    final refId = notification.referenceId;
 
     try {
+      switch (type) {
+        case 'identity_verification':
+        case 'verification':
+        case 'profile_verification':
+        case 'profile_photo_verification':
+          if (role != NotificationUserRole.seller) {
+            _showSnack(context, l10n.notificationUnableToOpen);
+            return;
+          }
+          if (!context.mounted) return;
+          context.push(AppRoutes.sellerProfileVerify);
+          return;
+        case 'profile_edit':
+        case 'edit_profile':
+          if (!context.mounted) return;
+          context.push(
+            role == NotificationUserRole.seller
+                ? AppRoutes.sellerProfileEdit
+                : AppRoutes.clientProfileEdit,
+          );
+          return;
+      }
+
+      if (refId == null || refId.isEmpty) {
+        _showSnack(context, l10n.notificationMissingLink);
+        return;
+      }
+
       switch (type) {
         case 'order':
         case 'hire_onboarding':
@@ -38,7 +63,7 @@ class NotificationNavigation {
           return;
         case 'job_match':
           if (role != NotificationUserRole.seller) {
-            _showSnack(context, 'Unable to open this notification.');
+            _showSnack(context, l10n.notificationUnableToOpen);
             return;
           }
           if (!context.mounted) return;
@@ -55,11 +80,11 @@ class NotificationNavigation {
           );
           return;
         default:
-          _showSnack(context, 'Unable to open this notification.');
+          _showSnack(context, l10n.notificationUnableToOpen);
       }
     } catch (e) {
       if (!context.mounted) return;
-      _showSnack(context, 'Could not open: $e');
+      _showSnack(context, l10n.notificationOpenFailed('$e'));
     }
   }
 
@@ -85,6 +110,7 @@ class NotificationNavigation {
     required NotificationUserRole role,
     required String orderId,
   }) async {
+    final l10n = context.l10n;
     final row = await _client
         .from('orders')
         .select('job_offers!job_offer_id(job_post_id)')
@@ -94,7 +120,7 @@ class NotificationNavigation {
     if (!context.mounted) return;
 
     if (row == null) {
-      _showSnack(context, 'Contract no longer available.');
+      _showSnack(context, l10n.notificationContractUnavailable);
       return;
     }
 
@@ -127,6 +153,7 @@ class NotificationNavigation {
     required NotificationUserRole role,
     required String offerId,
   }) async {
+    final l10n = context.l10n;
     final row = await _client
         .from('job_offers')
         .select('job_post_id')
@@ -136,7 +163,7 @@ class NotificationNavigation {
     if (!context.mounted) return;
 
     if (row == null) {
-      _showSnack(context, 'Application no longer available.');
+      _showSnack(context, l10n.notificationApplicationUnavailable);
       return;
     }
 
@@ -147,7 +174,7 @@ class NotificationNavigation {
         if (jobPostId != null) {
           context.push(AppRoutes.clientJobDetailsOf(jobPostId));
         } else {
-          _showSnack(context, 'Job post not found.');
+          _showSnack(context, l10n.notificationJobNotFound);
         }
         return;
       case NotificationUserRole.seller:

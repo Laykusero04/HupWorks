@@ -302,7 +302,7 @@ create table public.job_offers (
   delivery_time int,
   delivery_time_unit text,
   cover_letter text,
-  status text default 'pending' check (status in ('pending', 'accepted', 'rejected')),
+  status text default 'pending' check (status in ('pending', 'accepted', 'rejected', 'withdrawn')),
   created_at timestamptz default now(),
   constraint job_offers_delivery_pair_check check (
     (delivery_time is null and delivery_time_unit is null)

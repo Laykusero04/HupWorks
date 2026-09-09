@@ -4763,11 +4763,23 @@ abstract class AppLocalizations {
   /// **'Success'**
   String get successTitle;
 
+  /// No description provided for @somethingWentWrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong'**
+  String get somethingWentWrong;
+
   /// No description provided for @headsUp.
   ///
   /// In en, this message translates to:
   /// **'Heads up'**
   String get headsUp;
+
+  /// No description provided for @youAreOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re offline. Some actions may not work.'**
+  String get youAreOffline;
 
   /// No description provided for @applyWithoutCounterBody.
   ///
@@ -4858,6 +4870,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Optional note for the client…'**
   String get offerMessageHint;
+
+  /// No description provided for @offerMessageMinHint.
+  ///
+  /// In en, this message translates to:
+  /// **'If you include a message, use at least {count} characters'**
+  String offerMessageMinHint(int count);
+
+  /// No description provided for @offerMessageMinChars.
+  ///
+  /// In en, this message translates to:
+  /// **'Please write at least {count} characters in your message'**
+  String offerMessageMinChars(int count);
+
+  /// No description provided for @offerMessageCharCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{current} / {min} characters minimum'**
+  String offerMessageCharCount(int current, int min);
 
   /// No description provided for @findJobsTitle.
   ///
@@ -5380,6 +5410,570 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{month} {year}'**
   String workTrustCompletedMonthLabel(String month, int year);
+
+  /// No description provided for @tapSetBirthDateRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to set your birth date (required)'**
+  String get tapSetBirthDateRequired;
+
+  /// No description provided for @ageBirthDateStaysPrivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Age {age} (birth date stays private)'**
+  String ageBirthDateStaysPrivate(int age);
+
+  /// No description provided for @pleaseSetDateOfBirth.
+  ///
+  /// In en, this message translates to:
+  /// **'Please set your date of birth'**
+  String get pleaseSetDateOfBirth;
+
+  /// No description provided for @mustBeAtLeast18.
+  ///
+  /// In en, this message translates to:
+  /// **'You must be at least 18 years old'**
+  String get mustBeAtLeast18;
+
+  /// No description provided for @pleaseUploadClearProfilePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Please upload a clear profile photo'**
+  String get pleaseUploadClearProfilePhoto;
+
+  /// No description provided for @pleaseUploadIdSelfie.
+  ///
+  /// In en, this message translates to:
+  /// **'Please upload a selfie holding your ID'**
+  String get pleaseUploadIdSelfie;
+
+  /// No description provided for @leaveSetupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave setup?'**
+  String get leaveSetupTitle;
+
+  /// No description provided for @leaveSetupMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Log in again anytime to continue.'**
+  String get leaveSetupMessage;
+
+  /// No description provided for @requiredDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Required details'**
+  String get requiredDetails;
+
+  /// No description provided for @requiredDetailsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Job title and age help clients trust your profile. Your name comes from signup.'**
+  String get requiredDetailsHint;
+
+  /// No description provided for @ageDateOfBirth.
+  ///
+  /// In en, this message translates to:
+  /// **'Age / date of birth'**
+  String get ageDateOfBirth;
+
+  /// No description provided for @ageShownBirthPrivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Your age is shown on your profile. Birth date stays private.'**
+  String get ageShownBirthPrivate;
+
+  /// No description provided for @optionalDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional details'**
+  String get optionalDetails;
+
+  /// No description provided for @optionalDetailsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'You can skip these and fill them later in Edit Profile.'**
+  String get optionalDetailsHint;
+
+  /// No description provided for @profilePhotoGuidelineHint.
+  ///
+  /// In en, this message translates to:
+  /// **'A clear front-facing photo helps verification. Prefer a plain white background.'**
+  String get profilePhotoGuidelineHint;
+
+  /// No description provided for @photoDoLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Do: front face, clear bg'**
+  String get photoDoLabel;
+
+  /// No description provided for @photoDontLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t: side view / shades'**
+  String get photoDontLabel;
+
+  /// No description provided for @photoTipFaceCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'Face the camera directly (not a side view)'**
+  String get photoTipFaceCamera;
+
+  /// No description provided for @photoTipBackground.
+  ///
+  /// In en, this message translates to:
+  /// **'Plain / white background, even lighting'**
+  String get photoTipBackground;
+
+  /// No description provided for @photoTipNoAccessories.
+  ///
+  /// In en, this message translates to:
+  /// **'No sunglasses, hat, or heavy filters'**
+  String get photoTipNoAccessories;
+
+  /// No description provided for @photoTipShoulders.
+  ///
+  /// In en, this message translates to:
+  /// **'Shoulders visible; one person only'**
+  String get photoTipShoulders;
+
+  /// No description provided for @identityVerification.
+  ///
+  /// In en, this message translates to:
+  /// **'Identity verification'**
+  String get identityVerification;
+
+  /// No description provided for @identityVerificationSetupHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload a selfie holding your government ID next to your face. An admin will review face+ID separately from your profile photo — you will see “pending” until each is accepted.'**
+  String get identityVerificationSetupHint;
+
+  /// No description provided for @idDoLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Do: face + ID clear'**
+  String get idDoLabel;
+
+  /// No description provided for @idDontLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t: cover ID / glare'**
+  String get idDontLabel;
+
+  /// No description provided for @idTipHoldNextToFace.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold ID next to your face — both fully visible'**
+  String get idTipHoldNextToFace;
+
+  /// No description provided for @idTipGoodLighting.
+  ///
+  /// In en, this message translates to:
+  /// **'Good lighting; avoid glare on the ID'**
+  String get idTipGoodLighting;
+
+  /// No description provided for @idTipFourCorners.
+  ///
+  /// In en, this message translates to:
+  /// **'All four corners of the ID visible; fingers on edges only'**
+  String get idTipFourCorners;
+
+  /// No description provided for @idTipNoAccessories.
+  ///
+  /// In en, this message translates to:
+  /// **'No hat, sunglasses, or filters'**
+  String get idTipNoAccessories;
+
+  /// No description provided for @uploadIdFaceSelfie.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload ID + face selfie'**
+  String get uploadIdFaceSelfie;
+
+  /// No description provided for @submittedPendingAdminReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted — pending admin review'**
+  String get submittedPendingAdminReview;
+
+  /// No description provided for @updateAndSubmitForReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Update & submit for review'**
+  String get updateAndSubmitForReview;
+
+  /// No description provided for @submitForReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit for review'**
+  String get submitForReview;
+
+  /// No description provided for @faceIdPendingHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Face+ID is submitted but not accepted yet (+50 pts after accept). Profile photo is reviewed separately.'**
+  String get faceIdPendingHint;
+
+  /// No description provided for @faceIdVerifiedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Face+ID accepted. Replacing this selfie resets only the face+ID review.'**
+  String get faceIdVerifiedHint;
+
+  /// No description provided for @selfieWithId.
+  ///
+  /// In en, this message translates to:
+  /// **'Selfie with ID'**
+  String get selfieWithId;
+
+  /// No description provided for @selfieWithIdHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold your government ID next to your face. An admin will review this later.'**
+  String get selfieWithIdHint;
+
+  /// No description provided for @yourSubmittedPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Your submitted photo'**
+  String get yourSubmittedPhoto;
+
+  /// No description provided for @newPhotoSelectedTapToChange.
+  ///
+  /// In en, this message translates to:
+  /// **'New photo selected — tap to change'**
+  String get newPhotoSelectedTapToChange;
+
+  /// No description provided for @tapToChangePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to change photo'**
+  String get tapToChangePhoto;
+
+  /// No description provided for @trustScoreSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{score}/100 trust score'**
+  String trustScoreSubtitle(int score);
+
+  /// No description provided for @fullyVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Fully verified'**
+  String get fullyVerified;
+
+  /// No description provided for @awaitingAdminReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting admin review'**
+  String get awaitingAdminReview;
+
+  /// No description provided for @completeVerification.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete verification'**
+  String get completeVerification;
+
+  /// No description provided for @verificationScoreHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile photo and face+ID are reviewed separately (50 pts each).'**
+  String get verificationScoreHint;
+
+  /// No description provided for @profilePhotoLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile photo'**
+  String get profilePhotoLabel;
+
+  /// No description provided for @faceIdSelfieLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Face + ID selfie'**
+  String get faceIdSelfieLabel;
+
+  /// No description provided for @acceptedByAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted by admin'**
+  String get acceptedByAdmin;
+
+  /// No description provided for @rejectedPleaseUpdatePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected — please update photo'**
+  String get rejectedPleaseUpdatePhoto;
+
+  /// No description provided for @rejectedPleaseUpdateSelfie.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected — please update selfie'**
+  String get rejectedPleaseUpdateSelfie;
+
+  /// No description provided for @submittedAwaitingAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted — awaiting admin'**
+  String get submittedAwaitingAdmin;
+
+  /// No description provided for @notUploadedYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not uploaded yet'**
+  String get notUploadedYet;
+
+  /// No description provided for @statusVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified'**
+  String get statusVerified;
+
+  /// No description provided for @notVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Not verified'**
+  String get notVerified;
+
+  /// No description provided for @uploadFileOrImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload File or Image'**
+  String get uploadFileOrImage;
+
+  /// No description provided for @tapToAttachFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to attach a file'**
+  String get tapToAttachFile;
+
+  /// No description provided for @describeDeliveryDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe your delivery in details'**
+  String get describeDeliveryDetails;
+
+  /// No description provided for @enterDeliveryDetailsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your delivery details...'**
+  String get enterDeliveryDetailsHint;
+
+  /// No description provided for @filterJobs.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter jobs'**
+  String get filterJobs;
+
+  /// No description provided for @matchJobsWithSkills.
+  ///
+  /// In en, this message translates to:
+  /// **'Match jobs tagged with these skills.'**
+  String get matchJobsWithSkills;
+
+  /// No description provided for @searchJobTitleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search job title...'**
+  String get searchJobTitleHint;
+
+  /// No description provided for @onSiteOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'On-site only'**
+  String get onSiteOnly;
+
+  /// No description provided for @clearAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all'**
+  String get clearAll;
+
+  /// No description provided for @jobsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 job} other{{count} jobs}}'**
+  String jobsCount(int count);
+
+  /// No description provided for @noOpenJobsRightNow.
+  ///
+  /// In en, this message translates to:
+  /// **'No open jobs right now'**
+  String get noOpenJobsRightNow;
+
+  /// No description provided for @noOpenJobsRightNowHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Check back soon, or set a job alert to get notified when matching work is posted.'**
+  String get noOpenJobsRightNowHint;
+
+  /// No description provided for @noJobsMatchFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'No jobs match your filters'**
+  String get noJobsMatchFilters;
+
+  /// No description provided for @tryAdjustingFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Try adjusting category, job type, distance, or remote.'**
+  String get tryAdjustingFilters;
+
+  /// No description provided for @leaveDeliveryDraftTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave with draft?'**
+  String get leaveDeliveryDraftTitle;
+
+  /// No description provided for @leaveDeliveryDraftMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your delivery message and attachment won’t be saved if you leave.'**
+  String get leaveDeliveryDraftMessage;
+
+  /// No description provided for @leaveAnyway.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave'**
+  String get leaveAnyway;
+
+  /// No description provided for @keepEditing.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep editing'**
+  String get keepEditing;
+
+  /// No description provided for @chooseFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose file'**
+  String get chooseFile;
+
+  /// No description provided for @attachmentTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'File exceeds the 1 GB limit'**
+  String get attachmentTooLarge;
+
+  /// No description provided for @searchApplicationsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by job title...'**
+  String get searchApplicationsHint;
+
+  /// No description provided for @statusWithdrawn.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawn'**
+  String get statusWithdrawn;
+
+  /// No description provided for @withdrawApplication.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw'**
+  String get withdrawApplication;
+
+  /// No description provided for @withdrawApplicationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw application?'**
+  String get withdrawApplicationTitle;
+
+  /// No description provided for @withdrawApplicationConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The employer will no longer see this as a pending offer. You can apply again later.'**
+  String get withdrawApplicationConfirmBody;
+
+  /// No description provided for @applicationWithdrawn.
+  ///
+  /// In en, this message translates to:
+  /// **'Application withdrawn'**
+  String get applicationWithdrawn;
+
+  /// No description provided for @noFilteredApplications.
+  ///
+  /// In en, this message translates to:
+  /// **'No applications match'**
+  String get noFilteredApplications;
+
+  /// No description provided for @noFilteredApplicationsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Try another status or clear your search.'**
+  String get noFilteredApplicationsHint;
+
+  /// No description provided for @trustScoreLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Trust'**
+  String get trustScoreLabel;
+
+  /// No description provided for @genderLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender'**
+  String get genderLabel;
+
+  /// No description provided for @notificationMissingLink.
+  ///
+  /// In en, this message translates to:
+  /// **'This notification has no linked item.'**
+  String get notificationMissingLink;
+
+  /// No description provided for @notificationUnableToOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to open this notification.'**
+  String get notificationUnableToOpen;
+
+  /// No description provided for @notificationOpenFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open: {detail}'**
+  String notificationOpenFailed(String detail);
+
+  /// No description provided for @notificationContractUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Contract no longer available.'**
+  String get notificationContractUnavailable;
+
+  /// No description provided for @notificationApplicationUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Application no longer available.'**
+  String get notificationApplicationUnavailable;
+
+  /// No description provided for @notificationJobNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Job post not found.'**
+  String get notificationJobNotFound;
+
+  /// No description provided for @noFavouritesYetHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse open jobs and tap the bookmark to save them here.'**
+  String get noFavouritesYetHint;
+
+  /// No description provided for @noNotificationsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Updates about jobs, contracts, and messages will show up here.'**
+  String get noNotificationsHint;
+
+  /// No description provided for @noJobAlertsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No job alerts yet'**
+  String get noJobAlertsYet;
+
+  /// No description provided for @totalOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'Total orders'**
+  String get totalOrders;
 }
 
 class _AppLocalizationsDelegate

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/empty_state_widget.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/services/dashboard_service.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -15,25 +16,36 @@ class SellerDashBoard extends StatefulWidget {
 class _SellerDashBoardState extends State<SellerDashBoard> {
   Map<String, dynamic>? _data;
   bool _isLoading = true;
+  bool _hasError = false;
 
   @override
   void initState() {
     super.initState();
-    _loadDashboard();
+    _loadDashboard(showLoader: true);
   }
 
-  Future<void> _loadDashboard() async {
+  Future<void> _loadDashboard({bool showLoader = false}) async {
+    if (showLoader && mounted) {
+      setState(() {
+        _isLoading = true;
+        _hasError = false;
+      });
+    }
     try {
       final data = await DashboardService.getSellerDashboard();
       if (mounted) {
         setState(() {
           _data = data;
           _isLoading = false;
+          _hasError = false;
         });
       }
     } catch (e) {
       if (mounted) {
-        setState(() => _isLoading = false);
+        setState(() {
+          _isLoading = false;
+          if (_data == null) _hasError = true;
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
@@ -69,9 +81,6 @@ class _SellerDashBoardState extends State<SellerDashBoard> {
       );
     }
 
-    final jobsCompleted = (_data?['jobs_completed'] as num?)?.toInt() ?? 0;
-    final activeContracts = (_data?['active_contracts'] as num?)?.toInt() ?? 0;
-
     return Scaffold(
       backgroundColor: kDarkWhite,
       appBar: AppBar(
@@ -84,107 +93,126 @@ class _SellerDashBoardState extends State<SellerDashBoard> {
         ),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.only(top: 20.0),
-        child: Container(
-          padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-          width: context.width(),
-          decoration: const BoxDecoration(
-            color: kWhite,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(30.0),
-              topRight: Radius.circular(30.0),
-            ),
-          ),
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 15.0),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: kDarkWhite,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: kBorderColorTextField),
-                  ),
-                  child: Text(
-                    l10n.workOverviewDisclaimer,
-                    style: kTextStyle.copyWith(
-                      color: kSubTitleColor,
-                      fontSize: 12,
-                      height: 1.35,
-                    ),
+      body: _hasError && _data == null
+          ? EmptyStateWidget(
+              message: l10n.couldNotLoadResults,
+              hint: l10n.errorLoading,
+              icon: Icons.bar_chart_outlined,
+              actionLabel: l10n.retry,
+              onAction: () => _loadDashboard(showLoader: true),
+            )
+          : Padding(
+              padding: const EdgeInsets.only(top: 20.0),
+              child: Container(
+                padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+                width: context.width(),
+                decoration: const BoxDecoration(
+                  color: kWhite,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(30.0),
+                    topRight: Radius.circular(30.0),
                   ),
                 ),
-                const SizedBox(height: 14.0),
-                Row(
-                  children: [
-                    Expanded(
-                      child: DashBoardInfo(
-                        count: _formatHours(context),
-                        title: l10n.hoursWorked,
-                        image: 'images/td.png',
-                      ),
+                child: RefreshIndicator(
+                  color: kPrimaryColor,
+                  onRefresh: () => _loadDashboard(),
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(
+                      parent: BouncingScrollPhysics(),
                     ),
-                    const SizedBox(width: 10.0),
-                    Expanded(
-                      child: DashBoardInfo(
-                        count: _formatMoney('agreed_contract_value'),
-                        title: l10n.agreedContractValue,
-                        image: 'images/to.png',
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 15.0),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            color: kDarkWhite,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: kBorderColorTextField),
+                          ),
+                          child: Text(
+                            l10n.workOverviewDisclaimer,
+                            style: kTextStyle.copyWith(
+                              color: kSubTitleColor,
+                              fontSize: 12,
+                              height: 1.35,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 14.0),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: DashBoardInfo(
+                                count: _formatHours(context),
+                                title: l10n.hoursWorked,
+                                image: 'images/td.png',
+                              ),
+                            ),
+                            const SizedBox(width: 10.0),
+                            Expanded(
+                              child: DashBoardInfo(
+                                count: _formatMoney('agreed_contract_value'),
+                                title: l10n.agreedContractValue,
+                                image: 'images/to.png',
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10.0),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: DashBoardInfo(
+                                count: _formatMoney('payment_received_value'),
+                                title: l10n.paymentReceivedValue,
+                                image: 'images/co.png',
+                              ),
+                            ),
+                            const SizedBox(width: 10.0),
+                            Expanded(
+                              child: DashBoardInfo(
+                                count: _formatMoney('outstanding_value'),
+                                title: l10n.outstandingValue,
+                                image: 'images/io.png',
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10.0),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: DashBoardInfo(
+                                count:
+                                    '${(_data?['jobs_completed'] as num?)?.toInt() ?? 0}',
+                                title: l10n.jobsCompleted,
+                                image: 'images/co.png',
+                              ),
+                            ),
+                            const SizedBox(width: 10.0),
+                            Expanded(
+                              child: DashBoardInfo(
+                                count:
+                                    '${(_data?['active_contracts'] as num?)?.toInt() ?? 0}',
+                                title: l10n.activeContracts,
+                                image: 'images/io.png',
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-                const SizedBox(height: 10.0),
-                Row(
-                  children: [
-                    Expanded(
-                      child: DashBoardInfo(
-                        count: _formatMoney('payment_received_value'),
-                        title: l10n.paymentReceivedValue,
-                        image: 'images/co.png',
-                      ),
-                    ),
-                    const SizedBox(width: 10.0),
-                    Expanded(
-                      child: DashBoardInfo(
-                        count: _formatMoney('outstanding_value'),
-                        title: l10n.outstandingValue,
-                        image: 'images/io.png',
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10.0),
-                Row(
-                  children: [
-                    Expanded(
-                      child: DashBoardInfo(
-                        count: '$jobsCompleted',
-                        title: l10n.jobsCompleted,
-                        image: 'images/co.png',
-                      ),
-                    ),
-                    const SizedBox(width: 10.0),
-                    Expanded(
-                      child: DashBoardInfo(
-                        count: '$activeContracts',
-                        title: l10n.activeContracts,
-                        image: 'images/io.png',
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
     );
   }
 }

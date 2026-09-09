@@ -1208,7 +1208,9 @@
   "offerSentAtPostedRate": "Application sent at client's posted rate",
   "offerSentSuccess": "Your application has been sent",
   "successTitle": "Success",
+  "somethingWentWrong": "Something went wrong",
   "headsUp": "Heads up",
+  "youAreOffline": "You're offline. Some actions may not work.",
   "applyWithoutCounterBody": "You are applying at the client's posted rate. They will see your application at that rate.",
   "clientPostedRate": "Client's posted rate",
   "yourApplicationAmount": "Your application: {amount}",
@@ -1238,6 +1240,25 @@
   "quotePerMonth": "/ month",
   "offerMessageOptional": "Message (optional)",
   "offerMessageHint": "Optional note for the client…",
+  "offerMessageMinHint": "If you include a message, use at least {count} characters",
+  "@offerMessageMinHint": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "offerMessageMinChars": "Please write at least {count} characters in your message",
+  "@offerMessageMinChars": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "offerMessageCharCount": "{current} / {min} characters minimum",
+  "@offerMessageCharCount": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "min": { "type": "int" }
+    }
+  },
   "findJobsTitle": "Find Jobs",
   "couldNotLoadSkillsFilter": "Could not load skills filter. Pull to refresh later.",
   "buyerRequestDetailsTitle": "Job details",
@@ -1324,7 +1345,7 @@
   "jobAlertsTitle": "Job alerts",
   "jobAlertNew": "New alert",
   "jobAlertEdit": "Edit alert",
-  "jobAlertsEmpty": "Save rules for skills and distance. We will notify you when matching jobs are posted.",
+  "jobAlertsEmpty": "স্কিল ও দূরত্বের নিয়ম সংরক্ষণ করুন। মিল থাকা কাজ পোস্ট হলে আমরা জানাব।",
   "jobAlertUntitled": "Job alert",
   "jobAlertDeleteTitle": "Delete alert?",
   "jobAlertDeleteMessage": "You will no longer get notifications for this rule.",
@@ -1373,5 +1394,120 @@
       "month": { "type": "String" },
       "year": { "type": "int" }
     }
-  }
+  },
+
+  "tapSetBirthDateRequired": "জন্ম তারিখ সেট করতে ট্যাপ করুন (আবশ্যক)",
+  "ageBirthDateStaysPrivate": "বয়স {age} (জন্ম তারিখ গোপন থাকে)",
+  "@ageBirthDateStaysPrivate": {
+    "placeholders": {
+      "age": { "type": "int" }
+    }
+  },
+  "pleaseSetDateOfBirth": "অনুগ্রহ করে আপনার জন্ম তারিখ সেট করুন",
+  "mustBeAtLeast18": "আপনার বয়স কমপক্ষে ১৮ বছর হতে হবে",
+  "pleaseUploadClearProfilePhoto": "অনুগ্রহ করে একটি স্পষ্ট প্রোফাইল ছবি আপলোড করুন",
+  "pleaseUploadIdSelfie": "অনুগ্রহ করে আইডি ধরে একটি সেলফি আপলোড করুন",
+  "leaveSetupTitle": "সেটআপ ছেড়ে যাবেন?",
+  "leaveSetupMessage": "পরে আবার লগ ইন করে চালিয়ে যেতে পারবেন।",
+  "requiredDetails": "আবশ্যক তথ্য",
+  "requiredDetailsHint": "চাকরির শিরোনাম ও বয়স ক্লায়েন্টদের আপনার প্রোফাইলে আস্থা দিতে সাহায্য করে। আপনার নাম সাইনআপ থেকে আসে।",
+  "ageDateOfBirth": "বয়স / জন্ম তারিখ",
+  "ageShownBirthPrivate": "আপনার বয়স প্রোফাইলে দেখানো হয়। জন্ম তারিখ গোপন থাকে।",
+  "optionalDetails": "ঐচ্ছিক তথ্য",
+  "optionalDetailsHint": "এগুলো এড়িয়ে যেতে পারেন এবং পরে প্রোফাইল সম্পাদনায় পূরণ করতে পারেন।",
+  "profilePhotoGuidelineHint": "সামনের দিক থেকে স্পষ্ট ছবি যাচাইকরণে সাহায্য করে। সাদা পটভূমি পছন্দনীয়।",
+  "photoDoLabel": "করুন: সামনের মুখ, পরিষ্কার পটভূমি",
+  "photoDontLabel": "করবেন না: পাশের দৃশ্য / চশমা",
+  "photoTipFaceCamera": "সরাসরি ক্যামেরার দিকে তাকান (পাশের দৃশ্য নয়)",
+  "photoTipBackground": "সাদা/সাধারণ পটভূমি, সমান আলো",
+  "photoTipNoAccessories": "সানগ্লাস, টুপি বা ভারী ফিল্টার নয়",
+  "photoTipShoulders": "কাঁধ দৃশ্যমান; শুধু একজন ব্যক্তি",
+  "identityVerification": "পরিচয় যাচাইকরণ",
+  "identityVerificationSetupHint": "মুখের পাশে সরকারি আইডি ধরে একটি সেলফি আপলোড করুন। অ্যাডমিন প্রোফাইল ছবি থেকে আলাদাভাবে মুখ+আইডি পর্যালোচনা করবে — প্রতিটি গৃহীত না হওয়া পর্যন্ত “মুলতবি” দেখাবে।",
+  "idDoLabel": "করুন: মুখ + আইডি স্পষ্ট",
+  "idDontLabel": "করবেন না: আইডি ঢাকা / ঝলক",
+  "idTipHoldNextToFace": "মুখের পাশে আইডি ধরুন — দুটোই সম্পূর্ণ দৃশ্যমান",
+  "idTipGoodLighting": "ভালো আলো; আইডিতে ঝলক এড়ান",
+  "idTipFourCorners": "আইডির চারটি কোণ দৃশ্যমান; আঙুল শুধু কিনারায়",
+  "idTipNoAccessories": "টুপি, সানগ্লাস বা ফিল্টার নয়",
+  "uploadIdFaceSelfie": "আইডি + মুখের সেলফি আপলোড",
+  "submittedPendingAdminReview": "জমা দেওয়া হয়েছে — অ্যাডমিন পর্যালোচনা মুলতবি",
+  "updateAndSubmitForReview": "আপডেট ও পর্যালোচনার জন্য জমা দিন",
+  "submitForReview": "পর্যালোচনার জন্য জমা দিন",
+  "faceIdPendingHint": "মুখ+আইডি জমা হয়েছে কিন্তু এখনও গৃহীত হয়নি (গৃহীত হলে +৫০ পয়েন্ট)। প্রোফাইল ছবি আলাদাভাবে পর্যালোচনা হয়।",
+  "faceIdVerifiedHint": "মুখ+আইডি গৃহীত। এই সেলফি বদলালে শুধু মুখ+আইডি পর্যালোচনা রিসেট হয়।",
+  "selfieWithId": "আইডিসহ সেলফি",
+  "selfieWithIdHint": "মুখের পাশে সরকারি আইডি ধরুন। অ্যাডমিন পরে পর্যালোচনা করবে।",
+  "yourSubmittedPhoto": "আপনার জমা দেওয়া ছবি",
+  "newPhotoSelectedTapToChange": "নতুন ছবি নির্বাচিত — বদলাতে ট্যাপ করুন",
+  "tapToChangePhoto": "ছবি বদলাতে ট্যাপ করুন",
+  "trustScoreSubtitle": "{score}/১০০ ট্রাস্ট স্কোর",
+  "@trustScoreSubtitle": {
+    "placeholders": {
+      "score": { "type": "int" }
+    }
+  },
+  "fullyVerified": "সম্পূর্ণ যাচাইকৃত",
+  "awaitingAdminReview": "অ্যাডমিন পর্যালোচনা মুলতবি",
+  "completeVerification": "যাচাইকরণ সম্পূর্ণ করুন",
+  "verificationScoreHint": "প্রোফাইল ছবি ও মুখ+আইডি আলাদাভাবে পর্যালোচনা হয় (প্রতিটিতে ৫০ পয়েন্ট)।",
+  "profilePhotoLabel": "প্রোফাইল ছবি",
+  "faceIdSelfieLabel": "মুখ + আইডি সেলফি",
+  "acceptedByAdmin": "অ্যাডমিন কর্তৃক গৃহীত",
+  "rejectedPleaseUpdatePhoto": "প্রত্যাখ্যাত — ছবি আপডেট করুন",
+  "rejectedPleaseUpdateSelfie": "প্রত্যাখ্যাত — সেলফি আপডেট করুন",
+  "submittedAwaitingAdmin": "জমা দেওয়া হয়েছে — অ্যাডমিন অপেক্ষমাণ",
+  "notUploadedYet": "এখনও আপলোড হয়নি",
+  "statusVerified": "যাচাইকৃত",
+  "notVerified": "যাচাইকৃত নয়",
+  "uploadFileOrImage": "ফাইল বা ছবি আপলোড করুন",
+  "tapToAttachFile": "ফাইল সংযুক্ত করতে ট্যাপ করুন",
+  "describeDeliveryDetails": "আপনার ডেলিভারি বিস্তারিত বর্ণনা করুন",
+  "enterDeliveryDetailsHint": "ডেলিভারির বিবরণ লিখুন...",
+  "filterJobs": "কাজ ফিল্টার করুন",
+  "matchJobsWithSkills": "এই স্কিল দিয়ে ট্যাগ করা কাজ মিলান।",
+  "searchJobTitleHint": "কাজের শিরোনাম খুঁজুন...",
+  "onSiteOnly": "শুধু অন-সাইট",
+  "clearAll": "সব মুছুন",
+  "jobsCount": "{count, plural, =1{১টি কাজ} other{{count}টি কাজ}}",
+  "@jobsCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "noOpenJobsRightNow": "এখন কোনো খোলা কাজ নেই",
+  "noOpenJobsRightNowHint": "আবার চেক করুন, অথবা মিল থাকা কাজ পোস্ট হলে জানতে একটি জব অ্যালার্ট সেট করুন।",
+  "noJobsMatchFilters": "আপনার ফিল্টারের সাথে কোনো কাজ মিলছে না",
+  "tryAdjustingFilters": "ক্যাটাগরি, কাজের ধরন, দূরত্ব বা রিমোট সমন্বয় করে দেখুন।",
+  "leaveDeliveryDraftTitle": "ড্রাফট রেখে চলে যাবেন?",
+  "leaveDeliveryDraftMessage": "চলে গেলে আপনার ডেলিভারি বার্তা ও সংযুক্তি সংরক্ষিত হবে না।",
+  "leaveAnyway": "চলে যান",
+  "keepEditing": "সম্পাদনা চালিয়ে যান",
+  "chooseFile": "ফাইল বেছে নিন",
+  "attachmentTooLarge": "ফাইল ১ জিবি সীমা ছাড়িয়ে গেছে",
+  "searchApplicationsHint": "কাজের শিরোনাম দিয়ে খুঁজুন...",
+  "statusWithdrawn": "প্রত্যাহার",
+  "withdrawApplication": "প্রত্যাহার",
+  "withdrawApplicationTitle": "আবেদন প্রত্যাহার করবেন?",
+  "withdrawApplicationConfirmBody": "নিয়োগকর্তা আর এটি মুলতবি অফার হিসেবে দেখবেন না। পরে আবার আবেদন করতে পারবেন।",
+  "applicationWithdrawn": "আবেদন প্রত্যাহার করা হয়েছে",
+  "noFilteredApplications": "কোনো আবেদন মিলছে না",
+  "noFilteredApplicationsHint": "অন্য স্ট্যাটাস চেষ্টা করুন বা অনুসন্ধান মুছুন।",
+  "trustScoreLabel": "ট্রাস্ট",
+  "genderLabel": "লিঙ্গ",
+  "notificationMissingLink": "এই নোটিফিকেশনে কোনো লিংকড আইটেম নেই।",
+  "notificationUnableToOpen": "এই নোটিফিকেশন খোলা যায়নি।",
+  "notificationOpenFailed": "খোলা যায়নি: {detail}",
+  "@notificationOpenFailed": {
+    "placeholders": {
+      "detail": { "type": "String" }
+    }
+  },
+  "notificationContractUnavailable": "কন্ট্রাক্ট আর উপলব্ধ নেই।",
+  "notificationApplicationUnavailable": "আবেদন আর উপলব্ধ নেই।",
+  "notificationJobNotFound": "জব পোস্ট পাওয়া যায়নি।",
+  "noFavouritesYetHint": "খোলা কাজ ব্রাউজ করুন এবং বুকমার্ক ট্যাপ করে এখানে সংরক্ষণ করুন।",
+  "noNotificationsHint": "কাজ, কন্ট্রাক্ট ও বার্তার আপডেট এখানে দেখাবে।",
+  "noJobAlertsYet": "এখনও কোনো জব অ্যালার্ট নেই",
+  "totalOrders": "মোট অর্ডার"
 }

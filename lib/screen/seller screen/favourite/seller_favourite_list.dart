@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/localized_category.dart';
+import 'package:freelancer/core/widgets/empty_state_widget.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/l10n/l10n_labels.dart';
+import 'package:freelancer/router/route_names.dart';
 import 'package:freelancer/services/favourite_service.dart';
-import 'package:freelancer/services/job_posts_service.dart';
+import 'package:go_router/go_router.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../widgets/constant.dart';
@@ -94,17 +96,28 @@ class _SellerFavListState extends State<SellerFavList> {
           ),
           child: _isLoading
               ? const Center(child: CircularProgressIndicator(color: kPrimaryColor))
-              : _favourites.isEmpty
-                  ? Center(
-                      child: Text(
-                        l10n.noFavouritesYet,
-                        style: kTextStyle.copyWith(color: kLightNeutralColor),
-                      ),
-                    )
-                  : RefreshIndicator(
-                      color: kPrimaryColor,
-                      onRefresh: _loadFavourites,
-                      child: ListView.builder(
+              : RefreshIndicator(
+                  color: kPrimaryColor,
+                  onRefresh: _loadFavourites,
+                  child: _favourites.isEmpty
+                      ? ListView(
+                          physics: const AlwaysScrollableScrollPhysics(
+                            parent: BouncingScrollPhysics(),
+                          ),
+                          children: [
+                            SizedBox(
+                              height: MediaQuery.sizeOf(context).height * 0.15,
+                            ),
+                            EmptyStateWidget(
+                              message: l10n.noFavouritesYet,
+                              hint: l10n.noFavouritesYetHint,
+                              icon: Icons.bookmark_border,
+                              actionLabel: l10n.browseJobs,
+                              onAction: () => context.go(AppRoutes.sellerFindJobs),
+                            ),
+                          ],
+                        )
+                      : ListView.builder(
                         physics: const AlwaysScrollableScrollPhysics(
                           parent: BouncingScrollPhysics(),
                         ),

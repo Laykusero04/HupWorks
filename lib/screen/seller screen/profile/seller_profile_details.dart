@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:freelancer/core/utils/app_date_format.dart';
 import 'package:freelancer/core/utils/profile_avatar_picker.dart';
 import 'package:freelancer/core/utils/profile_image.dart';
 import 'package:freelancer/data/models/seller_skill_model.dart';
+import 'package:freelancer/router/route_names.dart';
 import 'package:freelancer/services/profile_service.dart';
 import 'package:freelancer/services/verification_service.dart';
-import 'package:nb_utils/nb_utils.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../widgets/constant.dart';
 import '../../widgets/editable_profile_avatar.dart';
@@ -17,8 +19,6 @@ import '../../widgets/profile_skeleton.dart';
 import '../../widgets/seller_skills_display.dart';
 import '../../widgets/verification_score_card.dart';
 import '../../widgets/verification_status_badge.dart';
-import 'seller_edit_profile_details.dart';
-import 'seller_identity_verification_screen.dart';
 
 class SellerProfileDetails extends StatefulWidget {
   const SellerProfileDetails({Key? key}) : super(key: key);
@@ -100,7 +100,8 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
       return const ProfileDetailsSkeleton(extraSection: true);
     }
 
-    final name = _profile?['name'] ?? 'Seller';
+    final l10n = context.l10n;
+    final name = _profile?['name'] ?? l10n.roleSeller;
     final email = (_profile?['email'] as String?) ?? '';
     final bio = _profile?['bio'] as String?;
     final profileImageUrl = _profile?['profile_image_url'];
@@ -115,7 +116,10 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
     final rating = reviewStats.rating;
     final reviewCount = reviewStats.count;
     final phone = _profile?['phone'] as String? ?? '';
-    final gender = _profile?['gender'] as String? ?? '';
+    final genderRaw = _profile?['gender'] as String? ?? '';
+    final gender = genderRaw.isEmpty
+        ? ''
+        : L10nLabels.gender(l10n, genderRaw);
     final verificationStatus =
         VerificationService.statusFromProfile(_profile);
     final verificationScore =
@@ -124,8 +128,8 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
     final avgLabel = reviewCount > 0 ? rating.toStringAsFixed(1) : '—';
 
     Future<void> openVerification() async {
-      await const SellerIdentityVerificationScreen().launch(context);
-      _load();
+      await context.push(AppRoutes.sellerProfileVerify);
+      if (mounted) _load();
     }
 
     final brand = Theme.of(context).colorScheme.primary;
@@ -240,13 +244,13 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      _statTile('$reviewCount', 'Reviews', brand),
+                      _statTile('$reviewCount', l10n.reviews, brand),
                       _statDivider(brand),
-                      _statTile(avgLabel, 'Avg rating', brand),
+                      _statTile(avgLabel, l10n.avgRating, brand),
                       _statDivider(brand),
                       _statTile(
                         '${verificationScore.total}',
-                        'Trust',
+                        l10n.trustScoreLabel,
                         brand,
                       ),
                     ],
@@ -273,12 +277,12 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                   width: double.infinity,
                   child: OutlinedButton.icon(
                     onPressed: () async {
-                      await const SellerEditProfile().launch(context);
-                      _load();
+                      await context.push(AppRoutes.sellerProfileEdit);
+                      if (mounted) _load();
                     },
                     icon: Icon(IconlyBold.edit, size: 18, color: brand),
                     label: Text(
-                      'Edit profile',
+                      context.l10n.editProfile,
                       style: kTextStyle.copyWith(color: brand, fontWeight: FontWeight.bold),
                     ),
                     style: ProfileDetailTheme.editProfileOutlinedStyle(accent: brand),
@@ -306,7 +310,7 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Text(
-                        'About',
+                        l10n.about,
                         textAlign: TextAlign.center,
                         style: kTextStyle.copyWith(
                           color: brand,
@@ -346,7 +350,7 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                 child: Row(
                   children: [
                     Text(
-                      'Profile details',
+                      l10n.profileDetails,
                       style: kTextStyle.copyWith(color: brand, fontWeight: FontWeight.bold),
                     ),
                   ],
@@ -361,11 +365,12 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _detailRow('Email', email),
-                      _detailRow('Phone', phone),
-                      _detailRow('Gender', gender),
-                      if (age != null) _detailRow('Age', '$age years old'),
-                      if (address != null && address.isNotEmpty) _detailRow('Address', address),
+                      _detailRow(l10n.email, email),
+                      _detailRow(l10n.phone, phone),
+                      _detailRow(l10n.genderLabel, gender),
+                      if (age != null) _detailRow(l10n.ageLabel, l10n.ageYearsOld(age)),
+                      if (address != null && address.isNotEmpty)
+                        _detailRow(l10n.address, address),
                     ],
                   ),
                 ),
@@ -384,11 +389,14 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                 child: Row(
                   children: [
                     Text(
-                      'Reviews',
+                      l10n.reviews,
                       style: kTextStyle.copyWith(color: brand, fontWeight: FontWeight.bold),
                     ),
                     const Spacer(),
-                    Text('$reviewCount total', style: kTextStyle.copyWith(color: kLightNeutralColor)),
+                    Text(
+                      l10n.countTotal(reviewCount),
+                      style: kTextStyle.copyWith(color: kLightNeutralColor),
+                    ),
                   ],
                 ),
               ),
@@ -402,12 +410,12 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                       Icon(IconlyBold.star, size: 48, color: brand.withValues(alpha: 0.45)),
                       const SizedBox(height: 8),
                       Text(
-                        'No reviews yet',
+                        l10n.noReviewsYet,
                         style: kTextStyle.copyWith(color: kLightNeutralColor),
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        'Reviews from clients appear here after completed orders.',
+                        l10n.reviewsFromClientsHint,
                         textAlign: TextAlign.center,
                         style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12, height: 1.35),
                       ),
@@ -506,7 +514,9 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
     final reviewer = row['reviewer'] as Map<String, dynamic>?;
     final reviewerName = (reviewer?['name'] as String?)?.trim();
     final imageUrl = (reviewer?['profile_image_url'] as String?)?.trim();
-    final who = (reviewerName != null && reviewerName.isNotEmpty) ? reviewerName : 'Client';
+    final who = (reviewerName != null && reviewerName.isNotEmpty)
+        ? reviewerName
+        : context.l10n.roleClient;
     final dateStr = _formatReviewDate(created, AppDateFormat.localeOf(context));
 
     return Padding(

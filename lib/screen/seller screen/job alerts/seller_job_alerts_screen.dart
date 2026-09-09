@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:freelancer/core/widgets/empty_state_widget.dart';
 import 'package:freelancer/data/models/seller_job_alert_rule_model.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/l10n/l10n_labels.dart';
@@ -139,18 +139,19 @@ class _SellerJobAlertsScreenState extends State<SellerJobAlertsScreen> {
               onRefresh: _load,
               child: _rules.isEmpty
                   ? ListView(
-                      physics: const AlwaysScrollableScrollPhysics(),
+                      physics: const AlwaysScrollableScrollPhysics(
+                        parent: BouncingScrollPhysics(),
+                      ),
                       children: [
-                        const SizedBox(height: 80),
-                        Icon(FeatherIcons.bell, size: 48, color: kLightNeutralColor),
-                        const SizedBox(height: 16),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 32),
-                          child: Text(
-                            l10n.jobAlertsEmpty,
-                            textAlign: TextAlign.center,
-                            style: kTextStyle.copyWith(color: kLightNeutralColor),
-                          ),
+                        SizedBox(
+                          height: MediaQuery.sizeOf(context).height * 0.12,
+                        ),
+                        EmptyStateWidget(
+                          message: l10n.noJobAlertsYet,
+                          hint: l10n.jobAlertsEmpty,
+                          icon: Icons.notifications_active_outlined,
+                          actionLabel: l10n.jobAlertNew,
+                          onAction: () => _openEditor(),
                         ),
                       ],
                     )

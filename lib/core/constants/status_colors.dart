@@ -36,6 +36,8 @@ abstract final class StatusColors {
         return (success, successBg);
       case 'rejected':
         return (danger, dangerBg);
+      case 'withdrawn':
+        return (neutral, neutralBg);
       case 'pending':
       default:
         return (warning, warningBg);

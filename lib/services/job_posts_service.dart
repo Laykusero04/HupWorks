@@ -328,6 +328,7 @@ class JobPostsService {
         .from('job_offers')
         .select('*, profiles:seller_id(name, profile_image_url, rating)')
         .eq('job_post_id', jobPostId)
+        .neq('status', 'withdrawn')
         .order('created_at', ascending: false);
     return List<Map<String, dynamic>>.from(data);
   }
@@ -345,6 +346,7 @@ class JobPostsService {
           'job_posts!inner(id, title, status, job_type, workers_needed, client_id)',
         )
         .eq('job_posts.client_id', user.id)
+        .neq('status', 'withdrawn')
         .order('created_at', ascending: false);
     return List<Map<String, dynamic>>.from(data);
   }

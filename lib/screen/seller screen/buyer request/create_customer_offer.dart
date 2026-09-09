@@ -33,6 +33,8 @@ class CreateCustomerOffer extends StatefulWidget {
 }
 
 class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
+  static const _coverLetterMinChars = 40;
+
   final _amountController = TextEditingController();
   final _coverLetterController = TextEditingController();
   String _priceBasis = JobPostsService.budgetBasisFixed;
@@ -53,6 +55,9 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
     _hasPostedBudget = JobPostsService.hasPostedBudget(_jobPostBudgetMap);
     _mode = _hasPostedBudget ? _OfferSubmitMode.agreePosted : _OfferSubmitMode.customBid;
     final agreed = JobPostsService.agreedOfferFromJobPost(_jobPostBudgetMap);
+    _coverLetterController.addListener(() {
+      if (mounted) setState(() {});
+    });
     if (agreed != null) {
       _priceBasis = agreed.basis;
     }
@@ -73,17 +78,17 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
       case _MessageType.success:
         bg = kPrimaryColor;
         icon = Icons.check_circle_outline;
-        title = 'Success';
+        title = context.l10n.successTitle;
         break;
       case _MessageType.error:
         bg = const Color(0xFFDC2626);
         icon = Icons.error_outline;
-        title = 'Something went wrong';
+        title = context.l10n.somethingWentWrong;
         break;
       case _MessageType.warning:
         bg = const Color(0xFFF59E0B);
         icon = Icons.info_outline;
-        title = 'Heads up';
+        title = context.l10n.headsUp;
         break;
     }
 
@@ -153,6 +158,15 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
       basis = _priceBasis;
     }
 
+    final cover = _coverLetterController.text.trim();
+    if (cover.isNotEmpty && cover.length < _coverLetterMinChars) {
+      _showMessage(
+        context.l10n.offerMessageMinChars(_coverLetterMinChars),
+        type: _MessageType.warning,
+      );
+      return;
+    }
+
     setState(() => _isSubmitting = true);
 
     try {
@@ -160,9 +174,7 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
         jobPostId: widget.jobPostId,
         price: amount,
         priceBasis: basis,
-        coverLetter: _coverLetterController.text.trim().isNotEmpty
-            ? _coverLetterController.text.trim()
-            : null,
+        coverLetter: cover.isNotEmpty ? cover : null,
         agreedToPostedRate: agreed,
       );
 
@@ -501,13 +513,34 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
                   keyboardType: TextInputType.multiline,
                   cursorColor: kNeutralColor,
                   maxLines: 5,
+                  enabled: !_isSubmitting,
                   decoration: kInputDecoration.copyWith(
                     labelText: l10n.offerMessageOptional,
                     labelStyle: kTextStyle.copyWith(color: kNeutralColor),
                     hintText: l10n.offerMessageHint,
                     hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
+                    helperText: l10n.offerMessageMinHint(_coverLetterMinChars),
+                    helperMaxLines: 2,
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     border: const OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    l10n.offerMessageCharCount(
+                      _coverLetterController.text.trim().length,
+                      _coverLetterMinChars,
+                    ),
+                    style: kTextStyle.copyWith(
+                      color: _coverLetterController.text.trim().isEmpty ||
+                              _coverLetterController.text.trim().length >=
+                                  _coverLetterMinChars
+                          ? kLightNeutralColor
+                          : const Color(0xFFF59E0B),
+                      fontSize: 12,
+                    ),
                   ),
                 ),
                 SizedBox(height: bottomLift + 32),

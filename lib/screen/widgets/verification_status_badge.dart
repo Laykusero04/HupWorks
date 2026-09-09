@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
 import 'package:freelancer/services/verification_service.dart';
 
@@ -21,7 +22,8 @@ class VerificationStatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final info = _infoFor(status);
+    final l10n = context.l10n;
+    final info = _infoFor(status, l10n);
     final score = this.score ?? VerificationScore.fromStatus(status);
     final child = Container(
       padding: EdgeInsets.symmetric(
@@ -62,35 +64,35 @@ class VerificationStatusBadge extends StatelessWidget {
     );
   }
 
-  static _BadgeInfo _infoFor(String status) {
+  static _BadgeInfo _infoFor(String status, AppLocalizations l10n) {
     switch (status) {
       case 'verified':
-        return const _BadgeInfo(
-          label: 'Verified',
+        return _BadgeInfo(
+          label: l10n.statusVerified,
           icon: Icons.verified,
-          fg: Color(0xFF0B7A3B),
-          bg: Color(0xFFE7FFED),
+          fg: const Color(0xFF0B7A3B),
+          bg: const Color(0xFFE7FFED),
         );
       case 'pending':
-        return const _BadgeInfo(
-          label: 'Pending',
+        return _BadgeInfo(
+          label: l10n.statusPending,
           icon: Icons.hourglass_top_rounded,
-          fg: Color(0xFFB86E00),
-          bg: Color(0xFFFFF4E0),
+          fg: const Color(0xFFB86E00),
+          bg: const Color(0xFFFFF4E0),
         );
       case 'rejected':
-        return const _BadgeInfo(
-          label: 'Rejected',
+        return _BadgeInfo(
+          label: l10n.statusRejected,
           icon: Icons.cancel_outlined,
-          fg: Color(0xFFC62828),
-          bg: Color(0xFFFFEBEE),
+          fg: const Color(0xFFC62828),
+          bg: const Color(0xFFFFEBEE),
         );
       default:
-        return const _BadgeInfo(
-          label: 'Not verified',
+        return _BadgeInfo(
+          label: l10n.notVerified,
           icon: Icons.shield_outlined,
-          fg: Color(0xFF546E7A),
-          bg: Color(0xFFECEFF1),
+          fg: const Color(0xFF546E7A),
+          bg: const Color(0xFFECEFF1),
         );
     }
   }

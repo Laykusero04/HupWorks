@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
 import 'package:freelancer/services/verification_service.dart';
 
@@ -20,6 +21,7 @@ class VerificationScoreCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final brand = accent ?? kPrimaryColor;
     final awaitingAdmin = (score.hasProfilePhoto && !score.profilePhotoAccepted) ||
         (score.hasIdSelfie && !score.identityAccepted);
@@ -100,10 +102,10 @@ class VerificationScoreCard extends StatelessWidget {
                   children: [
                     Text(
                       score.isComplete
-                          ? 'Fully verified'
+                          ? l10n.fullyVerified
                           : awaitingAdmin
-                              ? 'Awaiting admin review'
-                              : 'Complete verification',
+                              ? l10n.awaitingAdminReview
+                              : l10n.completeVerification,
                       style: kTextStyle.copyWith(
                         color: kNeutralColor,
                         fontWeight: FontWeight.bold,
@@ -112,7 +114,7 @@ class VerificationScoreCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Profile photo and face+ID are reviewed separately (50 pts each).',
+                      l10n.verificationScoreHint,
                       style: kTextStyle.copyWith(
                         color: kSubTitleColor,
                         fontSize: compact ? 11 : 12,
@@ -130,14 +132,14 @@ class VerificationScoreCard extends StatelessWidget {
                 : score.hasProfilePhoto
                     ? _RowState.pending
                     : _RowState.empty,
-            title: 'Profile photo',
+            title: l10n.profilePhotoLabel,
             subtitle: score.profilePhotoAccepted
-                ? 'Accepted by admin'
+                ? l10n.acceptedByAdmin
                 : score.hasProfilePhoto
                     ? (score.profilePhotoStatus == 'rejected'
-                        ? 'Rejected — please update photo'
-                        : 'Submitted — awaiting admin')
-                    : 'Not uploaded yet',
+                        ? l10n.rejectedPleaseUpdatePhoto
+                        : l10n.submittedAwaitingAdmin)
+                    : l10n.notUploadedYet,
             points: VerificationScore.profilePhotoPoints,
             earned: score.profilePhotoPointsEarned,
             accent: ringColor,
@@ -149,14 +151,14 @@ class VerificationScoreCard extends StatelessWidget {
                 : score.hasIdSelfie
                     ? _RowState.pending
                     : _RowState.empty,
-            title: 'Face + ID selfie',
+            title: l10n.faceIdSelfieLabel,
             subtitle: score.identityAccepted
-                ? 'Accepted by admin'
+                ? l10n.acceptedByAdmin
                 : score.hasIdSelfie
                     ? (score.identityStatus == 'rejected'
-                        ? 'Rejected — please update selfie'
-                        : 'Submitted — awaiting admin')
-                    : 'Not uploaded yet',
+                        ? l10n.rejectedPleaseUpdateSelfie
+                        : l10n.submittedAwaitingAdmin)
+                    : l10n.notUploadedYet,
             points: VerificationScore.identityPoints,
             earned: score.identityPointsEarned,
             accent: ringColor,

@@ -75,9 +75,10 @@ class _SellerIdentityVerificationScreenState
   }
 
   Future<void> _submit() async {
+    final l10n = context.l10n;
     if (_pickedSelfie == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please upload a selfie holding your ID')),
+        SnackBar(content: Text(l10n.pleaseUploadIdSelfie)),
       );
       return;
     }
@@ -103,7 +104,7 @@ class _SellerIdentityVerificationScreenState
         };
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Submitted — pending admin review')),
+        SnackBar(content: Text(l10n.submittedPendingAdminReview)),
       );
     } catch (e) {
       if (!mounted) return;
@@ -123,6 +124,7 @@ class _SellerIdentityVerificationScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     if (_loading) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator(color: kPrimaryColor)),
@@ -135,10 +137,10 @@ class _SellerIdentityVerificationScreenState
     final score = VerificationService.scoreFromProfile(_profile);
     final badgeStatus = VerificationService.statusFromProfile(_profile);
     final submitLabel = _submitting
-        ? 'Submitting...'
+        ? l10n.submitting
         : (hasSubmitted || _status == 'pending' || _status == 'verified')
-            ? 'Update & submit for review'
-            : 'Submit for review';
+            ? l10n.updateAndSubmitForReview
+            : l10n.submitForReview;
 
     return Scaffold(
       backgroundColor: kDarkWhite,
@@ -147,7 +149,7 @@ class _SellerIdentityVerificationScreenState
         elevation: 0,
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
-          'Identity verification',
+          l10n.identityVerification,
           style: kTextStyle.copyWith(
             color: kNeutralColor,
             fontWeight: FontWeight.bold,
@@ -183,20 +185,20 @@ class _SellerIdentityVerificationScreenState
                 if (_status == 'pending') ...[
                   const SizedBox(height: 12),
                   Text(
-                    'Face+ID is submitted but not accepted yet (+50 pts after accept). Profile photo is reviewed separately.',
+                    l10n.faceIdPendingHint,
                     style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13),
                   ),
                 ],
                 if (_status == 'verified') ...[
                   const SizedBox(height: 12),
                   Text(
-                    'Face+ID accepted. Replacing this selfie resets only the face+ID review.',
+                    l10n.faceIdVerifiedHint,
                     style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13),
                   ),
                 ],
                 const SizedBox(height: 20),
                 Text(
-                  'Selfie with ID',
+                  l10n.selfieWithId,
                   style: kTextStyle.copyWith(
                     color: kNeutralColor,
                     fontWeight: FontWeight.bold,
@@ -205,25 +207,25 @@ class _SellerIdentityVerificationScreenState
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Hold your government ID next to your face. An admin will review this later.',
+                  l10n.selfieWithIdHint,
                   style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13),
                 ),
                 const SizedBox(height: 16),
-                const VerificationGuidelineExamples(
+                VerificationGuidelineExamples(
                   doAsset: 'images/verification/id_face_do.png',
                   dontAsset: 'images/verification/id_face_dont.png',
-                  doLabel: 'Do: face + ID clear',
-                  dontLabel: "Don't: cover ID / glare",
+                  doLabel: l10n.idDoLabel,
+                  dontLabel: l10n.idDontLabel,
                   tips: [
-                    'Hold ID next to your face — both fully visible',
-                    'Good lighting, no glare on the ID',
-                    'All four corners of the ID visible',
-                    'No hat, sunglasses, or filters',
+                    l10n.idTipHoldNextToFace,
+                    l10n.idTipGoodLighting,
+                    l10n.idTipFourCorners,
+                    l10n.idTipNoAccessories,
                   ],
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  hasSubmitted ? 'Your submitted photo' : 'Upload ID + face selfie',
+                  hasSubmitted ? l10n.yourSubmittedPhoto : l10n.uploadIdFaceSelfie,
                   style: kTextStyle.copyWith(
                     color: kNeutralColor,
                     fontWeight: FontWeight.w600,
@@ -251,7 +253,7 @@ class _SellerIdentityVerificationScreenState
                                   size: 40, color: kPrimaryColor),
                               const SizedBox(height: 8),
                               Text(
-                                'Upload ID + face selfie',
+                                l10n.uploadIdFaceSelfie,
                                 style: kTextStyle.copyWith(color: kPrimaryColor),
                               ),
                             ],
@@ -269,8 +271,8 @@ class _SellerIdentityVerificationScreenState
                               ),
                               child: Text(
                                 hasNewPick
-                                    ? 'New photo selected — tap to change'
-                                    : 'Tap to change photo',
+                                    ? l10n.newPhotoSelectedTapToChange
+                                    : l10n.tapToChangePhoto,
                                 textAlign: TextAlign.center,
                                 style: kTextStyle.copyWith(
                                   color: kWhite,

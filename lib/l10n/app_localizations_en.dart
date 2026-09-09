@@ -2563,7 +2563,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get successTitle => 'Success';
 
   @override
+  String get somethingWentWrong => 'Something went wrong';
+
+  @override
   String get headsUp => 'Heads up';
+
+  @override
+  String get youAreOffline => 'You\'re offline. Some actions may not work.';
 
   @override
   String get applyWithoutCounterBody =>
@@ -2616,6 +2622,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get offerMessageHint => 'Optional note for the client…';
+
+  @override
+  String offerMessageMinHint(int count) {
+    return 'If you include a message, use at least $count characters';
+  }
+
+  @override
+  String offerMessageMinChars(int count) {
+    return 'Please write at least $count characters in your message';
+  }
+
+  @override
+  String offerMessageCharCount(int current, int min) {
+    return '$current / $min characters minimum';
+  }
 
   @override
   String get findJobsTitle => 'Find Jobs';
@@ -2903,4 +2924,321 @@ class AppLocalizationsEn extends AppLocalizations {
   String workTrustCompletedMonthLabel(String month, int year) {
     return '$month $year';
   }
+
+  @override
+  String get tapSetBirthDateRequired => 'Tap to set your birth date (required)';
+
+  @override
+  String ageBirthDateStaysPrivate(int age) {
+    return 'Age $age (birth date stays private)';
+  }
+
+  @override
+  String get pleaseSetDateOfBirth => 'Please set your date of birth';
+
+  @override
+  String get mustBeAtLeast18 => 'You must be at least 18 years old';
+
+  @override
+  String get pleaseUploadClearProfilePhoto =>
+      'Please upload a clear profile photo';
+
+  @override
+  String get pleaseUploadIdSelfie => 'Please upload a selfie holding your ID';
+
+  @override
+  String get leaveSetupTitle => 'Leave setup?';
+
+  @override
+  String get leaveSetupMessage => 'Log in again anytime to continue.';
+
+  @override
+  String get requiredDetails => 'Required details';
+
+  @override
+  String get requiredDetailsHint =>
+      'Job title and age help clients trust your profile. Your name comes from signup.';
+
+  @override
+  String get ageDateOfBirth => 'Age / date of birth';
+
+  @override
+  String get ageShownBirthPrivate =>
+      'Your age is shown on your profile. Birth date stays private.';
+
+  @override
+  String get optionalDetails => 'Optional details';
+
+  @override
+  String get optionalDetailsHint =>
+      'You can skip these and fill them later in Edit Profile.';
+
+  @override
+  String get profilePhotoGuidelineHint =>
+      'A clear front-facing photo helps verification. Prefer a plain white background.';
+
+  @override
+  String get photoDoLabel => 'Do: front face, clear bg';
+
+  @override
+  String get photoDontLabel => 'Don\'t: side view / shades';
+
+  @override
+  String get photoTipFaceCamera => 'Face the camera directly (not a side view)';
+
+  @override
+  String get photoTipBackground => 'Plain / white background, even lighting';
+
+  @override
+  String get photoTipNoAccessories => 'No sunglasses, hat, or heavy filters';
+
+  @override
+  String get photoTipShoulders => 'Shoulders visible; one person only';
+
+  @override
+  String get identityVerification => 'Identity verification';
+
+  @override
+  String get identityVerificationSetupHint =>
+      'Upload a selfie holding your government ID next to your face. An admin will review face+ID separately from your profile photo — you will see “pending” until each is accepted.';
+
+  @override
+  String get idDoLabel => 'Do: face + ID clear';
+
+  @override
+  String get idDontLabel => 'Don\'t: cover ID / glare';
+
+  @override
+  String get idTipHoldNextToFace =>
+      'Hold ID next to your face — both fully visible';
+
+  @override
+  String get idTipGoodLighting => 'Good lighting; avoid glare on the ID';
+
+  @override
+  String get idTipFourCorners =>
+      'All four corners of the ID visible; fingers on edges only';
+
+  @override
+  String get idTipNoAccessories => 'No hat, sunglasses, or filters';
+
+  @override
+  String get uploadIdFaceSelfie => 'Upload ID + face selfie';
+
+  @override
+  String get submittedPendingAdminReview => 'Submitted — pending admin review';
+
+  @override
+  String get updateAndSubmitForReview => 'Update & submit for review';
+
+  @override
+  String get submitForReview => 'Submit for review';
+
+  @override
+  String get faceIdPendingHint =>
+      'Face+ID is submitted but not accepted yet (+50 pts after accept). Profile photo is reviewed separately.';
+
+  @override
+  String get faceIdVerifiedHint =>
+      'Face+ID accepted. Replacing this selfie resets only the face+ID review.';
+
+  @override
+  String get selfieWithId => 'Selfie with ID';
+
+  @override
+  String get selfieWithIdHint =>
+      'Hold your government ID next to your face. An admin will review this later.';
+
+  @override
+  String get yourSubmittedPhoto => 'Your submitted photo';
+
+  @override
+  String get newPhotoSelectedTapToChange =>
+      'New photo selected — tap to change';
+
+  @override
+  String get tapToChangePhoto => 'Tap to change photo';
+
+  @override
+  String trustScoreSubtitle(int score) {
+    return '$score/100 trust score';
+  }
+
+  @override
+  String get fullyVerified => 'Fully verified';
+
+  @override
+  String get awaitingAdminReview => 'Awaiting admin review';
+
+  @override
+  String get completeVerification => 'Complete verification';
+
+  @override
+  String get verificationScoreHint =>
+      'Profile photo and face+ID are reviewed separately (50 pts each).';
+
+  @override
+  String get profilePhotoLabel => 'Profile photo';
+
+  @override
+  String get faceIdSelfieLabel => 'Face + ID selfie';
+
+  @override
+  String get acceptedByAdmin => 'Accepted by admin';
+
+  @override
+  String get rejectedPleaseUpdatePhoto => 'Rejected — please update photo';
+
+  @override
+  String get rejectedPleaseUpdateSelfie => 'Rejected — please update selfie';
+
+  @override
+  String get submittedAwaitingAdmin => 'Submitted — awaiting admin';
+
+  @override
+  String get notUploadedYet => 'Not uploaded yet';
+
+  @override
+  String get statusVerified => 'Verified';
+
+  @override
+  String get notVerified => 'Not verified';
+
+  @override
+  String get uploadFileOrImage => 'Upload File or Image';
+
+  @override
+  String get tapToAttachFile => 'Tap to attach a file';
+
+  @override
+  String get describeDeliveryDetails => 'Describe your delivery in details';
+
+  @override
+  String get enterDeliveryDetailsHint => 'Enter your delivery details...';
+
+  @override
+  String get filterJobs => 'Filter jobs';
+
+  @override
+  String get matchJobsWithSkills => 'Match jobs tagged with these skills.';
+
+  @override
+  String get searchJobTitleHint => 'Search job title...';
+
+  @override
+  String get onSiteOnly => 'On-site only';
+
+  @override
+  String get clearAll => 'Clear all';
+
+  @override
+  String jobsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count jobs',
+      one: '1 job',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get noOpenJobsRightNow => 'No open jobs right now';
+
+  @override
+  String get noOpenJobsRightNowHint =>
+      'Check back soon, or set a job alert to get notified when matching work is posted.';
+
+  @override
+  String get noJobsMatchFilters => 'No jobs match your filters';
+
+  @override
+  String get tryAdjustingFilters =>
+      'Try adjusting category, job type, distance, or remote.';
+
+  @override
+  String get leaveDeliveryDraftTitle => 'Leave with draft?';
+
+  @override
+  String get leaveDeliveryDraftMessage =>
+      'Your delivery message and attachment won’t be saved if you leave.';
+
+  @override
+  String get leaveAnyway => 'Leave';
+
+  @override
+  String get keepEditing => 'Keep editing';
+
+  @override
+  String get chooseFile => 'Choose file';
+
+  @override
+  String get attachmentTooLarge => 'File exceeds the 1 GB limit';
+
+  @override
+  String get searchApplicationsHint => 'Search by job title...';
+
+  @override
+  String get statusWithdrawn => 'Withdrawn';
+
+  @override
+  String get withdrawApplication => 'Withdraw';
+
+  @override
+  String get withdrawApplicationTitle => 'Withdraw application?';
+
+  @override
+  String get withdrawApplicationConfirmBody =>
+      'The employer will no longer see this as a pending offer. You can apply again later.';
+
+  @override
+  String get applicationWithdrawn => 'Application withdrawn';
+
+  @override
+  String get noFilteredApplications => 'No applications match';
+
+  @override
+  String get noFilteredApplicationsHint =>
+      'Try another status or clear your search.';
+
+  @override
+  String get trustScoreLabel => 'Trust';
+
+  @override
+  String get genderLabel => 'Gender';
+
+  @override
+  String get notificationMissingLink => 'This notification has no linked item.';
+
+  @override
+  String get notificationUnableToOpen => 'Unable to open this notification.';
+
+  @override
+  String notificationOpenFailed(String detail) {
+    return 'Could not open: $detail';
+  }
+
+  @override
+  String get notificationContractUnavailable => 'Contract no longer available.';
+
+  @override
+  String get notificationApplicationUnavailable =>
+      'Application no longer available.';
+
+  @override
+  String get notificationJobNotFound => 'Job post not found.';
+
+  @override
+  String get noFavouritesYetHint =>
+      'Browse open jobs and tap the bookmark to save them here.';
+
+  @override
+  String get noNotificationsHint =>
+      'Updates about jobs, contracts, and messages will show up here.';
+
+  @override
+  String get noJobAlertsYet => 'No job alerts yet';
+
+  @override
+  String get totalOrders => 'Total orders';
 }

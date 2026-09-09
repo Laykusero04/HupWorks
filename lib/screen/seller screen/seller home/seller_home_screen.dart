@@ -8,11 +8,9 @@ import 'package:freelancer/services/seller_home_service.dart';
 import 'package:freelancer/services/seller_orders_service.dart';
 import 'package:freelancer/router/route_names.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nb_utils/nb_utils.dart';
 
 import '../../widgets/client_shell_app_bar.dart';
 import '../../widgets/shell_tab_header.dart';
-import '../notification/seller_notification.dart';
 
 const _kSellerHomeMaxWidth = 720.0;
 
@@ -47,7 +45,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
           return IconButton(
             tooltip: context.l10n.notifications,
             onPressed: () async {
-              await const SellerNotification().launch(context);
+              await context.push(AppRoutes.sellerNotifications);
               if (mounted) await notifications.refreshUnreadCount();
             },
             icon: count > 0

@@ -745,7 +745,9 @@
   "offerSentAtPostedRate": "Aanmelding verzonden tegen klanttarief",
   "offerSentSuccess": "Je aanmelding is verzonden",
   "successTitle": "Gelukt",
+  "somethingWentWrong": "Er ging iets mis",
   "headsUp": "Let op",
+  "youAreOffline": "Je bent offline. Sommige acties werken mogelijk niet.",
   "applyWithoutCounterBody": "Je meldt je aan tegen het tarief van de klant. Zij zien je aanmelding tegen dat tarief.",
   "clientPostedRate": "Gepubliceerd tarief klant",
   "yourApplicationAmount": "Je aanmelding: {amount}",
@@ -761,6 +763,25 @@
   "quotePerMonth": "/ maand",
   "offerMessageOptional": "Bericht (optioneel)",
   "offerMessageHint": "Optionele notitie voor de klant…",
+  "offerMessageMinHint": "Als je een bericht toevoegt, gebruik dan minstens {count} tekens",
+  "@offerMessageMinHint": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "offerMessageMinChars": "Schrijf minstens {count} tekens in je bericht",
+  "@offerMessageMinChars": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "offerMessageCharCount": "{current} / {min} tekens minimum",
+  "@offerMessageCharCount": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "min": { "type": "int" }
+    }
+  },
   "findJobsTitle": "Jobs zoeken",
   "couldNotLoadSkillsFilter": "Vaardighedenfilter kon niet worden geladen. Trek later om te vernieuwen.",
   "buyerRequestDetailsTitle": "Jobdetails",
@@ -1040,5 +1061,120 @@
       "month": { "type": "String" },
       "year": { "type": "int" }
     }
-  }
+  },
+
+  "tapSetBirthDateRequired": "Tik om je geboortedatum in te stellen (verplicht)",
+  "ageBirthDateStaysPrivate": "Leeftijd {age} (geboortedatum blijft privé)",
+  "@ageBirthDateStaysPrivate": {
+    "placeholders": {
+      "age": { "type": "int" }
+    }
+  },
+  "pleaseSetDateOfBirth": "Stel je geboortedatum in",
+  "mustBeAtLeast18": "Je moet minstens 18 jaar oud zijn",
+  "pleaseUploadClearProfilePhoto": "Upload een duidelijke profielfoto",
+  "pleaseUploadIdSelfie": "Upload een selfie met je ID in de hand",
+  "leaveSetupTitle": "Setup verlaten?",
+  "leaveSetupMessage": "Log later opnieuw in om verder te gaan.",
+  "requiredDetails": "Verplichte gegevens",
+  "requiredDetailsHint": "Functietitel en leeftijd helpen klanten je te vertrouwen. Je naam komt van je registratie.",
+  "ageDateOfBirth": "Leeftijd / geboortedatum",
+  "ageShownBirthPrivate": "Je leeftijd wordt op je profiel getoond. Je geboortedatum blijft privé.",
+  "optionalDetails": "Optionele gegevens",
+  "optionalDetailsHint": "Je kunt deze overslaan en later invullen via Profiel bewerken.",
+  "profilePhotoGuidelineHint": "Een duidelijke foto van voren helpt bij verificatie. Bij voorkeur een effen witte achtergrond.",
+  "photoDoLabel": "Wel: gezicht van voren, heldere achtergrond",
+  "photoDontLabel": "Niet: zijaanzicht / zonnebril",
+  "photoTipFaceCamera": "Kijk recht in de camera (geen zijaanzicht)",
+  "photoTipBackground": "Effen / witte achtergrond, gelijkmatige belichting",
+  "photoTipNoAccessories": "Geen zonnebril, pet of zware filters",
+  "photoTipShoulders": "Schouders zichtbaar; slechts één persoon",
+  "identityVerification": "Identiteitsverificatie",
+  "identityVerificationSetupHint": "Upload een selfie met je officiële ID naast je gezicht. Een beheerder beoordeelt gezicht+ID apart van je profielfoto — je ziet “in behandeling” tot elk is goedgekeurd.",
+  "idDoLabel": "Wel: gezicht + ID duidelijk",
+  "idDontLabel": "Niet: ID bedekken / schittering",
+  "idTipHoldNextToFace": "Houd ID naast je gezicht — beide volledig zichtbaar",
+  "idTipGoodLighting": "Goede belichting; vermijd schittering op het ID",
+  "idTipFourCorners": "Alle vier hoeken van het ID zichtbaar; vingers alleen op de randen",
+  "idTipNoAccessories": "Geen pet, zonnebril of filters",
+  "uploadIdFaceSelfie": "Upload ID + gezicht-selfie",
+  "submittedPendingAdminReview": "Ingediend — wacht op beoordeling",
+  "updateAndSubmitForReview": "Bijwerken & indienen ter beoordeling",
+  "submitForReview": "Indienen ter beoordeling",
+  "faceIdPendingHint": "Gezicht+ID is ingediend maar nog niet goedgekeurd (+50 pts na acceptatie). Profielfoto wordt apart beoordeeld.",
+  "faceIdVerifiedHint": "Gezicht+ID geaccepteerd. Een nieuwe selfie reset alleen de gezicht+ID-beoordeling.",
+  "selfieWithId": "Selfie met ID",
+  "selfieWithIdHint": "Houd je officiële ID naast je gezicht. Een beheerder beoordeelt dit later.",
+  "yourSubmittedPhoto": "Je ingediende foto",
+  "newPhotoSelectedTapToChange": "Nieuwe foto geselecteerd — tik om te wijzigen",
+  "tapToChangePhoto": "Tik om foto te wijzigen",
+  "trustScoreSubtitle": "{score}/100 betrouwbaarheidsscore",
+  "@trustScoreSubtitle": {
+    "placeholders": {
+      "score": { "type": "int" }
+    }
+  },
+  "fullyVerified": "Volledig geverifieerd",
+  "awaitingAdminReview": "Wacht op beoordeling",
+  "completeVerification": "Verificatie afronden",
+  "verificationScoreHint": "Profielfoto en gezicht+ID worden apart beoordeeld (elk 50 pts).",
+  "profilePhotoLabel": "Profielfoto",
+  "faceIdSelfieLabel": "Gezicht + ID-selfie",
+  "acceptedByAdmin": "Geaccepteerd door beheerder",
+  "rejectedPleaseUpdatePhoto": "Afgewezen — update je foto",
+  "rejectedPleaseUpdateSelfie": "Afgewezen — update je selfie",
+  "submittedAwaitingAdmin": "Ingediend — wacht op beheerder",
+  "notUploadedYet": "Nog niet geüpload",
+  "statusVerified": "Geverifieerd",
+  "notVerified": "Niet geverifieerd",
+  "uploadFileOrImage": "Bestand of afbeelding uploaden",
+  "tapToAttachFile": "Tik om een bestand toe te voegen",
+  "describeDeliveryDetails": "Beschrijf je levering in detail",
+  "enterDeliveryDetailsHint": "Voer je leveringsdetails in...",
+  "filterJobs": "Vacatures filteren",
+  "matchJobsWithSkills": "Match vacatures met deze vaardigheden.",
+  "searchJobTitleHint": "Zoek vacaturetitel...",
+  "onSiteOnly": "Alleen on-site",
+  "clearAll": "Alles wissen",
+  "jobsCount": "{count, plural, =1{1 vacature} other{{count} vacatures}}",
+  "@jobsCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "noOpenJobsRightNow": "Nu geen open vacatures",
+  "noOpenJobsRightNowHint": "Kom later terug, of stel een vacaturemelding in zodat je een seintje krijgt bij passend werk.",
+  "noJobsMatchFilters": "Geen vacatures komen overeen met je filters",
+  "tryAdjustingFilters": "Pas categorie, type, afstand of remote aan.",
+  "leaveDeliveryDraftTitle": "Vertrekken met concept?",
+  "leaveDeliveryDraftMessage": "Je leveringsbericht en bijlage worden niet opgeslagen als je vertrekt.",
+  "leaveAnyway": "Vertrekken",
+  "keepEditing": "Blijven bewerken",
+  "chooseFile": "Bestand kiezen",
+  "attachmentTooLarge": "Bestand is groter dan de limiet van 1 GB",
+  "searchApplicationsHint": "Zoek op vacaturetitel...",
+  "statusWithdrawn": "Ingetrokken",
+  "withdrawApplication": "Intrekken",
+  "withdrawApplicationTitle": "Sollicitatie intrekken?",
+  "withdrawApplicationConfirmBody": "De werkgever ziet dit niet meer als openstaande sollicitatie. Je kunt later opnieuw solliciteren.",
+  "applicationWithdrawn": "Sollicitatie ingetrokken",
+  "noFilteredApplications": "Geen sollicitaties gevonden",
+  "noFilteredApplicationsHint": "Probeer een andere status of wis je zoekopdracht.",
+  "trustScoreLabel": "Vertrouwen",
+  "genderLabel": "Geslacht",
+  "notificationMissingLink": "Deze melding heeft geen gekoppeld item.",
+  "notificationUnableToOpen": "Deze melding kan niet worden geopend.",
+  "notificationOpenFailed": "Openen mislukt: {detail}",
+  "@notificationOpenFailed": {
+    "placeholders": {
+      "detail": { "type": "String" }
+    }
+  },
+  "notificationContractUnavailable": "Contract is niet meer beschikbaar.",
+  "notificationApplicationUnavailable": "Sollicitatie is niet meer beschikbaar.",
+  "notificationJobNotFound": "Vacature niet gevonden.",
+  "noFavouritesYetHint": "Bekijk open vacatures en tik op het bladwijzerpictogram om ze hier op te slaan.",
+  "noNotificationsHint": "Updates over vacatures, contracten en berichten verschijnen hier.",
+  "noJobAlertsYet": "Nog geen vacaturemeldingen",
+  "totalOrders": "Totaal contracten"
 }

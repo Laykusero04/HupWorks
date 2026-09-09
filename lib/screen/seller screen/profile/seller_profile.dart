@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/support_chat_navigation.dart';
 import 'package:freelancer/l10n/l10n.dart';
-import 'package:freelancer/screen/seller%20screen/profile/seller_identity_verification_screen.dart';
-import 'package:freelancer/screen/seller%20screen/profile/seller_profile_details.dart';
-import 'package:freelancer/screen/seller%20screen/seller%20dashboard/seller_dashboard.dart';
 import 'package:freelancer/services/auth_service.dart';
 import 'package:freelancer/services/profile_service.dart';
 import 'package:freelancer/services/verification_service.dart';
@@ -19,7 +16,6 @@ import '../../widgets/shell_tab_header.dart';
 import '../../widgets/verification_status_badge.dart';
 import '../favourite/seller_favourite_list.dart';
 import '../setting/seller_invite.dart';
-import '../setting/seller_setting.dart';
 
 class SellerProfile extends StatefulWidget {
   const SellerProfile({Key? key}) : super(key: key);
@@ -119,8 +115,9 @@ class _SellerProfileState extends State<SellerProfile> {
                 score: VerificationService.scoreFromProfile(_profile),
                 compact: true,
                 onTap: () async {
-                  await const SellerIdentityVerificationScreen().launch(context);
-                  _loadProfile(forceRefresh: true);
+                  Navigator.pop(context);
+                  await context.push(AppRoutes.sellerProfileVerify);
+                  if (mounted) _loadProfile(forceRefresh: true);
                 },
               ),
             ),
@@ -134,22 +131,29 @@ class _SellerProfileState extends State<SellerProfile> {
                   icon: Icons.person_outline,
                   title: l10n.myProfile,
                   onTap: () async {
-                    await const SellerProfileDetails().launch(context);
-                    _loadProfile(forceRefresh: true);
+                    Navigator.pop(context);
+                    await context.push(AppRoutes.sellerProfileDetails);
+                    if (mounted) _loadProfile(forceRefresh: true);
                   },
                 ),
                 ProfileMenuListTile(
                   icon: Icons.dashboard_outlined,
                   title: l10n.dashboard,
-                  onTap: () => const SellerDashBoard().launch(context),
+                  onTap: () {
+                    Navigator.pop(context);
+                    context.push(AppRoutes.sellerDashboard);
+                  },
                 ),
                 ProfileMenuListTile(
                   icon: Icons.verified_user_outlined,
-                  title: 'Identity verification',
-                  subtitle: '${VerificationService.scoreFromProfile(_profile).total}/100 trust score',
+                  title: l10n.identityVerification,
+                  subtitle: l10n.trustScoreSubtitle(
+                    VerificationService.scoreFromProfile(_profile).total,
+                  ),
                   onTap: () async {
-                    await const SellerIdentityVerificationScreen().launch(context);
-                    _loadProfile(forceRefresh: true);
+                    Navigator.pop(context);
+                    await context.push(AppRoutes.sellerProfileVerify);
+                    if (mounted) _loadProfile(forceRefresh: true);
                   },
                 ),
                 ProfileMenuListTile(
@@ -177,8 +181,9 @@ class _SellerProfileState extends State<SellerProfile> {
                   icon: Icons.settings_outlined,
                   title: l10n.settings,
                   onTap: () async {
-                    await const SellerSetting().launch(context);
-                    _loadProfile(forceRefresh: true);
+                    Navigator.pop(context);
+                    await context.push(AppRoutes.sellerSettings);
+                    if (mounted) _loadProfile(forceRefresh: true);
                   },
                 ),
                 ProfileMenuListTile(

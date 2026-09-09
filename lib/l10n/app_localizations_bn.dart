@@ -652,16 +652,24 @@ class AppLocalizationsBn extends AppLocalizations {
   String get authSavePassword => 'পাসওয়ার্ড সংরক্ষণ';
 
   @override
-  String get authVerification => 'যাচাইকরণ';
+  String get authVerification => 'ইমেইল নিশ্চিত করুন';
 
   @override
-  String get authCodeSentToEmail => 'আমরা আপনার ইমেইলে কোড পাঠিয়েছি-';
+  String get authConfirmEmailBody =>
+      'আমরা আপনার ইমেইলে একটি নিশ্চিতকরণ লিঙ্ক পাঠিয়েছি। অ্যাকাউন্ট সক্রিয় করতে লিঙ্কটি খুলুন, তারপর লগ ইন করুন।';
 
   @override
-  String get authDidntReceiveCode => 'কোড পাননি?';
+  String get authDidntReceiveEmail => 'ইমেইল পাননি?';
 
   @override
-  String get authResendCode => 'কোড আবার পাঠান';
+  String get authResendEmail => 'ইমেইল আবার পাঠান';
+
+  @override
+  String get authConfirmEmailResent =>
+      'নিশ্চিতকরণ ইমেইল আবার পাঠানো হয়েছে। আপনার ইনবক্স চেক করুন।';
+
+  @override
+  String get authBackToLogIn => 'লগ ইনে ফিরে যান';
 
   @override
   String get selectProfileImage => 'প্রোফাইল ছবি নির্বাচন';

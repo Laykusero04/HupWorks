@@ -1297,26 +1297,38 @@ abstract class AppLocalizations {
   /// No description provided for @authVerification.
   ///
   /// In en, this message translates to:
-  /// **'Verification'**
+  /// **'Confirm email'**
   String get authVerification;
 
-  /// No description provided for @authCodeSentToEmail.
+  /// No description provided for @authConfirmEmailBody.
   ///
   /// In en, this message translates to:
-  /// **'We\'ve sent the code to your email-'**
-  String get authCodeSentToEmail;
+  /// **'We\'ve sent a confirmation link to your email. Open the link to activate your account, then log in.'**
+  String get authConfirmEmailBody;
 
-  /// No description provided for @authDidntReceiveCode.
+  /// No description provided for @authDidntReceiveEmail.
   ///
   /// In en, this message translates to:
-  /// **'Didn\'t receive code?'**
-  String get authDidntReceiveCode;
+  /// **'Didn\'t get the email?'**
+  String get authDidntReceiveEmail;
 
-  /// No description provided for @authResendCode.
+  /// No description provided for @authResendEmail.
   ///
   /// In en, this message translates to:
-  /// **'Resend Code'**
-  String get authResendCode;
+  /// **'Resend email'**
+  String get authResendEmail;
+
+  /// No description provided for @authConfirmEmailResent.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmation email sent again. Check your inbox.'**
+  String get authConfirmEmailResent;
+
+  /// No description provided for @authBackToLogIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Log In'**
+  String get authBackToLogIn;
 
   /// No description provided for @selectProfileImage.
   ///

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:freelancer/router/route_names.dart';
 import 'package:freelancer/screen/widgets/auth/sign_up_screen.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../app_config/app_config.dart';
+import 'verification.dart';
 
-/// Freelancer signup → account onboarding (setup profile).
+/// Freelancer signup → confirm email, then log in → setup profile.
 class SellerSignUp extends StatelessWidget {
   const SellerSignUp({super.key});
 
@@ -18,9 +17,13 @@ class SellerSignUp extends StatelessWidget {
         subtitle: (l10n) => l10n.authJoinAsFreelancer,
         roleLabel: (l10n) => l10n.authRoleFreelancer,
         onSignedUp: (context, email) async {
-          // Use GoRouter so redirect does not yank away from an imperative stack.
           if (!context.mounted) return;
-          context.go(AppRoutes.sellerSetupProfile);
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => OtpVerification(email: email),
+            ),
+          );
         },
       );
 }

@@ -652,17 +652,24 @@ class AppLocalizationsNl extends AppLocalizations {
   String get authSavePassword => 'Wachtwoord opslaan';
 
   @override
-  String get authVerification => 'Verificatie';
+  String get authVerification => 'E-mail bevestigen';
 
   @override
-  String get authCodeSentToEmail =>
-      'We hebben de code naar je e-mail gestuurd-';
+  String get authConfirmEmailBody =>
+      'We hebben een bevestigingslink naar je e-mail gestuurd. Open de link om je account te activeren en log daarna in.';
 
   @override
-  String get authDidntReceiveCode => 'Code niet ontvangen?';
+  String get authDidntReceiveEmail => 'Geen e-mail ontvangen?';
 
   @override
-  String get authResendCode => 'Code opnieuw sturen';
+  String get authResendEmail => 'E-mail opnieuw sturen';
+
+  @override
+  String get authConfirmEmailResent =>
+      'Bevestigingsmail opnieuw verzonden. Controleer je inbox.';
+
+  @override
+  String get authBackToLogIn => 'Terug naar inloggen';
 
   @override
   String get selectProfileImage => 'Selecteer profielfoto';

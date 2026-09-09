@@ -649,16 +649,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authSavePassword => 'Save Password';
 
   @override
-  String get authVerification => 'Verification';
+  String get authVerification => 'Confirm email';
 
   @override
-  String get authCodeSentToEmail => 'We\'ve sent the code to your email-';
+  String get authConfirmEmailBody =>
+      'We\'ve sent a confirmation link to your email. Open the link to activate your account, then log in.';
 
   @override
-  String get authDidntReceiveCode => 'Didn\'t receive code?';
+  String get authDidntReceiveEmail => 'Didn\'t get the email?';
 
   @override
-  String get authResendCode => 'Resend Code';
+  String get authResendEmail => 'Resend email';
+
+  @override
+  String get authConfirmEmailResent =>
+      'Confirmation email sent again. Check your inbox.';
+
+  @override
+  String get authBackToLogIn => 'Back to Log In';
 
   @override
   String get selectProfileImage => 'Select Profile Image';

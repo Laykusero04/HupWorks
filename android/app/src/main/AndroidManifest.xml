@@ -32,7 +32,7 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-            <!-- Supabase auth deep links (password reset, magic link, etc.) -->
+            <!-- Supabase auth deep links (password reset, email confirm, etc.) -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -40,6 +40,14 @@
                 <data
                     android:scheme="hupworks"
                     android:host="reset-password"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data
+                    android:scheme="hupworks"
+                    android:host="confirm-email"/>
             </intent-filter>
             <!-- Attendance QR codes: hupworks://attendance/... -->
             <intent-filter>

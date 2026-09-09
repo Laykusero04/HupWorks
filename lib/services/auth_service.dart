@@ -10,10 +10,15 @@ class AuthService {
   /// Must also be listed under Supabase Auth → URL Configuration → Redirect URLs.
   static const passwordResetRedirectTo = 'hupworks://reset-password';
 
+  /// After the user taps the confirm-email link (Confirm email enabled in Auth).
+  static const emailConfirmRedirectTo = 'hupworks://confirm-email';
+
   /// True after [AuthChangeEvent.passwordRecovery] until the new password is saved.
   static bool passwordRecoveryPending = false;
 
-  /// Sign up with email and password
+  /// Sign up with email and password.
+  /// With "Confirm email" enabled, [AuthResponse.session] is usually null until
+  /// the user opens the confirmation link.
   static Future<AuthResponse> signUp({
     required String email,
     required String password,
@@ -24,13 +29,14 @@ class AuthService {
     final response = await _client.auth.signUp(
       email: email,
       password: password,
+      emailRedirectTo: emailConfirmRedirectTo,
       data: {
         'name': name,
         'role': role,
         if (phone != null && phone.isNotEmpty) 'phone': phone,
       },
     );
-    // New session: ensure profile row exists, then load role for GoRouter.
+    // New session (confirm email off, or already confirmed): ensure profile.
     if (response.session != null) {
       await ensureProfileExists(
         preferredName: name,
@@ -40,6 +46,15 @@ class AuthService {
       await getUserRole(forceRefresh: true);
     }
     return response;
+  }
+
+  /// Resend the signup confirmation email (Confirm email flow).
+  static Future<void> resendSignupConfirmation({required String email}) async {
+    await _client.auth.resend(
+      type: OtpType.signup,
+      email: email,
+      emailRedirectTo: emailConfirmRedirectTo,
+    );
   }
 
   /// Sign in with email and password

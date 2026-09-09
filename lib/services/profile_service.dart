@@ -217,7 +217,16 @@ class ProfileService {
     _cacheUserId = user.id;
     final role = profile['role'];
     if (role is String && role.trim().isNotEmpty) {
-      RoleCache.set(userId: user.id, role: role);
+      // Must pass onboarding flag — omitting it used to reset sellers to
+      // "needs setup" and GoRouter would send My Profile back to setup.
+      final completed = profile['seller_onboarding_completed'];
+      RoleCache.set(
+        userId: user.id,
+        role: role,
+        sellerOnboardingCompleted: completed is bool
+            ? completed
+            : (role.trim().toLowerCase() != 'seller'),
+      );
     }
     return Map<String, dynamic>.from(profile);
   }
@@ -244,7 +253,9 @@ class ProfileService {
         .from('profiles')
         .select(
           'id, role, name, email, phone, country, city, gender, '
-          'profile_image_url, bio, rating, created_at',
+          'profile_image_url, bio, rating, created_at, '
+          'verification_status, profile_photo_status, '
+          'company_name, company_website',
         )
         .eq('id', clientId)
         .eq('role', 'client')

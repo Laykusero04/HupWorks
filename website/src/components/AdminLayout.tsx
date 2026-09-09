@@ -4,7 +4,12 @@ import { NavLink, Outlet } from 'react-router-dom'
 
 const nav = [
   { to: '/', label: 'Overview', end: true, icon: 'bi-speedometer2' },
-  { to: '/verification', label: 'Verification', icon: 'bi-shield-check' },
+  { to: '/verification', label: 'Seller verification', icon: 'bi-shield-check' },
+  {
+    to: '/employer-verification',
+    label: 'Employer verification',
+    icon: 'bi-building-check',
+  },
   { to: '/reports', label: 'Reports', icon: 'bi-flag' },
   { to: '/users', label: 'Users', icon: 'bi-people' },
   { to: '/jobs', label: 'Jobs & orders', icon: 'bi-briefcase' },

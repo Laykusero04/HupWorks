@@ -1228,6 +1228,36 @@ class AppLocalizationsNl extends AppLocalizations {
   String get proBadge => 'Pro';
 
   @override
+  String get standingNewcomer => 'Nieuwkomer';
+
+  @override
+  String get standingAdvanced => 'Gevorderd';
+
+  @override
+  String get standingPro => 'Pro';
+
+  @override
+  String get standingExpert => 'Expert';
+
+  @override
+  String get standingGolden => 'Golden';
+
+  @override
+  String get standingWorkhorse => 'Workhorse';
+
+  @override
+  String get standingWorkNinja => 'WorkNinja';
+
+  @override
+  String get standingLegend => 'Legende';
+
+  @override
+  String get standingHupper => 'Hupper';
+
+  @override
+  String get standingTitle => 'Standing';
+
+  @override
   String get noApplicationsYet => 'Nog geen aanmeldingen';
 
   @override
@@ -3271,4 +3301,89 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get totalOrders => 'Totaal contracten';
+
+  @override
+  String get employerVerification => 'Werkgeververificatie';
+
+  @override
+  String get employerVerifyUpgradeHint =>
+      'Vul je profiel in om vacatures te plaatsen. Optioneel verifiëren met persoonlijke ID of bedrijfsdocumenten voor een geverifieerde badge.';
+
+  @override
+  String get chooseVerificationPath => 'Kies verificatiemethode';
+
+  @override
+  String get personalIdPath => 'Persoonlijk ID';
+
+  @override
+  String get companyDocPath => 'Bedrijf';
+
+  @override
+  String get companyDetails => 'Bedrijfsgegevens';
+
+  @override
+  String get companyName => 'Bedrijfsnaam';
+
+  @override
+  String get companyNameHint => 'Juridische of handelsnaam';
+
+  @override
+  String get companyRegistrationOptional => 'Registratienummer (optioneel)';
+
+  @override
+  String get companyRegistrationHint => 'KvK / CR / btw-nummer';
+
+  @override
+  String get companyWebsiteOptional => 'Website (optioneel)';
+
+  @override
+  String get companyDocUploadTitle => 'Bedrijfsregistratiedocument';
+
+  @override
+  String get companyDocUploadHint =>
+      'Upload een duidelijke foto van je bedrijfsregistratie.';
+
+  @override
+  String get uploadCompanyDoc => 'Bedrijfsdocument uploaden';
+
+  @override
+  String get pleaseUploadCompanyDoc => 'Upload een bedrijfsregistratiedocument';
+
+  @override
+  String get pleaseEnterCompanyName => 'Vul je bedrijfsnaam in';
+
+  @override
+  String get completeProfileToPostJob =>
+      'Vul je profiel aan om een vacature te plaatsen';
+
+  @override
+  String get completeProfileToPostJobHint =>
+      'Voeg deze gegevens toe zodat freelancers je vacature kunnen vertrouwen.';
+
+  @override
+  String get employerStandingNew => 'Nieuwe werkgever';
+
+  @override
+  String get employerStandingActive => 'Actieve inlener';
+
+  @override
+  String get employerStandingTrusted => 'Betrouwbare inlener';
+
+  @override
+  String get employerStandingEstablished => 'Gevestigde inlener';
+
+  @override
+  String employerStandingHint(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count voltooide betaalde hires',
+      one: '1 voltooide betaalde hire',
+      zero: 'Nog geen voltooide betaalde hires',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get verifiedEmployer => 'Geverifieerde werkgever';
 }

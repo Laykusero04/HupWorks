@@ -12,6 +12,7 @@ export type AdminOverview = {
   pendingVerification: number
   pendingIdentity?: number
   pendingProfilePhoto?: number
+  pendingEmployerVerification?: number
   openReports: number
   unpaidCompleted: number
   activeContracts: number
@@ -33,6 +34,9 @@ export type VerificationProfile = {
   profile_photo_status: string | null
   profile_photo_rejection_reason: string | null
   seller_onboarding_completed: boolean | null
+  company_name?: string | null
+  company_registration_number?: string | null
+  company_website?: string | null
 }
 
 export type VerificationSeller = {
@@ -66,6 +70,22 @@ export type VerificationRow = {
   profile: VerificationProfile | null
   seller: VerificationSeller | null
   privateDetails: VerificationPrivateDetails | null
+}
+
+export type EmployerVerificationRow = {
+  user_id: string
+  verify_type: 'personal_id' | 'company' | string | null
+  id_selfie_path: string | null
+  company_doc_path: string | null
+  company_name: string | null
+  company_registration_number: string | null
+  company_website: string | null
+  status: string | null
+  submitted_at: string | null
+  reviewed_at: string | null
+  rejection_reason: string | null
+  docUrl: string | null
+  profile: VerificationProfile | null
 }
 
 export type ReportRow = {
@@ -104,18 +124,37 @@ export type ReportRow = {
 
 export type ReviewTrack = 'profile' | 'identity'
 
-async function getJson<T>(path: string): Promise<T> {
-  const res = await fetch(path)
+async function parseJsonResponse<T>(res: Response, path: string): Promise<T & { error?: string }> {
   const text = await res.text()
-  let body: T & { error?: string }
   try {
-    body = JSON.parse(text) as T & { error?: string }
+    return JSON.parse(text) as T & { error?: string }
   } catch {
     throw new Error(
-      `Admin API returned non-JSON (${res.status}). Open ${path} — if it says "page could not be found" or "server error", redeploy after pushing website/api.`,
+      `Admin API returned non-JSON (${res.status}) for ${path}. If this is a 404, redeploy after the vercel.json /api/admin rewrite fix.`,
     )
   }
+}
+
+async function getJson<T>(path: string): Promise<T> {
+  const res = await fetch(path)
+  const body = await parseJsonResponse<T>(res, path)
   if (!res.ok) {
+    throw new Error(body.error || `Request failed (${res.status})`)
+  }
+  return body
+}
+
+async function postJson<T extends { ok: boolean; error?: string }>(
+  path: string,
+  input: unknown,
+): Promise<T> {
+  const res = await fetch(path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+  })
+  const body = await parseJsonResponse<T>(res, path)
+  if (!res.ok || !body.ok) {
     throw new Error(body.error || `Request failed (${res.status})`)
   }
   return body
@@ -132,6 +171,12 @@ export function fetchOverview() {
 export function fetchVerifications(status = 'pending') {
   return getJson<{ ok: boolean; rows: VerificationRow[] }>(
     `/api/admin/verifications?status=${encodeURIComponent(status)}`,
+  )
+}
+
+export function fetchEmployerVerifications(status = 'pending') {
+  return getJson<{ ok: boolean; rows: EmployerVerificationRow[] }>(
+    `/api/admin/employer-verifications?status=${encodeURIComponent(status)}`,
   )
 }
 
@@ -195,16 +240,10 @@ export async function updateCategory(input: {
   descriptionI18n: Record<string, string>
   icon?: string | null
 }) {
-  const res = await fetch('/api/admin/categories/update', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
-  })
-  const body = (await res.json()) as { ok: boolean; row?: CategoryRow; error?: string }
-  if (!res.ok || !body.ok) {
-    throw new Error(body.error || `Request failed (${res.status})`)
-  }
-  return body
+  return postJson<{ ok: boolean; row?: CategoryRow; error?: string }>(
+    '/api/admin/category-update',
+    input,
+  )
 }
 
 export async function reviewVerification(input: {
@@ -213,16 +252,22 @@ export async function reviewVerification(input: {
   decision: 'verified' | 'rejected'
   rejectionReason?: string
 }) {
-  const res = await fetch('/api/admin/verifications/review', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
-  })
-  const body = (await res.json()) as { ok: boolean; error?: string }
-  if (!res.ok || !body.ok) {
-    throw new Error(body.error || `Request failed (${res.status})`)
-  }
-  return body
+  return postJson<{ ok: boolean; error?: string }>(
+    '/api/admin/verification-review',
+    input,
+  )
+}
+
+export async function reviewEmployerVerification(input: {
+  userId: string
+  track: ReviewTrack
+  decision: 'verified' | 'rejected'
+  rejectionReason?: string
+}) {
+  return postJson<{ ok: boolean; error?: string }>(
+    '/api/admin/employer-verification-review',
+    input,
+  )
 }
 
 export function formatSkills(skills: unknown): string {

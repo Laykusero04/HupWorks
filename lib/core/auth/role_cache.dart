@@ -22,10 +22,17 @@ class RoleCache {
   }) {
     final normalized = role.trim().toLowerCase();
     if (normalized != 'seller' && normalized != 'client') return;
+    final sameUser = _userId == userId;
     _userId = userId;
     _role = normalized;
     if (normalized == 'seller') {
-      _sellerOnboardingCompleted = sellerOnboardingCompleted ?? false;
+      if (sellerOnboardingCompleted != null) {
+        _sellerOnboardingCompleted = sellerOnboardingCompleted;
+      } else if (!sameUser) {
+        // Unknown seller — treat as incomplete until AuthService loads the flag.
+        // Same user with omitted flag: preserve cached value (do not wipe).
+        _sellerOnboardingCompleted = false;
+      }
     } else {
       _sellerOnboardingCompleted = true;
     }

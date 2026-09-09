@@ -215,7 +215,7 @@ class SellerOrdersService {
         .from('job_posts')
         .select(
           '*, categories(name, name_i18n), ${JobPostsService.jobPostSkillsSelect}, '
-          'profiles:client_id(id, name, profile_image_url, rating, created_at, country, city, bio)',
+          'profiles:client_id(id, name, profile_image_url, rating, created_at, country, city, bio, verification_status, profile_photo_status, company_name)',
         )
         .eq('id', jobPostId)
         .single();

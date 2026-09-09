@@ -34,6 +34,7 @@ class AppRoutes {
   static const clientDashboard = '/client/dashboard';
   static const clientProfileDetails = '/client/profile/details';
   static const clientProfileEdit = '/client/profile/edit';
+  static const clientProfileVerify = '/client/profile/verify';
 
   // Seller shell tabs
   static const sellerHome = '/seller';

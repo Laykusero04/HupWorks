@@ -5,12 +5,16 @@ import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/core/utils/attendance_mode.dart';
 import 'package:freelancer/core/utils/app_date_format.dart';
 import 'package:freelancer/core/utils/category_name.dart';
+import 'package:freelancer/core/utils/client_profile_completeness.dart';
 import 'package:freelancer/core/utils/localized_category.dart';
 import 'package:freelancer/core/utils/shift_schedule.dart';
+import 'package:freelancer/router/route_names.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/services/category_service.dart';
 import 'package:freelancer/services/job_posts_service.dart';
+import 'package:freelancer/services/profile_service.dart';
 import 'package:freelancer/services/skill_service.dart';
+import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -49,6 +53,9 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
   bool _limitHireCount = true;
   bool _isLoading = false;
   bool _isCategoriesLoading = true;
+  bool _checkingGate = true;
+  bool _canPost = false;
+  List<String> _missingFields = const [];
   int _step = 0;
   DateTime? _workDate;
   TimeOfDay? _shiftStart;
@@ -67,8 +74,44 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
   @override
   void initState() {
     super.initState();
+    _checkPostGate();
     _loadCategories();
     _loadSkills();
+  }
+
+  Future<void> _checkPostGate() async {
+    try {
+      final profile = await ProfileService.getProfile(forceRefresh: true);
+      if (!mounted) return;
+      setState(() {
+        _canPost = ClientProfileCompleteness.canPostJobs(profile);
+        _missingFields =
+            ClientProfileCompleteness.missingForJobPost(profile);
+        _checkingGate = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _canPost = false;
+        _missingFields = const ['photo', 'phone', 'city', 'bio'];
+        _checkingGate = false;
+      });
+    }
+  }
+
+  String _missingLabel(AppLocalizations l10n, String key) {
+    switch (key) {
+      case 'photo':
+        return l10n.profilePhotoLabel;
+      case 'phone':
+        return l10n.phone;
+      case 'city':
+        return l10n.city;
+      case 'bio':
+        return l10n.aboutYourCompany;
+      default:
+        return key;
+    }
   }
 
   Future<void> _loadSkills() async {
@@ -301,6 +344,120 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
+    if (_checkingGate) {
+      return Scaffold(
+        backgroundColor: kDarkWhite,
+        appBar: AppBar(
+          backgroundColor: kDarkWhite,
+          elevation: 0,
+          iconTheme: const IconThemeData(color: kNeutralColor),
+          title: Text(
+            l10n.postAJob,
+            style: kTextStyle.copyWith(
+              color: kNeutralColor,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          centerTitle: true,
+        ),
+        body: const Center(
+          child: CircularProgressIndicator(color: kPrimaryColor),
+        ),
+      );
+    }
+
+    if (!_canPost) {
+      return Scaffold(
+        backgroundColor: kDarkWhite,
+        appBar: AppBar(
+          backgroundColor: kDarkWhite,
+          elevation: 0,
+          iconTheme: const IconThemeData(color: kNeutralColor),
+          title: Text(
+            l10n.postAJob,
+            style: kTextStyle.copyWith(
+              color: kNeutralColor,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          centerTitle: true,
+        ),
+        body: Padding(
+          padding: const EdgeInsets.only(top: 15),
+          child: Container(
+            width: context.width(),
+            padding: const EdgeInsets.all(24),
+            decoration: const BoxDecoration(
+              color: kWhite,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.badge_outlined, size: 48, color: kPrimaryColor),
+                const SizedBox(height: 16),
+                Text(
+                  l10n.completeProfileToPostJob,
+                  style: kTextStyle.copyWith(
+                    color: kNeutralColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  l10n.completeProfileToPostJobHint,
+                  style: kTextStyle.copyWith(color: kSubTitleColor),
+                ),
+                const SizedBox(height: 20),
+                ..._missingFields.map(
+                  (key) => Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.circle, size: 8, color: kPrimaryColor),
+                        const SizedBox(width: 10),
+                        Text(
+                          _missingLabel(l10n, key),
+                          style: kTextStyle.copyWith(color: kNeutralColor),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const Spacer(),
+                ButtonGlobalWithoutIcon(
+                  buttontext: l10n.editProfile,
+                  buttonDecoration: kButtonDecoration.copyWith(
+                    color: kPrimaryColor,
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  onPressed: () async {
+                    await context.push(AppRoutes.clientProfileEdit);
+                    await _checkPostGate();
+                  },
+                  buttonTextColor: kWhite,
+                ),
+                const SizedBox(height: 10),
+                Center(
+                  child: TextButton(
+                    onPressed: () async {
+                      await context.push(AppRoutes.clientProfileVerify);
+                      await _checkPostGate();
+                    },
+                    child: Text(l10n.employerVerification),
+                  ),
+                ),
+                const SizedBox(height: 12),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     final isLastStep = _step == _stepCount - 1;
 
     return PopScope(

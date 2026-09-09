@@ -16,7 +16,7 @@ function send(res: import('http').ServerResponse, status: number, body: unknown)
   res.end(JSON.stringify(body))
 }
 
-/** Local Vite middleware — production uses website/api/admin/[...path].ts on Vercel. */
+/** Local Vite middleware — production uses website/api/admin.ts on Vercel. */
 export function adminApiPlugin(): Plugin {
   return {
     name: 'hupworks-admin-api',

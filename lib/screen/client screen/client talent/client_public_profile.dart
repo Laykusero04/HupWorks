@@ -3,6 +3,8 @@ import 'package:freelancer/core/utils/app_date_format.dart';
 import 'package:freelancer/core/utils/profile_image.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/seller%20screen/report/seller_report.dart';
+import 'package:freelancer/screen/widgets/verification_status_badge.dart';
+import 'package:freelancer/services/employer_verification_service.dart';
 import 'package:freelancer/services/profile_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -111,6 +113,10 @@ class _ClientPublicProfileState extends State<ClientPublicProfile> {
     final avgLabel = reviewCount > 0 ? rating.toStringAsFixed(1) : '—';
     final locationParts = [city, country].where((s) => s.isNotEmpty).toList();
     final locationStr = locationParts.join(', ');
+    final companyName = (_profile!['company_name'] as String?)?.trim();
+    final verificationStatus =
+        EmployerVerificationService.statusFromProfile(_profile);
+    final isVerified = verificationStatus == 'verified';
 
     return Scaffold(
       backgroundColor: kDarkWhite,
@@ -171,9 +177,40 @@ class _ClientPublicProfileState extends State<ClientPublicProfile> {
                   style: kTextStyle.copyWith(
                     fontWeight: FontWeight.bold,
                     fontSize: 22,
+                    color: kNeutralColor,
                   ),
                 ),
               ),
+              if (companyName != null && companyName.isNotEmpty) ...[
+                const SizedBox(height: 4),
+                Text(
+                  companyName,
+                  textAlign: TextAlign.center,
+                  style: kTextStyle.copyWith(color: kSubTitleColor),
+                ),
+              ],
+              const SizedBox(height: 8),
+              Center(
+                child: VerificationStatusBadge(
+                  status: verificationStatus,
+                  score: EmployerVerificationService.scoreFromProfile(_profile),
+                  compact: true,
+                  showScore: false,
+                ),
+              ),
+              if (isVerified) ...[
+                const SizedBox(height: 6),
+                Center(
+                  child: Text(
+                    context.l10n.verifiedEmployer,
+                    style: kTextStyle.copyWith(
+                      color: const Color(0xFF0B7A3B),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
               if (locationStr.isNotEmpty) ...[
                 const SizedBox(height: 8),
                 Row(

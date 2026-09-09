@@ -112,6 +112,12 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
     final locationParts = [city, country].where((s) => s.isNotEmpty).toList();
     final locationStr = locationParts.join(', ');
 
+    Future<void> openEdit() async {
+      await const ClientEditProfile().launch(context);
+      await ProfileService.getProfile(forceRefresh: true);
+      if (mounted) _load();
+    }
+
     return Scaffold(
       backgroundColor: ProfileDetailTheme.scaffoldBg,
       appBar: AppBar(
@@ -124,148 +130,140 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
           style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            tooltip: l10n.editProfile,
+            onPressed: openEdit,
+            icon: const Icon(IconlyBold.edit, size: 20, color: kPrimaryColor),
+          ),
+        ],
       ),
       body: RefreshIndicator(
         color: kPrimaryColor,
         onRefresh: _load,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 20),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 16.0),
-
-              // Avatar — tap to change photo
-              EditableProfileAvatar(
-                imageUrl: profileImageUrl,
-                uploading: _uploadingPhoto,
-                onTap: _changePhoto,
-              ),
-              const SizedBox(height: 10.0),
-
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Text(
-                  name,
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: kTextStyle.copyWith(
-                    color: kNeutralColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  EditableProfileAvatar(
+                    imageUrl: profileImageUrl,
+                    size: 72,
+                    uploading: _uploadingPhoto,
+                    onTap: _changePhoto,
                   ),
-                ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: kTextStyle.copyWith(
+                            color: kNeutralColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                        if (locationStr.isNotEmpty) ...[
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              const Icon(Icons.location_on_outlined, size: 13, color: kSecondaryColor),
+                              const SizedBox(width: 3),
+                              Flexible(
+                                child: Text(
+                                  locationStr,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: kTextStyle.copyWith(
+                                    color: kLightNeutralColor,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                        if (reviewCount > 0) ...[
+                          const SizedBox(height: 8),
+                          ProfileRatingSummary(
+                            rating: rating,
+                            reviewCount: reviewCount,
+                            compact: true,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
               ),
 
-              if (locationStr.isNotEmpty) ...[
-                const SizedBox(height: 8.0),
-                Row(
+              const SizedBox(height: 12),
+
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
+                decoration: ProfileDetailTheme.statsPanel(),
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const Icon(Icons.location_on_outlined, size: 14, color: kSecondaryColor),
-                    const SizedBox(width: 4),
-                    Text(locationStr, style: kTextStyle.copyWith(color: kLightNeutralColor)),
+                    _statTile('$totalJobs', l10n.statPosted),
+                    _statDivider(),
+                    _statTile('$openJobs', l10n.open),
+                    _statDivider(),
+                    _statTile('$closedJobs', l10n.closed),
                   ],
                 ),
-              ],
-
-              const SizedBox(height: 10.0),
-              Center(
-                child: ProfileRatingSummary(
-                  rating: rating,
-                  reviewCount: reviewCount,
-                  compact: false,
-                ),
               ),
 
-              const SizedBox(height: 18.0),
-
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-                  decoration: ProfileDetailTheme.statsPanel(),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      _statTile('$totalJobs', l10n.statPosted),
-                      _statDivider(),
-                      _statTile('$openJobs', l10n.open),
-                      _statDivider(),
-                      _statTile('$closedJobs', l10n.closed),
-                    ],
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 18.0),
-
-              // Edit profile button
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton.icon(
-                    onPressed: () async {
-                      await const ClientEditProfile().launch(context);
-                      await ProfileService.getProfile(forceRefresh: true);
-                      _load();
-                    },
-                    icon: const Icon(IconlyBold.edit, size: 18, color: kPrimaryColor),
-                    label: Text(
-                      l10n.editProfile,
-                      style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold),
-                    ),
-                    style: ProfileDetailTheme.editProfileOutlinedStyle(),
-                  ),
-                ),
-              ),
-
-              // Bio
               if (bio != null && bio.trim().isNotEmpty) ...[
-                const SizedBox(height: 16.0),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 30),
-                  child: Text(
-                    bio,
-                    textAlign: TextAlign.center,
-                    style: kTextStyle.copyWith(color: kSubTitleColor),
-                  ),
+                const SizedBox(height: 12),
+                Text(
+                  bio.trim(),
+                  textAlign: TextAlign.start,
+                  style: kTextStyle.copyWith(color: kSubTitleColor, height: 1.35),
                 ),
               ],
 
-              const SizedBox(height: 22.0),
+              const SizedBox(height: 14),
 
               ProfileDetailTheme.sectionDivider(),
-              const SizedBox(height: 16.0),
+              const SizedBox(height: 10),
 
-              // Section header
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  children: [
-                    Text(
-                      l10n.myJobPosts,
-                      style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold),
-                    ),
-                    const Spacer(),
-                    Text(l10n.countTotal(totalJobs), style: kTextStyle.copyWith(color: kLightNeutralColor)),
-                  ],
-                ),
+              Row(
+                children: [
+                  Text(
+                    l10n.myJobPosts,
+                    style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold),
+                  ),
+                  const Spacer(),
+                  Text(
+                    l10n.countTotal(totalJobs),
+                    style: kTextStyle.copyWith(color: kLightNeutralColor),
+                  ),
+                ],
               ),
-              const SizedBox(height: 12.0),
+              const SizedBox(height: 8),
 
-              // Jobs list (or empty state)
               if (_jobs.isEmpty)
                 Padding(
-                  padding: const EdgeInsets.all(30),
+                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
                   child: Column(
                     children: [
-                      Icon(IconlyLight.paper, size: 48, color: kPrimaryColor.withValues(alpha: 0.45)),
-                      const SizedBox(height: 8),
-                      Text(context.l10n.noJobsPostedYet, style: kTextStyle.copyWith(color: kLightNeutralColor)),
-                      const SizedBox(height: 12),
+                      Icon(IconlyLight.paper, size: 36, color: kPrimaryColor.withValues(alpha: 0.45)),
+                      const SizedBox(height: 6),
+                      Text(
+                        l10n.noJobsPostedYet,
+                        style: kTextStyle.copyWith(color: kLightNeutralColor),
+                      ),
+                      const SizedBox(height: 10),
                       OutlinedButton.icon(
                         onPressed: () async {
                           await const CreateNewJobPost().launch(context);
@@ -273,20 +271,21 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
                         },
                         style: ProfileDetailTheme.editProfileOutlinedStyle(),
                         icon: const Icon(Icons.add, size: 18, color: kPrimaryColor),
-                        label: Text(context.l10n.postAJob, style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.w600)),
+                        label: Text(
+                          l10n.postAJob,
+                          style: kTextStyle.copyWith(
+                            color: kPrimaryColor,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
                     ],
                   ),
                 )
               else
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: Column(
-                    children: _jobs.map((j) => _jobCard(context, j)).toList(),
-                  ),
+                Column(
+                  children: _jobs.map((j) => _jobCard(context, j)).toList(),
                 ),
-
-              const SizedBox(height: 30),
             ],
           ),
         ),
@@ -295,23 +294,25 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
   }
 
   Widget _statTile(String value, String label) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold, fontSize: 18),
-        ),
-        const SizedBox(height: 2),
-        Text(label, style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12)),
-      ],
+    return Expanded(
+      child: Column(
+        children: [
+          Text(
+            value,
+            style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+          const SizedBox(height: 1),
+          Text(label, style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 11)),
+        ],
+      ),
     );
   }
 
   Widget _statDivider() => Container(
         width: 1,
-        height: 36,
+        height: 28,
         color: kPrimaryColor.withValues(alpha: 0.22),
-        margin: const EdgeInsets.symmetric(horizontal: 24),
+        margin: const EdgeInsets.symmetric(horizontal: 4),
       );
 
   Widget _jobCard(BuildContext context, Map<String, dynamic> job) {

@@ -84,9 +84,24 @@ export function OverviewPage() {
           <Col sm={6} xl={3}>
             <Card as={Link} to="/verification" className="kpi-card border-0 shadow-sm h-100">
               <Card.Body>
-                <div className="text-secondary small mb-1">Pending reviews</div>
+                <div className="text-secondary small mb-1">Seller reviews</div>
                 <div className="kpi-value">{overview?.pendingVerification ?? '—'}</div>
                 <div className="text-secondary small mt-1">Photo + ID</div>
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col sm={6} xl={3}>
+            <Card
+              as={Link}
+              to="/employer-verification"
+              className="kpi-card border-0 shadow-sm h-100"
+            >
+              <Card.Body>
+                <div className="text-secondary small mb-1">Employer reviews</div>
+                <div className="kpi-value">
+                  {overview?.pendingEmployerVerification ?? '—'}
+                </div>
+                <div className="text-secondary small mt-1">Photo + docs</div>
               </Card.Body>
             </Card>
           </Col>

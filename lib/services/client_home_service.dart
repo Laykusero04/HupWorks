@@ -44,6 +44,7 @@ class ClientHomeService {
         .from('profiles')
         .select(
           'id, name, profile_image_url, country, city, rating, '
+          'verification_status, profile_photo_status, '
           'seller_profiles!inner(job_title, about, skills)',
         )
         .eq('role', 'seller')
@@ -78,6 +79,7 @@ class ClientHomeService {
         .from('profiles')
         .select(
           'id, name, profile_image_url, country, city, rating, '
+          'verification_status, profile_photo_status, '
           'seller_profiles!inner(job_title, about, skills)',
         )
         .eq('role', 'seller')
@@ -88,7 +90,8 @@ class ClientHomeService {
         .from('seller_profiles')
         .select(
           'job_title, about, skills, '
-          'profiles!inner(id, name, profile_image_url, country, city, rating, role)',
+          'profiles!inner(id, name, profile_image_url, country, city, rating, role, '
+          'verification_status, profile_photo_status)',
         )
         .ilike('job_title', '%$q%')
         .limit(limit);

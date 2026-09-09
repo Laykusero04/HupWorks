@@ -1222,6 +1222,36 @@ class AppLocalizationsEn extends AppLocalizations {
   String get proBadge => 'Pro';
 
   @override
+  String get standingNewcomer => 'Newcomer';
+
+  @override
+  String get standingAdvanced => 'Advanced';
+
+  @override
+  String get standingPro => 'Pro';
+
+  @override
+  String get standingExpert => 'Expert';
+
+  @override
+  String get standingGolden => 'Golden';
+
+  @override
+  String get standingWorkhorse => 'Workhorse';
+
+  @override
+  String get standingWorkNinja => 'WorkNinja';
+
+  @override
+  String get standingLegend => 'Legend';
+
+  @override
+  String get standingHupper => 'Hupper';
+
+  @override
+  String get standingTitle => 'Standing';
+
+  @override
   String get noApplicationsYet => 'No applications yet';
 
   @override
@@ -3249,4 +3279,89 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get totalOrders => 'Total orders';
+
+  @override
+  String get employerVerification => 'Employer verification';
+
+  @override
+  String get employerVerifyUpgradeHint =>
+      'Complete your profile to post jobs. Optionally verify with a personal ID or company documents for a Verified employer badge.';
+
+  @override
+  String get chooseVerificationPath => 'Choose how to verify';
+
+  @override
+  String get personalIdPath => 'Personal ID';
+
+  @override
+  String get companyDocPath => 'Company';
+
+  @override
+  String get companyDetails => 'Company details';
+
+  @override
+  String get companyName => 'Company name';
+
+  @override
+  String get companyNameHint => 'Legal or trading name';
+
+  @override
+  String get companyRegistrationOptional => 'Registration number (optional)';
+
+  @override
+  String get companyRegistrationHint => 'KvK / CR / tax ID';
+
+  @override
+  String get companyWebsiteOptional => 'Website (optional)';
+
+  @override
+  String get companyDocUploadTitle => 'Company registration document';
+
+  @override
+  String get companyDocUploadHint =>
+      'Upload a clear photo of your business registration certificate.';
+
+  @override
+  String get uploadCompanyDoc => 'Upload company document';
+
+  @override
+  String get pleaseUploadCompanyDoc =>
+      'Please upload a company registration document';
+
+  @override
+  String get pleaseEnterCompanyName => 'Please enter your company name';
+
+  @override
+  String get completeProfileToPostJob => 'Complete your profile to post a job';
+
+  @override
+  String get completeProfileToPostJobHint =>
+      'Add these details so freelancers can trust your listing.';
+
+  @override
+  String get employerStandingNew => 'New employer';
+
+  @override
+  String get employerStandingActive => 'Active hirer';
+
+  @override
+  String get employerStandingTrusted => 'Trusted hirer';
+
+  @override
+  String get employerStandingEstablished => 'Established hirer';
+
+  @override
+  String employerStandingHint(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count completed paid hires',
+      one: '1 completed paid hire',
+      zero: 'No completed paid hires yet',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get verifiedEmployer => 'Verified employer';
 }

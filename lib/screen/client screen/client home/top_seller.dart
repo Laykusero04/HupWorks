@@ -7,6 +7,8 @@ import 'package:freelancer/services/profile_service.dart';
 
 import '../../widgets/client_shell_app_bar.dart';
 import '../../widgets/constant.dart';
+import '../../widgets/seller_standing_badge.dart';
+import '../../widgets/talent_card_verification_mark.dart';
 import '../client talent/freelancer_public_profile.dart';
 
 class TopSeller extends StatefulWidget {
@@ -98,7 +100,7 @@ class _TopSellerState extends State<TopSeller> {
       final t = about.trim();
       return t.length > 48 ? '${t.substring(0, 48)}…' : t;
     }
-    return context.l10n.verifiedFreelancer;
+    return context.l10n.freelancerDefault;
   }
 
   void _openSeller(Map<String, dynamic> seller) {
@@ -160,9 +162,9 @@ class _TopSellerState extends State<TopSeller> {
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          mainAxisSpacing: 10,
-          crossAxisSpacing: 10,
-          childAspectRatio: 0.72,
+          mainAxisSpacing: 14,
+          crossAxisSpacing: 14,
+          childAspectRatio: 0.62,
         ),
         itemCount: sellers.length,
         itemBuilder: (_, i) {
@@ -176,12 +178,12 @@ class _TopSellerState extends State<TopSeller> {
           return Material(
             color: Colors.transparent,
             child: InkWell(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(14),
               onTap: () => _openSeller(seller),
               child: Container(
                 decoration: BoxDecoration(
                   color: kWhite,
-                  borderRadius: BorderRadius.circular(8.0),
+                  borderRadius: BorderRadius.circular(14),
                   border: Border.all(color: kBorderColorTextField),
                 ),
                 clipBehavior: Clip.antiAlias,
@@ -189,17 +191,99 @@ class _TopSellerState extends State<TopSeller> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Expanded(
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: ProfileImage.provider(profileImageUrl),
-                            fit: BoxFit.cover,
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          DecoratedBox(
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: ProfileImage.provider(profileImageUrl),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
                           ),
-                        ),
+                          Positioned(
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            height: 40,
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    Colors.transparent,
+                                    Colors.black.withValues(alpha: 0.4),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            top: 8,
+                            left: 8,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.black.withValues(alpha: 0.5),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    IconlyBold.star,
+                                    color: Colors.amber,
+                                    size: 13,
+                                  ),
+                                  const SizedBox(width: 3),
+                                  Text(
+                                    rating.toStringAsFixed(1),
+                                    style: kTextStyle.copyWith(
+                                      color: Colors.white,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  if (reviewCount != null) ...[
+                                    Text(
+                                      ' ($reviewCount)',
+                                      style: kTextStyle.copyWith(
+                                        color: Colors.white70,
+                                        fontSize: 10,
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            top: 8,
+                            right: 8,
+                            child: TalentCardVerificationMark(
+                              profile: seller,
+                              size: 34,
+                              onPhoto: true,
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 8,
+                            left: 8,
+                            child: TalentCardStandingChip(
+                              rating: rating,
+                              reviewCount: reviewCount ?? 0,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(6.0),
+                      padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -208,42 +292,23 @@ class _TopSellerState extends State<TopSeller> {
                             style: kTextStyle.copyWith(
                               color: kNeutralColor,
                               fontWeight: FontWeight.bold,
+                              fontSize: 13,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          const SizedBox(height: 4),
-                          Row(
-                            children: [
-                              const Icon(IconlyBold.star, color: Colors.amber, size: 16),
-                              const SizedBox(width: 2),
-                              Text(
-                                rating.toStringAsFixed(1),
-                                style: kTextStyle.copyWith(color: kNeutralColor, fontSize: 12),
-                              ),
-                              if (reviewCount != null) ...[
-                                const SizedBox(width: 4),
-                                Expanded(
-                                  child: Text(
-                                    '($reviewCount)',
-                                    style: kTextStyle.copyWith(
-                                      color: kLightNeutralColor,
-                                      fontSize: 11,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: 2),
                           Text(
                             _subtitle(seller),
-                            style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 11),
-                            maxLines: 2,
+                            style: kTextStyle.copyWith(
+                              color: kSubTitleColor,
+                              fontSize: 11,
+                            ),
+                            maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
+                          const SizedBox(height: 6),
+                          TalentCardVerificationMeta(profile: seller),
                         ],
                       ),
                     ),

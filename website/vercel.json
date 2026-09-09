@@ -1,9 +1,13 @@
 {
   "rewrites": [
+    {
+      "source": "/api/admin/:path*",
+      "destination": "/api/admin?__path=:path*"
+    },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ],
   "functions": {
-    "api/admin/[...path].ts": {
+    "api/admin.ts": {
       "includeFiles": "api/_lib/**"
     }
   }

@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AdminLayout } from './components/AdminLayout'
 import { CatalogPage } from './pages/CatalogPage'
+import { EmployerVerificationPage } from './pages/EmployerVerificationPage'
 import { JobsPage } from './pages/JobsPage'
 import { OverviewPage } from './pages/OverviewPage'
 import { ReportsPage } from './pages/ReportsPage'
@@ -14,6 +15,7 @@ export default function App() {
         <Route element={<AdminLayout />}>
           <Route index element={<OverviewPage />} />
           <Route path="verification" element={<VerificationPage />} />
+          <Route path="employer-verification" element={<EmployerVerificationPage />} />
           <Route path="reports" element={<ReportsPage />} />
           <Route path="users" element={<UsersPage />} />
           <Route path="jobs" element={<JobsPage />} />

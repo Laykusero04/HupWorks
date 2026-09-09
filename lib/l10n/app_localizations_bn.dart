@@ -1226,6 +1226,36 @@ class AppLocalizationsBn extends AppLocalizations {
   String get proBadge => 'প্রো';
 
   @override
+  String get standingNewcomer => 'নিউকামার';
+
+  @override
+  String get standingAdvanced => 'অ্যাডভান্সড';
+
+  @override
+  String get standingPro => 'প্রো';
+
+  @override
+  String get standingExpert => 'এক্সপার্ট';
+
+  @override
+  String get standingGolden => 'গোল্ডেন';
+
+  @override
+  String get standingWorkhorse => 'ওয়ার্কহর্স';
+
+  @override
+  String get standingWorkNinja => 'ওয়ার্কনিনজা';
+
+  @override
+  String get standingLegend => 'লিজেন্ড';
+
+  @override
+  String get standingHupper => 'হাপার';
+
+  @override
+  String get standingTitle => 'স্ট্যান্ডিং';
+
+  @override
   String get noApplicationsYet => 'এখনও কোনো আবেদন নেই';
 
   @override
@@ -3256,4 +3286,89 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get totalOrders => 'মোট অর্ডার';
+
+  @override
+  String get employerVerification => 'নিয়োগকর্তা যাচাইকরণ';
+
+  @override
+  String get employerVerifyUpgradeHint =>
+      'চাকরি পোস্ট করতে প্রোফাইল সম্পূর্ণ করুন। যাচাইকৃত ব্যাজের জন্য ব্যক্তিগত আইডি বা কোম্পানি নথি দিয়ে যাচাই করতে পারেন।';
+
+  @override
+  String get chooseVerificationPath => 'যাচাইয়ের পথ বেছে নিন';
+
+  @override
+  String get personalIdPath => 'ব্যক্তিগত আইডি';
+
+  @override
+  String get companyDocPath => 'কোম্পানি';
+
+  @override
+  String get companyDetails => 'কোম্পানির বিবরণ';
+
+  @override
+  String get companyName => 'কোম্পানির নাম';
+
+  @override
+  String get companyNameHint => 'আইনি বা বাণিজ্যিক নাম';
+
+  @override
+  String get companyRegistrationOptional => 'নিবন্ধন নম্বর (ঐচ্ছিক)';
+
+  @override
+  String get companyRegistrationHint => 'KvK / CR / ট্যাক্স আইডি';
+
+  @override
+  String get companyWebsiteOptional => 'ওয়েবসাইট (ঐচ্ছিক)';
+
+  @override
+  String get companyDocUploadTitle => 'কোম্পানি নিবন্ধন নথি';
+
+  @override
+  String get companyDocUploadHint =>
+      'ব্যবসায়িক নিবন্ধন সার্টিফিকেটের স্পষ্ট ছবি আপলোড করুন।';
+
+  @override
+  String get uploadCompanyDoc => 'কোম্পানি নথি আপলোড';
+
+  @override
+  String get pleaseUploadCompanyDoc => 'কোম্পানি নিবন্ধন নথি আপলোড করুন';
+
+  @override
+  String get pleaseEnterCompanyName => 'কোম্পানির নাম লিখুন';
+
+  @override
+  String get completeProfileToPostJob =>
+      'চাকরি পোস্ট করতে প্রোফাইল সম্পূর্ণ করুন';
+
+  @override
+  String get completeProfileToPostJobHint =>
+      'ফ্রিল্যান্সাররা যেন আপনার তালিকা বিশ্বাস করতে পারে সেজন্য এগুলো যোগ করুন।';
+
+  @override
+  String get employerStandingNew => 'নতুন নিয়োগকর্তা';
+
+  @override
+  String get employerStandingActive => 'সক্রিয় নিয়োগকর্তা';
+
+  @override
+  String get employerStandingTrusted => 'বিশ্বস্ত নিয়োগকর্তা';
+
+  @override
+  String get employerStandingEstablished => 'প্রতিষ্ঠিত নিয়োগকর্তা';
+
+  @override
+  String employerStandingHint(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countটি সম্পন্ন পেইড হায়ার',
+      one: '১টি সম্পন্ন পেইড হায়ার',
+      zero: 'এখনও কোনো সম্পন্ন পেইড হায়ার নেই',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get verifiedEmployer => 'যাচাইকৃত নিয়োগকর্তা';
 }

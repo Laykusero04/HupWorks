@@ -6,13 +6,11 @@ import { PageSection } from '../components/PageSection'
 import { QueueToolbar } from '../components/QueueToolbar'
 import { StatusAlert } from '../components/StatusAlert'
 import {
-  fetchVerifications,
-  formatLanguages,
-  formatSkills,
-  reviewVerification,
+  fetchEmployerVerifications,
+  reviewEmployerVerification,
   statusLabel,
+  type EmployerVerificationRow,
   type ReviewTrack,
-  type VerificationRow,
 } from '../lib/adminApi'
 
 type Tab = 'pending' | 'verified' | 'rejected'
@@ -40,9 +38,15 @@ function statusBadge(status: string) {
   )
 }
 
-export function VerificationPage() {
+function verifyTypeLabel(type: string | null | undefined) {
+  if (type === 'company') return 'Company doc'
+  if (type === 'personal_id') return 'Personal ID'
+  return 'Not submitted'
+}
+
+export function EmployerVerificationPage() {
   const [tab, setTab] = useState<Tab>('pending')
-  const [rows, setRows] = useState<VerificationRow[]>([])
+  const [rows, setRows] = useState<EmployerVerificationRow[]>([])
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [busyKey, setBusyKey] = useState<string | null>(null)
@@ -54,7 +58,7 @@ export function VerificationPage() {
     setLoading(true)
     setError(null)
     try {
-      const res = await fetchVerifications(tab)
+      const res = await fetchEmployerVerifications(tab)
       setRows(res.rows)
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err))
@@ -72,7 +76,14 @@ export function VerificationPage() {
     if (!q) return rows
     return rows.filter((row) => {
       const p = row.profile
-      const hay = [p?.name, p?.email, p?.phone, row.seller?.job_title, row.user_id]
+      const hay = [
+        p?.name,
+        p?.email,
+        p?.phone,
+        row.company_name,
+        p?.company_name,
+        row.user_id,
+      ]
         .filter(Boolean)
         .join(' ')
         .toLowerCase()
@@ -87,7 +98,7 @@ export function VerificationPage() {
   ) {
     let rejectionReason: string | undefined
     if (decision === 'rejected') {
-      const label = track === 'profile' ? 'profile photo' : 'face + ID'
+      const label = track === 'profile' ? 'profile photo' : 'ID / company doc'
       const reason = window.prompt(`Rejection reason for ${label}:`)
       if (!reason?.trim()) return
       rejectionReason = reason.trim()
@@ -96,7 +107,7 @@ export function VerificationPage() {
     const key = `${userId}:${track}`
     setBusyKey(key)
     try {
-      await reviewVerification({ userId, track, decision, rejectionReason })
+      await reviewEmployerVerification({ userId, track, decision, rejectionReason })
 
       setRows((prev) =>
         prev
@@ -110,7 +121,11 @@ export function VerificationPage() {
               profile.verification_status = decision
               profile.verification_rejection_reason = rejectionReason ?? null
             }
-            return { ...row, profile, status: track === 'identity' ? decision : row.status }
+            return {
+              ...row,
+              profile,
+              status: track === 'identity' ? decision : row.status,
+            }
           })
           .filter((row) => {
             if (tab !== 'pending') return true
@@ -129,14 +144,14 @@ export function VerificationPage() {
   return (
     <div>
       <PageHeader
-        title="Seller verification"
-        subtitle="Each column is its own decision: profile photo and face + ID."
+        title="Employer verification"
+        subtitle="Separate from sellers: profile photo and personal ID or company registration."
       />
 
       <QueueToolbar
         search={query}
         onSearchChange={setQuery}
-        searchPlaceholder="Search name, email, phone…"
+        searchPlaceholder="Search name, email, company…"
         onRefresh={() => void load()}
         refreshing={loading}
         tabs={[
@@ -153,11 +168,11 @@ export function VerificationPage() {
 
       {error && <StatusAlert title="Error">{error}</StatusAlert>}
 
-      {loading && <LoadingState label="Loading queue…" />}
+      {loading && <LoadingState label="Loading employer queue…" />}
 
       {!loading && !error && filtered.length === 0 && (
         <EmptyState>
-          No {tab} sellers{query ? ' match your search' : ''}.
+          No {tab} employers{query ? ' match your search' : ''}.
         </EmptyState>
       )}
 
@@ -166,27 +181,23 @@ export function VerificationPage() {
           <Table responsive className="mb-0 align-middle">
             <thead className="table-light">
               <tr>
-                <th style={{ minWidth: 220 }}>Seller</th>
+                <th style={{ minWidth: 220 }}>Employer</th>
                 <th style={{ minWidth: 180 }}>Profile photo</th>
-                <th style={{ minWidth: 180 }}>Face + ID</th>
+                <th style={{ minWidth: 200 }}>ID / company</th>
               </tr>
             </thead>
             <tbody>
               {filtered.map((row) => {
                 const profile = row.profile
-                const seller = row.seller
                 const photoStatus = profile?.profile_photo_status ?? 'unverified'
                 const identityStatus = profile?.verification_status ?? row.status ?? 'unverified'
                 const photoUrl = profile?.profile_image_url
                 const open = expandedId === row.user_id
                 const photoBusy = busyKey === `${row.user_id}:profile`
                 const idBusy = busyKey === `${row.user_id}:identity`
-                const dob =
-                  row.privateDetails?.date_of_birth ||
-                  [seller?.birth_year, seller?.birth_month, seller?.birth_day]
-                    .filter((v) => v != null)
-                    .join('-') ||
-                  '—'
+                const companyName =
+                  row.company_name || profile?.company_name || '—'
+                const upgradeLabel = verifyTypeLabel(row.verify_type)
 
                 return (
                   <Fragment key={row.user_id}>
@@ -210,7 +221,7 @@ export function VerificationPage() {
                                 {profile?.name || 'Unnamed'}
                               </div>
                               <div className="small text-secondary text-truncate">
-                                {seller?.job_title || 'Seller'}
+                                {companyName !== '—' ? companyName : 'Employer'}
                                 {profile?.city ? ` · ${profile.city}` : ''}
                               </div>
                               <div className="mono-id text-secondary text-truncate">
@@ -241,16 +252,19 @@ export function VerificationPage() {
                       </td>
                       <td>
                         <TrackCell
-                          title="Face + ID"
-                          src={row.selfieUrl}
+                          title={upgradeLabel}
+                          src={row.docUrl}
                           status={identityStatus}
                           busy={idBusy}
-                          acceptLabel="Accept ID"
-                          rejectLabel="Reject ID"
-                          missingLabel="No face + ID"
+                          acceptLabel="Accept docs"
+                          rejectLabel="Reject docs"
+                          missingLabel="No ID / company doc"
                           onOpen={() =>
-                            row.selfieUrl &&
-                            setLightbox({ src: row.selfieUrl, title: 'Face + ID selfie' })
+                            row.docUrl &&
+                            setLightbox({
+                              src: row.docUrl,
+                              title: upgradeLabel,
+                            })
                           }
                           onAccept={() => void onReview(row.user_id, 'identity', 'verified')}
                           onReject={() => void onReview(row.user_id, 'identity', 'rejected')}
@@ -266,24 +280,30 @@ export function VerificationPage() {
                               <div>{profile?.phone || '—'}</div>
                             </Col>
                             <Col md={4}>
-                              <div className="text-secondary">Address</div>
-                              <div>{seller?.address || '—'}</div>
+                              <div className="text-secondary">Company</div>
+                              <div>{companyName}</div>
                             </Col>
                             <Col md={4}>
-                              <div className="text-secondary">DOB</div>
-                              <div>{dob}</div>
+                              <div className="text-secondary">Registration</div>
+                              <div>
+                                {row.company_registration_number ||
+                                  profile?.company_registration_number ||
+                                  '—'}
+                              </div>
                             </Col>
                             <Col md={4}>
-                              <div className="text-secondary">Skills</div>
-                              <div>{formatSkills(seller?.skills)}</div>
+                              <div className="text-secondary">Website</div>
+                              <div>
+                                {row.company_website || profile?.company_website || '—'}
+                              </div>
                             </Col>
                             <Col md={4}>
-                              <div className="text-secondary">Languages</div>
-                              <div>{formatLanguages(seller?.languages)}</div>
+                              <div className="text-secondary">Verify path</div>
+                              <div>{upgradeLabel}</div>
                             </Col>
                             <Col md={4}>
                               <div className="text-secondary">About</div>
-                              <div>{seller?.about || profile?.bio || '—'}</div>
+                              <div>{profile?.bio || '—'}</div>
                             </Col>
                           </Row>
                         </td>

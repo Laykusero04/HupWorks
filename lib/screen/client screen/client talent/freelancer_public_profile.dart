@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:freelancer/core/utils/app_date_format.dart';
 import 'package:freelancer/core/utils/profile_image.dart';
 import 'package:freelancer/l10n/l10n.dart';
@@ -18,6 +19,7 @@ import '../../widgets/profile_detail_theme.dart';
 import '../../widgets/profile_rating_summary.dart';
 import '../../widgets/profile_skeleton.dart';
 import '../../widgets/seller_skills_display.dart';
+import '../../widgets/seller_standing_badge.dart';
 import '../../widgets/verification_score_card.dart';
 import '../../widgets/verification_status_badge.dart';
 import '../../widgets/verified_work_trust_section.dart';
@@ -25,6 +27,7 @@ import '../client report/client_report.dart';
 import '../client service details/client_service_details.dart';
 
 /// Client-facing view of a freelancer's public profile.
+/// Layout matches [SellerProfileDetails] (compact header + stats + sections).
 class FreelancerPublicProfile extends StatefulWidget {
   const FreelancerPublicProfile({
     super.key,
@@ -60,13 +63,17 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
         ProfileService.getPublicSellerProfile(widget.sellerId),
         ProfileService.getReviewsReceived(widget.sellerId),
         SellerWorkTrustService.getPublicWorkTrust(widget.sellerId),
-        BlockService.isContactBlocked(widget.sellerId).then((v) => v).catchError((_) => false),
+        BlockService.isContactBlocked(widget.sellerId)
+            .then((v) => v)
+            .catchError((_) => false),
         SavedTalentService.isSaved(widget.sellerId).catchError((_) => false),
       ]);
       if (!mounted) return;
       setState(() {
         _profile = results[0] as Map<String, dynamic>?;
-        _reviews = List<Map<String, dynamic>>.from(results[1] as List<dynamic>? ?? const []);
+        _reviews = List<Map<String, dynamic>>.from(
+          results[1] as List<dynamic>? ?? const [],
+        );
         _workTrust = results[2] as SellerWorkTrust;
         _contactBlocked = results[3] as bool;
         _isSaved = results[4] as bool;
@@ -136,8 +143,9 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
           await ChatService.getOrCreateConversation(widget.sellerId);
       if (!mounted || _profile == null) return;
       final profileImageUrl = _profile!['profile_image_url'] as String? ?? '';
-      final name =
-          _profile!['name'] as String? ?? widget.initialName ?? 'Freelancer';
+      final name = _profile!['name'] as String? ??
+          widget.initialName ??
+          context.l10n.roleSeller;
       ChatInbox(
         conversationId: conversation['id'] as String,
         otherUserName: name,
@@ -167,19 +175,28 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
       );
     }
 
+    final l10n = context.l10n;
+    final brand = Theme.of(context).colorScheme.primary;
+    final pageBg = Theme.of(context).scaffoldBackgroundColor;
+
     if (_profile == null) {
       return Scaffold(
-        appBar: AppBar(),
+        backgroundColor: pageBg,
+        appBar: AppBar(
+          backgroundColor: pageBg,
+          surfaceTintColor: Colors.transparent,
+        ),
         body: Center(
           child: Text(
-            'Freelancer not found',
+            l10n.freelancerNotFound,
             style: kTextStyle.copyWith(color: kSubTitleColor),
           ),
         ),
       );
     }
 
-    final name = _profile!['name'] as String? ?? widget.initialName ?? 'Freelancer';
+    final name =
+        _profile!['name'] as String? ?? widget.initialName ?? l10n.roleSeller;
     final bio = _profile!['bio'] as String?;
     final profileImageUrl = _profile!['profile_image_url'] as String?;
     final jobTitle = ProfileService.sellerJobTitleFromProfile(_profile!);
@@ -189,6 +206,7 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
         VerificationService.scoreFromProfile(_profile);
     final about = ProfileService.sellerAboutFromProfile(_profile!);
     final address = ProfileService.sellerAddressFromProfile(_profile!);
+    final age = ProfileService.sellerAgeFromProfile(_profile!);
     final skills = ProfileService.sellerSkillsFromProfile(_profile!);
     final reviewStats = ProfileService.resolveReviewDisplay(
       profile: _profile,
@@ -199,33 +217,30 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
     final avgLabel = reviewCount > 0 ? rating.toStringAsFixed(1) : '—';
 
     return Scaffold(
-      backgroundColor: kDarkWhite,
+      backgroundColor: pageBg,
       appBar: AppBar(
-        backgroundColor: kDarkWhite,
+        backgroundColor: pageBg,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
-          'Freelancer profile',
-          style: kTextStyle.copyWith(
-            color: kPrimaryColor,
-            fontWeight: FontWeight.bold,
-          ),
+          'HupWorks',
+          style: kTextStyle.copyWith(color: brand, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         actions: [
           IconButton(
             tooltip: _isSaved
-                ? context.l10n.removedFromSavedTalent
-                : context.l10n.favorite,
+                ? l10n.removedFromSavedTalent
+                : l10n.favorite,
             onPressed: _saveBusy ? null : _toggleSaved,
             icon: Icon(
               _isSaved ? Icons.bookmark : Icons.bookmark_border,
-              color: _isSaved ? kPrimaryColor : kNeutralColor,
+              color: _isSaved ? brand : kNeutralColor,
             ),
           ),
           IconButton(
-            tooltip: context.l10n.report,
+            tooltip: l10n.report,
             onPressed: () {
               ClientReport(
                 reportedUserId: widget.sellerId,
@@ -237,251 +252,318 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
         ],
       ),
       body: RefreshIndicator(
-        color: kPrimaryColor,
+        color: brand,
         onRefresh: _load,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(
             parent: BouncingScrollPhysics(),
           ),
-          padding: const EdgeInsets.only(bottom: 32),
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 8),
-              Center(
-                child: Container(
-                  height: 110,
-                  width: 110,
-                  decoration: ProfileDetailTheme.avatarDecoration(
-                    ProfileImage.provider(profileImageUrl),
-                    accent: kPrimaryColor,
+              // Compact header — same composition as seller My Profile
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    height: 72,
+                    width: 72,
+                    decoration: ProfileDetailTheme.avatarDecoration(
+                      ProfileImage.provider(profileImageUrl),
+                      accent: brand,
+                    ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              Center(
-                child: VerificationStatusBadge(
-                  status: verificationStatus,
-                  score: verificationScore,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Text(
-                  name,
-                  textAlign: TextAlign.center,
-                  style: kTextStyle.copyWith(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 22,
-                  ),
-                ),
-              ),
-              if (jobTitle != null && jobTitle.isNotEmpty) ...[
-                const SizedBox(height: 6),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Text(
-                    jobTitle,
-                    textAlign: TextAlign.center,
-                    style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 14),
-                  ),
-                ),
-              ],
-              if (address != null && address.isNotEmpty) ...[
-                const SizedBox(height: 8),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.location_on_outlined, size: 14, color: kPrimaryColor),
-                      const SizedBox(width: 4),
-                      Flexible(
-                        child: Text(
-                          address,
-                          textAlign: TextAlign.center,
-                          style: kTextStyle.copyWith(color: kLightNeutralColor),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: kTextStyle.copyWith(
+                            color: kNeutralColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
                         ),
-                      ),
-                    ],
+                        if (jobTitle != null && jobTitle.isNotEmpty) ...[
+                          const SizedBox(height: 2),
+                          Text(
+                            jobTitle,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: kTextStyle.copyWith(
+                              color: kSubTitleColor,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                        if (address != null && address.isNotEmpty) ...[
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.location_on_outlined,
+                                size: 13,
+                                color: brand,
+                              ),
+                              const SizedBox(width: 3),
+                              Flexible(
+                                child: Text(
+                                  address,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: kTextStyle.copyWith(
+                                    color: kLightNeutralColor,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 6,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            VerificationStatusBadge(
+                              status: verificationStatus,
+                              score: verificationScore,
+                              compact: true,
+                            ),
+                            if (reviewCount > 0)
+                              ProfileRatingSummary(
+                                rating: rating,
+                                reviewCount: reviewCount,
+                                compact: true,
+                                accentColor: brand,
+                              ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-              const SizedBox(height: 10),
-              Center(
-                child: ProfileRatingSummary(
-                  rating: rating,
-                  reviewCount: reviewCount,
-                  accentColor: kPrimaryColor,
-                ),
-              ),
-              const SizedBox(height: 18),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  decoration: ProfileDetailTheme.statsPanel(accent: kPrimaryColor),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _stat('$reviewCount', 'Reviews'),
-                      _divider(),
-                      _stat(avgLabel, 'Avg rating'),
-                      _divider(),
-                      _stat('${verificationScore.total}', 'Trust'),
-                    ],
-                  ),
-                ),
-              ),
-              if (verificationScore.total > 0) ...[
-                const SizedBox(height: 14),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: VerificationScoreCard(
-                    score: verificationScore,
-                    accent: kPrimaryColor,
+                  const SizedBox(width: 8),
+                  SellerStandingBadge(
+                    rating: rating,
+                    reviewCount: reviewCount,
+                    size: 36,
                     compact: true,
                   ),
-                ),
-              ],
-              const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+                ],
+              ),
+
+              const SizedBox(height: 12),
+
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
+                decoration: ProfileDetailTheme.statsPanel(accent: brand),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Expanded(
-                      child: SizedBox(
-                        height: 48,
-                        child: OutlinedButton(
-                          onPressed: _contactBlocked ? null : _handleMessage,
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: kPrimaryColor,
-                            side: const BorderSide(color: kPrimaryColor),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                          ),
-                          child: Text(
-                            _contactBlocked
-                                ? context.l10n.contactBlockedShort
-                                : context.l10n.message,
-                            style: kTextStyle.copyWith(
-                              color: kPrimaryColor,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: SizedBox(
-                        height: 48,
-                        child: FilledButton(
-                          onPressed: _openService,
-                          style: FilledButton.styleFrom(
-                            backgroundColor: kPrimaryColor,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                          ),
-                          child: Text(
-                            context.l10n.viewServices,
-                            style: kTextStyle.copyWith(
-                              color: kWhite,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
+                    _statTile('$reviewCount', l10n.reviews, brand),
+                    _statDivider(brand),
+                    _statTile(avgLabel, l10n.avgRating, brand),
+                    _statDivider(brand),
+                    _statTile(
+                      '${verificationScore.total}',
+                      l10n.trustScoreLabel,
+                      brand,
                     ),
                   ],
                 ),
               ),
+
+              const SizedBox(height: 10),
+
+              VerificationScoreCard(
+                score: verificationScore,
+                accent: brand,
+                compact: true,
+              ),
+
+              const SizedBox(height: 12),
+
+              Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      height: 44,
+                      child: OutlinedButton(
+                        onPressed: _contactBlocked ? null : _handleMessage,
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: brand,
+                          side: BorderSide(color: brand),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        child: Text(
+                          _contactBlocked
+                              ? l10n.contactBlockedShort
+                              : l10n.message,
+                          style: kTextStyle.copyWith(
+                            color: brand,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: SizedBox(
+                      height: 44,
+                      child: FilledButton(
+                        onPressed: _openService,
+                        style: FilledButton.styleFrom(
+                          backgroundColor: brand,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        child: Text(
+                          l10n.viewServices,
+                          style: kTextStyle.copyWith(
+                            color: kWhite,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
               if (bio != null && bio.trim().isNotEmpty) ...[
-                const SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Text(
-                    bio.trim(),
-                    textAlign: TextAlign.center,
-                    style: kTextStyle.copyWith(color: kSubTitleColor),
+                const SizedBox(height: 12),
+                Text(
+                  bio.trim(),
+                  textAlign: TextAlign.start,
+                  style: kTextStyle.copyWith(
+                    color: kSubTitleColor,
+                    height: 1.35,
                   ),
                 ),
               ],
+
               if (about != null && about.isNotEmpty) ...[
-                const SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                const SizedBox(height: 12),
+                Text(
+                  l10n.about,
+                  style: kTextStyle.copyWith(
+                    color: brand,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  about,
+                  textAlign: TextAlign.start,
+                  style: kTextStyle.copyWith(
+                    color: kSubTitleColor,
+                    height: 1.35,
+                  ),
+                ),
+              ],
+
+              if (skills.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                SellerSkillsDisplay(skills: skills, accentColor: brand),
+              ],
+
+              if (_workTrust.shouldShowSection) ...[
+                const SizedBox(height: 14),
+                VerifiedWorkTrustSection(trust: _workTrust),
+              ],
+
+              if (age != null ||
+                  (address != null && address.isNotEmpty)) ...[
+                const SizedBox(height: 14),
+                ProfileDetailTheme.sectionDivider(
+                  gradientStart: brand,
+                  gradientEnd: kSecondaryColor,
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  l10n.profileDetails,
+                  style: kTextStyle.copyWith(
+                    color: brand,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: ProfileDetailTheme.cardOnPage(accent: brand),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'About',
-                        style: kTextStyle.copyWith(
-                          color: kPrimaryColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(about, style: kTextStyle.copyWith(color: kSubTitleColor)),
+                      if (age != null)
+                        _detailRow(l10n.ageLabel, l10n.ageYearsOld(age)),
+                      if (address != null && address.isNotEmpty)
+                        _detailRow(l10n.address, address),
                     ],
                   ),
                 ),
               ],
-              if (skills.isNotEmpty) ...[
-                const SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: SellerSkillsDisplay(skills: skills, accentColor: kPrimaryColor),
-                ),
-              ],
-              if (_workTrust.shouldShowSection) ...[
-                const SizedBox(height: 24),
-                VerifiedWorkTrustSection(trust: _workTrust),
-              ],
-              const SizedBox(height: 24),
+
+              const SizedBox(height: 14),
+
               ProfileDetailTheme.sectionDivider(
-                gradientStart: kPrimaryColor,
+                gradientStart: brand,
                 gradientEnd: kSecondaryColor,
               ),
-              const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Row(
-                  children: [
-                    Text(
-                      'Reviews',
-                      style: kTextStyle.copyWith(
-                        color: kPrimaryColor,
-                        fontWeight: FontWeight.bold,
-                      ),
+              const SizedBox(height: 10),
+
+              Row(
+                children: [
+                  Text(
+                    l10n.reviews,
+                    style: kTextStyle.copyWith(
+                      color: brand,
+                      fontWeight: FontWeight.bold,
                     ),
-                    const Spacer(),
-                    Text(
-                      '$reviewCount total',
-                      style: kTextStyle.copyWith(color: kLightNeutralColor),
-                    ),
-                  ],
-                ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    l10n.countTotal(reviewCount),
+                    style: kTextStyle.copyWith(color: kLightNeutralColor),
+                  ),
+                ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
+
               if (_reviews.isEmpty)
                 Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Text(
-                    'No reviews yet',
-                    textAlign: TextAlign.center,
-                    style: kTextStyle.copyWith(color: kLightNeutralColor),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+                  child: Column(
+                    children: [
+                      Icon(
+                        IconlyBold.star,
+                        size: 36,
+                        color: brand.withValues(alpha: 0.45),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        l10n.noReviewsYet,
+                        style: kTextStyle.copyWith(color: kLightNeutralColor),
+                      ),
+                    ],
                   ),
                 )
               else
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    children: _reviews.map(_reviewCard).toList(),
-                  ),
+                Column(
+                  children: _reviews.map((r) => _reviewCard(r, brand)).toList(),
                 ),
             ],
           ),
@@ -490,46 +572,99 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
     );
   }
 
-  Widget _stat(String value, String label) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: kTextStyle.copyWith(
-            color: kPrimaryColor,
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
+  Widget _statTile(String value, String label, Color accent) {
+    return Expanded(
+      child: Column(
+        children: [
+          Text(
+            value,
+            style: kTextStyle.copyWith(
+              color: accent,
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
           ),
-        ),
-        const SizedBox(height: 2),
-        Text(label, style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12)),
-      ],
+          const SizedBox(height: 1),
+          Text(
+            label,
+            style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 11),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _divider() => Container(
+  Widget _statDivider(Color accent) => Container(
         width: 1,
-        height: 36,
-        color: kPrimaryColor.withValues(alpha: 0.22),
-        margin: const EdgeInsets.symmetric(horizontal: 32),
+        height: 28,
+        color: accent.withValues(alpha: 0.22),
+        margin: const EdgeInsets.symmetric(horizontal: 4),
       );
 
-  Widget _reviewCard(Map<String, dynamic> row) {
+  Widget _detailRow(String label, String value) {
+    final v = value.trim().isEmpty ? '—' : value;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            flex: 2,
+            child: Text(
+              label,
+              style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13),
+            ),
+          ),
+          Expanded(
+            flex: 4,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  ':',
+                  style: kTextStyle.copyWith(
+                    color: kSubTitleColor,
+                    fontSize: 13,
+                  ),
+                ),
+                const SizedBox(width: 8.0),
+                Flexible(
+                  child: Text(
+                    v,
+                    style: kTextStyle.copyWith(
+                      color: kSubTitleColor,
+                      fontSize: 13,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _reviewCard(Map<String, dynamic> row, Color brand) {
     final stars = ProfileService.ratingAsStars(row['rating']);
     final comment = (row['comment'] as String?)?.trim();
     final created = row['created_at'] as String?;
     final reviewer = row['reviewer'] as Map<String, dynamic>?;
     final reviewerName = (reviewer?['name'] as String?)?.trim();
     final imageUrl = (reviewer?['profile_image_url'] as String?)?.trim();
-    final who =
-        (reviewerName != null && reviewerName.isNotEmpty) ? reviewerName : 'Client';
+    final who = (reviewerName != null && reviewerName.isNotEmpty)
+        ? reviewerName
+        : context.l10n.roleClient;
     final dateStr = _formatReviewDate(created, AppDateFormat.localeOf(context));
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Container(
+        width: double.infinity,
         padding: const EdgeInsets.all(12),
-        decoration: ProfileDetailTheme.cardOnPage(accent: kPrimaryColor),
+        decoration: ProfileDetailTheme.cardOnPage(accent: brand),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -540,8 +675,11 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
                   ? NetworkImage(imageUrl) as ImageProvider
                   : null,
               child: imageUrl == null || imageUrl.isEmpty
-                  ? Icon(Icons.person_rounded,
-                      color: kPrimaryColor.withValues(alpha: 0.55))
+                  ? Icon(
+                      Icons.person_rounded,
+                      color: brand.withValues(alpha: 0.55),
+                      size: 24,
+                    )
                   : null,
             ),
             const SizedBox(width: 12),
@@ -550,21 +688,28 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
                         child: Text(
                           who,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: kTextStyle.copyWith(fontWeight: FontWeight.bold),
+                          style: kTextStyle.copyWith(
+                            color: kNeutralColor,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                       if (dateStr.isNotEmpty)
-                        Text(
-                          dateStr,
-                          style: kTextStyle.copyWith(
-                            color: kLightNeutralColor,
-                            fontSize: 11,
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8),
+                          child: Text(
+                            dateStr,
+                            style: kTextStyle.copyWith(
+                              color: kLightNeutralColor,
+                              fontSize: 11,
+                            ),
                           ),
                         ),
                     ],
@@ -573,9 +718,12 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
                   Row(
                     children: List.generate(5, (i) {
                       return Icon(
-                        i < stars ? Icons.star_rounded : Icons.star_outline_rounded,
-                        size: 16,
-                        color: i < stars ? ratingBarColor : kBorderColorTextField,
+                        i < stars
+                            ? Icons.star_rounded
+                            : Icons.star_outline_rounded,
+                        size: 18,
+                        color:
+                            i < stars ? ratingBarColor : kBorderColorTextField,
                       );
                     }),
                   ),
@@ -583,7 +731,10 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
                     const SizedBox(height: 8),
                     Text(
                       comment,
-                      style: kTextStyle.copyWith(color: kSubTitleColor, height: 1.35),
+                      style: kTextStyle.copyWith(
+                        color: kSubTitleColor,
+                        height: 1.35,
+                      ),
                     ),
                   ],
                 ],

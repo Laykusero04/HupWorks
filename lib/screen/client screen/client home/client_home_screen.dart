@@ -11,12 +11,15 @@ import 'package:freelancer/screen/client%20screen/client%20profile/client_edit_p
 import 'package:freelancer/services/client_home_service.dart';
 import 'package:freelancer/services/job_posts_service.dart';
 import 'package:freelancer/services/profile_service.dart';
+import 'package:freelancer/services/verification_service.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../../router/route_names.dart';
 import '../../widgets/client_shell_app_bar.dart';
 import '../../widgets/constant.dart';
+import '../../widgets/seller_standing_badge.dart';
+import '../../widgets/talent_card_verification_mark.dart';
 import '../search/search.dart';
 import 'package:freelancer/core/utils/category_icons.dart';
 import 'package:freelancer/core/utils/localized_category.dart';
@@ -980,22 +983,24 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
     }
 
     return SizedBox(
-      height: 244,
+      height: 300,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: 16),
         itemCount: _topSellers.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 12),
+        separatorBuilder: (_, __) => const SizedBox(width: 14),
         itemBuilder: (_, i) {
           final seller = _topSellers[i];
           final profileImageUrl = seller['profile_image_url'] as String?;
           final ratingValue =
               double.tryParse('${seller['rating'] ?? 0}') ?? 0;
-          final isPro = ratingValue >= 4.5;
-
+          final reviewCount = (seller['review_count'] as num?)?.toInt() ?? 0;
+          final isVerified =
+              VerificationService.statusFromProfile(seller) == 'verified';
           final sellerId = seller['id'] as String?;
           final sellerName = seller['name'] as String?;
+          final subtitle = _topSellerSubtitle(seller, l10n, isVerified);
 
           return GestureDetector(
             onTap: sellerId == null
@@ -1006,85 +1011,80 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
                       name: sellerName,
                     ),
             child: Container(
-              width: 170,
+              width: 200,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: kBorderColorTextField),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 14,
-                    offset: const Offset(0, 8),
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
                   ),
                 ],
               ),
+              clipBehavior: Clip.antiAlias,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Stack(
                     children: [
                       Container(
-                        height: 130,
+                        height: 168,
                         width: double.infinity,
                         decoration: BoxDecoration(
-                          borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(20)),
                           image: DecorationImage(
                             image: ProfileImage.provider(profileImageUrl),
                             fit: BoxFit.cover,
                           ),
                         ),
                       ),
-                      if (isPro)
-                        Positioned(
-                          top: 10,
-                          left: 10,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 3),
-                            decoration: BoxDecoration(
-                              color: kAccentColor,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(Icons.workspace_premium_rounded,
-                                    size: 12, color: Colors.white),
-                                const SizedBox(width: 2),
-                                Text(
-                                  l10n.proBadge,
-                                  style: kTextStyle.copyWith(
-                                    color: Colors.white,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
+                      // Soft bottom fade so content meets photo cleanly
+                      Positioned(
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        height: 36,
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.transparent,
+                                Colors.black.withValues(alpha: 0.35),
                               ],
                             ),
                           ),
                         ),
+                      ),
                       Positioned(
-                        top: 10,
-                        right: 10,
+                        top: 8,
+                        left: 8,
                         child: Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 6, vertical: 3),
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.55),
+                            color: Colors.black.withValues(alpha: 0.5),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(IconlyBold.star,
-                                  color: Colors.amber, size: 12),
-                              const SizedBox(width: 2),
+                              const Icon(
+                                IconlyBold.star,
+                                color: Colors.amber,
+                                size: 13,
+                              ),
+                              const SizedBox(width: 3),
                               Text(
                                 ratingValue.toStringAsFixed(1),
                                 style: kTextStyle.copyWith(
                                   color: Colors.white,
-                                  fontSize: 10,
+                                  fontSize: 11,
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
@@ -1092,10 +1092,27 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
                           ),
                         ),
                       ),
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: TalentCardVerificationMark(
+                          profile: seller,
+                          size: 34,
+                          onPhoto: true,
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 8,
+                        left: 8,
+                        child: TalentCardStandingChip(
+                          rating: ratingValue,
+                          reviewCount: reviewCount,
+                        ),
+                      ),
                     ],
                   ),
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
+                    padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -1111,8 +1128,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          (seller['headline'] as String?) ??
-                              l10n.verifiedFreelancer,
+                          subtitle,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: kTextStyle.copyWith(
@@ -1120,25 +1136,8 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
                             fontSize: 11,
                           ),
                         ),
-                        const SizedBox(height: 10),
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(vertical: 7),
-                          decoration: BoxDecoration(
-                            color: kPrimaryColor.withOpacity(0.10),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Center(
-                            child: Text(
-                              l10n.viewProfile,
-                              style: kTextStyle.copyWith(
-                                color: kPrimaryColor,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 11,
-                              ),
-                            ),
-                          ),
-                        ),
+                        const SizedBox(height: 6),
+                        TalentCardVerificationMeta(profile: seller),
                       ],
                     ),
                   ),
@@ -1149,6 +1148,28 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
         },
       ),
     );
+  }
+
+  String _topSellerSubtitle(
+    Map<String, dynamic> seller,
+    AppLocalizations l10n,
+    bool isVerified,
+  ) {
+    final headline = (seller['headline'] as String?)?.trim();
+    if (headline != null && headline.isNotEmpty) return headline;
+
+    final sp = seller['seller_profiles'];
+    Map<String, dynamic>? row;
+    if (sp is Map<String, dynamic>) {
+      row = sp;
+    } else if (sp is List && sp.isNotEmpty && sp.first is Map<String, dynamic>) {
+      row = sp.first as Map<String, dynamic>;
+    }
+    final jobTitle = (row?['job_title'] as String?)?.trim();
+    if (jobTitle != null && jobTitle.isNotEmpty) return jobTitle;
+
+    if (isVerified) return l10n.verifiedFreelancer;
+    return l10n.freelancerDefault;
   }
 }
 

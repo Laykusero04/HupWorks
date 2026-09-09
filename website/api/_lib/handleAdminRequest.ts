@@ -66,6 +66,8 @@ export async function handleAdminRequest(req: AdminRequest): Promise<AdminRespon
       const [
         pendingIdentity,
         pendingProfilePhoto,
+        pendingEmployerIdentity,
+        pendingEmployerPhoto,
         openReports,
         unpaidCompleted,
         activeContracts,
@@ -78,6 +80,15 @@ export async function handleAdminRequest(req: AdminRequest): Promise<AdminRespon
           .from('profiles')
           .select('id', { count: 'exact', head: true })
           .eq('role', 'seller')
+          .eq('profile_photo_status', 'pending'),
+        sb
+          .from('employer_verifications')
+          .select('user_id', { count: 'exact', head: true })
+          .eq('status', 'pending'),
+        sb
+          .from('profiles')
+          .select('id', { count: 'exact', head: true })
+          .eq('role', 'client')
           .eq('profile_photo_status', 'pending'),
         sb
           .from('user_reports')
@@ -109,6 +120,13 @@ export async function handleAdminRequest(req: AdminRequest): Promise<AdminRespon
         }
       }
 
+      const employerTableMissing = Boolean(
+        pendingEmployerIdentity.error || pendingEmployerPhoto.error,
+      )
+      const pendingEmployer = employerTableMissing
+        ? 0
+        : (pendingEmployerIdentity.count ?? 0) + (pendingEmployerPhoto.count ?? 0)
+
       return {
         status: 200,
         body: {
@@ -117,6 +135,7 @@ export async function handleAdminRequest(req: AdminRequest): Promise<AdminRespon
             (pendingIdentity.count ?? 0) + (pendingProfilePhoto.count ?? 0),
           pendingIdentity: pendingIdentity.count ?? 0,
           pendingProfilePhoto: pendingProfilePhoto.count ?? 0,
+          pendingEmployerVerification: pendingEmployer,
           openReports: openReports.count ?? 0,
           unpaidCompleted: unpaidCompleted.count ?? 0,
           activeContracts: activeContracts.count ?? 0,
@@ -216,7 +235,12 @@ export async function handleAdminRequest(req: AdminRequest): Promise<AdminRespon
       return { status: 200, body: { ok: true, rows } }
     }
 
-    if (path === '/api/admin/verifications/review' && method === 'POST') {
+    // Single-segment path: Vercel non-Next catch-alls do not receive /api/admin/*/*
+    if (
+      (path === '/api/admin/verification-review' ||
+        path === '/api/admin/verifications/review') &&
+      method === 'POST'
+    ) {
       const body = (req.body ?? {}) as {
         userId?: string
         track?: 'profile' | 'identity'
@@ -273,6 +297,177 @@ export async function handleAdminRequest(req: AdminRequest): Promise<AdminRespon
           verification_rejection_reason: rejectionReason,
         })
         .eq('id', body.userId)
+
+      if (profileError) throw profileError
+      return { status: 200, body: { ok: true, track: 'identity' } }
+    }
+
+    if (path === '/api/admin/employer-verifications' && method === 'GET') {
+      const status = req.searchParams.get('status') ?? 'pending'
+      let profileQuery = sb
+        .from('profiles')
+        .select(
+          'id, name, email, phone, role, city, country, bio, profile_image_url, verification_status, verification_rejection_reason, profile_photo_status, profile_photo_rejection_reason, company_name, company_registration_number, company_website',
+        )
+        .eq('role', 'client')
+        .limit(200)
+
+      if (status === 'pending') {
+        profileQuery = profileQuery.or(
+          'profile_photo_status.eq.pending,verification_status.eq.pending',
+        )
+      } else if (status === 'verified') {
+        profileQuery = profileQuery
+          .eq('profile_photo_status', 'verified')
+          .eq('verification_status', 'verified')
+      } else if (status === 'rejected') {
+        profileQuery = profileQuery.or(
+          'profile_photo_status.eq.rejected,verification_status.eq.rejected',
+        )
+      }
+
+      const { data: profiles, error } = await profileQuery
+      if (error) throw error
+
+      const userIds = (profiles ?? []).map((p) => p.id as string)
+      const { data: employerRows, error: employerError } = userIds.length
+        ? await sb
+            .from('employer_verifications')
+            .select(
+              'user_id, verify_type, id_selfie_path, company_doc_path, company_name, company_registration_number, company_website, status, submitted_at, reviewed_at, rejection_reason',
+            )
+            .in('user_id', userIds)
+        : { data: [] as Record<string, unknown>[], error: null }
+
+      if (employerError) {
+        const msg = employerError.message || ''
+        if (msg.includes('employer_verifications') || msg.includes('schema cache')) {
+          return {
+            status: 500,
+            body: {
+              ok: false,
+              error:
+                'Apply migrations/0043_employer_verification.sql in the Supabase SQL Editor, then retry.',
+            },
+          }
+        }
+        throw employerError
+      }
+
+      const employerMap = new Map(
+        (employerRows ?? []).map((row) => [row.user_id as string, row]),
+      )
+
+      const rows = await Promise.all(
+        (profiles ?? []).map(async (profile) => {
+          const employer = employerMap.get(profile.id as string) ?? null
+          let docUrl: string | null = null
+          const verifyType = employer?.verify_type as string | undefined
+          const docPath =
+            verifyType === 'company'
+              ? (employer?.company_doc_path as string | undefined)
+              : (employer?.id_selfie_path as string | undefined)
+          if (docPath) {
+            const { data: signed } = await sb.storage
+              .from('identity-docs')
+              .createSignedUrl(docPath, 60 * 10)
+            docUrl = signed?.signedUrl ?? null
+          }
+          return {
+            user_id: profile.id,
+            verify_type: verifyType ?? null,
+            id_selfie_path: (employer?.id_selfie_path as string | null) ?? null,
+            company_doc_path:
+              (employer?.company_doc_path as string | null) ?? null,
+            company_name:
+              (employer?.company_name as string | null) ??
+              (profile.company_name as string | null) ??
+              null,
+            company_registration_number:
+              (employer?.company_registration_number as string | null) ??
+              (profile.company_registration_number as string | null) ??
+              null,
+            company_website:
+              (employer?.company_website as string | null) ??
+              (profile.company_website as string | null) ??
+              null,
+            status: employer?.status ?? profile.verification_status,
+            submitted_at: employer?.submitted_at ?? null,
+            reviewed_at: employer?.reviewed_at ?? null,
+            rejection_reason:
+              employer?.rejection_reason ?? profile.verification_rejection_reason,
+            profile,
+            docUrl,
+          }
+        }),
+      )
+
+      return { status: 200, body: { ok: true, rows } }
+    }
+
+    if (
+      (path === '/api/admin/employer-verification-review' ||
+        path === '/api/admin/employer-verifications/review') &&
+      method === 'POST'
+    ) {
+      const body = (req.body ?? {}) as {
+        userId?: string
+        track?: 'profile' | 'identity'
+        decision?: 'verified' | 'rejected'
+        rejectionReason?: string
+      }
+
+      if (!body.userId || !body.decision || !body.track) {
+        return {
+          status: 400,
+          body: {
+            ok: false,
+            error: 'userId, track (profile|identity), and decision required',
+          },
+        }
+      }
+      if (body.decision === 'rejected' && !body.rejectionReason?.trim()) {
+        return { status: 400, body: { ok: false, error: 'rejectionReason required' } }
+      }
+
+      const reviewedAt = new Date().toISOString()
+      const rejectionReason =
+        body.decision === 'rejected' ? body.rejectionReason!.trim() : null
+
+      if (body.track === 'profile') {
+        const { error: profileError } = await sb
+          .from('profiles')
+          .update({
+            profile_photo_status: body.decision,
+            profile_photo_reviewed_at: reviewedAt,
+            profile_photo_rejection_reason: rejectionReason,
+          })
+          .eq('id', body.userId)
+          .eq('role', 'client')
+        if (profileError) throw profileError
+        return { status: 200, body: { ok: true, track: 'profile' } }
+      }
+
+      const { error } = await sb
+        .from('employer_verifications')
+        .update({
+          status: body.decision,
+          reviewed_at: reviewedAt,
+          rejection_reason: rejectionReason,
+        })
+        .eq('user_id', body.userId)
+
+      if (error) throw error
+
+      const { error: profileError } = await sb
+        .from('profiles')
+        .update({
+          verification_status: body.decision,
+          verification_reviewed_at: reviewedAt,
+          verification_rejection_reason: rejectionReason,
+        })
+        .eq('id', body.userId)
+        .eq('role', 'client')
 
       if (profileError) throw profileError
       return { status: 200, body: { ok: true, track: 'identity' } }
@@ -418,7 +613,11 @@ export async function handleAdminRequest(req: AdminRequest): Promise<AdminRespon
       return { status: 200, body: { ok: true, rows: data ?? [] } }
     }
 
-    if (path === '/api/admin/categories/update' && method === 'POST') {
+    if (
+      (path === '/api/admin/category-update' ||
+        path === '/api/admin/categories/update') &&
+      method === 'POST'
+    ) {
       const body = (req.body ?? {}) as {
         id?: string
         nameI18n?: Record<string, string>

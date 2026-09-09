@@ -2374,6 +2374,66 @@ abstract class AppLocalizations {
   /// **'Pro'**
   String get proBadge;
 
+  /// No description provided for @standingNewcomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Newcomer'**
+  String get standingNewcomer;
+
+  /// No description provided for @standingAdvanced.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced'**
+  String get standingAdvanced;
+
+  /// No description provided for @standingPro.
+  ///
+  /// In en, this message translates to:
+  /// **'Pro'**
+  String get standingPro;
+
+  /// No description provided for @standingExpert.
+  ///
+  /// In en, this message translates to:
+  /// **'Expert'**
+  String get standingExpert;
+
+  /// No description provided for @standingGolden.
+  ///
+  /// In en, this message translates to:
+  /// **'Golden'**
+  String get standingGolden;
+
+  /// No description provided for @standingWorkhorse.
+  ///
+  /// In en, this message translates to:
+  /// **'Workhorse'**
+  String get standingWorkhorse;
+
+  /// No description provided for @standingWorkNinja.
+  ///
+  /// In en, this message translates to:
+  /// **'WorkNinja'**
+  String get standingWorkNinja;
+
+  /// No description provided for @standingLegend.
+  ///
+  /// In en, this message translates to:
+  /// **'Legend'**
+  String get standingLegend;
+
+  /// No description provided for @standingHupper.
+  ///
+  /// In en, this message translates to:
+  /// **'Hupper'**
+  String get standingHupper;
+
+  /// No description provided for @standingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Standing'**
+  String get standingTitle;
+
   /// No description provided for @noApplicationsYet.
   ///
   /// In en, this message translates to:
@@ -5986,6 +6046,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Total orders'**
   String get totalOrders;
+
+  /// No description provided for @employerVerification.
+  ///
+  /// In en, this message translates to:
+  /// **'Employer verification'**
+  String get employerVerification;
+
+  /// No description provided for @employerVerifyUpgradeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete your profile to post jobs. Optionally verify with a personal ID or company documents for a Verified employer badge.'**
+  String get employerVerifyUpgradeHint;
+
+  /// No description provided for @chooseVerificationPath.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how to verify'**
+  String get chooseVerificationPath;
+
+  /// No description provided for @personalIdPath.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal ID'**
+  String get personalIdPath;
+
+  /// No description provided for @companyDocPath.
+  ///
+  /// In en, this message translates to:
+  /// **'Company'**
+  String get companyDocPath;
+
+  /// No description provided for @companyDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Company details'**
+  String get companyDetails;
+
+  /// No description provided for @companyName.
+  ///
+  /// In en, this message translates to:
+  /// **'Company name'**
+  String get companyName;
+
+  /// No description provided for @companyNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal or trading name'**
+  String get companyNameHint;
+
+  /// No description provided for @companyRegistrationOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration number (optional)'**
+  String get companyRegistrationOptional;
+
+  /// No description provided for @companyRegistrationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'KvK / CR / tax ID'**
+  String get companyRegistrationHint;
+
+  /// No description provided for @companyWebsiteOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Website (optional)'**
+  String get companyWebsiteOptional;
+
+  /// No description provided for @companyDocUploadTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Company registration document'**
+  String get companyDocUploadTitle;
+
+  /// No description provided for @companyDocUploadHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload a clear photo of your business registration certificate.'**
+  String get companyDocUploadHint;
+
+  /// No description provided for @uploadCompanyDoc.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload company document'**
+  String get uploadCompanyDoc;
+
+  /// No description provided for @pleaseUploadCompanyDoc.
+  ///
+  /// In en, this message translates to:
+  /// **'Please upload a company registration document'**
+  String get pleaseUploadCompanyDoc;
+
+  /// No description provided for @pleaseEnterCompanyName.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your company name'**
+  String get pleaseEnterCompanyName;
+
+  /// No description provided for @completeProfileToPostJob.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete your profile to post a job'**
+  String get completeProfileToPostJob;
+
+  /// No description provided for @completeProfileToPostJobHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add these details so freelancers can trust your listing.'**
+  String get completeProfileToPostJobHint;
+
+  /// No description provided for @employerStandingNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New employer'**
+  String get employerStandingNew;
+
+  /// No description provided for @employerStandingActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active hirer'**
+  String get employerStandingActive;
+
+  /// No description provided for @employerStandingTrusted.
+  ///
+  /// In en, this message translates to:
+  /// **'Trusted hirer'**
+  String get employerStandingTrusted;
+
+  /// No description provided for @employerStandingEstablished.
+  ///
+  /// In en, this message translates to:
+  /// **'Established hirer'**
+  String get employerStandingEstablished;
+
+  /// No description provided for @employerStandingHint.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No completed paid hires yet} =1{1 completed paid hire} other{{count} completed paid hires}}'**
+  String employerStandingHint(int count);
+
+  /// No description provided for @verifiedEmployer.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified employer'**
+  String get verifiedEmployer;
 }
 
 class _AppLocalizationsDelegate

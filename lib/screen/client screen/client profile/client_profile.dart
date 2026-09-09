@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/support_chat_navigation.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/router/route_names.dart';
+import 'package:freelancer/screen/widgets/verification_status_badge.dart';
 import 'package:freelancer/services/auth_service.dart';
+import 'package:freelancer/services/employer_verification_service.dart';
 import 'package:freelancer/services/profile_service.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -96,6 +98,8 @@ class _ClientProfileState extends State<ClientProfile> {
     final profileImageUrl = _profile?['profile_image_url'] as String?;
     final rating = (_profile?['rating'] as num?)?.toDouble() ?? 0;
     final reviewCount = (_profile?['review_count'] as num?)?.toInt() ?? 0;
+    final verificationStatus =
+        EmployerVerificationService.statusFromProfile(_profile);
 
     return Material(
       color: kWhite,
@@ -107,6 +111,20 @@ class _ClientProfileState extends State<ClientProfile> {
             imageUrl: profileImageUrl,
             rating: rating,
             reviewCount: reviewCount,
+            verificationBadge: Padding(
+              padding: const EdgeInsets.only(top: 6),
+              child: VerificationStatusBadge(
+                status: verificationStatus,
+                score:
+                    EmployerVerificationService.scoreFromProfile(_profile),
+                compact: true,
+                onTap: () async {
+                  Navigator.pop(context);
+                  await context.push(AppRoutes.clientProfileVerify);
+                  if (mounted) _loadProfile(forceRefresh: true);
+                },
+              ),
+            ),
           ),
           const Divider(height: 1),
           Expanded(
@@ -119,6 +137,19 @@ class _ClientProfileState extends State<ClientProfile> {
                   onTap: () async {
                     await const ClientProfileDetails().launch(context);
                     _loadProfile(forceRefresh: true);
+                  },
+                ),
+                ProfileMenuListTile(
+                  icon: Icons.verified_user_outlined,
+                  title: l10n.employerVerification,
+                  subtitle: l10n.trustScoreSubtitle(
+                    EmployerVerificationService.scoreFromProfile(_profile)
+                        .total,
+                  ),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    await context.push(AppRoutes.clientProfileVerify);
+                    if (mounted) _loadProfile(forceRefresh: true);
                   },
                 ),
                 ProfileMenuListTile(

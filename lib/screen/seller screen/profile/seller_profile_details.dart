@@ -17,6 +17,7 @@ import '../../widgets/profile_detail_theme.dart';
 import '../../widgets/profile_rating_summary.dart';
 import '../../widgets/profile_skeleton.dart';
 import '../../widgets/seller_skills_display.dart';
+import '../../widgets/seller_standing_badge.dart';
 import '../../widgets/verification_score_card.dart';
 import '../../widgets/verification_status_badge.dart';
 
@@ -135,6 +136,11 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
     final brand = Theme.of(context).colorScheme.primary;
     final pageBg = Theme.of(context).scaffoldBackgroundColor;
 
+    Future<void> openEdit() async {
+      await context.push(AppRoutes.sellerProfileEdit);
+      if (mounted) _load();
+    }
+
     return Scaffold(
       backgroundColor: pageBg,
       appBar: AppBar(
@@ -147,290 +153,257 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
           style: kTextStyle.copyWith(color: brand, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            tooltip: l10n.editProfile,
+            onPressed: openEdit,
+            icon: Icon(IconlyBold.edit, size: 20, color: brand),
+          ),
+        ],
       ),
       body: RefreshIndicator(
         color: brand,
         onRefresh: _load,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 20),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 16.0),
-
-              EditableProfileAvatar(
-                imageUrl: ProfileImage.normalize(
-                  profileImageUrl is String ? profileImageUrl : null,
-                ),
-                accent: brand,
-                uploading: _uploadingPhoto,
-                onTap: _changePhoto,
-              ),
-              const SizedBox(height: 10.0),
-              Center(
-                child: VerificationStatusBadge(
-                  status: verificationStatus,
-                  score: verificationScore,
-                  onTap: openVerification,
-                ),
-              ),
-              const SizedBox(height: 10.0),
-
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Text(
-                  name,
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: kTextStyle.copyWith(
-                    color: kNeutralColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                  ),
-                ),
-              ),
-
-              if (jobTitle != null && jobTitle.isNotEmpty) ...[
-                const SizedBox(height: 6.0),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Text(
-                    jobTitle,
-                    textAlign: TextAlign.center,
-                    style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 14),
-                  ),
-                ),
-              ],
-
-              if (address != null && address.isNotEmpty) ...[
-                const SizedBox(height: 8.0),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.location_on_outlined, size: 14, color: kSellerAccent),
-                      const SizedBox(width: 4),
-                      Flexible(
-                        child: Text(
-                          address,
-                          textAlign: TextAlign.center,
-                          style: kTextStyle.copyWith(color: kLightNeutralColor),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-
-              const SizedBox(height: 10.0),
-              Center(
-                child: ProfileRatingSummary(
-                  rating: rating,
-                  reviewCount: reviewCount,
-                  compact: false,
-                  accentColor: brand,
-                ),
-              ),
-
-              const SizedBox(height: 18.0),
-
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-                  decoration: ProfileDetailTheme.statsPanel(accent: brand),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      _statTile('$reviewCount', l10n.reviews, brand),
-                      _statDivider(brand),
-                      _statTile(avgLabel, l10n.avgRating, brand),
-                      _statDivider(brand),
-                      _statTile(
-                        '${verificationScore.total}',
-                        l10n.trustScoreLabel,
-                        brand,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 14.0),
-
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: VerificationScoreCard(
-                  score: verificationScore,
-                  accent: brand,
-                  onTap: openVerification,
-                ),
-              ),
-
-              const SizedBox(height: 18.0),
-
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton.icon(
-                    onPressed: () async {
-                      await context.push(AppRoutes.sellerProfileEdit);
-                      if (mounted) _load();
-                    },
-                    icon: Icon(IconlyBold.edit, size: 18, color: brand),
-                    label: Text(
-                      context.l10n.editProfile,
-                      style: kTextStyle.copyWith(color: brand, fontWeight: FontWeight.bold),
+              // Identity header: avatar + name stack + standing
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  EditableProfileAvatar(
+                    imageUrl: ProfileImage.normalize(
+                      profileImageUrl is String ? profileImageUrl : null,
                     ),
-                    style: ProfileDetailTheme.editProfileOutlinedStyle(accent: brand),
+                    size: 72,
+                    accent: brand,
+                    uploading: _uploadingPhoto,
+                    onTap: _changePhoto,
                   ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: kTextStyle.copyWith(
+                            color: kNeutralColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                        if (jobTitle != null && jobTitle.isNotEmpty) ...[
+                          const SizedBox(height: 2),
+                          Text(
+                            jobTitle,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13),
+                          ),
+                        ],
+                        if (address != null && address.isNotEmpty) ...[
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              const Icon(Icons.location_on_outlined, size: 13, color: kSellerAccent),
+                              const SizedBox(width: 3),
+                              Flexible(
+                                child: Text(
+                                  address,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: kTextStyle.copyWith(
+                                    color: kLightNeutralColor,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 6,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            VerificationStatusBadge(
+                              status: verificationStatus,
+                              score: verificationScore,
+                              onTap: openVerification,
+                              compact: true,
+                            ),
+                            if (reviewCount > 0)
+                              ProfileRatingSummary(
+                                rating: rating,
+                                reviewCount: reviewCount,
+                                compact: true,
+                                accentColor: brand,
+                              ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  SellerStandingBadge(
+                    rating: rating,
+                    reviewCount: reviewCount,
+                    size: 36,
+                    compact: true,
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 12),
+
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
+                decoration: ProfileDetailTheme.statsPanel(accent: brand),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    _statTile('$reviewCount', l10n.reviews, brand),
+                    _statDivider(brand),
+                    _statTile(avgLabel, l10n.avgRating, brand),
+                    _statDivider(brand),
+                    _statTile(
+                      '${verificationScore.total}',
+                      l10n.trustScoreLabel,
+                      brand,
+                    ),
+                  ],
                 ),
+              ),
+
+              const SizedBox(height: 10),
+
+              VerificationScoreCard(
+                score: verificationScore,
+                accent: brand,
+                onTap: openVerification,
+                compact: true,
               ),
 
               if (bio != null && bio.trim().isNotEmpty) ...[
-                const SizedBox(height: 16.0),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 30),
-                  child: Text(
-                    bio.trim(),
-                    textAlign: TextAlign.center,
-                    style: kTextStyle.copyWith(color: kSubTitleColor),
-                  ),
+                const SizedBox(height: 12),
+                Text(
+                  bio.trim(),
+                  textAlign: TextAlign.start,
+                  style: kTextStyle.copyWith(color: kSubTitleColor, height: 1.35),
                 ),
               ],
 
               if (about != null && about.isNotEmpty) ...[
-                const SizedBox(height: 16.0),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 30),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        l10n.about,
-                        textAlign: TextAlign.center,
-                        style: kTextStyle.copyWith(
-                          color: brand,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 13,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        about,
-                        textAlign: TextAlign.center,
-                        style: kTextStyle.copyWith(color: kSubTitleColor),
-                      ),
-                    ],
+                const SizedBox(height: 12),
+                Text(
+                  l10n.about,
+                  style: kTextStyle.copyWith(
+                    color: brand,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
                   ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  about,
+                  textAlign: TextAlign.start,
+                  style: kTextStyle.copyWith(color: kSubTitleColor, height: 1.35),
                 ),
               ],
 
               if (_skills.isNotEmpty) ...[
-                const SizedBox(height: 16.0),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 30),
-                  child: SellerSkillsDisplay(skills: _skills, accentColor: brand),
-                ),
+                const SizedBox(height: 12),
+                SellerSkillsDisplay(skills: _skills, accentColor: brand),
               ],
 
-              const SizedBox(height: 22.0),
+              const SizedBox(height: 14),
 
               ProfileDetailTheme.sectionDivider(
                 gradientStart: brand,
                 gradientEnd: kSellerAccent,
               ),
-              const SizedBox(height: 16.0),
+              const SizedBox(height: 10),
 
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
+              Text(
+                l10n.profileDetails,
+                style: kTextStyle.copyWith(color: brand, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: ProfileDetailTheme.cardOnPage(accent: brand),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      l10n.profileDetails,
-                      style: kTextStyle.copyWith(color: brand, fontWeight: FontWeight.bold),
-                    ),
+                    _detailRow(l10n.email, email),
+                    _detailRow(l10n.phone, phone),
+                    _detailRow(l10n.genderLabel, gender),
+                    if (age != null) _detailRow(l10n.ageLabel, l10n.ageYearsOld(age)),
+                    if (address != null && address.isNotEmpty)
+                      _detailRow(l10n.address, address),
                   ],
                 ),
               ),
-              const SizedBox(height: 12.0),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Container(
-                  padding: const EdgeInsets.all(14),
-                  decoration: ProfileDetailTheme.cardOnPage(accent: brand),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _detailRow(l10n.email, email),
-                      _detailRow(l10n.phone, phone),
-                      _detailRow(l10n.genderLabel, gender),
-                      if (age != null) _detailRow(l10n.ageLabel, l10n.ageYearsOld(age)),
-                      if (address != null && address.isNotEmpty)
-                        _detailRow(l10n.address, address),
-                    ],
+
+              const SizedBox(height: 14),
+
+              ProfileDetailTheme.sectionDivider(
+                gradientStart: brand,
+                gradientEnd: kSellerAccent,
+              ),
+              const SizedBox(height: 10),
+
+              Row(
+                children: [
+                  Text(
+                    l10n.reviews,
+                    style: kTextStyle.copyWith(color: brand, fontWeight: FontWeight.bold),
                   ),
-                ),
+                  const Spacer(),
+                  Text(
+                    l10n.countTotal(reviewCount),
+                    style: kTextStyle.copyWith(color: kLightNeutralColor),
+                  ),
+                ],
               ),
-
-              const SizedBox(height: 22.0),
-
-              ProfileDetailTheme.sectionDivider(
-                gradientStart: brand,
-                gradientEnd: kSellerAccent,
-              ),
-              const SizedBox(height: 16.0),
-
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  children: [
-                    Text(
-                      l10n.reviews,
-                      style: kTextStyle.copyWith(color: brand, fontWeight: FontWeight.bold),
-                    ),
-                    const Spacer(),
-                    Text(
-                      l10n.countTotal(reviewCount),
-                      style: kTextStyle.copyWith(color: kLightNeutralColor),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12.0),
+              const SizedBox(height: 8),
 
               if (_reviews.isEmpty)
                 Padding(
-                  padding: const EdgeInsets.all(30),
+                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
                   child: Column(
                     children: [
-                      Icon(IconlyBold.star, size: 48, color: brand.withValues(alpha: 0.45)),
-                      const SizedBox(height: 8),
+                      Icon(IconlyBold.star, size: 36, color: brand.withValues(alpha: 0.45)),
+                      const SizedBox(height: 6),
                       Text(
                         l10n.noReviewsYet,
                         style: kTextStyle.copyWith(color: kLightNeutralColor),
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 4),
                       Text(
                         l10n.reviewsFromClientsHint,
                         textAlign: TextAlign.center,
-                        style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12, height: 1.35),
+                        style: kTextStyle.copyWith(
+                          color: kLightNeutralColor,
+                          fontSize: 12,
+                          height: 1.35,
+                        ),
                       ),
                     ],
                   ),
                 )
               else
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: Column(
-                    children: _reviews.map((r) => _reviewCard(r, brand)).toList(),
-                  ),
+                Column(
+                  children: _reviews.map((r) => _reviewCard(r, brand)).toList(),
                 ),
-
-              const SizedBox(height: 36),
             ],
           ),
         ),
@@ -439,47 +412,49 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
   }
 
   Widget _statTile(String value, String label, Color accent) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: kTextStyle.copyWith(color: accent, fontWeight: FontWeight.bold, fontSize: 18),
-        ),
-        const SizedBox(height: 2),
-        Text(label, style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12)),
-      ],
+    return Expanded(
+      child: Column(
+        children: [
+          Text(
+            value,
+            style: kTextStyle.copyWith(color: accent, fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+          const SizedBox(height: 1),
+          Text(label, style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 11)),
+        ],
+      ),
     );
   }
 
   Widget _statDivider(Color accent) => Container(
         width: 1,
-        height: 36,
+        height: 28,
         color: accent.withValues(alpha: 0.22),
-        margin: const EdgeInsets.symmetric(horizontal: 24),
+        margin: const EdgeInsets.symmetric(horizontal: 4),
       );
 
   Widget _detailRow(String label, String value) {
     final v = value.trim().isEmpty ? '—' : value;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
             flex: 2,
-            child: Text(label, style: kTextStyle.copyWith(color: kSubTitleColor)),
+            child: Text(label, style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13)),
           ),
           Expanded(
             flex: 4,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(':', style: kTextStyle.copyWith(color: kSubTitleColor)),
-                const SizedBox(width: 10.0),
+                Text(':', style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13)),
+                const SizedBox(width: 8.0),
                 Flexible(
                   child: Text(
                     v,
-                    style: kTextStyle.copyWith(color: kSubTitleColor),
+                    style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 3,
                   ),

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/app_date_format.dart';
 import 'package:freelancer/core/utils/profile_image.dart';
 import 'package:freelancer/screen/client%20screen/client%20talent/client_public_profile.dart';
+import 'package:freelancer/screen/widgets/verification_status_badge.dart';
+import 'package:freelancer/services/employer_verification_service.dart';
 import 'package:freelancer/services/profile_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -76,6 +78,8 @@ class JobClientInfoCard extends StatelessWidget {
     final r = rating ?? 0.0;
     final reviews = reviewCount ?? 0;
     final jobs = jobPostsCount ?? 0;
+    final verificationStatus =
+        EmployerVerificationService.statusFromProfile(clientProfile);
 
     return Material(
       color: kPrimaryColor.withValues(alpha: 0.05),
@@ -112,6 +116,14 @@ class JobClientInfoCard extends StatelessWidget {
                             fontSize: 15,
                           ),
                         ),
+                        if (verificationStatus == 'verified') ...[
+                          const SizedBox(height: 4),
+                          VerificationStatusBadge(
+                            status: verificationStatus,
+                            compact: true,
+                            showScore: false,
+                          ),
+                        ],
                         if (location.isNotEmpty)
                           Text(
                             location,

@@ -33,6 +33,7 @@ import '../screen/client screen/client_setting/client_setting.dart';
 import '../screen/client screen/client dashboard/client_dashboard.dart';
 import '../screen/client screen/client profile/client_profile_details.dart';
 import '../screen/client screen/client profile/client_edit_profile_details.dart';
+import '../screen/client screen/client profile/employer_verification_screen.dart';
 import '../screen/seller screen/seller authentication/seller_log_in.dart';
 import '../screen/seller screen/seller authentication/seller_sign_up.dart';
 import '../screen/seller screen/seller home/seller_home_screen.dart';
@@ -370,6 +371,11 @@ GoRouter createRouter() {
         path: AppRoutes.clientProfileEdit,
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const ClientEditProfile(),
+      ),
+      GoRoute(
+        path: AppRoutes.clientProfileVerify,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const EmployerVerificationScreen(),
       ),
 
       // Seller — My Applications (sub-screen, outside the shell so it pushes

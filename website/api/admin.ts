@@ -1,13 +1,25 @@
-import { handleAdminRequest } from '../_lib/handleAdminRequest'
+import { handleAdminRequest } from './_lib/handleAdminRequest'
 
 export const config = {
   runtime: 'edge',
 }
 
-/** Vercel Edge handler — works with Vite `"type": "module"`. */
+/**
+ * Single-file Vercel Edge entry for all /api/admin traffic.
+ * vercel.json rewrites /api/admin/:path* → /api/admin?__path=:path* so nested
+ * and flat segments both reach this function (non-Next catch-alls do not).
+ */
 export default async function handler(request: Request): Promise<Response> {
   try {
     const url = new URL(request.url)
+    const searchParams = new URLSearchParams(url.searchParams)
+    const rewritten = searchParams.get('__path')
+    searchParams.delete('__path')
+
+    const path = rewritten
+      ? `/api/admin/${rewritten}`.replace(/\/+$/, '') || '/api/admin'
+      : url.pathname.replace(/\/+$/, '') || '/api/admin'
+
     let body: unknown = {}
     if (request.method !== 'GET' && request.method !== 'HEAD') {
       try {
@@ -18,9 +30,9 @@ export default async function handler(request: Request): Promise<Response> {
     }
 
     const result = await handleAdminRequest({
-      path: url.pathname.replace(/\/+$/, '') || '/api/admin',
+      path,
       method: request.method,
-      searchParams: url.searchParams,
+      searchParams,
       body,
     })
 

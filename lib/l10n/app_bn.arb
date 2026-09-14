@@ -399,6 +399,14 @@
   "standingLegend": "লিজেন্ড",
   "standingHupper": "হাপার",
   "standingTitle": "স্ট্যান্ডিং",
+  "filterTalent": "ট্যালেন্ট ফিল্টার",
+  "filterMinRating": "ন্যূনতম রেটিং",
+  "ratingAtLeast": "{rating}+",
+  "@ratingAtLeast": {
+    "placeholders": {
+      "rating": { "type": "String" }
+    }
+  },
   "noApplicationsYet": "এখনও কোনো আবেদন নেই",
   "noApplicationsYetHint": "খোলা জব ব্রাউজ করুন এবং স্পষ্ট অফার পাঠান।",
   "noClientApplicationsYetHint": "আপনার জবে আবেদন এখানে দেখা যাবে। আবেদন পেতে একটি জব পোস্ট করুন।",

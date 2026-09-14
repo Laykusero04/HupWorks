@@ -454,80 +454,6 @@ GoRouter createRouter() {
   );
 }
 
-List<BottomNavigationBarItem> _clientNavItems(
-  BuildContext context,
-  int chatUnread,
-) {
-  final l10n = context.l10n;
-  return [
-    BottomNavigationBarItem(
-      icon: const Icon(Icons.home_outlined),
-      activeIcon: const Icon(Icons.home),
-      label: l10n.home,
-    ),
-    BottomNavigationBarItem(
-      icon: _badgedNavIcon(Icons.chat_bubble_outline, chatUnread),
-      activeIcon: _badgedNavIcon(Icons.chat_bubble, chatUnread),
-      label: l10n.message,
-    ),
-    BottomNavigationBarItem(
-      icon: const Icon(Icons.people_outline),
-      activeIcon: const Icon(Icons.people),
-      label: l10n.talent,
-    ),
-    BottomNavigationBarItem(
-      icon: const Icon(Icons.work_outline),
-      activeIcon: const Icon(Icons.work),
-      label: l10n.myJobs,
-    ),
-    BottomNavigationBarItem(
-      icon: const Icon(Icons.description_outlined),
-      activeIcon: const Icon(Icons.description),
-      label: l10n.contracts,
-    ),
-  ];
-}
-
-List<BottomNavigationBarItem> _sellerNavItems(
-  BuildContext context,
-  int chatUnread,
-) {
-  final l10n = context.l10n;
-  return [
-    BottomNavigationBarItem(
-      icon: const Icon(Icons.home_outlined),
-      activeIcon: const Icon(Icons.home),
-      label: l10n.home,
-    ),
-    BottomNavigationBarItem(
-      icon: _badgedNavIcon(Icons.chat_bubble_outline, chatUnread),
-      activeIcon: _badgedNavIcon(Icons.chat_bubble, chatUnread),
-      label: l10n.message,
-    ),
-    BottomNavigationBarItem(
-      icon: const Icon(Icons.search),
-      activeIcon: const Icon(Icons.search),
-      label: l10n.findJobs,
-    ),
-    BottomNavigationBarItem(
-      icon: const Icon(Icons.description_outlined),
-      activeIcon: const Icon(Icons.description),
-      label: l10n.contracts,
-    ),
-  ];
-}
-
-Widget _badgedNavIcon(IconData icon, int count) {
-  if (count <= 0) return Icon(icon);
-  return Badge(
-    label: Text(
-      count > 9 ? '9+' : '$count',
-      style: const TextStyle(fontSize: 10),
-    ),
-    child: Icon(icon),
-  );
-}
-
 /// Shared bottom nav for client and seller shells.
 class _ScaffoldWithNavBar extends StatelessWidget {
   final ShellPersona persona;
@@ -563,30 +489,213 @@ class _ScaffoldWithNavBar extends StatelessWidget {
           extendBody: false,
           drawer: drawer,
           body: navigationShell,
-          bottomNavigationBar: DecoratedBox(
-            decoration: const BoxDecoration(
-              color: kWhite,
-              border: Border(top: BorderSide(color: kBorderColorTextField)),
-            ),
-            child: BottomNavigationBar(
-              type: BottomNavigationBarType.fixed,
-              backgroundColor: kWhite,
-              elevation: 0,
-              selectedItemColor: _accentColor,
-              unselectedItemColor: kLightNeutralColor,
-              selectedFontSize: 12,
-              unselectedFontSize: 12,
-              showUnselectedLabels: true,
-              currentIndex: navigationShell.currentIndex,
-              onTap: (i) => navigationShell.goBranch(
-                i,
-                initialLocation: i == navigationShell.currentIndex,
-              ),
-              items: items,
+          bottomNavigationBar: _ShellBottomNav(
+            accent: _accentColor,
+            currentIndex: navigationShell.currentIndex,
+            items: items,
+            onTap: (i) => navigationShell.goBranch(
+              i,
+              initialLocation: i == navigationShell.currentIndex,
             ),
           ),
         );
       },
+    );
+  }
+}
+
+class _ShellNavItem {
+  const _ShellNavItem({
+    required this.icon,
+    required this.activeIcon,
+    required this.label,
+  });
+
+  final Widget icon;
+  final Widget activeIcon;
+  final String label;
+}
+
+List<_ShellNavItem> _clientNavItems(BuildContext context, int chatUnread) {
+  final l10n = context.l10n;
+  return [
+    _ShellNavItem(
+      icon: const Icon(Icons.home_outlined),
+      activeIcon: const Icon(Icons.home_rounded),
+      label: l10n.home,
+    ),
+    _ShellNavItem(
+      icon: _badgedNavIcon(Icons.chat_bubble_outline, chatUnread),
+      activeIcon: _badgedNavIcon(Icons.chat_bubble, chatUnread),
+      label: l10n.message,
+    ),
+    _ShellNavItem(
+      icon: const Icon(Icons.people_outline),
+      activeIcon: const Icon(Icons.people_rounded),
+      label: l10n.talent,
+    ),
+    _ShellNavItem(
+      icon: const Icon(Icons.work_outline),
+      activeIcon: const Icon(Icons.work_rounded),
+      label: l10n.myJobs,
+    ),
+    _ShellNavItem(
+      icon: const Icon(Icons.description_outlined),
+      activeIcon: const Icon(Icons.description_rounded),
+      label: l10n.contracts,
+    ),
+  ];
+}
+
+List<_ShellNavItem> _sellerNavItems(BuildContext context, int chatUnread) {
+  final l10n = context.l10n;
+  return [
+    _ShellNavItem(
+      icon: const Icon(Icons.home_outlined),
+      activeIcon: const Icon(Icons.home_rounded),
+      label: l10n.home,
+    ),
+    _ShellNavItem(
+      icon: _badgedNavIcon(Icons.chat_bubble_outline, chatUnread),
+      activeIcon: _badgedNavIcon(Icons.chat_bubble, chatUnread),
+      label: l10n.message,
+    ),
+    _ShellNavItem(
+      icon: const Icon(Icons.search),
+      activeIcon: const Icon(Icons.search_rounded),
+      label: l10n.findJobs,
+    ),
+    _ShellNavItem(
+      icon: const Icon(Icons.description_outlined),
+      activeIcon: const Icon(Icons.description_rounded),
+      label: l10n.contracts,
+    ),
+  ];
+}
+
+Widget _badgedNavIcon(IconData icon, int count) {
+  if (count <= 0) return Icon(icon);
+  return Badge(
+    label: Text(
+      count > 9 ? '9+' : '$count',
+      style: const TextStyle(fontSize: 10),
+    ),
+    child: Icon(icon),
+  );
+}
+
+/// Compact shell bottom nav — clear selected state, tight safe-area padding.
+class _ShellBottomNav extends StatelessWidget {
+  const _ShellBottomNav({
+    required this.accent,
+    required this.currentIndex,
+    required this.items,
+    required this.onTap,
+  });
+
+  final Color accent;
+  final int currentIndex;
+  final List<_ShellNavItem> items;
+  final ValueChanged<int> onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.paddingOf(context).bottom;
+
+    return Material(
+      color: kWhite,
+      elevation: 0,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: kWhite,
+          border: const Border(
+            top: BorderSide(color: kBorderColorTextField, width: 0.8),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 10,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(6, 6, 6, bottomInset > 0 ? bottomInset : 8),
+          child: Row(
+            children: [
+              for (var i = 0; i < items.length; i++)
+                Expanded(
+                  child: _ShellBottomNavTile(
+                    item: items[i],
+                    selected: i == currentIndex,
+                    accent: accent,
+                    onTap: () => onTap(i),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ShellBottomNavTile extends StatelessWidget {
+  const _ShellBottomNavTile({
+    required this.item,
+    required this.selected,
+    required this.accent,
+    required this.onTap,
+  });
+
+  final _ShellNavItem item;
+  final bool selected;
+  final Color accent;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = selected ? accent : kLightNeutralColor;
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 180),
+              curve: Curves.easeOut,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              decoration: BoxDecoration(
+                color: selected
+                    ? accent.withValues(alpha: 0.12)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: IconTheme(
+                data: IconThemeData(color: color, size: 22),
+                child: selected ? item.activeIcon : item.icon,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              item.label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: color,
+                fontSize: 11,
+                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                height: 1.1,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

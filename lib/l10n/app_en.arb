@@ -466,6 +466,14 @@
   "standingLegend": "Legend",
   "standingHupper": "Hupper",
   "standingTitle": "Standing",
+  "filterTalent": "Filter talent",
+  "filterMinRating": "Minimum rating",
+  "ratingAtLeast": "{rating}+",
+  "@ratingAtLeast": {
+    "placeholders": {
+      "rating": { "type": "String" }
+    }
+  },
   "noApplicationsYet": "No applications yet",
   "noApplicationsYetHint": "Browse open jobs and send a clear offer to stand out.",
   "noClientApplicationsYetHint": "Applications to your jobs show up here. Post a job to start receiving them.",

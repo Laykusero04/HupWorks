@@ -78,7 +78,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: kWhite,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.only(bottom: 40),
@@ -96,7 +96,7 @@ class _SplashScreenState extends State<SplashScreen> {
               Text(
                 'HupWorks',
                 style: kTextStyle.copyWith(
-                  color: kWhite,
+                  color: kNeutralColor,
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 0.6,
@@ -106,7 +106,7 @@ class _SplashScreenState extends State<SplashScreen> {
               Text(
                 'Getting things ready…',
                 style: kTextStyle.copyWith(
-                  color: kWhite.withValues(alpha: 0.55),
+                  color: kSubTitleColor,
                   fontSize: 13,
                 ),
               ),
@@ -115,12 +115,12 @@ class _SplashScreenState extends State<SplashScreen> {
                 children: [
                   Text(
                     'Version',
-                    style: kTextStyle.copyWith(color: kWhite.withValues(alpha: 0.7)),
+                    style: kTextStyle.copyWith(color: kLightNeutralColor),
                   ),
                   Text(
                     AppInfo.appVersion,
                     style: kTextStyle.copyWith(
-                      color: kWhite,
+                      color: kNeutralColor,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

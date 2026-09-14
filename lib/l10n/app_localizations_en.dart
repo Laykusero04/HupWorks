@@ -1252,6 +1252,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get standingTitle => 'Standing';
 
   @override
+  String get filterTalent => 'Filter talent';
+
+  @override
+  String get filterMinRating => 'Minimum rating';
+
+  @override
+  String ratingAtLeast(String rating) {
+    return '$rating+';
+  }
+
+  @override
   String get noApplicationsYet => 'No applications yet';
 
   @override

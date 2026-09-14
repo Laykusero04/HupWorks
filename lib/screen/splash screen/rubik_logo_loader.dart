@@ -217,7 +217,7 @@ class _RubikLogoLoaderState extends State<RubikLogoLoader>
           child: ClipRRect(
             borderRadius: BorderRadius.circular(size * 0.06),
             child: ColoredBox(
-              color: const Color(0xFF0A0A0A),
+              color: Colors.white,
               child: Stack(
                 clipBehavior: Clip.hardEdge,
                 children: [

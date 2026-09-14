@@ -1258,6 +1258,17 @@ class AppLocalizationsNl extends AppLocalizations {
   String get standingTitle => 'Standing';
 
   @override
+  String get filterTalent => 'Talent filteren';
+
+  @override
+  String get filterMinRating => 'Minimumbeoordeling';
+
+  @override
+  String ratingAtLeast(String rating) {
+    return '$rating+';
+  }
+
+  @override
   String get noApplicationsYet => 'Nog geen aanmeldingen';
 
   @override

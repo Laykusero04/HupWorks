@@ -25,34 +25,41 @@ class VerificationStatusBadge extends StatelessWidget {
     final l10n = context.l10n;
     final info = _infoFor(status, l10n);
     final score = this.score ?? VerificationScore.fromStatus(status);
-    final child = Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: compact ? 8 : 10,
-        vertical: compact ? 4 : 6,
-      ),
-      decoration: BoxDecoration(
-        color: info.bg,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: info.fg.withValues(alpha: 0.35)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(info.icon, size: compact ? 14 : 16, color: info.fg),
-          const SizedBox(width: 6),
-          Text(
-            showScore ? '${info.label} · ${score.total}/100' : info.label,
-            style: kTextStyle.copyWith(
-              color: info.fg,
-              fontWeight: FontWeight.w600,
-              fontSize: compact ? 11 : 12,
-            ),
+    final child = Align(
+      alignment: Alignment.centerLeft,
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        alignment: Alignment.centerLeft,
+        child: Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: compact ? 8 : 10,
+            vertical: compact ? 4 : 6,
           ),
-          if (onTap != null) ...[
-            const SizedBox(width: 4),
-            Icon(Icons.chevron_right, size: 16, color: info.fg),
-          ],
-        ],
+          decoration: BoxDecoration(
+            color: info.bg,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: info.fg.withValues(alpha: 0.35)),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(info.icon, size: compact ? 14 : 16, color: info.fg),
+              SizedBox(width: compact ? 4 : 6),
+              Text(
+                showScore ? '${info.label} · ${score.total}/100' : info.label,
+                style: kTextStyle.copyWith(
+                  color: info.fg,
+                  fontWeight: FontWeight.w600,
+                  fontSize: compact ? 11 : 12,
+                ),
+              ),
+              if (onTap != null) ...[
+                const SizedBox(width: 4),
+                Icon(Icons.chevron_right, size: 16, color: info.fg),
+              ],
+            ],
+          ),
+        ),
       ),
     );
 

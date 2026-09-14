@@ -122,7 +122,7 @@ class TalentCardVerificationMark extends StatelessWidget {
   }
 }
 
-/// Status line + dual-track dots (photo · ID) under a card title.
+/// Compact verification status line under a card title.
 class TalentCardVerificationMeta extends StatelessWidget {
   const TalentCardVerificationMeta({
     super.key,
@@ -139,8 +139,6 @@ class TalentCardVerificationMeta extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final score = VerificationService.scoreFromProfile(profile);
-    final photoOk = score.profilePhotoAccepted;
-    final idOk = score.identityAccepted;
 
     final label = score.isComplete
         ? l10n.verifiedFreelancer
@@ -165,84 +163,18 @@ class TalentCardVerificationMeta extends StatelessWidget {
           const SizedBox(width: 8),
         ],
         Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: kTextStyle.copyWith(
-                  color: labelColor,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 11,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Row(
-                children: [
-                  _TrackPill(
-                    ok: photoOk,
-                    icon: Icons.person_rounded,
-                    label: l10n.profilePhotoLabel,
-                  ),
-                  const SizedBox(width: 6),
-                  _TrackPill(
-                    ok: idOk,
-                    icon: Icons.badge_rounded,
-                    label: l10n.faceIdSelfieLabel,
-                  ),
-                ],
-              ),
-            ],
+          child: Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: kTextStyle.copyWith(
+              color: labelColor,
+              fontWeight: FontWeight.w600,
+              fontSize: 11,
+            ),
           ),
         ),
       ],
-    );
-  }
-}
-
-class _TrackPill extends StatelessWidget {
-  const _TrackPill({
-    required this.ok,
-    required this.icon,
-    required this.label,
-  });
-
-  final bool ok;
-  final IconData icon;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Tooltip(
-      message: label,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-        decoration: BoxDecoration(
-          color: ok ? const Color(0xFFE7FFED) : const Color(0xFFF1F3F5),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: ok ? const Color(0xFF0B7A3B) : const Color(0xFFCFD8DC),
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: 12,
-              color: ok ? const Color(0xFF0B7A3B) : const Color(0xFF90A4AE),
-            ),
-            const SizedBox(width: 2),
-            Icon(
-              ok ? Icons.check_rounded : Icons.close_rounded,
-              size: 11,
-              color: ok ? const Color(0xFF0B7A3B) : const Color(0xFF90A4AE),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

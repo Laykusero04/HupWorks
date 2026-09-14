@@ -399,6 +399,14 @@
   "standingLegend": "Legende",
   "standingHupper": "Hupper",
   "standingTitle": "Standing",
+  "filterTalent": "Talent filteren",
+  "filterMinRating": "Minimumbeoordeling",
+  "ratingAtLeast": "{rating}+",
+  "@ratingAtLeast": {
+    "placeholders": {
+      "rating": { "type": "String" }
+    }
+  },
   "noApplicationsYet": "Nog geen aanmeldingen",
   "noApplicationsYetHint": "Blader door open jobs en stuur een duidelijk voorstel.",
   "noClientApplicationsYetHint": "Aanmeldingen op jouw jobs verschijnen hier. Plaats een job om er te ontvangen.",

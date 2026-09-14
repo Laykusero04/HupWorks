@@ -2434,6 +2434,24 @@ abstract class AppLocalizations {
   /// **'Standing'**
   String get standingTitle;
 
+  /// No description provided for @filterTalent.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter talent'**
+  String get filterTalent;
+
+  /// No description provided for @filterMinRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum rating'**
+  String get filterMinRating;
+
+  /// No description provided for @ratingAtLeast.
+  ///
+  /// In en, this message translates to:
+  /// **'{rating}+'**
+  String ratingAtLeast(String rating);
+
   /// No description provided for @noApplicationsYet.
   ///
   /// In en, this message translates to:

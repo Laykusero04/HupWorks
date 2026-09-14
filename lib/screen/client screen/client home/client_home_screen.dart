@@ -983,7 +983,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
     }
 
     return SizedBox(
-      height: 300,
+      height: 262,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
@@ -1028,88 +1028,80 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Stack(
-                    children: [
-                      Container(
-                        height: 168,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: ProfileImage.provider(profileImageUrl),
-                            fit: BoxFit.cover,
+                  Expanded(
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        DecoratedBox(
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: ProfileImage.provider(profileImageUrl),
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
-                      ),
-                      // Soft bottom fade so content meets photo cleanly
-                      Positioned(
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        height: 36,
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                Colors.transparent,
-                                Colors.black.withValues(alpha: 0.35),
+                        Positioned(
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          height: 28,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Colors.transparent,
+                                  Colors.black.withValues(alpha: 0.28),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          top: 8,
+                          left: 8,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withValues(alpha: 0.5),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  IconlyBold.star,
+                                  color: Colors.amber,
+                                  size: 13,
+                                ),
+                                const SizedBox(width: 3),
+                                Text(
+                                  ratingValue.toStringAsFixed(1),
+                                  style: kTextStyle.copyWith(
+                                    color: Colors.white,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
                         ),
-                      ),
-                      Positioned(
-                        top: 8,
-                        left: 8,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: 0.5),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(
-                                IconlyBold.star,
-                                color: Colors.amber,
-                                size: 13,
-                              ),
-                              const SizedBox(width: 3),
-                              Text(
-                                ratingValue.toStringAsFixed(1),
-                                style: kTextStyle.copyWith(
-                                  color: Colors.white,
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ],
+                        Positioned(
+                          top: 8,
+                          right: 8,
+                          child: TalentCardVerificationMark(
+                            profile: seller,
+                            size: 34,
+                            onPhoto: true,
                           ),
                         ),
-                      ),
-                      Positioned(
-                        top: 8,
-                        right: 8,
-                        child: TalentCardVerificationMark(
-                          profile: seller,
-                          size: 34,
-                          onPhoto: true,
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 8,
-                        left: 8,
-                        child: TalentCardStandingChip(
-                          rating: ratingValue,
-                          reviewCount: reviewCount,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
@@ -1137,7 +1129,11 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
                           ),
                         ),
                         const SizedBox(height: 6),
-                        TalentCardVerificationMeta(profile: seller),
+                        TalentCardStandingChip(
+                          rating: ratingValue,
+                          reviewCount: reviewCount,
+                          onPhoto: false,
+                        ),
                       ],
                     ),
                   ),

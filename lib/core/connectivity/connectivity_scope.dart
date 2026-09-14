@@ -67,43 +67,58 @@ class ConnectivityScope extends InheritedNotifier<ConnectivityController> {
   }
 }
 
-/// Thin top banner when the device reports no network (shared by both personas).
+/// Compact offline strip — status-bar safe, soft warning styling.
 class OfflineBanner extends StatelessWidget {
   const OfflineBanner({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = ConnectivityScope.maybeOf(context);
-    if (controller == null) return const SizedBox.shrink();
+    final top = MediaQuery.paddingOf(context).top;
+    final l10n = context.l10n;
 
-    return ListenableBuilder(
-      listenable: controller,
-      builder: (context, _) {
-        if (controller.isOnline) return const SizedBox.shrink();
-        final top = MediaQuery.paddingOf(context).top;
-        return Material(
-          color: const Color(0xFF334155),
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(16, top > 0 ? 6 : 10, 16, 10),
-            child: Row(
-              children: [
-                const Icon(Icons.wifi_off_rounded, color: Colors.white, size: 18),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    context.l10n.youAreOffline,
-                    style: kTextStyle.copyWith(
-                      color: Colors.white,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                    ),
+    return Material(
+      color: const Color(0xFFFFF4E5),
+      elevation: 0,
+      child: DecoratedBox(
+        decoration: const BoxDecoration(
+          border: Border(
+            bottom: BorderSide(color: Color(0xFFFFE0B2)),
+          ),
+        ),
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(14, top + 8, 14, 10),
+          child: Row(
+            children: [
+              Container(
+                width: 28,
+                height: 28,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFE0B2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                alignment: Alignment.center,
+                child: const Icon(
+                  Icons.wifi_off_rounded,
+                  color: Color(0xFFB86E00),
+                  size: 16,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  l10n.youAreOffline,
+                  style: kTextStyle.copyWith(
+                    color: const Color(0xFF8A5A00),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    height: 1.25,
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }
@@ -116,11 +131,26 @@ class OfflineAware extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const OfflineBanner(),
-        Expanded(child: child),
-      ],
+    final controller = ConnectivityScope.maybeOf(context);
+    if (controller == null) return child;
+
+    return ListenableBuilder(
+      listenable: controller,
+      builder: (context, _) {
+        final offline = controller.isOffline;
+        return Column(
+          children: [
+            if (offline) const OfflineBanner(),
+            Expanded(
+              child: MediaQuery.removePadding(
+                context: context,
+                removeTop: offline,
+                child: child,
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

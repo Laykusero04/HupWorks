@@ -1256,6 +1256,17 @@ class AppLocalizationsBn extends AppLocalizations {
   String get standingTitle => 'স্ট্যান্ডিং';
 
   @override
+  String get filterTalent => 'ট্যালেন্ট ফিল্টার';
+
+  @override
+  String get filterMinRating => 'ন্যূনতম রেটিং';
+
+  @override
+  String ratingAtLeast(String rating) {
+    return '$rating+';
+  }
+
+  @override
   String get noApplicationsYet => 'এখনও কোনো আবেদন নেই';
 
   @override

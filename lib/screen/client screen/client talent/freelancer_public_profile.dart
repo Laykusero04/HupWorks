@@ -20,7 +20,6 @@ import '../../widgets/profile_rating_summary.dart';
 import '../../widgets/profile_skeleton.dart';
 import '../../widgets/seller_skills_display.dart';
 import '../../widgets/seller_standing_badge.dart';
-import '../../widgets/verification_score_card.dart';
 import '../../widgets/verification_status_badge.dart';
 import '../../widgets/verified_work_trust_section.dart';
 import '../client report/client_report.dart';
@@ -379,14 +378,6 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
                     ),
                   ],
                 ),
-              ),
-
-              const SizedBox(height: 10),
-
-              VerificationScoreCard(
-                score: verificationScore,
-                accent: brand,
-                compact: true,
               ),
 
               const SizedBox(height: 12),

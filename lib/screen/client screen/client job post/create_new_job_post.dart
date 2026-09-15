@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/l10n/l10n_labels.dart';
@@ -362,9 +363,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
           ),
           centerTitle: true,
         ),
-        body: const Center(
-          child: CircularProgressIndicator(color: kPrimaryColor),
-        ),
+        body: const LoadingWidget(),
       );
     }
 

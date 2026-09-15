@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
+import 'package:freelancer/core/widgets/loading_widget.dart';
 
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/app_date_format.dart';
@@ -1250,7 +1252,7 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
         ],
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator(color: primary))
+          ? const LoadingWidget()
           : Column(
               children: [
                 if (_isRefreshing)
@@ -1260,8 +1262,7 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
                     backgroundColor: primary.withValues(alpha: 0.15),
                   ),
                 Expanded(
-                  child: RefreshIndicator(
-                    color: primary,
+                  child: RubikRefreshIndicator(
                     onRefresh: _loadRequests,
                     child: visible.isEmpty
                         ? ListView(

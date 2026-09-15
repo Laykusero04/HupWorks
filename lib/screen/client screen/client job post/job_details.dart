@@ -1,4 +1,6 @@
 import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
+import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/job_offer_delivery.dart';
 import 'package:freelancer/core/utils/localized_category.dart';
@@ -372,7 +374,7 @@ class _JobDetailsState extends State<JobDetails> {
     if (_isLoading) {
       return const Scaffold(
         backgroundColor: kDarkWhite,
-        body: Center(child: CircularProgressIndicator(color: kPrimaryColor)),
+        body: const LoadingWidget(),
       );
     }
 
@@ -435,8 +437,7 @@ class _JobDetailsState extends State<JobDetails> {
             topRight: Radius.circular(30.0),
           ),
         ),
-        child: RefreshIndicator(
-          color: kPrimaryColor,
+        child: RubikRefreshIndicator(
           onRefresh: _loadData,
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(

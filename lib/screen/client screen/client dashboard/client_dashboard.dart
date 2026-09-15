@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
+import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:freelancer/core/utils/dashboard_period.dart';
 import 'package:freelancer/core/widgets/empty_state_widget.dart';
 import 'package:freelancer/l10n/l10n.dart';
@@ -69,7 +71,7 @@ class _ClientDashBoardState extends State<ClientDashBoard> {
     if (_isLoading) {
       return const Scaffold(
         backgroundColor: kDarkWhite,
-        body: Center(child: CircularProgressIndicator(color: kPrimaryColor)),
+        body: const LoadingWidget(),
       );
     }
 
@@ -110,8 +112,7 @@ class _ClientDashBoardState extends State<ClientDashBoard> {
                     topRight: Radius.circular(30.0),
                   ),
                 ),
-                child: RefreshIndicator(
-                  color: kPrimaryColor,
+                child: RubikRefreshIndicator(
                   onRefresh: () => _loadDashboard(),
                   child: SingleChildScrollView(
                     physics: const AlwaysScrollableScrollPhysics(

@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
+import 'package:freelancer/core/widgets/loading_widget.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
@@ -216,8 +218,7 @@ class _TopSellerState extends State<TopSeller> {
   }
 
   Widget _buildGrid(List<Map<String, dynamic>> sellers) {
-    return RefreshIndicator(
-      color: kPrimaryColor,
+    return RubikRefreshIndicator(
       onRefresh: _load,
       child: GridView.builder(
         physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
@@ -404,7 +405,7 @@ class _TopSellerState extends State<TopSeller> {
           ),
           Expanded(
             child: _isLoading
-                ? const Center(child: CircularProgressIndicator(color: kPrimaryColor))
+                ? const LoadingWidget()
                 : _sellers.isEmpty
                     ? Center(
                         child: Text(

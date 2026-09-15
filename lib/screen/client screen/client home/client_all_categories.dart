@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:freelancer/core/utils/category_icons.dart';
 import 'package:freelancer/core/utils/localized_category.dart';
 import 'package:freelancer/l10n/l10n.dart';
@@ -92,7 +93,7 @@ class _ClientAllCategoriesState extends State<ClientAllCategories> {
             ),
           ),
           child: _loading
-              ? const Center(child: CircularProgressIndicator(color: kPrimaryColor))
+              ? const LoadingWidget()
               : _categories.isEmpty
                   ? Center(
                       child: Text(

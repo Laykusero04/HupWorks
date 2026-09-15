@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:freelancer/core/utils/app_date_format.dart';
 import 'package:freelancer/core/utils/localized_category.dart';
 import 'package:freelancer/core/utils/shift_schedule.dart';
@@ -92,7 +93,7 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) return const Scaffold(backgroundColor: kDarkWhite, body: Center(child: CircularProgressIndicator(color: kPrimaryColor)));
+    if (_isLoading) return const Scaffold(backgroundColor: kDarkWhite, body: const LoadingWidget());
 
     final l10n = context.l10n;
     final category = LocalizedCategory.name(

@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
+import 'package:freelancer/core/widgets/loading_widget.dart';
 
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/app_date_format.dart';
@@ -548,7 +550,7 @@ class _SellerApplicationsState extends State<SellerApplications> {
             ),
           ),
           child: _isLoading
-              ? const Center(child: CircularProgressIndicator(color: kPrimaryColor))
+              ? const LoadingWidget()
               : Column(
                   children: [
                     const SizedBox(height: 15),
@@ -556,8 +558,7 @@ class _SellerApplicationsState extends State<SellerApplications> {
                     const SizedBox(height: 8),
                     Expanded(
                       child: visible.isEmpty
-                          ? RefreshIndicator(
-                              color: kPrimaryColor,
+                          ? RubikRefreshIndicator(
                               onRefresh: () => _load(showLoader: false),
                               child: ListView(
                                 physics: const AlwaysScrollableScrollPhysics(
@@ -571,8 +572,7 @@ class _SellerApplicationsState extends State<SellerApplications> {
                                 ],
                               ),
                             )
-                          : RefreshIndicator(
-                              color: kPrimaryColor,
+                          : RubikRefreshIndicator(
                               onRefresh: () => _load(showLoader: false),
                               child: ListView.builder(
                                 physics: const AlwaysScrollableScrollPhysics(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
@@ -161,8 +162,7 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
           ),
         ],
       ),
-      body: RefreshIndicator(
-        color: brand,
+      body: RubikRefreshIndicator(
         onRefresh: _load,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),

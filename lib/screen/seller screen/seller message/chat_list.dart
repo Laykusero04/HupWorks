@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:freelancer/core/chat/chat_unread_scope.dart';
 import 'package:freelancer/data/models/chat_inbox_filter.dart';
@@ -161,8 +162,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 ? _buildSkeleton()
                 : ListenableBuilder(
                     listenable: ChatUnreadScope.of(context),
-                    builder: (context, _) => RefreshIndicator(
-                      color: primary,
+                    builder: (context, _) => RubikRefreshIndicator(
                       onRefresh: _loadConversations,
                       child: _buildBody(),
                     ),

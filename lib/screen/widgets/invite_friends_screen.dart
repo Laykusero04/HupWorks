@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:freelancer/l10n/l10n.dart';
@@ -74,7 +75,7 @@ class _InviteFriendsScreenState extends State<InviteFriendsScreen> {
             ),
           ),
           child: _loading
-              ? const Center(child: CircularProgressIndicator(color: kPrimaryColor))
+              ? const LoadingWidget()
               : SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:freelancer/data/models/hire_onboarding_packet_model.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/services/hire_onboarding_service.dart';
@@ -175,9 +176,7 @@ class _HireOnboardingEditorScreenState extends State<HireOnboardingEditorScreen>
         centerTitle: true,
       ),
       body: _loading
-          ? const Center(
-              child: CircularProgressIndicator(color: kPrimaryColor),
-            )
+          ? const LoadingWidget()
           : Column(
               children: [
                 Expanded(

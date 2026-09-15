@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:freelancer/core/utils/profile_avatar_picker.dart';
 import 'package:freelancer/core/utils/profile_image.dart';
@@ -141,7 +142,7 @@ class _ClientEditProfileState extends State<ClientEditProfile> {
     if (_isLoading) {
       return const Scaffold(
         backgroundColor: kDarkWhite,
-        body: Center(child: CircularProgressIndicator(color: kPrimaryColor)),
+        body: const LoadingWidget(),
       );
     }
 

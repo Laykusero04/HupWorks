@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:freelancer/core/utils/localized_category.dart';
 import 'package:freelancer/services/category_service.dart';
 
@@ -53,7 +54,7 @@ class _CategoryPickerFieldState extends State<CategoryPickerField> {
   @override
   Widget build(BuildContext context) {
     if (widget.isLoading) {
-      return const Center(child: CircularProgressIndicator(color: kPrimaryColor));
+      return const LoadingWidget();
     }
 
     final filtered = _filtered;

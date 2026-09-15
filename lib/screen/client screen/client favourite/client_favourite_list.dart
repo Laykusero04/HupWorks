@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
+import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:freelancer/core/utils/profile_image.dart';
 import 'package:freelancer/core/widgets/empty_state_widget.dart';
 import 'package:freelancer/l10n/l10n.dart';
@@ -105,9 +107,8 @@ class _ClientFavListState extends State<ClientFavList> {
             ),
           ),
           child: _isLoading
-              ? const Center(child: CircularProgressIndicator(color: kPrimaryColor))
-              : RefreshIndicator(
-                  color: kPrimaryColor,
+              ? const LoadingWidget()
+              : RubikRefreshIndicator(
                   onRefresh: _load,
                   child: _saved.isEmpty
                       ? ListView(

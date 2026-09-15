@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:freelancer/core/notifications/notification_scope.dart';
 import 'package:freelancer/core/utils/client_profile_completeness.dart';
@@ -162,8 +163,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
       ),
       body: _isLoading
           ? const _ClientHomeLoading()
-          : RefreshIndicator(
-              color: kPrimaryColor,
+          : RubikRefreshIndicator(
               onRefresh: _loadData,
               child: CustomScrollView(
                 physics: const AlwaysScrollableScrollPhysics(

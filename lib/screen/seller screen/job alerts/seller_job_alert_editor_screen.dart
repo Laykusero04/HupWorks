@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:freelancer/core/utils/localized_category.dart';
 import 'package:freelancer/data/models/seller_job_alert_rule_model.dart';
 import 'package:freelancer/l10n/l10n.dart';
@@ -301,7 +302,7 @@ class _SellerJobAlertEditorScreenState extends State<SellerJobAlertEditorScreen>
           foregroundColor: kWhite,
           title: Text(widget.existing == null ? l10n.jobAlertNew : l10n.jobAlertEdit),
         ),
-        body: Center(child: CircularProgressIndicator(color: primary)),
+        body: const LoadingWidget(),
       );
     }
 

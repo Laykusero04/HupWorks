@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:freelancer/core/widgets/loading_widget.dart';
 
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/profile_avatar_picker.dart';
@@ -126,7 +127,7 @@ class _SellerIdentityVerificationScreenState
     final l10n = context.l10n;
     if (_loading) {
       return const Scaffold(
-        body: Center(child: CircularProgressIndicator(color: kPrimaryColor)),
+        body: const LoadingWidget(),
       );
     }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
 import 'package:freelancer/core/notifications/notification_scope.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/l10n/l10n_labels.dart';
@@ -121,8 +122,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
       ),
       body: _isLoading
           ? const _SellerHomeLoading()
-          : RefreshIndicator(
-              color: kSellerPrimary,
+          : RubikRefreshIndicator(
               onRefresh: _loadData,
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(

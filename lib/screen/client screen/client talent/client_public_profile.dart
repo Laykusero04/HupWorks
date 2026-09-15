@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
 import 'package:freelancer/core/utils/app_date_format.dart';
 import 'package:freelancer/core/utils/profile_image.dart';
 import 'package:freelancer/l10n/l10n.dart';
@@ -146,8 +147,7 @@ class _ClientPublicProfileState extends State<ClientPublicProfile> {
           ),
         ],
       ),
-      body: RefreshIndicator(
-        color: kPrimaryColor,
+      body: RubikRefreshIndicator(
         onRefresh: _load,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(

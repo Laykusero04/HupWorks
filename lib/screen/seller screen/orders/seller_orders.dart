@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
+import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:freelancer/core/utils/app_date_format.dart';
 import 'package:freelancer/core/utils/order_cancellation.dart';
 import 'package:freelancer/core/utils/order_contract_display.dart';
@@ -125,10 +127,9 @@ class _SellerOrderListState extends State<SellerOrderList> {
               const SizedBox(height: 12.0),
               Expanded(
                 child: _isLoading
-                    ? Center(child: CircularProgressIndicator(color: primary))
+                    ? const LoadingWidget()
                     : _orders.isEmpty
-                        ? RefreshIndicator(
-                            color: primary,
+                        ? RubikRefreshIndicator(
                             onRefresh: () => _loadOrders(showLoader: false),
                             child: ListView(
                               physics: const AlwaysScrollableScrollPhysics(
@@ -166,8 +167,8 @@ class _SellerOrderListState extends State<SellerOrderList> {
                               ],
                             ),
                           )
-                        : RefreshIndicator(
-                            color: primary, onRefresh: () => _loadOrders(showLoader: false),
+                        : RubikRefreshIndicator(
+                            onRefresh: () => _loadOrders(showLoader: false),
                             child: ListView.builder(
                               physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
                               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),

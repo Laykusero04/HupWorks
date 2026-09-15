@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:freelancer/core/utils/app_date_format.dart';
 import 'package:freelancer/core/utils/chat_thread_context.dart';
 import 'package:freelancer/core/utils/order_contract_display.dart';
@@ -106,7 +107,7 @@ class _ChatInboxRouteState extends State<ChatInboxRoute> {
     if (_loading) {
       return const Scaffold(
         backgroundColor: kDarkWhite,
-        body: Center(child: CircularProgressIndicator(color: kPrimaryColor)),
+        body: const LoadingWidget(),
       );
     }
     return Scaffold(

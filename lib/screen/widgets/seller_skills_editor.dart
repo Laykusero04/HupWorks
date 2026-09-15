@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:freelancer/core/utils/seller_skills_validation.dart';
 import 'package:freelancer/data/models/seller_skill_model.dart';
 import 'package:freelancer/services/skill_service.dart';
@@ -167,7 +168,7 @@ class _SellerSkillsEditorState extends State<SellerSkillsEditor> {
     if (_catalogLoading) {
       return const Padding(
         padding: EdgeInsets.symmetric(vertical: 24),
-        child: Center(child: CircularProgressIndicator(color: kPrimaryColor)),
+        child: const LoadingWidget(),
       );
     }
 

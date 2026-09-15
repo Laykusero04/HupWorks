@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/widgets/brand_painting_qr.dart';
 import 'package:freelancer/services/attendance_service.dart';
@@ -125,7 +126,7 @@ class _AttendanceQrDisplayScreenState extends State<AttendanceQrDisplayScreen> {
         centerTitle: true,
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: kPrimaryColor))
+          ? const LoadingWidget()
           : SingleChildScrollView(
               padding: const EdgeInsets.all(20),
               child: Column(

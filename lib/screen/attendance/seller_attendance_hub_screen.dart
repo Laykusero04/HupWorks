@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
+import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/services/attendance_service.dart';
 import 'package:go_router/go_router.dart';
@@ -73,11 +75,8 @@ class _SellerAttendanceHubScreenState extends State<SellerAttendanceHubScreen> {
         ],
       ),
       body: _loading
-          ? const Center(
-              child: CircularProgressIndicator(color: kPrimaryColor),
-            )
-          : RefreshIndicator(
-              color: kPrimaryColor,
+          ? const LoadingWidget()
+          : RubikRefreshIndicator(
               onRefresh: _load,
               child: _jobs.isEmpty
                   ? ListView(

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
+import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:freelancer/core/utils/localized_category.dart';
 import 'package:freelancer/core/widgets/empty_state_widget.dart';
 import 'package:freelancer/l10n/l10n.dart';
@@ -95,9 +97,8 @@ class _SellerFavListState extends State<SellerFavList> {
             ),
           ),
           child: _isLoading
-              ? const Center(child: CircularProgressIndicator(color: kPrimaryColor))
-              : RefreshIndicator(
-                  color: kPrimaryColor,
+              ? const LoadingWidget()
+              : RubikRefreshIndicator(
                   onRefresh: _loadFavourites,
                   child: _favourites.isEmpty
                       ? ListView(

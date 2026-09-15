@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:freelancer/core/utils/attendance_format.dart';
 import 'package:freelancer/core/utils/attendance_mode.dart';
 import 'package:freelancer/data/models/attendance_punch_model.dart';
@@ -250,7 +251,7 @@ class _AttendanceConfirmScreenState extends State<AttendanceConfirmScreen> {
             ],
             const SizedBox(height: 24),
             if (_isSubmitting)
-              const Center(child: CircularProgressIndicator(color: kPrimaryColor))
+              const LoadingWidget()
             else
               ButtonGlobalWithoutIcon(
                 buttontext: _isQrOnceMode

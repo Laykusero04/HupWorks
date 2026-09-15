@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
+import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:freelancer/core/utils/attendance_mode.dart';
 import 'package:freelancer/core/utils/app_date_format.dart';
@@ -626,7 +628,7 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
     if (_isLoading) {
       return const Scaffold(
         backgroundColor: kDarkWhite,
-        body: Center(child: CircularProgressIndicator(color: kPrimaryColor)),
+        body: const LoadingWidget(),
       );
     }
 
@@ -740,8 +742,7 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
               topRight: Radius.circular(30.0),
             ),
           ),
-          child: RefreshIndicator(
-            color: kPrimaryColor,
+          child: RubikRefreshIndicator(
             onRefresh: _loadOrder,
             child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(

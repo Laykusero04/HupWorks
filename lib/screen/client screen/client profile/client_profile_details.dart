@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:freelancer/core/utils/localized_category.dart';
 import 'package:freelancer/core/utils/profile_avatar_picker.dart';
@@ -138,8 +139,7 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
           ),
         ],
       ),
-      body: RefreshIndicator(
-        color: kPrimaryColor,
+      body: RubikRefreshIndicator(
         onRefresh: _load,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),

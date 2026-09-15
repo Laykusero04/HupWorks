@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
+import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:freelancer/core/utils/app_date_format.dart';
 import 'package:freelancer/core/utils/localized_category.dart';
@@ -98,9 +100,7 @@ class _JobPostState extends State<JobPost> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(color: kPrimaryColor),
-            )
+          ? const LoadingWidget()
           : _jobPosts.isEmpty
               ? EmptyStateWidget(
                   message: l10n.noJobsPostedYet,
@@ -118,8 +118,7 @@ class _JobPostState extends State<JobPost> {
                     _loadJobPosts();
                   },
                 )
-              : RefreshIndicator(
-                  color: kPrimaryColor,
+              : RubikRefreshIndicator(
                   onRefresh: _loadJobPosts,
                   child: SingleChildScrollView(
                     physics: const AlwaysScrollableScrollPhysics(

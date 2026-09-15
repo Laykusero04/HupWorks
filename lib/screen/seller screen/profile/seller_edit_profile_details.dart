@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:freelancer/core/utils/profile_avatar_picker.dart';
 import 'package:freelancer/core/utils/profile_image.dart';
@@ -178,7 +179,7 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
       return const Scaffold(
         backgroundColor: kDarkWhite,
         body: SafeArea(
-          child: Center(child: CircularProgressIndicator(color: kPrimaryColor)),
+          child: const LoadingWidget(),
         ),
       );
     }

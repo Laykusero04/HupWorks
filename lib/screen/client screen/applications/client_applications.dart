@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
+import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:freelancer/core/utils/app_date_format.dart';
 import 'package:freelancer/core/utils/job_offer_chat_actions.dart';
 import 'package:freelancer/core/utils/profile_image.dart';
@@ -173,9 +175,7 @@ class _ClientApplicationsState extends State<ClientApplications> {
               const SizedBox(height: 8),
               Expanded(
                 child: _isLoading
-                    ? const Center(
-                        child: CircularProgressIndicator(color: kPrimaryColor),
-                      )
+                    ? const LoadingWidget()
                     : visible.isEmpty
                         ? EmptyStateWidget(
                             message: l10n.noApplicationsYet,
@@ -187,8 +187,7 @@ class _ClientApplicationsState extends State<ClientApplications> {
                               if (mounted) _load(showLoader: false);
                             },
                           )
-                        : RefreshIndicator(
-                            color: kPrimaryColor,
+                        : RubikRefreshIndicator(
                             onRefresh: () => _load(showLoader: false),
                             child: ListView.builder(
                               physics: const AlwaysScrollableScrollPhysics(

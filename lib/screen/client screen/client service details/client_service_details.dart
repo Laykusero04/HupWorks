@@ -1,4 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:freelancer/core/utils/app_date_format.dart';
@@ -123,7 +124,7 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
     if (_isLoading) {
       return const Scaffold(
         backgroundColor: kWhite,
-        body: Center(child: CircularProgressIndicator(color: kPrimaryColor)),
+        body: const LoadingWidget(),
       );
     }
 

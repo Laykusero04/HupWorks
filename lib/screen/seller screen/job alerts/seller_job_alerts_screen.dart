@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
+import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:freelancer/core/widgets/empty_state_widget.dart';
 import 'package:freelancer/data/models/seller_job_alert_rule_model.dart';
 import 'package:freelancer/l10n/l10n.dart';
@@ -133,9 +135,8 @@ class _SellerJobAlertsScreenState extends State<SellerJobAlertsScreen> {
         label: Text(l10n.jobAlertNew),
       ),
       body: _loading
-          ? Center(child: CircularProgressIndicator(color: primary))
-          : RefreshIndicator(
-              color: primary,
+          ? const LoadingWidget()
+          : RubikRefreshIndicator(
               onRefresh: _load,
               child: _rules.isEmpty
                   ? ListView(

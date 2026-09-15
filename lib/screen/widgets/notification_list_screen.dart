@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -193,8 +194,7 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
             padding: const EdgeInsets.only(left: 15.0, right: 15.0),
             child: _isLoading
                 ? const NotificationListSkeleton()
-                : RefreshIndicator(
-                    color: kPrimaryColor,
+                : RubikRefreshIndicator(
                     onRefresh: _loadInitial,
                     child: _notifications.isEmpty
                         ? ListView(

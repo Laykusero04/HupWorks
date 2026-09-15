@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:freelancer/core/widgets/loading_widget.dart';
 
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/talent_seller_filters.dart';
@@ -335,9 +336,7 @@ class _MarketplaceSearchBodyState extends State<_MarketplaceSearchBody> {
       valueListenable: widget.filters,
       builder: (context, filters, _) {
         if (_loading) {
-          return const Center(
-            child: CircularProgressIndicator(color: kPrimaryColor),
-          );
+          return const LoadingWidget();
         }
 
         if (_error != null) {

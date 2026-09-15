@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:flutter_tawkto/flutter_tawk.dart';
 import 'package:freelancer/core/config/tawk_config.dart';
 import 'package:freelancer/core/constants/support_contact.dart';
@@ -199,9 +200,7 @@ class _SupportChatScreenState extends State<SupportChatScreen>
         key: ValueKey('$languageCode|$link'),
         directChatLink: link,
         visitor: _buildVisitor(),
-        placeholder: const Center(
-          child: CircularProgressIndicator(color: kPrimaryColor),
-        ),
+        placeholder: const LoadingWidget(),
       ),
     );
   }

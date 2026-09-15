@@ -449,14 +449,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacySectionChoicesBody =>
-      'You can update profile details in the app and contact support to request account changes. Depending on your location, you may have additional rights to access, correct, or delete personal data.';
+      'You can update profile details in the app and permanently delete your account from Settings. Depending on your location, you may have additional rights to access, correct, or delete personal data.';
 
   @override
   String get privacySectionContactTitle => 'Contact';
 
   @override
   String get privacySectionContactBody =>
-      'If you have questions about this policy or your data, reach us through Help & Support in the app.';
+      'If you have questions about this policy or your data, email us at support@hup-works.nl or use Help & Support in the app.';
 
   @override
   String get appOnboardSkip => 'Skip';
@@ -475,35 +475,69 @@ class AppLocalizationsEn extends AppLocalizations {
       'We\'ll show the app in the language you pick. You can change it later in Settings.';
 
   @override
-  String get appOnboardPage1Title => 'Sign up and create an account';
+  String get appOnboardPage1Title => 'Create an account';
 
   @override
-  String get appOnboardPage1Body => 'Join as an Employer or Freelancer.';
+  String get appOnboardPage1Body => 'Sign up as an Employer or Freelancer.';
 
   @override
   String get appOnboardPage2Title => 'Post or search';
 
   @override
-  String get appOnboardPage2Body => 'Post a job, or browse and apply.';
+  String get appOnboardPage2Body =>
+      'Post a job, or browse and apply for a shift.';
 
   @override
   String get appOnboardPage3Title => 'Chat and align';
 
   @override
   String get appOnboardPage3Body =>
-      'Message in the app and agree on the details.';
+      'Message each other in the app and agree on the work.';
 
   @override
-  String get appOnboardPage4Title => 'Check for shift updates';
+  String get appOnboardPage4Title => 'Stay updated on your shift status';
 
   @override
-  String get appOnboardPage4Body => 'Use on-site attendance or QR.';
+  String get appOnboardPage4Body =>
+      'Register your presence on site using your QR code.';
 
   @override
-  String get appOnboardPage5Title => 'Wrap up and leave a review';
+  String get appOnboardPage5Title => 'Wrap up and review';
 
   @override
-  String get appOnboardPage5Body => 'Finish the job and share your experience.';
+  String get appOnboardPage5Body => 'Finish your shift and leave a review.';
+
+  @override
+  String get appOnboardPage6Title => 'Get paid';
+
+  @override
+  String get appOnboardPage6Body =>
+      'Enter your hours and send your invoice to the employer. Once they approve it based on your clock-in and clock-out times, you get paid according to your preferences!';
+
+  @override
+  String get appOnboardPage7Title => 'Huppakee — update your admin';
+
+  @override
+  String get appOnboardPage7Body =>
+      'Before you rush to the next shift, keep your administration up to date. Rule of thumb: the more often you do this, the less time your tax filing will take!';
+
+  @override
+  String get appOnboardPage8Title => 'On to the next shift!';
+
+  @override
+  String get appOnboardPage8Body =>
+      'That was it — went fast, right? On to the next one!';
+
+  @override
+  String get platformRulesTitle => 'Platform rules';
+
+  @override
+  String get platformRulesSubtitle => 'From signup to payment in 8 steps';
+
+  @override
+  String platformRulesStepLabel(int step) {
+    return 'Step $step';
+  }
 
   @override
   String get authWelcomeHowToUse => 'How will you use HupWorks?';
@@ -1255,6 +1289,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get filterTalent => 'Filter talent';
 
   @override
+  String get filterLimitNearby => 'Limit to nearby freelancers';
+
+  @override
   String get filterMinRating => 'Minimum rating';
 
   @override
@@ -1559,6 +1596,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dashboard => 'Dashboard';
+
+  @override
+  String get periodDay => 'Day';
+
+  @override
+  String get periodWeek => 'Week';
+
+  @override
+  String get periodMonth => 'Month';
 
   @override
   String get addDeposit => 'Add Deposit';
@@ -1888,7 +1934,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get supportTawkEnvHint =>
-      'Add TAWK_DIRECT_CHAT_LINK to your .env file (see .env.example). FAQ answers are still available in the first tab.';
+      'Add TAWK_DIRECT_CHAT_LINK (and TAWK_DIRECT_CHAT_LINK_NL for Dutch) to your .env file. Set each widget\'s language in the Tawk dashboard. FAQ answers are still available in the first tab.';
 
   @override
   String get supportNoQuestionsYet => 'No questions available yet.';
@@ -3375,4 +3421,150 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get verifiedEmployer => 'Verified employer';
+
+  @override
+  String get deleteAccount => 'Delete account';
+
+  @override
+  String get deleteAccountSubtitle =>
+      'Permanently remove your profile and data';
+
+  @override
+  String get deleteAccountConfirmTitle => 'Delete your account?';
+
+  @override
+  String get deleteAccountConfirmBody =>
+      'This cannot be undone. Open jobs and contracts involving you will be cancelled. Type DELETE to confirm.';
+
+  @override
+  String get deleteAccountConfirmHint => 'Type DELETE';
+
+  @override
+  String get deleteAccountConfirmAction => 'Delete forever';
+
+  @override
+  String get deleteAccountSuccess => 'Your account has been deleted.';
+
+  @override
+  String get deleteAccountMismatch => 'Type DELETE exactly to confirm.';
+
+  @override
+  String get supportEmail => 'Support email';
+
+  @override
+  String supportEmailSubtitle(String email) {
+    return 'Email us at $email';
+  }
+
+  @override
+  String get supportEmailCopied => 'Support email copied to clipboard';
+
+  @override
+  String get supportEmailOpenFailed =>
+      'Could not open email app. Address copied instead.';
+
+  @override
+  String get settingsProfilePhotoHint =>
+      'Clear front-facing photo — reviewed separately by admin';
+
+  @override
+  String get settingsPhotoStatusPending => 'Pending admin review';
+
+  @override
+  String get settingsPhotoStatusRejected => 'Rejected — upload a new photo';
+
+  @override
+  String get settingsPhotoStatusVerified => 'Photo verified';
+
+  @override
+  String get settingsPhotoStatusUnverified => 'Not submitted for review yet';
+
+  @override
+  String get settingsVerificationSubtitle =>
+      'Upload ID documents for your verified badge';
+
+  @override
+  String get faqDiffMessagesQ =>
+      'What is the difference between Messages and Help & Support?';
+
+  @override
+  String get faqDiffMessagesA =>
+      'Messages is for chatting with employers or freelancers about jobs and orders. Help & Support is for contacting the HupWorks team about account or technical issues.';
+
+  @override
+  String get faqResetPasswordQ => 'How do I reset my password?';
+
+  @override
+  String get faqResetPasswordA =>
+      'On the login screen, tap Forgot Password and enter your email. Check your inbox for a reset link from HupWorks.';
+
+  @override
+  String get faqUpdateProfileQ => 'How do I update my profile?';
+
+  @override
+  String get faqUpdateProfileA =>
+      'Open the menu (profile icon) → My Profile. You can update your name, photo, and other details from there.';
+
+  @override
+  String get faqPostJobQ => 'How do I post a job?';
+
+  @override
+  String get faqPostJobA =>
+      'From the employer home screen, use Post a Job (or the jobs section). Fill in the title, category, location, budget, and requirements, then publish.';
+
+  @override
+  String get faqTrackOrderQ => 'How do I track my order?';
+
+  @override
+  String get faqTrackOrderA =>
+      'Go to the Orders tab to see active, pending, and completed work. Tap an order for details, delivery status, and chat with the freelancer.';
+
+  @override
+  String get faqMessageSellerQ => 'How do I message a freelancer?';
+
+  @override
+  String get faqMessageSellerA =>
+      'Open an order or job offer and use Message, or go to the Messages tab to see all conversations with freelancers.';
+
+  @override
+  String get faqReportSellerQ => 'How do I report a freelancer?';
+
+  @override
+  String get faqReportSellerA =>
+      'Open the chat, contract, or freelancer profile and tap Report. Choose a reason, describe what happened, and submit. For urgent problems, also start a live chat with support.';
+
+  @override
+  String get faqPaymentsClientQ => 'How do payments work?';
+
+  @override
+  String get faqPaymentsClientA =>
+      'Payment happens outside the app (cash, bank transfer, or local e-wallet). Agree on the amount in the job or chat, then pay the freelancer directly after the work is done.';
+
+  @override
+  String get faqReportClientQ => 'How do I report an employer or job?';
+
+  @override
+  String get faqReportClientA =>
+      'Open the job, contract, employer profile, or chat and tap the report (flag) icon. Choose a reason, describe what happened, and submit.';
+
+  @override
+  String get faqApplyJobQ => 'How do I apply to a job?';
+
+  @override
+  String get faqApplyJobA =>
+      'Go to Find Jobs, open a listing, and submit your offer with price and delivery details. The employer can accept and start an order from there.';
+
+  @override
+  String get faqGetPaidQ => 'How do I get paid?';
+
+  @override
+  String get faqGetPaidA =>
+      'HupWorks does not hold or transfer money. After you finish the work, collect payment directly from the employer (cash, bank transfer, or local e-wallet) based on the agreed amount.';
+
+  @override
+  String get faqAttendanceQ => 'How does attendance check-in work?';
+
+  @override
+  String get faqAttendanceA =>
+      'Profile menu → Attendance. At the job site, scan the QR code provided by the employer to punch in or out for that order.';
 }

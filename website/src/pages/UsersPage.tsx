@@ -5,7 +5,7 @@ import { PageHeader } from '../components/PageHeader'
 import { PageSection } from '../components/PageSection'
 import { QueueToolbar } from '../components/QueueToolbar'
 import { StatusAlert } from '../components/StatusAlert'
-import { fetchUsers, statusLabel, type AdminUserRow } from '../lib/adminApi'
+import { deleteUser, fetchUsers, statusLabel, type AdminUserRow } from '../lib/adminApi'
 
 type RoleFilter = 'all' | 'client' | 'seller' | 'incomplete'
 
@@ -32,6 +32,7 @@ export function UsersPage() {
   const [query, setQuery] = useState('')
   const [role, setRole] = useState<RoleFilter>('all')
   const [expandedId, setExpandedId] = useState<string | null>(null)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -60,6 +61,25 @@ export function UsersPage() {
       sellers: rows.filter((r) => r.role === 'seller').length,
     }
   }, [rows])
+
+  async function handleDelete(row: AdminUserRow) {
+    const label = row.name || row.email || row.id
+    const ok = window.confirm(
+      `Permanently delete ${label}?\n\nThis cancels their open orders, removes profile data, and deletes the Auth user. This cannot be undone.`,
+    )
+    if (!ok) return
+    setDeletingId(row.id)
+    setError(null)
+    try {
+      await deleteUser(row.id)
+      setExpandedId(null)
+      await load()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err))
+    } finally {
+      setDeletingId(null)
+    }
+  }
 
   return (
     <div>
@@ -97,7 +117,7 @@ export function UsersPage() {
 
       {!loading && !error && rows.length === 0 && <EmptyState>No users match.</EmptyState>}
 
-      {!loading && !error && rows.length > 0 && (
+      {!loading && rows.length > 0 && (
         <>
           <p className="text-secondary small mb-2">
             Showing {rows.length}
@@ -108,6 +128,7 @@ export function UsersPage() {
               const open = expandedId === row.id
               const roleLabel =
                 row.role === 'seller' ? 'Seller' : row.role === 'client' ? 'Client' : row.role
+              const deleting = deletingId === row.id
               return (
                 <PageSection key={row.id} bodyClassName="py-3">
                   <button
@@ -207,6 +228,16 @@ export function UsersPage() {
                             </a>
                           </div>
                         )}
+                        <div className="col-12">
+                          <button
+                            type="button"
+                            className="btn btn-outline-danger btn-sm"
+                            disabled={deleting}
+                            onClick={() => void handleDelete(row)}
+                          >
+                            {deleting ? 'Deleting…' : 'Delete account'}
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </Collapse>

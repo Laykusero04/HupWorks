@@ -800,6 +800,63 @@ export async function handleAdminRequest(req: AdminRequest): Promise<AdminRespon
       }
     }
 
+    if (
+      (path === '/api/admin/users-delete' || path === '/api/admin/users/delete') &&
+      method === 'POST'
+    ) {
+      const body = (req.body ?? {}) as { userId?: string }
+      const userId = (body.userId ?? '').trim()
+      if (!userId) {
+        return { status: 400, body: { ok: false, error: 'userId is required' } }
+      }
+
+      const { error: prepareError } = await sb.rpc('prepare_account_deletion', {
+        p_user_id: userId,
+      })
+      if (prepareError) {
+        const msg = prepareError.message || String(prepareError)
+        if (msg.includes('prepare_account_deletion') || msg.includes('Could not find')) {
+          return {
+            status: 500,
+            body: {
+              ok: false,
+              error:
+                'Apply migrations/0044_delete_account.sql in the Supabase SQL Editor, then retry.',
+            },
+          }
+        }
+        throw prepareError
+      }
+
+      // Best-effort storage cleanup (avatars + identity docs).
+      const storagePaths = [
+        `${userId}/avatar.jpg`,
+        `${userId}/id_selfie.jpg`,
+        `${userId}/company_doc.jpg`,
+      ]
+      try {
+        await sb.storage.from('avatars').remove([`${userId}/avatar.jpg`])
+      } catch (storageErr) {
+        console.error('[admin/users-delete] avatars cleanup', storageErr)
+      }
+      try {
+        await sb.storage.from('identity-docs').remove(storagePaths.slice(1))
+      } catch (storageErr) {
+        console.error('[admin/users-delete] identity-docs cleanup', storageErr)
+      }
+
+      const { error: profileError } = await sb.from('profiles').delete().eq('id', userId)
+      if (profileError) throw profileError
+
+      const { error: authError } = await sb.auth.admin.deleteUser(userId)
+      if (authError) {
+        // Profile may already be gone; still report Auth failure.
+        throw authError
+      }
+
+      return { status: 200, body: { ok: true, deletedUserId: userId } }
+    }
+
     return { status: 404, body: { ok: false, error: 'Not found' } }
   } catch (err) {
     return { status: 500, body: { ok: false, error: errorMessage(err) } }

@@ -907,7 +907,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacySectionChoicesBody.
   ///
   /// In en, this message translates to:
-  /// **'You can update profile details in the app and contact support to request account changes. Depending on your location, you may have additional rights to access, correct, or delete personal data.'**
+  /// **'You can update profile details in the app and permanently delete your account from Settings. Depending on your location, you may have additional rights to access, correct, or delete personal data.'**
   String get privacySectionChoicesBody;
 
   /// No description provided for @privacySectionContactTitle.
@@ -919,7 +919,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacySectionContactBody.
   ///
   /// In en, this message translates to:
-  /// **'If you have questions about this policy or your data, reach us through Help & Support in the app.'**
+  /// **'If you have questions about this policy or your data, email us at support@hup-works.nl or use Help & Support in the app.'**
   String get privacySectionContactBody;
 
   /// No description provided for @appOnboardSkip.
@@ -955,13 +955,13 @@ abstract class AppLocalizations {
   /// No description provided for @appOnboardPage1Title.
   ///
   /// In en, this message translates to:
-  /// **'Sign up and create an account'**
+  /// **'Create an account'**
   String get appOnboardPage1Title;
 
   /// No description provided for @appOnboardPage1Body.
   ///
   /// In en, this message translates to:
-  /// **'Join as an Employer or Freelancer.'**
+  /// **'Sign up as an Employer or Freelancer.'**
   String get appOnboardPage1Body;
 
   /// No description provided for @appOnboardPage2Title.
@@ -973,7 +973,7 @@ abstract class AppLocalizations {
   /// No description provided for @appOnboardPage2Body.
   ///
   /// In en, this message translates to:
-  /// **'Post a job, or browse and apply.'**
+  /// **'Post a job, or browse and apply for a shift.'**
   String get appOnboardPage2Body;
 
   /// No description provided for @appOnboardPage3Title.
@@ -985,32 +985,86 @@ abstract class AppLocalizations {
   /// No description provided for @appOnboardPage3Body.
   ///
   /// In en, this message translates to:
-  /// **'Message in the app and agree on the details.'**
+  /// **'Message each other in the app and agree on the work.'**
   String get appOnboardPage3Body;
 
   /// No description provided for @appOnboardPage4Title.
   ///
   /// In en, this message translates to:
-  /// **'Check for shift updates'**
+  /// **'Stay updated on your shift status'**
   String get appOnboardPage4Title;
 
   /// No description provided for @appOnboardPage4Body.
   ///
   /// In en, this message translates to:
-  /// **'Use on-site attendance or QR.'**
+  /// **'Register your presence on site using your QR code.'**
   String get appOnboardPage4Body;
 
   /// No description provided for @appOnboardPage5Title.
   ///
   /// In en, this message translates to:
-  /// **'Wrap up and leave a review'**
+  /// **'Wrap up and review'**
   String get appOnboardPage5Title;
 
   /// No description provided for @appOnboardPage5Body.
   ///
   /// In en, this message translates to:
-  /// **'Finish the job and share your experience.'**
+  /// **'Finish your shift and leave a review.'**
   String get appOnboardPage5Body;
+
+  /// No description provided for @appOnboardPage6Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Get paid'**
+  String get appOnboardPage6Title;
+
+  /// No description provided for @appOnboardPage6Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your hours and send your invoice to the employer. Once they approve it based on your clock-in and clock-out times, you get paid according to your preferences!'**
+  String get appOnboardPage6Body;
+
+  /// No description provided for @appOnboardPage7Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Huppakee — update your admin'**
+  String get appOnboardPage7Title;
+
+  /// No description provided for @appOnboardPage7Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Before you rush to the next shift, keep your administration up to date. Rule of thumb: the more often you do this, the less time your tax filing will take!'**
+  String get appOnboardPage7Body;
+
+  /// No description provided for @appOnboardPage8Title.
+  ///
+  /// In en, this message translates to:
+  /// **'On to the next shift!'**
+  String get appOnboardPage8Title;
+
+  /// No description provided for @appOnboardPage8Body.
+  ///
+  /// In en, this message translates to:
+  /// **'That was it — went fast, right? On to the next one!'**
+  String get appOnboardPage8Body;
+
+  /// No description provided for @platformRulesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Platform rules'**
+  String get platformRulesTitle;
+
+  /// No description provided for @platformRulesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'From signup to payment in 8 steps'**
+  String get platformRulesSubtitle;
+
+  /// No description provided for @platformRulesStepLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {step}'**
+  String platformRulesStepLabel(int step);
 
   /// No description provided for @authWelcomeHowToUse.
   ///
@@ -2440,6 +2494,12 @@ abstract class AppLocalizations {
   /// **'Filter talent'**
   String get filterTalent;
 
+  /// No description provided for @filterLimitNearby.
+  ///
+  /// In en, this message translates to:
+  /// **'Limit to nearby freelancers'**
+  String get filterLimitNearby;
+
   /// No description provided for @filterMinRating.
   ///
   /// In en, this message translates to:
@@ -2961,6 +3021,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Dashboard'**
   String get dashboard;
+
+  /// No description provided for @periodDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Day'**
+  String get periodDay;
+
+  /// No description provided for @periodWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Week'**
+  String get periodWeek;
+
+  /// No description provided for @periodMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get periodMonth;
 
   /// No description provided for @addDeposit.
   ///
@@ -3553,7 +3631,7 @@ abstract class AppLocalizations {
   /// No description provided for @supportTawkEnvHint.
   ///
   /// In en, this message translates to:
-  /// **'Add TAWK_DIRECT_CHAT_LINK to your .env file (see .env.example). FAQ answers are still available in the first tab.'**
+  /// **'Add TAWK_DIRECT_CHAT_LINK (and TAWK_DIRECT_CHAT_LINK_NL for Dutch) to your .env file. Set each widget\'s language in the Tawk dashboard. FAQ answers are still available in the first tab.'**
   String get supportTawkEnvHint;
 
   /// No description provided for @supportNoQuestionsYet.
@@ -6208,6 +6286,258 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Verified employer'**
   String get verifiedEmployer;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account'**
+  String get deleteAccount;
+
+  /// No description provided for @deleteAccountSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Permanently remove your profile and data'**
+  String get deleteAccountSubtitle;
+
+  /// No description provided for @deleteAccountConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete your account?'**
+  String get deleteAccountConfirmTitle;
+
+  /// No description provided for @deleteAccountConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This cannot be undone. Open jobs and contracts involving you will be cancelled. Type DELETE to confirm.'**
+  String get deleteAccountConfirmBody;
+
+  /// No description provided for @deleteAccountConfirmHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Type DELETE'**
+  String get deleteAccountConfirmHint;
+
+  /// No description provided for @deleteAccountConfirmAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete forever'**
+  String get deleteAccountConfirmAction;
+
+  /// No description provided for @deleteAccountSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account has been deleted.'**
+  String get deleteAccountSuccess;
+
+  /// No description provided for @deleteAccountMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Type DELETE exactly to confirm.'**
+  String get deleteAccountMismatch;
+
+  /// No description provided for @supportEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Support email'**
+  String get supportEmail;
+
+  /// No description provided for @supportEmailSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Email us at {email}'**
+  String supportEmailSubtitle(String email);
+
+  /// No description provided for @supportEmailCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Support email copied to clipboard'**
+  String get supportEmailCopied;
+
+  /// No description provided for @supportEmailOpenFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open email app. Address copied instead.'**
+  String get supportEmailOpenFailed;
+
+  /// No description provided for @settingsProfilePhotoHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear front-facing photo — reviewed separately by admin'**
+  String get settingsProfilePhotoHint;
+
+  /// No description provided for @settingsPhotoStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending admin review'**
+  String get settingsPhotoStatusPending;
+
+  /// No description provided for @settingsPhotoStatusRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected — upload a new photo'**
+  String get settingsPhotoStatusRejected;
+
+  /// No description provided for @settingsPhotoStatusVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo verified'**
+  String get settingsPhotoStatusVerified;
+
+  /// No description provided for @settingsPhotoStatusUnverified.
+  ///
+  /// In en, this message translates to:
+  /// **'Not submitted for review yet'**
+  String get settingsPhotoStatusUnverified;
+
+  /// No description provided for @settingsVerificationSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload ID documents for your verified badge'**
+  String get settingsVerificationSubtitle;
+
+  /// No description provided for @faqDiffMessagesQ.
+  ///
+  /// In en, this message translates to:
+  /// **'What is the difference between Messages and Help & Support?'**
+  String get faqDiffMessagesQ;
+
+  /// No description provided for @faqDiffMessagesA.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages is for chatting with employers or freelancers about jobs and orders. Help & Support is for contacting the HupWorks team about account or technical issues.'**
+  String get faqDiffMessagesA;
+
+  /// No description provided for @faqResetPasswordQ.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I reset my password?'**
+  String get faqResetPasswordQ;
+
+  /// No description provided for @faqResetPasswordA.
+  ///
+  /// In en, this message translates to:
+  /// **'On the login screen, tap Forgot Password and enter your email. Check your inbox for a reset link from HupWorks.'**
+  String get faqResetPasswordA;
+
+  /// No description provided for @faqUpdateProfileQ.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I update my profile?'**
+  String get faqUpdateProfileQ;
+
+  /// No description provided for @faqUpdateProfileA.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the menu (profile icon) → My Profile. You can update your name, photo, and other details from there.'**
+  String get faqUpdateProfileA;
+
+  /// No description provided for @faqPostJobQ.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I post a job?'**
+  String get faqPostJobQ;
+
+  /// No description provided for @faqPostJobA.
+  ///
+  /// In en, this message translates to:
+  /// **'From the employer home screen, use Post a Job (or the jobs section). Fill in the title, category, location, budget, and requirements, then publish.'**
+  String get faqPostJobA;
+
+  /// No description provided for @faqTrackOrderQ.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I track my order?'**
+  String get faqTrackOrderQ;
+
+  /// No description provided for @faqTrackOrderA.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to the Orders tab to see active, pending, and completed work. Tap an order for details, delivery status, and chat with the freelancer.'**
+  String get faqTrackOrderA;
+
+  /// No description provided for @faqMessageSellerQ.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I message a freelancer?'**
+  String get faqMessageSellerQ;
+
+  /// No description provided for @faqMessageSellerA.
+  ///
+  /// In en, this message translates to:
+  /// **'Open an order or job offer and use Message, or go to the Messages tab to see all conversations with freelancers.'**
+  String get faqMessageSellerA;
+
+  /// No description provided for @faqReportSellerQ.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I report a freelancer?'**
+  String get faqReportSellerQ;
+
+  /// No description provided for @faqReportSellerA.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the chat, contract, or freelancer profile and tap Report. Choose a reason, describe what happened, and submit. For urgent problems, also start a live chat with support.'**
+  String get faqReportSellerA;
+
+  /// No description provided for @faqPaymentsClientQ.
+  ///
+  /// In en, this message translates to:
+  /// **'How do payments work?'**
+  String get faqPaymentsClientQ;
+
+  /// No description provided for @faqPaymentsClientA.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment happens outside the app (cash, bank transfer, or local e-wallet). Agree on the amount in the job or chat, then pay the freelancer directly after the work is done.'**
+  String get faqPaymentsClientA;
+
+  /// No description provided for @faqReportClientQ.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I report an employer or job?'**
+  String get faqReportClientQ;
+
+  /// No description provided for @faqReportClientA.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the job, contract, employer profile, or chat and tap the report (flag) icon. Choose a reason, describe what happened, and submit.'**
+  String get faqReportClientA;
+
+  /// No description provided for @faqApplyJobQ.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I apply to a job?'**
+  String get faqApplyJobQ;
+
+  /// No description provided for @faqApplyJobA.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to Find Jobs, open a listing, and submit your offer with price and delivery details. The employer can accept and start an order from there.'**
+  String get faqApplyJobA;
+
+  /// No description provided for @faqGetPaidQ.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I get paid?'**
+  String get faqGetPaidQ;
+
+  /// No description provided for @faqGetPaidA.
+  ///
+  /// In en, this message translates to:
+  /// **'HupWorks does not hold or transfer money. After you finish the work, collect payment directly from the employer (cash, bank transfer, or local e-wallet) based on the agreed amount.'**
+  String get faqGetPaidA;
+
+  /// No description provided for @faqAttendanceQ.
+  ///
+  /// In en, this message translates to:
+  /// **'How does attendance check-in work?'**
+  String get faqAttendanceQ;
+
+  /// No description provided for @faqAttendanceA.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile menu → Attendance. At the job site, scan the QR code provided by the employer to punch in or out for that order.'**
+  String get faqAttendanceA;
 }
 
 class _AppLocalizationsDelegate

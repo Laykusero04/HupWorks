@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/utils/dashboard_period.dart';
 import 'package:freelancer/core/widgets/empty_state_widget.dart';
 import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/screen/widgets/dashboard_period_selector.dart';
 import 'package:freelancer/services/dashboard_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -17,6 +19,7 @@ class _SellerDashBoardState extends State<SellerDashBoard> {
   Map<String, dynamic>? _data;
   bool _isLoading = true;
   bool _hasError = false;
+  DashboardPeriod _period = DashboardPeriod.month;
 
   @override
   void initState() {
@@ -32,7 +35,7 @@ class _SellerDashBoardState extends State<SellerDashBoard> {
       });
     }
     try {
-      final data = await DashboardService.getSellerDashboard();
+      final data = await DashboardService.getSellerDashboard(period: _period);
       if (mounted) {
         setState(() {
           _data = data;
@@ -51,6 +54,12 @@ class _SellerDashBoardState extends State<SellerDashBoard> {
         );
       }
     }
+  }
+
+  void _onPeriodChanged(DashboardPeriod period) {
+    if (period == _period) return;
+    setState(() => _period = period);
+    _loadDashboard(showLoader: true);
   }
 
   String _formatHours(BuildContext context) {
@@ -124,6 +133,11 @@ class _SellerDashBoardState extends State<SellerDashBoard> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 15.0),
+                        DashboardPeriodSelector(
+                          value: _period,
+                          onChanged: _onPeriodChanged,
+                        ),
+                        const SizedBox(height: 14.0),
                         Container(
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(

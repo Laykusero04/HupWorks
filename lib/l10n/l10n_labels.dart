@@ -174,6 +174,21 @@ class L10nLabels {
         (title: l10n.privacySectionContactTitle, body: l10n.privacySectionContactBody),
       ];
 
+  /// Full platform journey: signup → payment (8 steps).
+  static List<({String title, String body})> platformRulesSteps(
+    AppLocalizations l10n,
+  ) =>
+      [
+        (title: l10n.appOnboardPage1Title, body: l10n.appOnboardPage1Body),
+        (title: l10n.appOnboardPage2Title, body: l10n.appOnboardPage2Body),
+        (title: l10n.appOnboardPage3Title, body: l10n.appOnboardPage3Body),
+        (title: l10n.appOnboardPage4Title, body: l10n.appOnboardPage4Body),
+        (title: l10n.appOnboardPage5Title, body: l10n.appOnboardPage5Body),
+        (title: l10n.appOnboardPage6Title, body: l10n.appOnboardPage6Body),
+        (title: l10n.appOnboardPage7Title, body: l10n.appOnboardPage7Body),
+        (title: l10n.appOnboardPage8Title, body: l10n.appOnboardPage8Body),
+      ];
+
   static String jobTypeLabel(AppLocalizations l10n, String? t) {
     switch (t) {
       case 'full_time':

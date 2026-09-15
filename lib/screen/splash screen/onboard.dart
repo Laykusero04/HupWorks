@@ -3,6 +3,7 @@ import 'package:freelancer/core/locale/locale_controller.dart';
 import 'package:freelancer/core/locale/locale_scope.dart';
 import 'package:freelancer/core/onboarding/onboarding_prefs.dart';
 import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/screen/app_config/app_config.dart';
 import 'package:freelancer/screen/widgets/auth/auth_ui.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
@@ -20,8 +21,19 @@ class _OnBoardState extends State<OnBoard> {
   final _pageController = PageController();
   int _index = 0;
 
-  static const _contentPageCount = 5;
+  static const _contentPageCount = 8;
   static const _pageCount = _contentPageCount + 1;
+
+  static const _images = [
+    AppInfo.onBoard1,
+    AppInfo.onBoard2,
+    AppInfo.onBoard3,
+    AppInfo.onBoard2,
+    AppInfo.onBoard3,
+    AppInfo.onBoard1,
+    AppInfo.onBoard2,
+    AppInfo.onBoard3,
+  ];
 
   @override
   void dispose() {
@@ -46,38 +58,19 @@ class _OnBoardState extends State<OnBoard> {
     );
   }
 
-  List<_OnboardPageData> _contentPages(AppLocalizations l10n) => [
+  List<_OnboardPageData> _contentPages(AppLocalizations l10n) {
+    final steps = L10nLabels.platformRulesSteps(l10n);
+    return [
+      for (var i = 0; i < steps.length; i++)
         _OnboardPageData(
-          image: AppInfo.onBoard1,
-          title: l10n.appOnboardPage1Title,
-          body: l10n.appOnboardPage1Body,
-          accent: kPrimaryColor,
+          image: _images[i % _images.length],
+          step: i + 1,
+          title: steps[i].title,
+          body: steps[i].body,
+          accent: i.isEven ? kPrimaryColor : kSecondaryColor,
         ),
-        _OnboardPageData(
-          image: AppInfo.onBoard2,
-          title: l10n.appOnboardPage2Title,
-          body: l10n.appOnboardPage2Body,
-          accent: kSecondaryColor,
-        ),
-        _OnboardPageData(
-          image: AppInfo.onBoard3,
-          title: l10n.appOnboardPage3Title,
-          body: l10n.appOnboardPage3Body,
-          accent: kPrimaryColor,
-        ),
-        _OnboardPageData(
-          image: AppInfo.onBoard2,
-          title: l10n.appOnboardPage4Title,
-          body: l10n.appOnboardPage4Body,
-          accent: kSecondaryColor,
-        ),
-        _OnboardPageData(
-          image: AppInfo.onBoard3,
-          title: l10n.appOnboardPage5Title,
-          body: l10n.appOnboardPage5Body,
-          accent: kPrimaryColor,
-        ),
-      ];
+    ];
+  }
 
   Color _accentForIndex(List<_OnboardPageData> pages) {
     if (_index == 0) return kPrimaryColor;
@@ -138,7 +131,7 @@ class _OnBoardState extends State<OnBoard> {
     );
   }
 
-  Widget _buildContentPage(_OnboardPageData page) {
+  Widget _buildContentPage(_OnboardPageData page, AppLocalizations l10n) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 28),
       child: Column(
@@ -146,17 +139,34 @@ class _OnBoardState extends State<OnBoard> {
           const Spacer(flex: 1),
           Image.asset(
             page.image,
-            height: 220,
+            height: 200,
             fit: BoxFit.contain,
           ),
-          const SizedBox(height: 36),
+          const SizedBox(height: 24),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: page.accent.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: page.accent.withValues(alpha: 0.45)),
+            ),
+            child: Text(
+              l10n.platformRulesStepLabel(page.step),
+              style: kTextStyle.copyWith(
+                color: page.accent,
+                fontWeight: FontWeight.w700,
+                fontSize: 13,
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
           Text(
             page.title,
             textAlign: TextAlign.center,
             style: kTextStyle.copyWith(
               color: kNeutralColor,
               fontWeight: FontWeight.bold,
-              fontSize: 24,
+              fontSize: 22,
               height: 1.25,
             ),
           ),
@@ -219,7 +229,7 @@ class _OnBoardState extends State<OnBoard> {
                   if (i == 0) {
                     return _buildLanguagePage(localeController);
                   }
-                  return _buildContentPage(pages[i - 1]);
+                  return _buildContentPage(pages[i - 1], l10n);
                 },
               ),
             ),
@@ -231,10 +241,10 @@ class _OnBoardState extends State<OnBoard> {
                     controller: _pageController,
                     count: _pageCount,
                     effect: ExpandingDotsEffect(
-                      dotHeight: 7,
-                      dotWidth: 7,
+                      dotHeight: 6,
+                      dotWidth: 6,
                       expansionFactor: 3.2,
-                      spacing: 8,
+                      spacing: 6,
                       activeDotColor: accent,
                       dotColor: accent.withValues(alpha: 0.22),
                     ),
@@ -316,12 +326,14 @@ class _LanguageOptionTile extends StatelessWidget {
 class _OnboardPageData {
   const _OnboardPageData({
     required this.image,
+    required this.step,
     required this.title,
     required this.body,
     required this.accent,
   });
 
   final String image;
+  final int step;
   final String title;
   final String body;
   final Color accent;

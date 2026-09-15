@@ -19,15 +19,14 @@ class ClientHomeService {
 
   /// Fetch all categories
   static Future<List<Map<String, dynamic>>> getCategories() async {
-    final data = await _client
-        .from('categories')
-        .select()
-        .order('name');
+    final data = await _client.from('categories').select().order('name');
     return List<Map<String, dynamic>>.from(data);
   }
 
   /// Fetch popular/trending services (sorted by rating, limited)
-  static Future<List<Map<String, dynamic>>> getPopularServices({int limit = 10}) async {
+  static Future<List<Map<String, dynamic>>> getPopularServices({
+    int limit = 10,
+  }) async {
     final data = await _client
         .from('services')
         .select('*, profiles!seller_id(name, profile_image_url)')
@@ -39,7 +38,9 @@ class ClientHomeService {
   }
 
   /// Fetch top sellers (sorted by rating)
-  static Future<List<Map<String, dynamic>>> getTopSellers({int limit = 10}) async {
+  static Future<List<Map<String, dynamic>>> getTopSellers({
+    int limit = 10,
+  }) async {
     final data = await _client
         .from('profiles')
         .select(
@@ -71,7 +72,10 @@ class ClientHomeService {
   }
 
   /// Search sellers by name or job title.
-  static Future<List<Map<String, dynamic>>> searchSellers(String query, {int limit = 20}) async {
+  static Future<List<Map<String, dynamic>>> searchSellers(
+    String query, {
+    int limit = 20,
+  }) async {
     final q = query.trim();
     if (q.isEmpty) return getTopSellers(limit: limit);
 
@@ -124,8 +128,68 @@ class ClientHomeService {
     return enriched.sublist(0, limit);
   }
 
+  /// Nearby / text seller browse. Uses [browse_nearby_sellers] when
+  /// [maxDistanceKm] is set (requires employer lat/lng).
+  static Future<List<Map<String, dynamic>>> browseSellers({
+    String query = '',
+    double? maxDistanceKm,
+    double? clientLat,
+    double? clientLng,
+    int limit = 48,
+    int offset = 0,
+  }) async {
+    if (maxDistanceKm != null) {
+      return browseNearbySellers(
+        query: query,
+        maxDistanceKm: maxDistanceKm,
+        clientLat: clientLat,
+        clientLng: clientLng,
+        limit: limit,
+        offset: offset,
+      );
+    }
+    final q = query.trim();
+    if (q.isEmpty) return getTopSellers(limit: limit);
+    return searchSellers(q, limit: limit);
+  }
+
+  /// RPC: freelancers within [maxDistanceKm] of the employer pin.
+  static Future<List<Map<String, dynamic>>> browseNearbySellers({
+    String query = '',
+    required double maxDistanceKm,
+    double? clientLat,
+    double? clientLng,
+    int limit = 48,
+    int offset = 0,
+  }) async {
+    if (clientLat == null || clientLng == null) {
+      throw ArgumentError('clientLat/clientLng required for nearby search');
+    }
+
+    final raw = await _client.rpc(
+      'browse_nearby_sellers',
+      params: {
+        'p_query': query.trim().isEmpty ? null : query.trim(),
+        'p_max_distance_km': maxDistanceKm,
+        'p_client_lat': clientLat,
+        'p_client_lng': clientLng,
+        'p_limit': limit,
+        'p_offset': offset,
+      },
+    );
+
+    final list = raw is List
+        ? List<Map<String, dynamic>>.from(
+            raw.map((e) => Map<String, dynamic>.from(e as Map)),
+          )
+        : <Map<String, dynamic>>[];
+    return ProfileService.enrichProfilesWithReviewStats(list);
+  }
+
   /// First active service for a seller (for deep-linking from talent browse).
-  static Future<String?> getFirstActiveServiceIdForSeller(String sellerUserId) async {
+  static Future<String?> getFirstActiveServiceIdForSeller(
+    String sellerUserId,
+  ) async {
     final data = await _client
         .from('services')
         .select('id')

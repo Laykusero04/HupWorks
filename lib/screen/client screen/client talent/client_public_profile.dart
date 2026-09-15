@@ -86,14 +86,14 @@ class _ClientPublicProfileState extends State<ClientPublicProfile> {
         appBar: AppBar(),
         body: Center(
           child: Text(
-            'Client not found',
+            context.l10n.clientNotFound,
             style: kTextStyle.copyWith(color: kSubTitleColor),
           ),
         ),
       );
     }
 
-    final name = _profile!['name'] as String? ?? widget.initialName ?? 'Client';
+    final name = _profile!['name'] as String? ?? widget.initialName ?? context.l10n.roleClient;
     final bio = (_profile!['bio'] as String?)?.trim();
     final city = (_profile!['city'] as String?)?.trim() ?? '';
     final country = (_profile!['country'] as String?)?.trim() ?? '';

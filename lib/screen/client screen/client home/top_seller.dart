@@ -1,11 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:freelancer/core/utils/profile_image.dart';
-import 'package:freelancer/core/utils/seller_standing.dart';
+import 'package:freelancer/core/utils/talent_seller_filters.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/services/client_home_service.dart';
 import 'package:freelancer/services/profile_service.dart';
-import 'package:freelancer/services/verification_service.dart';
+import 'package:freelancer/screen/widgets/talent_filter_sheet.dart';
 
 import '../../widgets/client_shell_app_bar.dart';
 import '../../widgets/constant.dart';
@@ -22,44 +24,49 @@ class TopSeller extends StatefulWidget {
 
 class _TopSellerState extends State<TopSeller> {
   final TextEditingController _searchController = TextEditingController();
+  Timer? _searchDebounce;
 
   List<Map<String, dynamic>> _sellers = [];
   bool _isLoading = true;
   String _searchQuery = '';
-
-  /// `null` = any verification status.
-  bool? _verifiedOnly;
-  SellerStanding? _standingFilter;
-  double? _minRating;
-
-  static const _minRatingOptions = <double>[3.5, 4.0, 4.5];
+  TalentSellerFilters _filters = TalentSellerFilters.empty;
+  TalentFilterOrigin _origin = TalentFilterOrigin.empty;
 
   @override
   void initState() {
     super.initState();
-    _load();
+    _bootstrap();
   }
 
   @override
   void dispose() {
+    _searchDebounce?.cancel();
     _searchController.dispose();
     super.dispose();
   }
 
-  bool get _hasActiveFilters =>
-      _verifiedOnly == true || _standingFilter != null || _minRating != null;
-
-  int get _activeFilterCount {
-    var n = 0;
-    if (_verifiedOnly == true) n++;
-    if (_standingFilter != null) n++;
-    if (_minRating != null) n++;
-    return n;
+  Future<void> _bootstrap() async {
+    try {
+      final profile = await ProfileService.getProfile();
+      if (mounted) {
+        setState(() => _origin = TalentFilterOrigin.fromProfile(profile));
+      }
+    } catch (_) {
+      // Origin stays empty; nearby requires a map pin later.
+    }
+    await _load();
   }
 
   Future<void> _load() async {
+    if (mounted) setState(() => _isLoading = true);
     try {
-      final list = await ClientHomeService.getTopSellers(limit: 48);
+      final list = await ClientHomeService.browseSellers(
+        query: _filters.usesNearbySearch ? _searchQuery : '',
+        maxDistanceKm: _filters.maxDistanceKm,
+        clientLat: _origin.latitude,
+        clientLng: _origin.longitude,
+        limit: 48,
+      );
       if (mounted) {
         setState(() {
           _sellers = list;
@@ -76,67 +83,47 @@ class _TopSellerState extends State<TopSeller> {
     }
   }
 
-  List<Map<String, dynamic>> get _filteredSellers {
-    final q = _searchQuery.trim().toLowerCase();
+  List<Map<String, dynamic>> get _filteredSellers => TalentSellerFilters.apply(
+        _sellers,
+        filters: _filters,
+        // Nearby text match is server-side; otherwise filter locally.
+        query: _filters.usesNearbySearch ? '' : _searchQuery,
+      );
 
-    return _sellers.where((seller) {
-      if (q.isNotEmpty) {
-        final name = (seller['name'] as String? ?? '').toLowerCase();
-        final sp = _sellerProfileRow(seller);
-        final jobTitle = (sp?['job_title'] as String? ?? '').toLowerCase();
-        final about = (sp?['about'] as String? ?? '').toLowerCase();
-        final skillNames = ProfileService.sellerSkillsFromProfile(seller)
-            .map((s) => s.name.toLowerCase())
-            .join(' ');
-        final matchesSearch = name.contains(q) ||
-            jobTitle.contains(q) ||
-            about.contains(q) ||
-            skillNames.contains(q);
-        if (!matchesSearch) return false;
-      }
-
-      if (_verifiedOnly == true) {
-        if (VerificationService.statusFromProfile(seller) != 'verified') {
-          return false;
-        }
-      }
-
-      final rating = double.tryParse('${seller['rating'] ?? 0}') ?? 0;
-      final reviewCount = (seller['review_count'] as num?)?.toInt() ?? 0;
-
-      if (_minRating != null && rating < _minRating!) return false;
-
-      if (_standingFilter != null) {
-        final standing = SellerStandingResolver.resolve(
-          rating: rating,
-          reviewCount: reviewCount,
-        );
-        if (standing != _standingFilter) return false;
-      }
-
-      return true;
-    }).toList();
-  }
-
-  static Map<String, dynamic>? _sellerProfileRow(Map<String, dynamic> seller) {
-    final sp = seller['seller_profiles'];
-    if (sp is Map<String, dynamic>) return sp;
-    if (sp is List && sp.isNotEmpty && sp.first is Map<String, dynamic>) {
-      return sp.first as Map<String, dynamic>;
-    }
-    return null;
+  void _onSearchChanged(String q) {
+    setState(() => _searchQuery = q);
+    if (!_filters.usesNearbySearch) return;
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(const Duration(milliseconds: 350), _load);
   }
 
   String _subtitle(Map<String, dynamic> seller) {
-    final sp = _sellerProfileRow(seller);
+    final sp = TalentSellerFilters.sellerProfileRow(seller);
     final jobTitle = sp?['job_title'] as String?;
-    if (jobTitle != null && jobTitle.trim().isNotEmpty) return jobTitle.trim();
+    final distance = (seller['distance_km'] as num?)?.toDouble();
+    String? distanceLabel;
+    if (distance != null && _filters.usesNearbySearch) {
+      distanceLabel = distance < 10
+          ? '${distance.toStringAsFixed(1)} km'
+          : '${distance.round()} km';
+    }
+
+    if (jobTitle != null && jobTitle.trim().isNotEmpty) {
+      return distanceLabel == null
+          ? jobTitle.trim()
+          : '$distanceLabel · ${jobTitle.trim()}';
+    }
 
     final topSkills = ProfileService.sellerSkillsFromProfile(seller)
         .where((s) => s.stars == 5)
         .map((s) => s.name)
         .toList();
-    if (topSkills.isNotEmpty) return topSkills.take(2).join(' · ');
+    if (topSkills.isNotEmpty) {
+      final skills = topSkills.take(2).join(' · ');
+      return distanceLabel == null ? skills : '$distanceLabel · $skills';
+    }
+
+    if (distanceLabel != null) return distanceLabel;
 
     final about = sp?['about'] as String?;
     if (about != null && about.trim().isNotEmpty) {
@@ -156,237 +143,18 @@ class _TopSellerState extends State<TopSeller> {
     );
   }
 
-  void _clearFilters() {
-    setState(() {
-      _verifiedOnly = null;
-      _standingFilter = null;
-      _minRating = null;
-    });
-  }
-
   Future<void> _openFilterSheet() async {
-    final l10n = context.l10n;
-    var draftVerified = _verifiedOnly;
-    var draftStanding = _standingFilter;
-    var draftMinRating = _minRating;
-
-    final applied = await showModalBottomSheet<bool>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: kWhite,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (ctx) {
-        return StatefulBuilder(
-          builder: (ctx, setSheetState) {
-            Widget sectionLabel(String text) => Text(
-                  text,
-                  style: kTextStyle.copyWith(
-                    color: kLightNeutralColor,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
-                );
-
-            Widget chip({
-              required String label,
-              required bool selected,
-              required VoidCallback onTap,
-            }) {
-              return ChoiceChip(
-                label: Text(label),
-                selected: selected,
-                onSelected: (_) => onTap(),
-                selectedColor: kPrimaryColor.withValues(alpha: 0.15),
-                labelStyle: kTextStyle.copyWith(
-                  color: selected ? kPrimaryColor : kNeutralColor,
-                  fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
-                  fontSize: 13,
-                ),
-                backgroundColor: kDarkWhite,
-                side: BorderSide(
-                  color: selected ? kPrimaryColor : kBorderColorTextField,
-                ),
-              );
-            }
-
-            return SafeArea(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(
-                  20,
-                  12,
-                  20,
-                  16 + MediaQuery.viewInsetsOf(ctx).bottom,
-                ),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxHeight: MediaQuery.sizeOf(ctx).height * 0.75,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Center(
-                        child: Container(
-                          width: 36,
-                          height: 4,
-                          decoration: BoxDecoration(
-                            color: kBorderColorTextField,
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        l10n.filterTalent,
-                        style: kTextStyle.copyWith(
-                          color: kNeutralColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 17,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      Flexible(
-                        child: SingleChildScrollView(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              sectionLabel(l10n.statusVerified),
-                              const SizedBox(height: 8),
-                              Wrap(
-                                spacing: 8,
-                                runSpacing: 8,
-                                children: [
-                                  chip(
-                                    label: l10n.filterAll,
-                                    selected: draftVerified != true,
-                                    onTap: () => setSheetState(
-                                      () => draftVerified = null,
-                                    ),
-                                  ),
-                                  chip(
-                                    label: l10n.statusVerified,
-                                    selected: draftVerified == true,
-                                    onTap: () => setSheetState(
-                                      () => draftVerified = true,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 20),
-                              sectionLabel(l10n.standingTitle),
-                              const SizedBox(height: 8),
-                              Wrap(
-                                spacing: 8,
-                                runSpacing: 8,
-                                children: [
-                                  chip(
-                                    label: l10n.filterAll,
-                                    selected: draftStanding == null,
-                                    onTap: () => setSheetState(
-                                      () => draftStanding = null,
-                                    ),
-                                  ),
-                                  for (final standing in SellerStanding.values)
-                                    chip(
-                                      label: standing.label(l10n),
-                                      selected: draftStanding == standing,
-                                      onTap: () => setSheetState(
-                                        () => draftStanding = standing,
-                                      ),
-                                    ),
-                                ],
-                              ),
-                              const SizedBox(height: 20),
-                              sectionLabel(l10n.filterMinRating),
-                              const SizedBox(height: 8),
-                              Wrap(
-                                spacing: 8,
-                                runSpacing: 8,
-                                children: [
-                                  chip(
-                                    label: l10n.filterAll,
-                                    selected: draftMinRating == null,
-                                    onTap: () => setSheetState(
-                                      () => draftMinRating = null,
-                                    ),
-                                  ),
-                                  for (final rating in _minRatingOptions)
-                                    chip(
-                                      label: l10n.ratingAtLeast(
-                                        rating.toStringAsFixed(1),
-                                      ),
-                                      selected: draftMinRating == rating,
-                                      onTap: () => setSheetState(
-                                        () => draftMinRating = rating,
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: OutlinedButton(
-                              onPressed: () {
-                                setSheetState(() {
-                                  draftVerified = null;
-                                  draftStanding = null;
-                                  draftMinRating = null;
-                                });
-                              },
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: kNeutralColor,
-                                side: const BorderSide(
-                                  color: kBorderColorTextField,
-                                ),
-                                minimumSize: const Size.fromHeight(46),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              child: Text(l10n.filterClear),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () => Navigator.pop(ctx, true),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: kPrimaryColor,
-                                foregroundColor: kWhite,
-                                minimumSize: const Size.fromHeight(46),
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              child: Text(l10n.filterApply),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-        );
+    final next = await showTalentFilterSheet(
+      context,
+      initial: _filters,
+      origin: _origin,
+      onOriginChanged: (o) {
+        if (mounted) setState(() => _origin = o);
       },
     );
-
-    if (applied == true && mounted) {
-      setState(() {
-        _verifiedOnly = draftVerified;
-        _standingFilter = draftStanding;
-        _minRating = draftMinRating;
-      });
+    if (next != null && mounted) {
+      setState(() => _filters = next);
+      await _load();
     }
   }
 
@@ -399,7 +167,7 @@ class _TopSellerState extends State<TopSeller> {
           Expanded(
             child: TextField(
               controller: _searchController,
-              onChanged: (q) => setState(() => _searchQuery = q),
+              onChanged: _onSearchChanged,
               style: kTextStyle.copyWith(color: kNeutralColor, fontSize: 14),
               decoration: InputDecoration(
                 hintText: l10n.searchFreelancers,
@@ -438,99 +206,11 @@ class _TopSellerState extends State<TopSeller> {
             ),
           ),
           const SizedBox(width: 8),
-          Material(
-            color: _hasActiveFilters
-                ? kPrimaryColor.withValues(alpha: 0.12)
-                : kDarkWhite,
-            borderRadius: BorderRadius.circular(12),
-            child: InkWell(
-              onTap: _openFilterSheet,
-              borderRadius: BorderRadius.circular(12),
-              child: Container(
-                width: 48,
-                height: 48,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: _hasActiveFilters
-                        ? kPrimaryColor
-                        : kBorderColorTextField,
-                  ),
-                ),
-                child: Badge(
-                  isLabelVisible: _hasActiveFilters,
-                  label: Text('$_activeFilterCount'),
-                  backgroundColor: kPrimaryColor,
-                  child: Icon(
-                    Icons.tune_rounded,
-                    color: _hasActiveFilters ? kPrimaryColor : kNeutralColor,
-                    size: 22,
-                  ),
-                ),
-              ),
-            ),
+          TalentFilterButton(
+            filters: _filters,
+            onPressed: _openFilterSheet,
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildActiveFilterChips() {
-    if (!_hasActiveFilters) return const SizedBox.shrink();
-    final l10n = context.l10n;
-
-    Widget pill(String label, VoidCallback onClear) {
-      return Padding(
-        padding: const EdgeInsets.only(right: 8),
-        child: InputChip(
-          label: Text(label),
-          onDeleted: onClear,
-          deleteIconColor: kPrimaryColor,
-          backgroundColor: kPrimaryColor.withValues(alpha: 0.1),
-          side: BorderSide(color: kPrimaryColor.withValues(alpha: 0.35)),
-          labelStyle: kTextStyle.copyWith(
-            color: kPrimaryColor,
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      );
-    }
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: [
-            if (_verifiedOnly == true)
-              pill(l10n.statusVerified, () => setState(() => _verifiedOnly = null)),
-            if (_standingFilter != null)
-              pill(
-                _standingFilter!.label(l10n),
-                () => setState(() => _standingFilter = null),
-              ),
-            if (_minRating != null)
-              pill(
-                l10n.ratingAtLeast(_minRating!.toStringAsFixed(1)),
-                () => setState(() => _minRating = null),
-              ),
-            TextButton(
-              onPressed: _clearFilters,
-              style: TextButton.styleFrom(
-                foregroundColor: kSubTitleColor,
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-              child: Text(
-                l10n.clearFilters,
-                style: kTextStyle.copyWith(fontSize: 12),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -711,7 +391,17 @@ class _TopSellerState extends State<TopSeller> {
       body: Column(
         children: [
           _buildSearchBar(),
-          _buildActiveFilterChips(),
+          TalentFilterActiveChips(
+            filters: _filters,
+            onChanged: (f) {
+              final nearbyChanged =
+                  f.maxDistanceKm != _filters.maxDistanceKm;
+              setState(() => _filters = f);
+              if (nearbyChanged) {
+                _load();
+              }
+            },
+          ),
           Expanded(
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator(color: kPrimaryColor))
@@ -737,7 +427,7 @@ class _TopSellerState extends State<TopSeller> {
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
-                                  if (_hasActiveFilters) ...[
+                                  if (_filters.hasActive) ...[
                                     const SizedBox(height: 8),
                                     Text(
                                       l10n.tryAdjustingFilters,
@@ -749,7 +439,13 @@ class _TopSellerState extends State<TopSeller> {
                                     ),
                                     const SizedBox(height: 12),
                                     TextButton(
-                                      onPressed: _clearFilters,
+                                      onPressed: () async {
+                                        setState(
+                                          () => _filters =
+                                              TalentSellerFilters.empty,
+                                        );
+                                        await _load();
+                                      },
                                       child: Text(l10n.clearFilters),
                                     ),
                                   ],

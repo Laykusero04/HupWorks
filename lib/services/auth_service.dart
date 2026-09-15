@@ -94,6 +94,51 @@ class AuthService {
     await _client.auth.signOut();
   }
 
+  /// Permanently delete the signed-in account (orders cancelled, profile + auth removed).
+  /// Requires migration `0044_delete_account.sql`. Best-effort storage cleanup first.
+  static Future<void> deleteAccount() async {
+    final user = _client.auth.currentUser;
+    if (user == null) throw Exception('Not logged in');
+
+    await _tryRemoveOwnStorage(user.id);
+
+    try {
+      await _client.rpc('delete_own_account');
+    } catch (e) {
+      final msg = e.toString();
+      if (msg.contains('delete_own_account') ||
+          msg.contains('Could not find the function') ||
+          msg.contains('PGRST202')) {
+        throw Exception(
+          'Account deletion is not enabled on the server yet. '
+          'Apply migrations/0044_delete_account.sql in the Supabase SQL Editor.',
+        );
+      }
+      rethrow;
+    }
+
+    ProfileService.clearProfileCache();
+    clearRoleCache();
+    passwordRecoveryPending = false;
+    try {
+      await _client.auth.signOut();
+    } catch (_) {
+      // Session is already invalid after auth.users delete.
+    }
+  }
+
+  static Future<void> _tryRemoveOwnStorage(String userId) async {
+    try {
+      await _client.storage.from('avatars').remove(['$userId/avatar.jpg']);
+    } catch (_) {}
+    try {
+      await _client.storage.from('identity-docs').remove([
+        '$userId/id_selfie.jpg',
+        '$userId/company_doc.jpg',
+      ]);
+    } catch (_) {}
+  }
+
   /// Check if user is logged in
   static bool get isLoggedIn => _client.auth.currentSession != null;
 

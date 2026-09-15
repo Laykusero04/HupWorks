@@ -689,7 +689,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
       );
     }
 
-    final visible = _categories.take(8).toList();
+    final visible = _categories.take(12).toList();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: GridView.builder(
@@ -719,25 +719,12 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
                       builder: (context, constraints) {
                         final size = constraints.biggest.shortestSide
                             .clamp(40.0, 56.0);
-                        return SizedBox(
-                          width: size,
-                          height: size,
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              color: _categoryTint(i),
-                              borderRadius: BorderRadius.circular(18),
-                              border: Border.all(
-                                color:
-                                    _categoryIconColor(i).withOpacity(0.15),
-                              ),
-                            ),
-                            child: Icon(
-                              CategoryIcons.iconData(
-                                  cat['icon'] as String?),
-                              size: size * 0.5,
-                              color: _categoryIconColor(i),
-                            ),
-                          ),
+                        return CategoryVisual(
+                          iconKey: cat['icon'] as String?,
+                          tint: _categoryTint(i),
+                          iconColor: _categoryIconColor(i),
+                          size: size,
+                          radius: 18,
                         );
                       },
                     ),

@@ -967,4 +967,19 @@ insert into public.categories (name, icon, description, name_i18n, description_i
     'General Labor', 'labor', 'Construction helpers, movers, handyman, onsite helpers',
     '{"en":"General Labor","nl":"Algemeen werk","bn":"সাধারণ শ্রম"}'::jsonb,
     '{"en":"Construction helpers, movers, handyman, onsite helpers","nl":"Bouwhelpers, verhuizers, klusjesmannen, onsite helpers","bn":"নির্মাণ সহায়ক, মুভার, হ্যান্ডম্যান, অনসাইট সহায়ক"}'::jsonb
+  ),
+  (
+    'Logistics', 'logistics', 'Warehouse logistics, stock handlers, loaders, route helpers',
+    '{"en":"Logistics","nl":"Logistiek","bn":"লজিস্টিক্স"}'::jsonb,
+    '{"en":"Warehouse logistics, stock handlers, loaders, route helpers","nl":"Magazijnlogistiek, voorraadmedewerkers, laders, routehelpers","bn":"গুদাম লজিস্টিক্স, স্টক হ্যান্ডলার, লোডার, রুট সহায়ক"}'::jsonb
+  ),
+  (
+    'Gardening', 'gardening', 'Gardeners, landscapers, groundskeepers, plant care',
+    '{"en":"Gardening","nl":"Tuinieren","bn":"বাগান"}'::jsonb,
+    '{"en":"Gardeners, landscapers, groundskeepers, plant care","nl":"Tuinmannen, hoveniers, terreinknechten, plantenverzorging","bn":"মালি, ল্যান্ডস্কেপার, মাঠরক্ষক, গাছের যত্ন"}'::jsonb
+  ),
+  (
+    'Sailing', 'sailing', 'Deckhands, marina helpers, boat maintenance, sailing support',
+    '{"en":"Sailing","nl":"Zeilen","bn":"নৌকা চালনা"}'::jsonb,
+    '{"en":"Deckhands, marina helpers, boat maintenance, sailing support","nl":"Matrozen, jachthavenhelpers, bootonderhoud, zeilondersteuning","bn":"ডেকহ্যান্ড, মেরিনা সহায়ক, নৌকা রক্ষণাবেক্ষণ, পালতোলা সহায়তা"}'::jsonb
   );

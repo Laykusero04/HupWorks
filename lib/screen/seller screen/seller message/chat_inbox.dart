@@ -985,9 +985,13 @@ class _ChatInboxState extends State<ChatInbox> {
   // ---------------------------------------------------------------- Input
   Widget _buildMessageInput() {
     final l10n = context.l10n;
+    // When the keyboard is open, Scaffold already resized — keep SafeArea
+    // bottom off so we don't get a second empty strip above the keyboard.
+    final padBottom = MediaQuery.viewInsetsOf(context).bottom == 0;
     if (_contactBlocked) {
       return SafeArea(
         top: false,
+        bottom: padBottom,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(12, 6, 12, 10),
           child: Container(
@@ -1007,6 +1011,7 @@ class _ChatInboxState extends State<ChatInbox> {
     }
     return SafeArea(
       top: false,
+      bottom: padBottom,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(12, 6, 12, 10),
         child: Column(

@@ -27,7 +27,8 @@ class NotificationNavigation {
         case 'profile_verification':
         case 'profile_photo_verification':
           if (role != NotificationUserRole.seller) {
-            _showSnack(context, l10n.notificationUnableToOpen);
+            if (!context.mounted) return;
+            context.push(AppRoutes.clientProfileVerify);
             return;
           }
           if (!context.mounted) return;

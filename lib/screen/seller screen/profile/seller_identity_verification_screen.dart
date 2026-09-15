@@ -5,7 +5,6 @@ import 'package:freelancer/core/utils/profile_avatar_picker.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
-import 'package:freelancer/screen/widgets/verification_guideline_examples.dart';
 import 'package:freelancer/screen/widgets/verification_score_card.dart';
 import 'package:freelancer/screen/widgets/verification_status_badge.dart';
 import 'package:freelancer/services/profile_service.dart';
@@ -209,19 +208,6 @@ class _SellerIdentityVerificationScreenState
                 Text(
                   l10n.selfieWithIdHint,
                   style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13),
-                ),
-                const SizedBox(height: 16),
-                VerificationGuidelineExamples(
-                  doAsset: 'images/verification/id_face_do.png',
-                  dontAsset: 'images/verification/id_face_dont.png',
-                  doLabel: l10n.idDoLabel,
-                  dontLabel: l10n.idDontLabel,
-                  tips: [
-                    l10n.idTipHoldNextToFace,
-                    l10n.idTipGoodLighting,
-                    l10n.idTipFourCorners,
-                    l10n.idTipNoAccessories,
-                  ],
                 ),
                 const SizedBox(height: 24),
                 Text(

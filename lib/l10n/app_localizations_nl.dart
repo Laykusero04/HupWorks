@@ -174,7 +174,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get completeYourProfileBody =>
-      'Voeg een foto en contactgegevens toe zodat freelancers je vacatures vertrouwen.';
+      'Voeg een foto en contactgegevens toe zodat freelancers je jobs vertrouwen.';
 
   @override
   String get completeProfileAction => 'Profiel afronden';
@@ -231,7 +231,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get myJobs => 'Diensten';
 
   @override
-  String get talent => 'Talent';
+  String get talent => 'Freelancers';
 
   @override
   String get justNow => 'Zojuist';
@@ -312,7 +312,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get reportOpenFromContextHint =>
-      'Tip: open Rapport vanuit een chat, job of contract om de andere persoon automatisch te koppelen.';
+      'Tip: open Rapport vanuit een chat, job of overeenkomst om de andere persoon automatisch te koppelen.';
 
   @override
   String reportReportingUser(String name) {
@@ -325,7 +325,7 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
-  String get reportReportingContract => 'Gekoppeld aan dit contract';
+  String get reportReportingContract => 'Gekoppeld aan dit overeenkomst';
 
   @override
   String get cancelReasonScheduleConflict => 'Planningconflict';
@@ -341,7 +341,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get cancelReasonPersonalEmergency => 'Persoonlijke noodsituatie';
 
   @override
-  String get cancelReasonClientIssue => 'Probleem met klant / communicatie';
+  String get cancelReasonClientIssue => 'Probleem met werkgever / communicatie';
 
   @override
   String get cancelReasonOther => 'Overig';
@@ -388,7 +388,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get attendanceFreelancerHintDisabled =>
-      'Je klant heeft aanwezigheid niet ingeschakeld voor deze job.';
+      'Je werkgever heeft aanwezigheid niet ingeschakeld voor deze job.';
 
   @override
   String get attendanceOnboardingQrInOut =>
@@ -400,7 +400,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get attendanceOnboardingSelfReport =>
-      'Open Aanwezigheid in HupWorks op dit contract en tik op Inklokken bij start en Uitklokken bij vertrek. Geen QR-scan nodig.';
+      'Open Aanwezigheid in HupWorks op dit overeenkomst en tik op Inklokken bij start en Uitklokken bij vertrek. Geen QR-scan nodig.';
 
   @override
   String get attendanceOnboardingDisabled =>
@@ -424,7 +424,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get aboutHupWorksBody =>
-      'HupWorks is een marktplaats die klanten verbindt met freelancers en lokale werknemers voor jobs en diensten. We helpen mensen werk te plaatsen, talent in te huren, aanwezigheid op locatie te volgen en orders van begin tot eind te beheren.\n\nOns doel is huren en gehuurd worden eenvoudiger, duidelijker en betrouwbaarder te makenâ€”of je nu geschoolde hulp nodig hebt of je freelancebedrijf wilt laten groeien.';
+      'HupWorks is een marktplaats die werkgevers verbindt met freelancers en lokale werknemers voor jobs en diensten. We helpen mensen werk te plaatsen, freelancers in te huren, aanwezigheid op locatie te volgen en orders van begin tot eind te beheren.\n\nOns doel is huren en gehuurd worden eenvoudiger, duidelijker en betrouwbaarder te makenâ€”of je nu geschoolde hulp nodig hebt of je freelancebedrijf wilt laten groeien.';
 
   @override
   String get privacySectionCollectTitle => 'Gegevens die we verzamelen';
@@ -452,14 +452,14 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get privacySectionChoicesBody =>
-      'Je kunt profielgegevens in de app bijwerken en support contacteren voor accountwijzigingen. Afhankelijk van je locatie kun je extra rechten hebben om persoonsgegevens in te zien, te corrigeren of te verwijderen.';
+      'Je kunt profielgegevens in de app bijwerken en je account permanent verwijderen via Instellingen. Afhankelijk van je locatie kun je extra rechten hebben om persoonsgegevens in te zien, te corrigeren of te verwijderen.';
 
   @override
   String get privacySectionContactTitle => 'Contact';
 
   @override
   String get privacySectionContactBody =>
-      'Heb je vragen over dit beleid of je gegevens? Neem contact op via Help & ondersteuning in de app.';
+      'Heb je vragen over dit beleid of je gegevens? Mail naar support@hup-works.nl of gebruik Help & ondersteuning in de app.';
 
   @override
   String get appOnboardSkip => 'Overslaan';
@@ -478,35 +478,72 @@ class AppLocalizationsNl extends AppLocalizations {
       'We tonen de app in de taal die je kiest. Je kunt dit later wijzigen in Instellingen.';
 
   @override
-  String get appOnboardPage1Title => 'Schrijf je in en maak een account';
+  String get appOnboardPage1Title => 'Maak een account';
 
   @override
-  String get appOnboardPage1Body => 'Meld je aan als Werkgever of Freelancer.';
+  String get appOnboardPage1Body =>
+      'Meld je aan als Opdrachtgever of Freelancer.';
 
   @override
   String get appOnboardPage2Title => 'Plaats of zoek';
 
   @override
   String get appOnboardPage2Body =>
-      'Plaats een klus, of blader en solliciteer.';
+      'Plaats een klus, of blader en meld je aan voor een dienst.';
 
   @override
   String get appOnboardPage3Title => 'Chat en stem af';
 
   @override
-  String get appOnboardPage3Body => 'Bericht in de app en spreek de opties af.';
+  String get appOnboardPage3Body =>
+      'Bericht elkaar in de app en spreek het werk af.';
 
   @override
-  String get appOnboardPage4Title => 'Check voor updates van de shift';
+  String get appOnboardPage4Title =>
+      'Blijf op de hoogte van de status van uw shift';
 
   @override
-  String get appOnboardPage4Body => 'Gebruik op locatie aanwezigheid of QR.';
+  String get appOnboardPage4Body =>
+      'Registreer op locatie je aanwezigheid m.b.v. je QR.';
 
   @override
-  String get appOnboardPage5Title => 'Rond af en laat een review achter';
+  String get appOnboardPage5Title => 'Rond af en review';
 
   @override
-  String get appOnboardPage5Body => 'Sluit de klus af en deel je ervaring.';
+  String get appOnboardPage5Body =>
+      'Rond je dienst af en laat een review achter.';
+
+  @override
+  String get appOnboardPage6Title => 'Krijg betaald';
+
+  @override
+  String get appOnboardPage6Body =>
+      'Vul je uren in en stuur je factuur naar de werkgever. Zodra de werkgever deze goedkeurt a.d.h.v. je in- en uitkloktijd, krijg je betaald a.d.h.v. je voorkeuren!';
+
+  @override
+  String get appOnboardPage7Title => 'Huppakee, administratie bijwerken';
+
+  @override
+  String get appOnboardPage7Body =>
+      'Voordat je gelijk doorgaat, is het belangrijk om de administratie bij te houden. De vuistregel is: hoe vaker je dit doet, des te minder het je kost aan tijd bij het doen van je aangifte!';
+
+  @override
+  String get appOnboardPage8Title => 'En weer door naar de volgende shift!';
+
+  @override
+  String get appOnboardPage8Body =>
+      'Dat was hem, ging snel he? Op naar de volgende!';
+
+  @override
+  String get platformRulesTitle => 'Spelregels van het platform';
+
+  @override
+  String get platformRulesSubtitle => 'Van aanmelden tot betaling in 8 stappen';
+
+  @override
+  String platformRulesStepLabel(int step) {
+    return 'Stap $step';
+  }
 
   @override
   String get authWelcomeHowToUse => 'Hoe wil je HupWorks gebruiken?';
@@ -515,7 +552,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get authRoleClient => 'Werkgever';
 
   @override
-  String get authRoleClientSubtitle => 'Talent aannemen';
+  String get authRoleClientSubtitle => 'Inhuren';
 
   @override
   String get authRoleFreelancer => 'Freelancer';
@@ -729,7 +766,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get aboutYou => 'Over jou';
 
   @override
-  String get aboutYouHint => 'Vertel klanten over jezelf';
+  String get aboutYouHint => 'Vertel werkgevers over jezelf';
 
   @override
   String stepOf(int current, int total) {
@@ -746,7 +783,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get postJob => 'Job plaatsen';
 
   @override
-  String get findTalent => 'Talent vinden';
+  String get findTalent => 'Inhuren';
 
   @override
   String get categories => 'Categorieën';
@@ -937,7 +974,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get shortcutMessages => 'Berichten';
 
   @override
-  String get shortcutMessagesSub => 'Chat met klanten';
+  String get shortcutMessagesSub => 'Chat met werkgevers';
 
   @override
   String get shortcutContracts => 'Overeenkomsten';
@@ -1020,7 +1057,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get cancellationRequestBody =>
-      'Je klant heeft 48 uur om goed te keuren of het contract te behouden.';
+      'Je werkgever heeft 48 uur om goed te keuren of het overeenkomst te behouden.';
 
   @override
   String get cancellationReason => 'Reden';
@@ -1037,7 +1074,7 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
-  String get keepContract => 'Contract behouden';
+  String get keepContract => 'Overeenkomst behouden';
 
   @override
   String get approveCancellation => 'Annulering goedkeuren';
@@ -1047,7 +1084,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get waitingForClientCancel =>
-      'Wachten tot de klant je annuleringsverzoek beoordeelt';
+      'Wachten tot de werkgever je annuleringsverzoek beoordeelt';
 
   @override
   String get cancellationRequested => 'Annulering aangevraagd';
@@ -1089,20 +1126,20 @@ class AppLocalizationsNl extends AppLocalizations {
   String get noFavouritesYet => 'Nog geen opgeslagen jobs';
 
   @override
-  String get savedTalentList => 'Opgeslagen talent';
+  String get savedTalentList => 'Opgeslagen freelancers';
 
   @override
-  String get noSavedTalentYet => 'Nog geen opgeslagen talent';
+  String get noSavedTalentYet => 'Nog geen opgeslagen freelancers';
 
   @override
   String get noSavedTalentYetHint =>
       'Blader door freelancers en tik op de bladwijzer om ze hier op te slaan.';
 
   @override
-  String get addedToSavedTalent => 'Talent opgeslagen';
+  String get addedToSavedTalent => 'Freelancer opgeslagen';
 
   @override
-  String get removedFromSavedTalent => 'Verwijderd uit opgeslagen talent';
+  String get removedFromSavedTalent => 'Verwijderd uit opgeslagen freelancers';
 
   @override
   String get noReviewsYet => 'Nog geen reviews';
@@ -1141,7 +1178,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get typeSupportMessage => 'Typ je bericht';
 
   @override
-  String get clientReport => 'Klant melden';
+  String get clientReport => 'Werkgever melden';
 
   @override
   String get selectReason => 'Selecteer reden';
@@ -1153,15 +1190,15 @@ class AppLocalizationsNl extends AppLocalizations {
   String get submitReport => 'Melding indienen';
 
   @override
-  String get cancellationSheetTitle => 'Contract annuleren aanvragen';
+  String get cancellationSheetTitle => 'Overeenkomst annuleren aanvragen';
 
   @override
   String get cancellationSheetBody =>
-      'Je klant wordt op de hoogte gesteld en kan binnen 48 uur goedkeuren of afwijzen. Het contract blijft actief tot ze reageren.';
+      'Je werkgever wordt op de hoogte gesteld en kan binnen 48 uur goedkeuren of afwijzen. Het overeenkomst blijft actief tot ze reageren.';
 
   @override
   String get cancellationExplainHint =>
-      'Wat is er gebeurd? Dit helpt je klant je verzoek te begrijpen.';
+      'Wat is er gebeurd? Dit helpt je werkgever je verzoek te begrijpen.';
 
   @override
   String cancellationCharCount(int current, int min) {
@@ -1196,7 +1233,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get promoVerifiedTalentSubtitle =>
-      'Geverifieerd talent voor elk project';
+      'Geverifieerde freelancers voor elk project';
 
   @override
   String get promoProposalsSubtitle =>
@@ -1206,11 +1243,10 @@ class AppLocalizationsNl extends AppLocalizations {
   String get promoNicheServicesSubtitle => 'Vind diensten in elke niche';
 
   @override
-  String get jobTypeGig => 'Dienst';
+  String get jobTypeGig => 'Shift';
 
   @override
-  String get recentJobsEmptyHint =>
-      'Tik op \"Vacature plaatsen\" om te beginnen';
+  String get recentJobsEmptyHint => 'Tik op \"Job plaatsen\" om te beginnen';
 
   @override
   String get postJobShort => 'Plaatsen';
@@ -1258,7 +1294,10 @@ class AppLocalizationsNl extends AppLocalizations {
   String get standingTitle => 'Standing';
 
   @override
-  String get filterTalent => 'Talent filteren';
+  String get filterTalent => 'Freelancers filteren';
+
+  @override
+  String get filterLimitNearby => 'Beperk tot freelancers in de buurt';
 
   @override
   String get filterMinRating => 'Minimumbeoordeling';
@@ -1309,11 +1348,11 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get attentionContractDeliveredOne =>
-      '1 contract geleverd â€” wacht op goedkeuring klant';
+      '1 overeenkomst geleverd â€” wacht op goedkeuring werkgever';
 
   @override
   String attentionContractDeliveredMany(int count) {
-    return '$count contracten geleverd â€” wacht op goedkeuring klant';
+    return '$count overeenkomsten geleverd â€” wacht op goedkeuring werkgever';
   }
 
   @override
@@ -1390,7 +1429,7 @@ class AppLocalizationsNl extends AppLocalizations {
       'Richt je camera op de aanwezigheids-QR op de werklocatie.';
 
   @override
-  String get attendanceScanLoadingDetails => 'Vacaturegegevens ladenâ€¦';
+  String get attendanceScanLoadingDetails => 'Jobgegevens laden…';
 
   @override
   String attendanceScanningForJob(String title) {
@@ -1434,14 +1473,14 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get attendanceHowItWorksBody =>
-      '1. Print en plak deze QR op de werkplek.\n2. Ingehuurde freelancers openen HupWorks en scannen.\n3. Ze bevestigen in- of uitklokken op hun telefoon.\n4. Bekijk de aanwezigheid van vandaag op het vacaturedetailscherm.';
+      '1. Print en plak deze QR op de werkplek.\n2. Ingehuurde freelancers openen HupWorks en scannen.\n3. Ze bevestigen in- of uitklokken op hun telefoon.\n4. Bekijk de aanwezigheid van vandaag op het jobdetailscherm.';
 
   @override
   String get noOnsiteJobsYet => 'Nog geen jobs op locatie';
 
   @override
   String get noOnsiteJobsBody =>
-      'Je hebt een geaccepteerd contract op locatie nodig. Je klant kiest bij het plaatsen hoe aanwezigheid werkt (QR of zelf melden).';
+      'Je hebt een geaccepteerd overeenkomst op locatie nodig. Je werkgever kiest bij het plaatsen hoe aanwezigheid werkt (QR of zelf melden).';
 
   @override
   String get findOnsiteJobs => 'Jobs op locatie zoeken';
@@ -1450,7 +1489,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get selectedJob => 'Geselecteerde job';
 
   @override
-  String get openContract => 'Contract openen';
+  String get openContract => 'Overeenkomst openen';
 
   @override
   String get attendanceTimeIn => 'Tijd in';
@@ -1554,7 +1593,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get noConversationsHint =>
-      'Start een chat vanaf een freelancer- of klantprofiel';
+      'Start een chat vanaf een freelancer- of werkgeverprofiel';
 
   @override
   String get noChatMatches => 'Geen resultaten';
@@ -1567,6 +1606,15 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get dashboard => 'Dashboard';
+
+  @override
+  String get periodDay => 'Dag';
+
+  @override
+  String get periodWeek => 'Week';
+
+  @override
+  String get periodMonth => 'Maand';
 
   @override
   String get addDeposit => 'Storting toevoegen';
@@ -1611,7 +1659,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get aboutCompanyHint =>
-      'Korte intro voor freelancers die je vacatures bekijken…';
+      'Korte intro voor freelancers die je jobs bekijken…';
 
   @override
   String get updating => 'Bijwerken...';
@@ -1664,7 +1712,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get skillsOptionalHint =>
-      'Optioneel — voeg vaardigheden toe zodat klanten je vinden.';
+      'Optioneel — voeg vaardigheden toe zodat werkgevers je vinden.';
 
   @override
   String get jobTitleHint => 'bijv. Fabrieksarbeider';
@@ -1673,7 +1721,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get statPosted => 'Geplaatst';
 
   @override
-  String get myJobPosts => 'Mijn vacatures';
+  String get myJobPosts => 'Mijn jobs';
 
   @override
   String countTotal(int count) {
@@ -1681,14 +1729,14 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
-  String get noJobsPostedYet => 'Nog geen vacatures geplaatst';
+  String get noJobsPostedYet => 'Nog geen jobs geplaatst';
 
   @override
   String get noJobsPostedYetHint =>
-      'Plaats een vacature om aanmeldingen van freelancers te ontvangen.';
+      'Plaats een job om aanmeldingen van freelancers te ontvangen.';
 
   @override
-  String get postAJob => 'Vacature plaatsen';
+  String get postAJob => 'Job plaatsen';
 
   @override
   String get avgRating => 'Gem. beoordeling';
@@ -1706,13 +1754,13 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get reviewsFromClientsHint =>
-      'Beoordelingen van klanten verschijnen hier na voltooide orders.';
+      'Beoordelingen van werkgevers verschijnen hier na voltooide orders.';
 
   @override
-  String get clientProfile => 'Klantprofiel';
+  String get clientProfile => 'Werkgeverprofiel';
 
   @override
-  String get clientNotFound => 'Klant niet gevonden';
+  String get clientNotFound => 'Werkgever niet gevonden';
 
   @override
   String get freelancerProfile => 'Freelancerprofiel';
@@ -1726,7 +1774,7 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
-  String get jobsPosted => 'Vacatures geplaatst';
+  String get jobsPosted => 'Jobs geplaatst';
 
   @override
   String get memberSince => 'Lid sinds';
@@ -1735,7 +1783,8 @@ class AppLocalizationsNl extends AppLocalizations {
   String get noneYet => 'Nog geen';
 
   @override
-  String get noReviewsForClientYet => 'Nog geen beoordelingen voor deze klant.';
+  String get noReviewsForClientYet =>
+      'Nog geen beoordelingen voor deze werkgever.';
 
   @override
   String get viewServices => 'Diensten bekijken';
@@ -1817,7 +1866,7 @@ class AppLocalizationsNl extends AppLocalizations {
       'Hoe beoordeel je je algehele ervaring met deze verkoper?';
 
   @override
-  String get freelancerForContract => 'Freelancer voor dit contract';
+  String get freelancerForContract => 'Freelancer voor dit overeenkomst';
 
   @override
   String get selectRating => 'Selecteer beoordeling';
@@ -1900,7 +1949,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get supportTawkEnvHint =>
-      'Voeg TAWK_DIRECT_CHAT_LINK toe aan je .env (zie .env.example). FAQ blijft beschikbaar in het eerste tabblad.';
+      'Voeg TAWK_DIRECT_CHAT_LINK en TAWK_DIRECT_CHAT_LINK_NL toe aan je .env (zie .env.example). Stel de widgettaal in op tawk.to. FAQ blijft in het eerste tabblad.';
 
   @override
   String get supportNoQuestionsYet => 'Nog geen vragen beschikbaar.';
@@ -1971,7 +2020,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get cancelJobConfirmTitle =>
-      'Weet je zeker dat je je\nvacature wilt annuleren!';
+      'Weet je zeker dat je je\njob wilt annuleren!';
 
   @override
   String get noLabel => 'Nee';
@@ -2032,11 +2081,11 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get noContractsYetClientHint =>
-      'Neem iemand aan op een vacature om hier een overeenkomst te starten.';
+      'Huur iemand in op een job om hier een overeenkomst te starten.';
 
   @override
   String get noContractsYetSellerHint =>
-      'Solliciteer op jobs en word aangenomen — overeenkomsten verschijnen hier.';
+      'Meld je aan op jobs en word ingehuurd — overeenkomsten verschijnen hier.';
 
   @override
   String get noFilteredContractsHint =>
@@ -2085,7 +2134,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get sellerColon => 'Verkoper:';
 
   @override
-  String get clientColon => 'Klant:';
+  String get clientColon => 'Werkgever:';
 
   @override
   String get labelTitle => 'Titel';
@@ -2124,10 +2173,10 @@ class AppLocalizationsNl extends AppLocalizations {
   String get closeAction => 'Sluiten';
 
   @override
-  String get contractCancelledSnack => 'Contract geannuleerd';
+  String get contractCancelledSnack => 'Overeenkomst geannuleerd';
 
   @override
-  String get contractKeptActive => 'Contract actief gehouden';
+  String get contractKeptActive => 'Overeenkomst actief gehouden';
 
   @override
   String get markJobComplete => 'Job als voltooid markeren';
@@ -2140,12 +2189,12 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String markJobCompleteDeliveredBody(String seller) {
-    return 'Je bevestigt dat je het werk van $seller via hun levering hebt ontvangen. Het contract sluit als voltooid en je kunt daarna een review achterlaten.';
+    return 'Je bevestigt dat je het werk van $seller via hun levering hebt ontvangen. Het overeenkomst sluit als voltooid en je kunt daarna een review achterlaten.';
   }
 
   @override
   String markJobCompleteManualBody(String seller) {
-    return 'Je staat op het punt dit contract als afgerond te sluiten. Gebruik dit wanneer je de deliverables van $seller hebt ontvangen (via chat of bestanden), ook als ze nog geen levering hebben ingediend.';
+    return 'Je staat op het punt dit overeenkomst als afgerond te sluiten. Gebruik dit wanneer je de deliverables van $seller hebt ontvangen (via chat of bestanden), ook als ze nog geen levering hebben ingediend.';
   }
 
   @override
@@ -2162,7 +2211,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get leaveReviewBody =>
-      'Reviews helpen andere klanten en belonen goed werk.';
+      'Reviews helpen andere werkgevers en belonen goed werk.';
 
   @override
   String get later => 'Later';
@@ -2188,11 +2237,11 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get openContractCalloutBody =>
-      'Je freelancer moet de levering indienen voordat je dit contract kunt voltooien. Bericht de verkoper via het ⋮-menu bovenaan.';
+      'Je freelancer moet de levering indienen voordat je dit overeenkomst kunt voltooien. Bericht de verkoper via het ⋮-menu bovenaan.';
 
   @override
   String cancellationRequestBannerBody(String seller) {
-    return '$seller vroeg om dit contract te annuleren. Je kunt goedkeuren of het actief houden. Reageer je niet binnen 48 uur, dan blijft het contract actief.';
+    return '$seller vroeg om dit overeenkomst te annuleren. Je kunt goedkeuren of het actief houden. Reageer je niet binnen 48 uur, dan blijft het overeenkomst actief.';
   }
 
   @override
@@ -2232,7 +2281,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get cancellationRequestSent48h =>
-      'Annuleringsverzoek verzonden. Wacht op reactie klant (48u).';
+      'Annuleringsverzoek verzonden. Wacht op reactie werkgever (48u).';
 
   @override
   String get cancellationRequestWithdrawn => 'Annuleringsverzoek ingetrokken';
@@ -2250,20 +2299,21 @@ class AppLocalizationsNl extends AppLocalizations {
   String get completeOrder => 'Order voltooien';
 
   @override
-  String get waitingForClientApproval => 'Wacht op goedkeuring van de klant';
+  String get waitingForClientApproval =>
+      'Wacht op goedkeuring van de werkgever';
 
   @override
   String get waitingForDelivery => 'Wacht op levering';
 
   @override
-  String get waitingForClientResponse => 'Wacht op reactie klant';
+  String get waitingForClientResponse => 'Wacht op reactie werkgever';
 
   @override
   String get sellerCancellationPendingBody =>
-      'Je annuleringsverzoek is verzonden. De klant heeft tot 48 uur om goed te keuren of het contract actief te houden.';
+      'Je annuleringsverzoek is verzonden. De werkgever heeft tot 48 uur om goed te keuren of het overeenkomst actief te houden.';
 
   @override
-  String get contractCancelledTitle => 'Contract geannuleerd';
+  String get contractCancelledTitle => 'Overeenkomst geannuleerd';
 
   @override
   String get viewFirstDayInstructions => 'Instructies eerste dag bekijken';
@@ -2273,7 +2323,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get firstDayInstructionsSharedBody =>
-      'Je klant deelde locatie, toegang en contacten voor deze job.';
+      'Je werkgever deelde locatie, toegang en contacten voor deze job.';
 
   @override
   String get openInstructions => 'Instructies openen';
@@ -2284,28 +2334,28 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
-  String get messageClientTooltip => 'Bericht klant';
+  String get messageClientTooltip => 'Bericht werkgever';
 
   @override
   String get openAttendance => 'Aanwezigheid openen';
 
   @override
-  String get instructionsReadyTap => 'Instructies ready, lees hier';
+  String get instructionsReadyTap => 'Instructies klaar, lees hier';
 
   @override
   String get rateExperienceWithClient =>
-      'Hoe beoordeel je je ervaring met deze klant?';
+      'Hoe beoordeel je je ervaring met deze werkgever?';
 
   @override
-  String get postedThisContract => 'Plaatste dit contract';
+  String get postedThisContract => 'Plaatste dit overeenkomst';
 
   @override
   String errorLoadingJobPosts(String message) {
-    return 'Fout bij laden vacatures: $message';
+    return 'Fout bij laden jobs: $message';
   }
 
   @override
-  String get jobPostClosed => 'Vacature gesloten';
+  String get jobPostClosed => 'Job gesloten';
 
   @override
   String get addFirstDayInstructionsTitle =>
@@ -2323,16 +2373,16 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get contractNotFoundForHire =>
-      'Geen contract gevonden voor deze hire.';
+      'Geen overeenkomst gevonden voor deze hire.';
 
   @override
   String get applicationRejected => 'Aanmelding afgewezen';
 
   @override
-  String get hireFreelancerTitle => 'Freelancer aannemen?';
+  String get hireFreelancerTitle => 'Freelancer inhuren?';
 
   @override
-  String get hireAction => 'Aannemen';
+  String get hireAction => 'Inhuren';
 
   @override
   String get rejectApplicationTitle => 'Aanmelding afwijzen?';
@@ -2343,24 +2393,24 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
-  String get closeJobTitle => 'Deze vacature sluiten?';
+  String get closeJobTitle => 'Deze job sluiten?';
 
   @override
   String get closeJobConfirmBody =>
-      'Deze vacature wordt gesloten voor nieuwe sollicitanten. Bestaande aanmeldingen blijven op je lijst.';
+      'Deze job wordt gesloten voor nieuwe aanmelders. Bestaande aanmeldingen blijven op je lijst.';
 
   @override
-  String get closeJob => 'Vacature sluiten';
+  String get closeJob => 'Job sluiten';
 
   @override
   String get attendanceSettingsUpdated =>
       'Aanwezigheidsinstellingen bijgewerkt';
 
   @override
-  String get jobPostedSuccess => 'Vacature succesvol geplaatst!';
+  String get jobPostedSuccess => 'Job succesvol geplaatst!';
 
   @override
-  String get pleaseEnterJobTitle => 'Voer een vacaturetitel in';
+  String get pleaseEnterJobTitle => 'Voer een jobtitel in';
 
   @override
   String get pleaseSelectCategory => 'Selecteer een categorie';
@@ -2387,7 +2437,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get createJobStepBudget => 'Budget';
 
   @override
-  String get createJobPostTitle => 'Vacature plaatsen';
+  String get createJobPostTitle => 'Job plaatsen';
 
   @override
   String get shortJobTitleHint => 'Korte titel voor het werk';
@@ -2399,7 +2449,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get categoryNameHint => 'bijv. Schoonmaker, Bakker';
 
   @override
-  String get describeJobLabel => 'Beschrijf de vacature';
+  String get describeJobLabel => 'Beschrijf de job';
 
   @override
   String get describeJobHint => 'Scope, planning, vaardigheden';
@@ -2506,7 +2556,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get numberToHire => 'Aantal te werven';
 
   @override
-  String get noCapUntilCloseJob => 'Geen limiet tot je de vacature sluit';
+  String get noCapUntilCloseJob => 'Geen limiet tot je de job sluit';
 
   @override
   String get budgetAppliesAs => 'Budget geldt als';
@@ -2537,12 +2587,12 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String hireConfirmUnlimited(String name, String price) {
-    return 'Aanbod van $name ($price) accepteren? De vacature blijft open zodat je meer freelancers kunt aannemen tot je hem sluit.';
+    return 'Aanbod van $name ($price) accepteren? De job blijft open zodat je meer freelancers kunt inhuren tot je hem sluit.';
   }
 
   @override
   String hireConfirmFillsAll(String name, String price, int filled, int cap) {
-    return 'Aanbod van $name ($price) accepteren? Dit vult je laatste plek ($filled van $cap). De vacature sluit voor nieuwe sollicitanten. Andere aanmeldingen blijven open — wijs ze alleen af als je ze niet wilt.';
+    return 'Aanbod van $name ($price) accepteren? Dit vult je laatste plek ($filled van $cap). De job sluit voor nieuwe aanmelders. Andere aanmeldingen blijven open — wijs ze alleen af als je ze niet wilt.';
   }
 
   @override
@@ -2553,13 +2603,13 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get hiredJobFull =>
-      'Aangenomen! Deze vacature is vol en gesloten voor nieuwe sollicitanten.';
+      'Ingehuurd! Deze job is vol en gesloten voor nieuwe aanmelders.';
 
   @override
-  String get hiredContractCreated => 'Aangenomen! Contract aangemaakt.';
+  String get hiredContractCreated => 'Ingehuurd! Overeenkomst aangemaakt.';
 
   @override
-  String get jobPostFallback => 'Vacature';
+  String get jobPostFallback => 'Job';
 
   @override
   String get budgetLabel => 'Budget';
@@ -2588,7 +2638,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String totalJobPostCount(int count) {
-    return 'Totaal vacatures ($count)';
+    return 'Totaal jobs ($count)';
   }
 
   @override
@@ -2604,20 +2654,21 @@ class AppLocalizationsNl extends AppLocalizations {
   String get submitOfferTitle => 'Aanmelding indienen';
 
   @override
-  String get applyAtClientRate => 'Meld je aan tegen klanttarief';
+  String get applyAtClientRate => 'Meld je aan tegen werkgevertarief';
 
   @override
-  String get agreeToClientRate => 'Akkoord met\nklanttarief';
+  String get agreeToClientRate => 'Akkoord met\nwerkgevertarief';
 
   @override
   String get customBid => 'Eigen\nbod';
 
   @override
   String get offerNoPostedRateWarning =>
-      'Deze vacature heeft geen gepubliceerd tarief. Voer een eigen bedrag in.';
+      'Deze job heeft geen gepubliceerd tarief. Voer een eigen bedrag in.';
 
   @override
-  String get offerSentAtPostedRate => 'Aanmelding verzonden tegen klanttarief';
+  String get offerSentAtPostedRate =>
+      'Aanmelding verzonden tegen werkgevertarief';
 
   @override
   String get offerSentSuccess => 'Je aanmelding is verzonden';
@@ -2637,10 +2688,10 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get applyWithoutCounterBody =>
-      'Je meldt je aan tegen het tarief van de klant. Zij zien je aanmelding tegen dat tarief.';
+      'Je meldt je aan tegen het tarief van de werkgever. Zij zien je aanmelding tegen dat tarief.';
 
   @override
-  String get clientPostedRate => 'Gepubliceerd tarief klant';
+  String get clientPostedRate => 'Gepubliceerd tarief werkgever';
 
   @override
   String yourApplicationAmount(String amount) {
@@ -2649,15 +2700,15 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get customBidIntroWithBudget =>
-      'Voer je eigen bedrag in als je anders wilt bieden dan het budget van de klant.';
+      'Voer je eigen bedrag in als je anders wilt bieden dan het budget van de werkgever.';
 
   @override
   String get customBidIntroNoBudget =>
-      'Deze vacature heeft geen budget — voer het bedrag in dat je vraagt.';
+      'Deze job heeft geen budget — voer het bedrag in dat je vraagt.';
 
   @override
   String clientPostedPrefix(String amount) {
-    return 'Klant plaatste: $amount';
+    return 'Werkgever plaatste: $amount';
   }
 
   @override
@@ -2685,7 +2736,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get offerMessageOptional => 'Bericht (optioneel)';
 
   @override
-  String get offerMessageHint => 'Optionele notitie voor de klant…';
+  String get offerMessageHint => 'Optionele notitie voor de werkgever…';
 
   @override
   String offerMessageMinHint(int count) {
@@ -2811,7 +2862,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get threadContextSubtitle =>
-      'Actieve jobs en contracten met deze persoon';
+      'Actieve jobs en overeenkomsten met deze persoon';
 
   @override
   String threadContextRelatedCount(int count) {
@@ -2867,7 +2918,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get delete => 'Verwijderen';
 
   @override
-  String get jobAlertsTitle => 'Vacaturemeldingen';
+  String get jobAlertsTitle => 'Jobmeldingen';
 
   @override
   String get jobAlertNew => 'Nieuwe melding';
@@ -2877,10 +2928,10 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get jobAlertsEmpty =>
-      'Sla regels op voor vaardigheden en afstand. We sturen een melding bij passende vacatures.';
+      'Sla regels op voor vaardigheden en afstand. We sturen een melding bij passende jobs.';
 
   @override
-  String get jobAlertUntitled => 'Vacaturemelding';
+  String get jobAlertUntitled => 'Jobmelding';
 
   @override
   String get jobAlertDeleteTitle => 'Melding verwijderen?';
@@ -2890,7 +2941,7 @@ class AppLocalizationsNl extends AppLocalizations {
       'Je ontvangt geen meldingen meer voor deze regel.';
 
   @override
-  String get jobAlertMatchesAllJobs => 'Alle open vacatures';
+  String get jobAlertMatchesAllJobs => 'Alle open jobs';
 
   @override
   String get jobAlertAnyDistance => 'Elke afstand';
@@ -2946,27 +2997,27 @@ class AppLocalizationsNl extends AppLocalizations {
       'Kies je locatie op de kaart voor afstandsmeldingen.';
 
   @override
-  String get jobAlertLimitDistance => 'Alleen vacatures in de buurt';
+  String get jobAlertLimitDistance => 'Alleen jobs in de buurt';
 
   @override
-  String get jobAlertIncludeRemote => 'Remote vacatures meenemen';
+  String get jobAlertIncludeRemote => 'Remote jobs meenemen';
 
   @override
   String get jobAlertNeedProfileLocation =>
       'Kies eerst je locatie op de kaart voordat je een afstand instelt.';
 
   @override
-  String get jobAlertSaveFromFilter => 'Opslaan als vacaturemelding';
+  String get jobAlertSaveFromFilter => 'Opslaan als jobmelding';
 
   @override
-  String get jobAlertsAppBarTooltip => 'Vacaturemeldingen';
+  String get jobAlertsAppBarTooltip => 'Jobmeldingen';
 
   @override
   String get workTrustSectionTitle => 'Geverifieerd werk';
 
   @override
   String get workTrustSectionSubtitle =>
-      'Gebaseerd op voltooide on-site contracten en aanwezigheidsregistraties op HupWorks—geen betaalde badges.';
+      'Gebaseerd op voltooide on-site overeenkomsten en aanwezigheidsregistraties op HupWorks—geen betaalde badges.';
 
   @override
   String get workTrustStatCompletedOnsite => 'On-site voltooid';
@@ -2982,7 +3033,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get workTrustAttendanceVerifiedTooltip =>
-      'Aanwezigheid geregistreerd voor deze vacature';
+      'Aanwezigheid geregistreerd voor deze job';
 
   @override
   String workTrustCompletedMonthLabel(String month, int year) {
@@ -3022,7 +3073,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get requiredDetailsHint =>
-      'Functietitel en leeftijd helpen klanten je te vertrouwen. Je naam komt van je registratie.';
+      'Functietitel en leeftijd helpen werkgevers je te vertrouwen. Je naam komt van je registratie.';
 
   @override
   String get ageDateOfBirth => 'Leeftijd / geboortedatum';
@@ -3184,13 +3235,13 @@ class AppLocalizationsNl extends AppLocalizations {
   String get enterDeliveryDetailsHint => 'Voer je leveringsdetails in...';
 
   @override
-  String get filterJobs => 'Vacatures filteren';
+  String get filterJobs => 'Jobs filteren';
 
   @override
-  String get matchJobsWithSkills => 'Match vacatures met deze vaardigheden.';
+  String get matchJobsWithSkills => 'Match jobs met deze vaardigheden.';
 
   @override
-  String get searchJobTitleHint => 'Zoek vacaturetitel...';
+  String get searchJobTitleHint => 'Zoek jobtitel...';
 
   @override
   String get onSiteOnly => 'Alleen on-site';
@@ -3203,22 +3254,21 @@ class AppLocalizationsNl extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count vacatures',
-      one: '1 vacature',
+      other: '$count jobs',
+      one: '1 job',
     );
     return '$_temp0';
   }
 
   @override
-  String get noOpenJobsRightNow => 'Nu geen open vacatures';
+  String get noOpenJobsRightNow => 'Nu geen open jobs';
 
   @override
   String get noOpenJobsRightNowHint =>
-      'Kom later terug, of stel een vacaturemelding in zodat je een seintje krijgt bij passend werk.';
+      'Kom later terug, of stel een jobmelding in zodat je een seintje krijgt bij passend werk.';
 
   @override
-  String get noJobsMatchFilters =>
-      'Geen vacatures komen overeen met je filters';
+  String get noJobsMatchFilters => 'Geen jobs komen overeen met je filters';
 
   @override
   String get tryAdjustingFilters =>
@@ -3244,7 +3294,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get attachmentTooLarge => 'Bestand is groter dan de limiet van 1 GB';
 
   @override
-  String get searchApplicationsHint => 'Zoek op vacaturetitel...';
+  String get searchApplicationsHint => 'Zoek op jobtitel...';
 
   @override
   String get statusWithdrawn => 'Ingetrokken';
@@ -3253,17 +3303,17 @@ class AppLocalizationsNl extends AppLocalizations {
   String get withdrawApplication => 'Intrekken';
 
   @override
-  String get withdrawApplicationTitle => 'Sollicitatie intrekken?';
+  String get withdrawApplicationTitle => 'Aanmelding intrekken?';
 
   @override
   String get withdrawApplicationConfirmBody =>
-      'De werkgever ziet dit niet meer als openstaande sollicitatie. Je kunt later opnieuw solliciteren.';
+      'De werkgever ziet dit niet meer als openstaande aanmelding. Je kunt later opnieuw aanmelden.';
 
   @override
-  String get applicationWithdrawn => 'Sollicitatie ingetrokken';
+  String get applicationWithdrawn => 'Aanmelding ingetrokken';
 
   @override
-  String get noFilteredApplications => 'Geen sollicitaties gevonden';
+  String get noFilteredApplications => 'Geen aanmeldingen gevonden';
 
   @override
   String get noFilteredApplicationsHint =>
@@ -3290,35 +3340,35 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get notificationContractUnavailable =>
-      'Contract is niet meer beschikbaar.';
+      'Overeenkomst is niet meer beschikbaar.';
 
   @override
   String get notificationApplicationUnavailable =>
-      'Sollicitatie is niet meer beschikbaar.';
+      'Aanmelding is niet meer beschikbaar.';
 
   @override
-  String get notificationJobNotFound => 'Vacature niet gevonden.';
+  String get notificationJobNotFound => 'Job niet gevonden.';
 
   @override
   String get noFavouritesYetHint =>
-      'Bekijk open vacatures en tik op het bladwijzerpictogram om ze hier op te slaan.';
+      'Bekijk open jobs en tik op het bladwijzerpictogram om ze hier op te slaan.';
 
   @override
   String get noNotificationsHint =>
-      'Updates over vacatures, contracten en berichten verschijnen hier.';
+      'Updates over jobs, overeenkomsten en berichten verschijnen hier.';
 
   @override
-  String get noJobAlertsYet => 'Nog geen vacaturemeldingen';
+  String get noJobAlertsYet => 'Nog geen jobmeldingen';
 
   @override
-  String get totalOrders => 'Totaal contracten';
+  String get totalOrders => 'Totaal overeenkomsten';
 
   @override
   String get employerVerification => 'Werkgeververificatie';
 
   @override
   String get employerVerifyUpgradeHint =>
-      'Vul je profiel in om vacatures te plaatsen. Optioneel verifiëren met persoonlijke ID of bedrijfsdocumenten voor een geverifieerde badge.';
+      'Vul je profiel in om jobs te plaatsen. Optioneel verifiëren met persoonlijke ID of bedrijfsdocumenten voor een geverifieerde badge.';
 
   @override
   String get chooseVerificationPath => 'Kies verificatiemethode';
@@ -3365,11 +3415,11 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get completeProfileToPostJob =>
-      'Vul je profiel aan om een vacature te plaatsen';
+      'Vul je profiel aan om een job te plaatsen';
 
   @override
   String get completeProfileToPostJobHint =>
-      'Voeg deze gegevens toe zodat freelancers je vacature kunnen vertrouwen.';
+      'Voeg deze gegevens toe zodat freelancers je job kunnen vertrouwen.';
 
   @override
   String get employerStandingNew => 'Nieuwe werkgever';
@@ -3397,4 +3447,152 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get verifiedEmployer => 'Geverifieerde werkgever';
+
+  @override
+  String get deleteAccount => 'Account verwijderen';
+
+  @override
+  String get deleteAccountSubtitle =>
+      'Verwijder je profiel en gegevens permanent';
+
+  @override
+  String get deleteAccountConfirmTitle => 'Account verwijderen?';
+
+  @override
+  String get deleteAccountConfirmBody =>
+      'Dit kan niet ongedaan worden gemaakt. Openstaande jobs en overeenkomsten worden geannuleerd. Typ DELETE om te bevestigen.';
+
+  @override
+  String get deleteAccountConfirmHint => 'Typ DELETE';
+
+  @override
+  String get deleteAccountConfirmAction => 'Voorgoed verwijderen';
+
+  @override
+  String get deleteAccountSuccess => 'Je account is verwijderd.';
+
+  @override
+  String get deleteAccountMismatch => 'Typ precies DELETE om te bevestigen.';
+
+  @override
+  String get supportEmail => 'Support-e-mail';
+
+  @override
+  String supportEmailSubtitle(String email) {
+    return 'Mail ons op $email';
+  }
+
+  @override
+  String get supportEmailCopied => 'Support-e-mail gekopieerd naar klembord';
+
+  @override
+  String get supportEmailOpenFailed =>
+      'E-mailapp kon niet worden geopend. Adres is gekopieerd.';
+
+  @override
+  String get settingsProfilePhotoHint =>
+      'Duidelijke foto van voren — apart beoordeeld door admin';
+
+  @override
+  String get settingsPhotoStatusPending => 'In behandeling bij admin';
+
+  @override
+  String get settingsPhotoStatusRejected =>
+      'Afgewezen — upload een nieuwe foto';
+
+  @override
+  String get settingsPhotoStatusVerified => 'Foto geverifieerd';
+
+  @override
+  String get settingsPhotoStatusUnverified =>
+      'Nog niet ingediend ter beoordeling';
+
+  @override
+  String get settingsVerificationSubtitle =>
+      'Upload ID-documenten voor je geverifieerde badge';
+
+  @override
+  String get faqDiffMessagesQ =>
+      'Wat is het verschil tussen Berichten en Help & ondersteuning?';
+
+  @override
+  String get faqDiffMessagesA =>
+      'Berichten is om te chatten met werkgevers of freelancers over jobs en overeenkomsten. Help & ondersteuning is om het HupWorks-team te bereiken over account- of technische problemen.';
+
+  @override
+  String get faqResetPasswordQ => 'Hoe reset ik mijn wachtwoord?';
+
+  @override
+  String get faqResetPasswordA =>
+      'Tik op het inlogscherm op Wachtwoord vergeten en vul je e-mail in. Check je inbox voor een resetlink van HupWorks.';
+
+  @override
+  String get faqUpdateProfileQ => 'Hoe werk ik mijn profiel bij?';
+
+  @override
+  String get faqUpdateProfileA =>
+      'Open het menu (profielfoto) → Mijn profiel. Daar kun je je naam, foto en andere gegevens bijwerken.';
+
+  @override
+  String get faqPostJobQ => 'Hoe plaats ik een job?';
+
+  @override
+  String get faqPostJobA =>
+      'Vanaf het werkgever-startscherm kies je Job plaatsen (of de jobs-sectie). Vul titel, categorie, locatie, budget en eisen in en publiceer.';
+
+  @override
+  String get faqTrackOrderQ => 'Hoe volg ik mijn order?';
+
+  @override
+  String get faqTrackOrderA =>
+      'Ga naar het tabblad Orders voor actief, openstaand en afgerond werk. Tik op een order voor details, leverstatus en chat met de freelancer.';
+
+  @override
+  String get faqMessageSellerQ => 'Hoe stuur ik een freelancer een bericht?';
+
+  @override
+  String get faqMessageSellerA =>
+      'Open een order of jobaanbod en kies Bericht, of ga naar het tabblad Berichten voor al je gesprekken met freelancers.';
+
+  @override
+  String get faqReportSellerQ => 'Hoe meld ik een freelancer?';
+
+  @override
+  String get faqReportSellerA =>
+      'Open de chat, overeenkomst of het freelancerprofiel en tik op Melden. Kies een reden, beschrijf wat er gebeurde en verstuur. Bij urgente problemen start je ook een livechat met support.';
+
+  @override
+  String get faqPaymentsClientQ => 'Hoe werken betalingen?';
+
+  @override
+  String get faqPaymentsClientA =>
+      'Betaling gebeurt buiten de app (contant, bankoverschrijving of lokale e-wallet). Spreek het bedrag af in de job of chat en betaal de freelancer direct na het werk.';
+
+  @override
+  String get faqReportClientQ => 'Hoe meld ik een werkgever of job?';
+
+  @override
+  String get faqReportClientA =>
+      'Open de job, overeenkomst, het werkgeverprofiel of de chat en tik op het meldingspictogram (vlag). Kies een reden, beschrijf wat er gebeurde en verstuur.';
+
+  @override
+  String get faqApplyJobQ => 'Hoe meld ik me aan voor een job?';
+
+  @override
+  String get faqApplyJobA =>
+      'Ga naar Jobs, open een listing en stuur je aanmelding met prijs en details. De werkgever kan accepteren en een order starten.';
+
+  @override
+  String get faqGetPaidQ => 'Hoe krijg ik betaald?';
+
+  @override
+  String get faqGetPaidA =>
+      'HupWorks houdt of verplaatst geen geld. Na afronding van het werk ontvang je betaling rechtstreeks van de werkgever (contant, bankoverschrijving of lokale e-wallet) volgens het afgesproken bedrag.';
+
+  @override
+  String get faqAttendanceQ => 'Hoe werkt aanwezigheid / inchecken?';
+
+  @override
+  String get faqAttendanceA =>
+      'Profielmenu → Aanwezigheid. Op locatie scan je de QR-code van de werkgever om in of uit te klokken voor die order.';
 }

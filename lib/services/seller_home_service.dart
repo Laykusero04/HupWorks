@@ -1,4 +1,5 @@
 import 'package:freelancer/core/utils/app_logger.dart';
+import 'package:freelancer/core/utils/dashboard_period.dart';
 import 'package:freelancer/services/attendance_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -22,10 +23,18 @@ class SellerHomeService {
   ///
   /// Hours = accepted hour reports (sign-in). Amounts = completed order prices.
   /// Marked paid = optional off-app confirmation; still unpaid = agreed − marked.
-  static Future<Map<String, dynamic>> getWorkOverview() async {
+  ///
+  /// When [period] is set, hours / completed / paid KPIs are scoped to that
+  /// range. Active contracts stay a live snapshot. Omit [period] for all-time
+  /// (seller home).
+  static Future<Map<String, dynamic>> getWorkOverview({
+    DashboardPeriod? period,
+  }) async {
     final user = _client.auth.currentUser;
     if (user == null) return {};
 
+    final range =
+        period == null ? null : DashboardPeriodRange.forPeriod(period);
     final now = DateTime.now();
     final monthStart = DateTime(now.year, now.month, 1);
 
@@ -51,20 +60,33 @@ class SellerHomeService {
         activeContracts++;
         deliveredAwaiting++;
       }
-      if (st == 'completed') {
-        jobsCompleted++;
-        final price = double.tryParse(o['price'].toString()) ?? 0;
-        agreedContractValue += price;
+      if (st != 'completed') continue;
+
+      final completedAt = DateTime.tryParse(
+            o['completed_at'] as String? ?? '',
+          ) ??
+          DateTime.tryParse(o['created_at'] as String? ?? '');
+      if (completedAt != null && !completedAt.isBefore(monthStart)) {
+        completedThisMonth++;
+      }
+
+      final completedInScope = range == null ||
+          (completedAt != null && range.contains(completedAt));
+      if (!completedInScope) continue;
+
+      jobsCompleted++;
+      final price = double.tryParse(o['price'].toString()) ?? 0;
+      agreedContractValue += price;
+
+      final paidAt = DateTime.tryParse(
+        o['payment_received_at'] as String? ?? '',
+      );
+      if (range == null) {
         if (o['payment_received_at'] != null) {
           paymentReceivedValue += price;
         }
-        final completedAt = DateTime.tryParse(
-              o['completed_at'] as String? ?? '',
-            ) ??
-            DateTime.tryParse(o['created_at'] as String? ?? '');
-        if (completedAt != null && !completedAt.isBefore(monthStart)) {
-          completedThisMonth++;
-        }
+      } else if (paidAt != null && range.contains(paidAt)) {
+        paymentReceivedValue += price;
       }
     }
 
@@ -74,11 +96,17 @@ class SellerHomeService {
 
     double hoursWorkedMinutes = 0;
     try {
-      final hourRows = await _client
+      var hourQuery = _client
           .from('hour_reports')
-          .select('minutes')
+          .select('minutes, work_date')
           .eq('seller_id', user.id)
           .eq('status', 'accepted');
+      if (range != null) {
+        hourQuery = hourQuery
+            .gte('work_date', range.startDate)
+            .lt('work_date', range.endDate);
+      }
+      final hourRows = await hourQuery;
       for (final row in List<Map<String, dynamic>>.from(hourRows)) {
         hoursWorkedMinutes += (row['minutes'] as num?)?.toDouble() ?? 0;
       }
@@ -144,6 +172,7 @@ class SellerHomeService {
       'avg_rating': avgRating,
       'review_count': reviewList.length,
       'onsite_attendance_jobs': onsiteAttendanceCount,
+      if (period != null) 'period': period.name,
     };
   }
 

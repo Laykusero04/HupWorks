@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/app_date_format.dart';
 import 'package:freelancer/core/utils/profile_image.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/client%20screen/client%20talent/client_public_profile.dart';
 import 'package:freelancer/screen/widgets/verification_status_badge.dart';
 import 'package:freelancer/services/employer_verification_service.dart';
@@ -69,7 +70,7 @@ class JobClientInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final name = clientProfile?['name'] as String? ?? 'Client';
+    final name = clientProfile?['name'] as String? ?? context.l10n.roleClient;
     final imageUrl =
         ProfileImage.normalize(clientProfile?['profile_image_url'] as String?);
     final city = (clientProfile?['city'] as String?)?.trim() ?? '';

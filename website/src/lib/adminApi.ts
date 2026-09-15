@@ -234,6 +234,13 @@ export function fetchUsers(role = 'all', q = '') {
   )
 }
 
+export async function deleteUser(userId: string) {
+  return postJson<{ ok: boolean; deletedUserId?: string; error?: string }>(
+    '/api/admin/users-delete',
+    { userId },
+  )
+}
+
 export async function updateCategory(input: {
   id: string
   nameI18n: Record<string, string>

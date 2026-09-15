@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tawkto/flutter_tawk.dart';
 import 'package:freelancer/core/config/tawk_config.dart';
+import 'package:freelancer/core/constants/support_contact.dart';
 import 'package:freelancer/core/constants/support_presets.dart';
 import 'package:freelancer/core/utils/app_logger.dart';
+import 'package:freelancer/core/utils/support_chat_navigation.dart';
 import 'package:freelancer/data/models/support_preset_model.dart';
 import 'package:freelancer/services/auth_service.dart';
 import 'package:freelancer/l10n/l10n.dart';
@@ -96,12 +98,14 @@ class _SupportChatScreenState extends State<SupportChatScreen>
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final link = TawkConfig.directChatLink;
+    final lang = Localizations.localeOf(context).languageCode;
+    final link = TawkConfig.directChatLinkFor(lang);
     final chatConfigured = link != null;
 
     return Scaffold(
       backgroundColor: kDarkWhite,
-      resizeToAvoidBottomInset: true,
+      // Tawk WebView owns the keyboard; Scaffold resize double-lifts the page.
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: kDarkWhite,
         elevation: 0,
@@ -114,6 +118,13 @@ class _SupportChatScreenState extends State<SupportChatScreen>
           ),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            tooltip: l10n.supportEmail,
+            onPressed: () => openSupportEmail(context),
+            icon: const Icon(Icons.email_outlined),
+          ),
+        ],
         bottom: TabBar(
           controller: _tabController,
           labelColor: kPrimaryColor,
@@ -129,10 +140,10 @@ class _SupportChatScreenState extends State<SupportChatScreen>
         controller: _tabController,
         children: [
           _SupportFaqTab(
-            presets: SupportPresets.forRole(_userRole()),
+            presets: SupportPresets.forRole(l10n, _userRole()),
             onChatTap: chatConfigured ? () => _tabController.animateTo(1) : null,
           ),
-          chatConfigured ? _buildChat(link) : _buildMissingConfig(),
+          chatConfigured ? _buildChat(link, lang) : _buildMissingConfig(),
         ],
       ),
     );
@@ -161,20 +172,31 @@ class _SupportChatScreenState extends State<SupportChatScreen>
               textAlign: TextAlign.center,
               style: kTextStyle.copyWith(color: kSubTitleColor),
             ),
+            const SizedBox(height: 20),
+            OutlinedButton.icon(
+              onPressed: () => openSupportEmail(context),
+              icon: const Icon(Icons.email_outlined),
+              label: Text(SupportContact.email),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildChat(String link) {
-    // Tawk's WebView draws its own input bar; without bottom inset it sits
-    // under Android's system navigation (looks like two overlapping bars).
-    final bottomInset = MediaQuery.viewPaddingOf(context).bottom;
+  Widget _buildChat(String link, String languageCode) {
+    // Clear the system nav/gesture bar when the keyboard is closed. When the
+    // keyboard is open, leave 0 — Tawk already lifts its composer; padding
+    // here would show as a second empty bar ("two screens").
+    final mq = MediaQuery.of(context);
+    final keyboardOpen = mq.viewInsets.bottom > 0;
+    final bottomInset = keyboardOpen ? 0.0 : mq.viewPadding.bottom;
 
     return Padding(
       padding: EdgeInsets.only(bottom: bottomInset),
       child: Tawk(
+        // Reload WebView when app language changes (each link = its own widget).
+        key: ValueKey('$languageCode|$link'),
         directChatLink: link,
         visitor: _buildVisitor(),
         placeholder: const Center(
@@ -196,13 +218,37 @@ class _SupportFaqTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Column(
       children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+          child: Material(
+            color: kWhite,
+            borderRadius: BorderRadius.circular(12),
+            child: ListTile(
+              onTap: () => openSupportEmail(context),
+              leading: const Icon(Icons.email_outlined, color: kPrimaryColor),
+              title: Text(
+                l10n.supportEmail,
+                style: kTextStyle.copyWith(
+                  color: kNeutralColor,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              subtitle: Text(
+                l10n.supportEmailSubtitle(SupportContact.email),
+                style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13),
+              ),
+              trailing: const Icon(Icons.open_in_new, size: 18, color: kLightNeutralColor),
+            ),
+          ),
+        ),
         Expanded(
           child: presets.isEmpty
               ? Center(
                   child: Text(
-                    context.l10n.supportNoQuestionsYet,
+                    l10n.supportNoQuestionsYet,
                     style: kTextStyle.copyWith(color: kSubTitleColor),
                   ),
                 )
@@ -227,7 +273,7 @@ class _SupportFaqTab extends StatelessWidget {
                   onPressed: onChatTap,
                   icon: const Icon(Icons.chat_bubble_outline, color: kWhite),
                   label: Text(
-                    context.l10n.supportStillNeedHelp,
+                    l10n.supportStillNeedHelp,
                     style: kTextStyle.copyWith(
                       color: kWhite,
                       fontWeight: FontWeight.w600,

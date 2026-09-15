@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/attendance_format.dart';
 import 'package:freelancer/data/models/hour_report_model.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/services/hour_reports_service.dart';
 
 import 'constant.dart';
@@ -230,7 +231,11 @@ class _HourReportsSectionState extends State<HourReportsSection> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    report.statusLabel,
+                    switch (report.status) {
+                      HourReport.accepted => context.l10n.statusAccepted,
+                      HourReport.declined => context.l10n.statusRejected,
+                      _ => context.l10n.statusPending,
+                    },
                     style: kTextStyle.copyWith(
                       color: _statusColor(report.status),
                       fontSize: 11,

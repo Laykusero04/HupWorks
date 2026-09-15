@@ -449,14 +449,14 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get privacySectionChoicesBody =>
-      'আপনি অ্যাপে প্রোফাইল আপডেট করতে পারেন এবং অ্যাকাউন্ট পরিবর্তনের জন্য সাপোর্টে যোগাযোগ করতে পারেন। অবস্থান অনুযায়ে ব্যক্তিগত ডেটা অ্যাক্সেস, সংশোধন বা মুছে ফেলার অতিরিক্ত অধিকার থাকতে পারে।';
+      'আপনি অ্যাপে প্রোফাইল আপডেট করতে পারেন এবং সেটিংস থেকে অ্যাকাউন্ট স্থায়ীভাবে মুছে ফেলতে পারেন। অবস্থান অনুযায়ী ব্যক্তিগত ডেটা অ্যাক্সেস, সংশোধন বা মুছে ফেলার অতিরিক্ত অধিকার থাকতে পারে।';
 
   @override
   String get privacySectionContactTitle => 'যোগাযোগ';
 
   @override
   String get privacySectionContactBody =>
-      'এই নীতি বা আপনার ডেটা নিয়ে প্রশ্ন থাকলে অ্যাপের সাহায্য ও সহায়তার মাধ্যমে যোগাযোগ করুন।';
+      'এই নীতি বা আপনার ডেটা নিয়ে প্রশ্ন থাকলে support@hup-works.nl-এ ইমেইল করুন অথবা অ্যাপের সাহায্য ও সহায়তা ব্যবহার করুন।';
 
   @override
   String get appOnboardSkip => 'এড়িয়ে যান';
@@ -475,37 +475,70 @@ class AppLocalizationsBn extends AppLocalizations {
       'আপনি যে ভাষা বেছে নেবেন, অ্যাপ সেই ভাষায় দেখাবে। পরে সেটিংস থেকে পরিবর্তন করতে পারবেন।';
 
   @override
-  String get appOnboardPage1Title => 'সাইন আপ করুন এবং অ্যাকাউন্ট তৈরি করুন';
+  String get appOnboardPage1Title => 'একটি অ্যাকাউন্ট তৈরি করুন';
 
   @override
   String get appOnboardPage1Body =>
-      'ক্লায়েন্ট বা ফ্রিল্যান্সার হিসেবে যোগ দিন।';
+      'নিয়োগকর্তা বা ফ্রিল্যান্সার হিসেবে সাইন আপ করুন।';
 
   @override
   String get appOnboardPage2Title => 'পোস্ট করুন বা খুঁজুন';
 
   @override
   String get appOnboardPage2Body =>
-      'একটি কাজ পোস্ট করুন, অথবা ব্রাউজ করে আবেদন করুন।';
+      'একটি কাজ পোস্ট করুন, অথবা ব্রাউজ করে একটি শিফটের জন্য আবেদন করুন।';
 
   @override
   String get appOnboardPage3Title => 'চ্যাট করুন এবং সমন্বয় করুন';
 
   @override
-  String get appOnboardPage3Body => 'অ্যাপে মেসেজ করুন এবং বিস্তারিত সম্মত হন।';
+  String get appOnboardPage3Body =>
+      'অ্যাপে একে অপরকে মেসেজ করুন এবং কাজটি সম্মত হন।';
 
   @override
-  String get appOnboardPage4Title => 'শিফট আপডেট চেক করুন';
+  String get appOnboardPage4Title => 'আপনার শিফটের স্ট্যাটাস জানুন';
 
   @override
-  String get appOnboardPage4Body => 'লোকেশনে উপস্থিতি বা QR ব্যবহার করুন।';
+  String get appOnboardPage4Body =>
+      'লোকেশনে আপনার QR দিয়ে উপস্থিতি নিবন্ধন করুন।';
 
   @override
   String get appOnboardPage5Title => 'শেষ করুন এবং রিভিউ দিন';
 
   @override
-  String get appOnboardPage5Body =>
-      'কাজ শেষ করুন এবং আপনার অভিজ্ঞতা শেয়ার করুন।';
+  String get appOnboardPage5Body => 'আপনার শিফট শেষ করুন এবং একটি রিভিউ দিন।';
+
+  @override
+  String get appOnboardPage6Title => 'পেমেন্ট নিন';
+
+  @override
+  String get appOnboardPage6Body =>
+      'আপনার ঘণ্টা লিখুন এবং নিয়োগকর্তাকে ইনভয়েস পাঠান। ইন ও আউট ক্লক টাইম অনুযায়ী অনুমোদনের পর আপনার পছন্দ অনুযায়ী পেমেন্ট পাবেন!';
+
+  @override
+  String get appOnboardPage7Title => 'Huppakee — প্রশাসন আপডেট করুন';
+
+  @override
+  String get appOnboardPage7Body =>
+      'পরবর্তী শিফটে যাওয়ার আগে প্রশাসন আপ টু ডেট রাখুন। নিয়ম: যতবার করবেন, ট্যাক্স ফাইলিংয়ে তত কম সময় লাগবে!';
+
+  @override
+  String get appOnboardPage8Title => 'আবার পরবর্তী শিফটে!';
+
+  @override
+  String get appOnboardPage8Body =>
+      'হয়ে গেল — দ্রুত হয়ে গেছে তো? চলুন পরেরটিতে!';
+
+  @override
+  String get platformRulesTitle => 'প্ল্যাটফর্মের নিয়ম';
+
+  @override
+  String get platformRulesSubtitle => 'সাইন আপ থেকে পেমেন্ট — ৮টি ধাপ';
+
+  @override
+  String platformRulesStepLabel(int step) {
+    return 'ধাপ $step';
+  }
 
   @override
   String get authWelcomeHowToUse => 'আপনি HupWorks কীভাবে ব্যবহার করবেন?';
@@ -1259,6 +1292,10 @@ class AppLocalizationsBn extends AppLocalizations {
   String get filterTalent => 'ট্যালেন্ট ফিল্টার';
 
   @override
+  String get filterLimitNearby =>
+      'কাছাকাছি ফ্রিল্যান্সারদের মধ্যে সীমাবদ্ধ করুন';
+
+  @override
   String get filterMinRating => 'ন্যূনতম রেটিং';
 
   @override
@@ -1563,6 +1600,15 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get dashboard => 'ড্যাশবোর্ড';
+
+  @override
+  String get periodDay => 'দিন';
+
+  @override
+  String get periodWeek => 'সপ্তাহ';
+
+  @override
+  String get periodMonth => 'মাস';
 
   @override
   String get addDeposit => 'জমা যোগ';
@@ -1893,7 +1939,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get supportTawkEnvHint =>
-      '.env-এ TAWK_DIRECT_CHAT_LINK যোগ করুন (.env.example দেখুন)। প্রথম ট্যাবে FAQ উপলব্ধ।';
+      '.env-এ TAWK_DIRECT_CHAT_LINK (এবং প্রয়োজনে TAWK_DIRECT_CHAT_LINK_BN) যোগ করুন। Tawk ড্যাশবোর্ডে প্রতিটি উইজেটের ভাষা সেট করুন। প্রথম ট্যাবে FAQ উপলব্ধ।';
 
   @override
   String get supportNoQuestionsYet => 'এখনও কোনো প্রশ্ন নেই।';
@@ -3382,4 +3428,149 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get verifiedEmployer => 'যাচাইকৃত নিয়োগকর্তা';
+
+  @override
+  String get deleteAccount => 'অ্যাকাউন্ট মুছুন';
+
+  @override
+  String get deleteAccountSubtitle => 'প্রোফাইল ও ডেটা স্থায়ীভাবে সরান';
+
+  @override
+  String get deleteAccountConfirmTitle => 'অ্যাকাউন্ট মুছবেন?';
+
+  @override
+  String get deleteAccountConfirmBody =>
+      'এটি পূর্বাবস্থায় ফেরানো যাবে না। আপনার খোলা কাজ ও চুক্তি বাতিল হবে। নিশ্চিত করতে DELETE টাইপ করুন।';
+
+  @override
+  String get deleteAccountConfirmHint => 'DELETE টাইপ করুন';
+
+  @override
+  String get deleteAccountConfirmAction => 'চিরতরে মুছুন';
+
+  @override
+  String get deleteAccountSuccess => 'আপনার অ্যাকাউন্ট মুছে ফেলা হয়েছে।';
+
+  @override
+  String get deleteAccountMismatch => 'নিশ্চিত করতে ঠিক DELETE টাইপ করুন।';
+
+  @override
+  String get supportEmail => 'সাপোর্ট ইমেইল';
+
+  @override
+  String supportEmailSubtitle(String email) {
+    return '$email-এ ইমেইল করুন';
+  }
+
+  @override
+  String get supportEmailCopied => 'সাপোর্ট ইমেইল ক্লিপবোর্ডে কপি হয়েছে';
+
+  @override
+  String get supportEmailOpenFailed =>
+      'ইমেইল অ্যাপ খোলা যায়নি। ঠিকানা কপি করা হয়েছে।';
+
+  @override
+  String get settingsProfilePhotoHint =>
+      'স্পষ্ট সামনের ছবি — অ্যাডমিন আলাদাভাবে পর্যালোচনা করে';
+
+  @override
+  String get settingsPhotoStatusPending => 'অ্যাডমিন পর্যালোচনায় অপেক্ষমাণ';
+
+  @override
+  String get settingsPhotoStatusRejected =>
+      'প্রত্যাখ্যাত — নতুন ছবি আপলোড করুন';
+
+  @override
+  String get settingsPhotoStatusVerified => 'ছবি যাচাইকৃত';
+
+  @override
+  String get settingsPhotoStatusUnverified => 'এখনও পর্যালোচনার জন্য জমা হয়নি';
+
+  @override
+  String get settingsVerificationSubtitle =>
+      'যাচাইকৃত ব্যাজের জন্য আইডি নথি আপলোড করুন';
+
+  @override
+  String get faqDiffMessagesQ => 'Messages এবং Help & Support-এর পার্থক্য কী?';
+
+  @override
+  String get faqDiffMessagesA =>
+      'Messages দিয়ে নিয়োগকর্তা বা ফ্রিল্যান্সারদের সাথে কাজ নিয়ে চ্যাট করেন। Help & Support দিয়ে অ্যাকাউন্ট বা প্রযুক্তিগত সমস্যার জন্য HupWorks টিমের সাথে যোগাযোগ করেন।';
+
+  @override
+  String get faqResetPasswordQ => 'পাসওয়ার্ড কীভাবে রিসেট করব?';
+
+  @override
+  String get faqResetPasswordA =>
+      'লগইন স্ক্রিনে Forgot Password ট্যাপ করে ইমেইল দিন। HupWorks থেকে রিসেট লিঙ্কের জন্য ইনবক্স চেক করুন।';
+
+  @override
+  String get faqUpdateProfileQ => 'প্রোফাইল কীভাবে আপডেট করব?';
+
+  @override
+  String get faqUpdateProfileA =>
+      'মেনু (প্রোফাইল আইকন) → My Profile খুলুন। সেখান থেকে নাম, ছবি ও অন্যান্য তথ্য আপডেট করতে পারবেন।';
+
+  @override
+  String get faqPostJobQ => 'কীভাবে একটি কাজ পোস্ট করব?';
+
+  @override
+  String get faqPostJobA =>
+      'নিয়োগকর্তা হোম স্ক্রিন থেকে Post a Job ব্যবহার করুন। শিরোনাম, ক্যাটাগরি, লোকেশন, বাজেট ও প্রয়োজনীয়তা পূরণ করে পাবলিশ করুন।';
+
+  @override
+  String get faqTrackOrderQ => 'অর্ডার কীভাবে ট্র্যাক করব?';
+
+  @override
+  String get faqTrackOrderA =>
+      'Orders ট্যাবে সক্রিয়, অপেক্ষমাণ ও সম্পন্ন কাজ দেখুন। বিস্তারিত, ডেলিভারি স্ট্যাটাস ও চ্যাটের জন্য একটি অর্ডারে ট্যাপ করুন।';
+
+  @override
+  String get faqMessageSellerQ => 'ফ্রিল্যান্সারকে কীভাবে মেসেজ করব?';
+
+  @override
+  String get faqMessageSellerA =>
+      'অর্ডার বা জব অফার খুলে Message ব্যবহার করুন, অথবা Messages ট্যাবে সব কথোপকথন দেখুন।';
+
+  @override
+  String get faqReportSellerQ => 'ফ্রিল্যান্সারকে কীভাবে রিপোর্ট করব?';
+
+  @override
+  String get faqReportSellerA =>
+      'চ্যাট, চুক্তি বা ফ্রিল্যান্সার প্রোফাইল খুলে Report ট্যাপ করুন। কারণ বেছে নিন, বিবরণ দিন এবং জমা দিন। জরুরি সমস্যায় সাপোর্ট লাইভ চ্যাটও শুরু করুন।';
+
+  @override
+  String get faqPaymentsClientQ => 'পেমেন্ট কীভাবে কাজ করে?';
+
+  @override
+  String get faqPaymentsClientA =>
+      'পেমেন্ট অ্যাপের বাইরে হয় (নগদ, ব্যাংক বা স্থানীয় ই-ওয়ালেট)। কাজ বা চ্যাটে পরিমাণে সম্মত হোন, কাজ শেষে সরাসরি ফ্রিল্যান্সারকে পরিশোধ করুন।';
+
+  @override
+  String get faqReportClientQ => 'নিয়োগকর্তা বা কাজ কীভাবে রিপোর্ট করব?';
+
+  @override
+  String get faqReportClientA =>
+      'কাজ, চুক্তি, নিয়োগকর্তা প্রোফাইল বা চ্যাট খুলে রিপোর্ট (ফ্ল্যাগ) আইকনে ট্যাপ করুন। কারণ বেছে নিন, বিবরণ দিন এবং জমা দিন।';
+
+  @override
+  String get faqApplyJobQ => 'কাজে কীভাবে আবেদন করব?';
+
+  @override
+  String get faqApplyJobA =>
+      'Find Jobs-এ যান, একটি তালিকা খুলুন এবং মূল্য ও বিবরণসহ অফার পাঠান। নিয়োগকর্তা গ্রহণ করে অর্ডার শুরু করতে পারেন।';
+
+  @override
+  String get faqGetPaidQ => 'কীভাবে পেমেন্ট পাব?';
+
+  @override
+  String get faqGetPaidA =>
+      'HupWorks টাকা ধরে রাখে বা স্থানান্তর করে না। কাজ শেষে সম্মত পরিমাণ অনুযায়ী সরাসরি নিয়োগকর্তার কাছ থেকে পেমেন্ট নিন।';
+
+  @override
+  String get faqAttendanceQ => 'উপস্থিতি চেক-ইন কীভাবে কাজ করে?';
+
+  @override
+  String get faqAttendanceA =>
+      'প্রোফাইল মেনু → Attendance। জব সাইটে নিয়োগকর্তার দেওয়া QR স্ক্যান করে ইন/আউট করুন।';
 }

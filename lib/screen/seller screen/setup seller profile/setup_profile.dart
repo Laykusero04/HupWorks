@@ -10,7 +10,6 @@ import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/screen/widgets/seller_skills_editor.dart';
-import 'package:freelancer/screen/widgets/verification_guideline_examples.dart';
 import 'package:freelancer/services/auth_service.dart';
 import 'package:freelancer/services/profile_service.dart';
 import 'package:freelancer/services/verification_service.dart';
@@ -621,19 +620,6 @@ class _SetupSellerProfileState extends State<SetupSellerProfile> {
           l10n.profilePhotoGuidelineHint,
           style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13),
         ),
-        const SizedBox(height: 16),
-        VerificationGuidelineExamples(
-          doAsset: 'images/verification/profile_photo_do.png',
-          dontAsset: 'images/verification/profile_photo_dont.png',
-          doLabel: l10n.photoDoLabel,
-          dontLabel: l10n.photoDontLabel,
-          tips: [
-            l10n.photoTipFaceCamera,
-            l10n.photoTipBackground,
-            l10n.photoTipNoAccessories,
-            l10n.photoTipShoulders,
-          ],
-        ),
         const SizedBox(height: 24),
         Center(
           child: Stack(
@@ -697,19 +683,6 @@ class _SetupSellerProfileState extends State<SetupSellerProfile> {
         Text(
           l10n.identityVerificationSetupHint,
           style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13),
-        ),
-        const SizedBox(height: 16),
-        VerificationGuidelineExamples(
-          doAsset: 'images/verification/id_face_do.png',
-          dontAsset: 'images/verification/id_face_dont.png',
-          doLabel: l10n.idDoLabel,
-          dontLabel: l10n.idDontLabel,
-          tips: [
-            l10n.idTipHoldNextToFace,
-            l10n.idTipGoodLighting,
-            l10n.idTipFourCorners,
-            l10n.idTipNoAccessories,
-          ],
         ),
         const SizedBox(height: 24),
         GestureDetector(

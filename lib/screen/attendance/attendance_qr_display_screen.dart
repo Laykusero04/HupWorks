@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/screen/widgets/brand_painting_qr.dart';
 import 'package:freelancer/services/attendance_service.dart';
 import 'package:nb_utils/nb_utils.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../widgets/button_global.dart';
@@ -147,19 +147,9 @@ class _AttendanceQrDisplayScreenState extends State<AttendanceQrDisplayScreen> {
                   ),
                   const SizedBox(height: 24),
                   if (_qrPayload != null)
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: kWhite,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: kBorderColorTextField),
-                      ),
-                      child: QrImageView(
-                        data: _qrPayload!,
-                        version: QrVersions.auto,
-                        size: 240,
-                        backgroundColor: Colors.white,
-                      ),
+                    BrandPaintingQr(
+                      data: _qrPayload!,
+                      size: 260,
                     )
                   else
                     Text(

@@ -1,4 +1,5 @@
 import '../../core/errors/failures.dart';
+import '../../core/utils/dashboard_period.dart';
 import '../../services/dashboard_service.dart';
 import '../../services/favourite_service.dart';
 import '../../services/seller_home_service.dart';
@@ -9,9 +10,11 @@ import '../models/service_model.dart';
 class DashboardRepository {
   // ── Client dashboard ──
 
-  Future<Map<String, dynamic>> getClientDashboard() async {
+  Future<Map<String, dynamic>> getClientDashboard({
+    DashboardPeriod period = DashboardPeriod.month,
+  }) async {
     try {
-      return await DashboardService.getClientDashboard();
+      return await DashboardService.getClientDashboard(period: period);
     } catch (e) {
       throw ServerFailure(e.toString());
     }
@@ -36,9 +39,11 @@ class DashboardRepository {
 
   // ── Seller dashboard ──
 
-  Future<Map<String, dynamic>> getSellerDashboard() async {
+  Future<Map<String, dynamic>> getSellerDashboard({
+    DashboardPeriod period = DashboardPeriod.month,
+  }) async {
     try {
-      return await DashboardService.getSellerDashboard();
+      return await DashboardService.getSellerDashboard(period: period);
     } catch (e) {
       throw ServerFailure(e.toString());
     }

@@ -154,18 +154,13 @@ class _ClientAllCategoriesState extends State<ClientAllCategories> {
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Container(
-                                height: 44,
-                                width: 44,
-                                decoration: BoxDecoration(
-                                  color: color.withValues(alpha: 0.12),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Icon(
-                                  CategoryIcons.iconData(icon),
-                                  color: color,
-                                  size: 24,
-                                ),
+                              CategoryVisual(
+                                iconKey: icon,
+                                tint: color.withValues(alpha: 0.12),
+                                iconColor: color,
+                                size: 44,
+                                radius: 12,
+                                iconSize: 24,
                               ),
                               const SizedBox(width: 12),
                               Expanded(

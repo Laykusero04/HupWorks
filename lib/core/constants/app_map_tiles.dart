@@ -2,7 +2,7 @@ import 'package:flutter_map/flutter_map.dart';
 
 /// Shared OSM tiles (no third-party API key).
 abstract final class AppMapTiles {
-  static const userAgentPackageName = 'com.prolancer.app';
+  static const userAgentPackageName = 'com.hupworks.app';
 
   /// OpenStreetMap raster tiles — works without a CARTO/Mapbox key.
   static TileLayer osm({required bool isDark}) {

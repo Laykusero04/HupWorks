@@ -30,7 +30,7 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>com.prolancer.app</string>
+			<string>com.hupworks.app</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>hupworks</string>

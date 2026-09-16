@@ -1,4 +1,4 @@
-package com.prolancer.app
+package com.hupworks.app
 
 import io.flutter.embedding.android.FlutterActivity
 

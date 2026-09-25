@@ -76,7 +76,7 @@ class _HupWorksAppState extends State<HupWorksApp> {
                     theme: appTheme(),
                     routerConfig: _router,
                     locale: widget.localeController.locale,
-                    supportedLocales: AppLocalizations.supportedLocales,
+                    supportedLocales: LocaleController.supportedLocales,
                     localizationsDelegates:
                         AppLocalizations.localizationsDelegates,
                     builder: (context, child) {

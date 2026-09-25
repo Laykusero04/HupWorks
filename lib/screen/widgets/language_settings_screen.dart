@@ -12,7 +12,7 @@ class LanguageSettingsScreen extends StatelessWidget {
   static final _options = <({Locale locale, String Function(AppLocalizations) label})>[
     (locale: const Locale('en'), label: (l) => l.languageEnglish),
     (locale: const Locale('nl'), label: (l) => l.languageDutch),
-    (locale: const Locale('bn'), label: (l) => l.languageBengali),
+    // (locale: const Locale('bn'), label: (l) => l.languageBengali), // temporarily disabled
   ];
 
   @override

@@ -13,7 +13,7 @@ class LocaleController extends ChangeNotifier {
   static const supportedLocales = <Locale>[
     Locale('en'),
     Locale('nl'),
-    Locale('bn'),
+    // Locale('bn'), // temporarily disabled
   ];
 
   static const Locale defaultLocale = Locale('en');
@@ -22,7 +22,7 @@ class LocaleController extends ChangeNotifier {
   static const languageOptionEntries = <({Locale locale, String nativeLabel})>[
     (locale: Locale('en'), nativeLabel: 'English'),
     (locale: Locale('nl'), nativeLabel: 'Nederlands'),
-    (locale: Locale('bn'), nativeLabel: 'বাংলা'),
+    // (locale: Locale('bn'), nativeLabel: 'বাংলা'), // temporarily disabled
   ];
 
   Locale _locale = defaultLocale;

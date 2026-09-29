@@ -358,11 +358,11 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get attendanceClientHintQrInOut =>
-      'সাইটে একটি QR পোস্ট করুন। কর্মীরা ইন ও আউট ক্লক করতে স্ক্যান করবে।';
+      'পিন করা সাইটে একটি QR পোস্ট করুন। কর্মীরা শুধু সেই পিনের ২০০ মিটারের মধ্যে ইন ও আউট ক্লক করতে পারবে।';
 
   @override
   String get attendanceClientHintQrOnce =>
-      'সাইটে একটি QR পোস্ট করুন। কর্মীরা দিনে একবার চেক-ইন করতে স্ক্যান করবে।';
+      'পিন করা সাইটে একটি QR পোস্ট করুন। কর্মীরা শুধু সেই পিনের ২০০ মিটারের মধ্যে চেক-ইন করতে পারবে।';
 
   @override
   String get attendanceClientHintSelfReport =>
@@ -374,11 +374,11 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get attendanceFreelancerHintQrInOut =>
-      'ইন ও আউট ক্লক করতে সাইটের QR স্ক্যান করুন।';
+      'ইন ও আউট ক্লক করতে সাইটের QR স্ক্যান করুন। আপনাকে কাজের স্থানে থাকতে হবে।';
 
   @override
   String get attendanceFreelancerHintQrOnce =>
-      'পৌঁছালে সাইটের QR একবার স্ক্যান করুন।';
+      'পৌঁছালে সাইটের QR একবার স্ক্যান করুন। আপনাকে কাজের স্থানে থাকতে হবে।';
 
   @override
   String get attendanceFreelancerHintSelfReport =>
@@ -390,11 +390,11 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get attendanceOnboardingQrInOut =>
-      'HupWorks-এ উপস্থিতি খুলে জব সাইটের QR স্ক্যান করে আগমনে ক্লক ইন এবং প্রস্থানে ক্লক আউট করুন।';
+      'HupWorks-এ উপস্থিতি খুলে জব সাইটের QR স্ক্যান করে আগমনে ক্লক ইন এবং প্রস্থানে ক্লক আউট করুন। অ্যাপ যাচাই করে যে আপনি সাইট পিনের ২০০ মিটারের মধ্যে আছেন।';
 
   @override
   String get attendanceOnboardingQrOnce =>
-      'পৌঁছালে HupWorks-এ উপস্থিতি খুলে সাইটে পোস্ট করা QR স্ক্যান করুন। দিনে একবার চেক-ইনই যথেষ্ট।';
+      'পৌঁছালে HupWorks-এ উপস্থিতি খুলে সাইটে পোস্ট করা QR স্ক্যান করুন। দিনে একবার চেক-ইনই যথেষ্ট। অ্যাপ যাচাই করে যে আপনি সাইট পিনের ২০০ মিটারের মধ্যে আছেন।';
 
   @override
   String get attendanceOnboardingSelfReport =>
@@ -409,6 +409,45 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get attendanceTrackingHint => 'কর্মীরা সাইটে সময় কীভাবে রেকর্ড করে।';
+
+  @override
+  String get pleasePinJobSite =>
+      'মানচিত্রে কাজের স্থান পিন করুন। QR উপস্থিতি শুধু সেই স্থানে কাজ করে।';
+
+  @override
+  String get setSitePin => 'সাইট পিন সেট করুন';
+
+  @override
+  String get attendancePinSiteToUseQr =>
+      'QR উপস্থিতি ব্যবহারের আগে মানচিত্রে পিন সেট করুন। কর্মীরা শুধু সেই পিনের ২০০ মিটারের মধ্যে ক্লক ইন করতে পারবে।';
+
+  @override
+  String get attendanceLocationCheckHint =>
+      'রেকর্ড করার আগে HupWorks যাচাই করে যে আপনি কাজের স্থানে আছেন।';
+
+  @override
+  String get attendanceLocationRequired =>
+      'আপনি কাজের স্থানে আছেন কিনা যাচাই করতে লোকেশন চালু করুন।';
+
+  @override
+  String get attendanceLocationDenied =>
+      'কাজের স্থানে ক্লক ইন করতে লোকেশন অনুমতি দরকার।';
+
+  @override
+  String get attendanceLocationDeniedForever =>
+      'লোকেশন অনুমতি বন্ধ আছে। ক্লক ইন করতে সেটিংসে চালু করুন।';
+
+  @override
+  String get attendanceLocationServicesOff =>
+      'কাজের স্থানে ক্লক ইন করতে লোকেশন সার্ভিস চালু করুন।';
+
+  @override
+  String get attendanceTooFarFromSite =>
+      'উপস্থিতি নথি করতে আপনাকে কাজের স্থানে থাকতে হবে। কাছে গিয়ে আবার চেষ্টা করুন।';
+
+  @override
+  String get attendanceNoSitePin =>
+      'এই কাজের এখনো কোনো সাইট পিন নেই। ক্লায়েন্টকে মানচিত্রে স্থান সেট করতে বলুন।';
 
   @override
   String get genderMale => 'পুরুষ';
@@ -1448,6 +1487,17 @@ class AppLocalizationsBn extends AppLocalizations {
   String get attendanceSharePrintInstructions => 'শেয়ার / প্রিন্ট নির্দেশ';
 
   @override
+  String get attendanceShareQrSubject => 'HupWorks উপস্থিতি QR';
+
+  @override
+  String get attendanceShareQrCaption => 'কাজের স্থানে HupWorks-এ স্ক্যান করুন';
+
+  @override
+  String attendanceShareQrMessage(String job) {
+    return 'এই QR প্রিন্ট করে \"$job\" এ পোস্ট করুন। নিয়োগপ্রাপ্ত কর্মীরা সাইটে থেকে HupWorks-এ স্ক্যান করবে।';
+  }
+
+  @override
   String get regenerateQr => 'QR পুনরায় তৈরি';
 
   @override
@@ -1468,7 +1518,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get attendanceHowItWorksBody =>
-      '1. কর্মস্থলে এই QR প্রিন্ট ও টেপ করুন।\n2. নিয়োগপ্রাপ্ত ফ্রিল্যান্সাররা HupWorks খুলে স্ক্যান করে।\n3. তারা ফোনে ক্লক ইন বা ক্লক আউট নিশ্চিত করে।\n4. জব বিবরণ স্ক্রিনে আজকের উপস্থিতি দেখতে পারবেন।';
+      '1. মানচিত্রে কর্মস্থল পিন করুন, তারপর সেখানে এই QR প্রিন্ট ও টেপ করুন।\n2. নিয়োগপ্রাপ্ত ফ্রিল্যান্সাররা সাইটে থেকে HupWorks খুলে স্ক্যান করে।\n3. তারা ফোনে ক্লক ইন বা ক্লক আউট নিশ্চিত করে। পাঞ্চ শুধু পিনের ২০০ মিটারের মধ্যে গৃহীত হয়।\n4. জব বিবরণ স্ক্রিনে আজকের উপস্থিতি দেখতে পারবেন।';
 
   @override
   String get noOnsiteJobsYet => 'এখনও কোনো অন-সাইট জব নেই';
@@ -3573,4 +3623,143 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get faqAttendanceA =>
       'প্রোফাইল মেনু → Attendance। জব সাইটে নিয়োগকর্তার দেওয়া QR স্ক্যান করে ইন/আউট করুন।';
+
+  @override
+  String get chatPrivacyTitle => 'কে আপনাকে বার্তা পাঠাতে পারবে';
+
+  @override
+  String get chatPrivacySubtitle =>
+      'কোন প্রোফাইল নতুন চ্যাট শুরু করতে পারবে তা বেছে নিন। এতে স্প্যাম ও অবাঞ্ছিত বার্তা কমে।';
+
+  @override
+  String get chatPrivacyAnyone => 'যে কেউ';
+
+  @override
+  String get chatPrivacyAnyoneHint =>
+      'যেকোনো প্রোফাইল আপনার সাথে নতুন চ্যাট শুরু করতে পারবে।';
+
+  @override
+  String get chatPrivacyVerified => 'শুধু যাচাইকৃত প্রোফাইল';
+
+  @override
+  String get chatPrivacyVerifiedHint =>
+      'শুধু যাদের পরিচয় যাচাই হয়েছে তারা নতুন চ্যাট শুরু করতে পারবে।';
+
+  @override
+  String get chatPrivacyConnections => 'যাদের সাথে কাজ করেছি';
+
+  @override
+  String get chatPrivacyConnectionsHint =>
+      'শুধু যাদের সাথে ইতিমধ্যে আবেদন বা চুক্তি আছে।';
+
+  @override
+  String get chatPrivacyNobody => 'নতুন বার্তা নয়';
+
+  @override
+  String get chatPrivacyNobodyHint =>
+      'নতুন কেউ চ্যাট শুরু করতে পারবে না। আগের কথোপকথন ও চালু চুক্তি খোলা থাকবে।';
+
+  @override
+  String get chatPrivacySaved => 'বার্তার পছন্দ সংরক্ষিত হয়েছে';
+
+  @override
+  String get chatPrivacyDeniedNobody => 'এই ব্যক্তি নতুন বার্তা নিচ্ছেন না।';
+
+  @override
+  String get chatPrivacyDeniedVerified =>
+      'এই ব্যক্তি শুধু যাচাইকৃত প্রোফাইল থেকে বার্তা নেন।';
+
+  @override
+  String get chatPrivacyDeniedConnections =>
+      'এই ব্যক্তি শুধু যাদের সাথে আগে কাজ করেছেন তাদের বার্তা নেন।';
+
+  @override
+  String get platformShareTitle => 'আপনার অংশ';
+
+  @override
+  String get platformShareMenuSubtitle => 'আপনার মধ্য দিয়ে চলা কাজ দেখুন';
+
+  @override
+  String get platformShareHeadline =>
+      'প্ল্যাটফর্ম যে কাজ নিয়ে চলে, তার মধ্যে আপনার অংশ দেখুন।';
+
+  @override
+  String get platformShareSellerNote =>
+      'আপনি যে শিফট শেষ করেছেন সেগুলো থেকে গণনা করা।';
+
+  @override
+  String get platformShareClientNote =>
+      'আপনি যে শিফট নিয়োগ করেছেন এবং সম্পন্ন হিসেবে চিহ্নিত করেছেন সেগুলো থেকে গণনা করা।';
+
+  @override
+  String get platformShareOfCompletedWork => 'সম্পন্ন কাজের';
+
+  @override
+  String get platformShareShifts => 'সম্পন্ন শিফট';
+
+  @override
+  String get platformShareHours => 'গৃহীত ঘণ্টা';
+
+  @override
+  String get platformShareValue => 'সম্পন্ন কাজ';
+
+  @override
+  String platformShareCountOf(String yours, String total) {
+    return '$total-এর মধ্যে $yours';
+  }
+
+  @override
+  String get platformShareEmpty =>
+      'প্ল্যাটফর্মে আপনার অংশ দেখতে একটি শিফট সম্পন্ন করুন।';
+
+  @override
+  String get platformShareDisclaimer =>
+      'এটি সম্পন্ন শিফটের আপনার অংশ। এটি কোম্পানির মালিকানা নয় এবং কোনো পেআউট নয়।';
+
+  @override
+  String get charityCauseTitle => 'একটি উদ্দেশ্য সমর্থন করুন';
+
+  @override
+  String get charityCauseHeadline => 'আপনার অংশের সাথে একটি উদ্দেশ্য বেছে নিন।';
+
+  @override
+  String get charityCauseBody =>
+      'এতে আপনার শতাংশ বদলায় না। HupWorks শিফটের টাকা পাঠায় না। আপনার পছন্দ রাখা হয়, যাতে পরে প্ল্যাটফর্মের উপহার সেদিকে যায়।';
+
+  @override
+  String get charityCauseShareLabel => 'আপনি যে উদ্দেশ্য সমর্থন করেন';
+
+  @override
+  String get charityCauseShareEmpty => 'একটি উদ্দেশ্য বেছে নিন';
+
+  @override
+  String get charityCauseNone => 'কোনো উদ্দেশ্য নয়';
+
+  @override
+  String get charityCauseNoneHint =>
+      'আপনার অংশ শুধু সম্পন্ন কাজের হিসাব হিসেবে থাকে।';
+
+  @override
+  String get charityCauseFood => 'খাদ্য';
+
+  @override
+  String get charityCauseFoodHint => 'খাবার ও খাদ্য সহায়তা।';
+
+  @override
+  String get charityCauseEducation => 'শিক্ষা';
+
+  @override
+  String get charityCauseEducationHint => 'শেখা ও স্কুল সহায়তা।';
+
+  @override
+  String get charityCauseHealth => 'স্বাস্থ্য';
+
+  @override
+  String get charityCauseHealthHint => 'চিকিৎসা ও স্বাস্থ্য সহায়তা।';
+
+  @override
+  String get charityCauseShelter => 'আশ্রয়';
+
+  @override
+  String get charityCauseShelterHint => 'বাসস্থান ও নিরাপদ থাকার জায়গা।';
 }

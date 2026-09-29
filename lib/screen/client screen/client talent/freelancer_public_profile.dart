@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:freelancer/core/chat/chat_contact_policy.dart';
 import 'package:freelancer/core/utils/app_date_format.dart';
 import 'package:freelancer/core/utils/profile_image.dart';
 import 'package:freelancer/l10n/l10n.dart';
@@ -16,6 +17,7 @@ import 'package:freelancer/data/models/seller_work_trust_model.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../widgets/constant.dart';
+import '../../widgets/profile_photo_viewer.dart';
 import '../../widgets/profile_detail_theme.dart';
 import '../../widgets/profile_rating_summary.dart';
 import '../../widgets/profile_skeleton.dart';
@@ -154,9 +156,7 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
       ).launch(context);
     } catch (e) {
       if (mounted) {
-        final msg = '$e'.contains('Contact blocked')
-            ? context.l10n.contactBlocked
-            : context.l10n.couldNotOpenChatWithDetail('$e');
+        final msg = messageForChatStartFailure(context.l10n, e);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(msg)),
         );
@@ -261,93 +261,92 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Compact header — same composition as seller My Profile
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    height: 72,
-                    width: 72,
+              Center(
+                child: GestureDetector(
+                  onTap: () => showProfilePhoto(
+                    context,
+                    imageUrl: profileImageUrl,
+                  ),
+                  child: Container(
+                    height: 168,
+                    width: 168,
                     decoration: ProfileDetailTheme.avatarDecoration(
                       ProfileImage.provider(profileImageUrl),
                       accent: brand,
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          name,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: kTextStyle.copyWith(
-                            color: kNeutralColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                        if (jobTitle != null && jobTitle.isNotEmpty) ...[
-                          const SizedBox(height: 2),
-                          Text(
-                            jobTitle,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: kTextStyle.copyWith(
-                              color: kSubTitleColor,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ],
-                        if (address != null && address.isNotEmpty) ...[
-                          const SizedBox(height: 4),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.location_on_outlined,
-                                size: 13,
-                                color: brand,
-                              ),
-                              const SizedBox(width: 3),
-                              Flexible(
-                                child: Text(
-                                  address,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: kTextStyle.copyWith(
-                                    color: kLightNeutralColor,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                        const SizedBox(height: 8),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 6,
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          children: [
-                            VerificationStatusBadge(
-                              status: verificationStatus,
-                              score: verificationScore,
-                              compact: true,
-                            ),
-                            if (reviewCount > 0)
-                              ProfileRatingSummary(
-                                rating: rating,
-                                reviewCount: reviewCount,
-                                compact: true,
-                                accentColor: brand,
-                              ),
-                          ],
-                        ),
-                      ],
-                    ),
+                ),
+              ),
+              const SizedBox(height: 14),
+              Text(
+                name,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: kTextStyle.copyWith(
+                  color: kNeutralColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 22,
+                ),
+              ),
+              if (jobTitle != null && jobTitle.isNotEmpty) ...[
+                const SizedBox(height: 4),
+                Text(
+                  jobTitle,
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: kTextStyle.copyWith(
+                    color: kSubTitleColor,
+                    fontSize: 14,
                   ),
-                  const SizedBox(width: 8),
+                ),
+              ],
+              if (address != null && address.isNotEmpty) ...[
+                const SizedBox(height: 6),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.location_on_outlined,
+                      size: 14,
+                      color: brand,
+                    ),
+                    const SizedBox(width: 3),
+                    Flexible(
+                      child: Text(
+                        address,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: kTextStyle.copyWith(
+                          color: kLightNeutralColor,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+              const SizedBox(height: 10),
+              Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 8,
+                runSpacing: 6,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  VerificationStatusBadge(
+                    status: verificationStatus,
+                    score: verificationScore,
+                    compact: true,
+                  ),
+                  if (reviewCount > 0)
+                    ProfileRatingSummary(
+                      rating: rating,
+                      reviewCount: reviewCount,
+                      compact: true,
+                      accentColor: brand,
+                    ),
                   SellerStandingBadge(
                     rating: rating,
                     reviewCount: reviewCount,

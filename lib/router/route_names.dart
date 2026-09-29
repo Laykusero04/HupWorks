@@ -32,6 +32,7 @@ class AppRoutes {
   static const clientNotifications = '/client/notifications';
   static const clientSettings = '/client/settings';
   static const clientDashboard = '/client/dashboard';
+  static const clientPlatformShare = '/client/platform-share';
   static const clientProfileDetails = '/client/profile/details';
   static const clientProfileEdit = '/client/profile/edit';
   static const clientProfileVerify = '/client/profile/verify';
@@ -55,6 +56,7 @@ class AppRoutes {
   static const sellerNotifications = '/seller/notifications';
   static const sellerSettings = '/seller/settings';
   static const sellerDashboard = '/seller/dashboard';
+  static const sellerPlatformShare = '/seller/platform-share';
   static const sellerProfileDetails = '/seller/profile/details';
   static const sellerProfileEdit = '/seller/profile/edit';
   static const sellerProfileVerify = '/seller/profile/verify';

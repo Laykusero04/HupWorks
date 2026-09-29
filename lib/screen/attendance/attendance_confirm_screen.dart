@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/utils/attendance_location.dart';
 import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:freelancer/core/utils/attendance_format.dart';
 import 'package:freelancer/core/utils/attendance_mode.dart';
 import 'package:freelancer/data/models/attendance_punch_model.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/services/attendance_service.dart';
+import 'package:geolocator/geolocator.dart';
 
 import '../widgets/button_global.dart';
 import '../widgets/constant.dart';
@@ -36,11 +38,22 @@ class _AttendanceConfirmScreenState extends State<AttendanceConfirmScreen> {
 
   Future<void> _submit() async {
     final l10n = context.l10n;
+    final site = widget.resolve;
+    if (site.latitude == null || site.longitude == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.attendanceNoSitePin)),
+      );
+      return;
+    }
+
     setState(() => _isSubmitting = true);
     try {
+      final position = await readAttendancePosition();
       final result = await AttendanceService.recordAttendancePunch(
         token: widget.token,
         punchType: _selectedPunchType,
+        latitude: position.latitude,
+        longitude: position.longitude,
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -56,11 +69,32 @@ class _AttendanceConfirmScreenState extends State<AttendanceConfirmScreen> {
         ),
       );
       Navigator.of(context).pop(true);
+    } on AttendanceGpsException catch (e) {
+      if (!mounted) return;
+      setState(() => _isSubmitting = false);
+      final openSettings = switch (e.block) {
+        AttendanceGpsBlock.servicesOff => Geolocator.openLocationSettings,
+        AttendanceGpsBlock.deniedForever => Geolocator.openAppSettings,
+        _ => null,
+      };
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(attendanceGpsMessage(l10n, e.block)),
+          action: openSettings == null
+              ? null
+              : SnackBarAction(
+                  label: l10n.settings,
+                  onPressed: () {
+                    openSettings();
+                  },
+                ),
+        ),
+      );
     } catch (e) {
       if (mounted) {
         setState(() => _isSubmitting = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.errorWithDetail('$e'))),
+          SnackBar(content: Text(attendanceRpcMessage(l10n, e))),
         );
       }
     }
@@ -250,6 +284,11 @@ class _AttendanceConfirmScreenState extends State<AttendanceConfirmScreen> {
               ),
             ],
             const SizedBox(height: 24),
+            Text(
+              l10n.attendanceLocationCheckHint,
+              style: kTextStyle.copyWith(color: kSubTitleColor, height: 1.35),
+            ),
+            const SizedBox(height: 12),
             if (_isSubmitting)
               const LoadingWidget()
             else

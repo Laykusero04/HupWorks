@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:freelancer/core/chat/chat_contact_policy.dart';
 import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
 import 'package:freelancer/core/widgets/loading_widget.dart';
 
@@ -152,7 +153,7 @@ class _SellerApplicationsState extends State<SellerApplications> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.couldNotOpenChatWithDetail('$e'))),
+          SnackBar(content: Text(messageForChatStartFailure(l10n, e))),
         );
       }
     }

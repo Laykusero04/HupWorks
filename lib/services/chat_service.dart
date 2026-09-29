@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:freelancer/data/models/chat_inbox_filter.dart';
 import 'package:freelancer/services/block_service.dart';
+import 'package:freelancer/services/chat_privacy_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ChatService {
@@ -25,6 +26,7 @@ class ChatService {
     if (await BlockService.isContactBlocked(otherUserId)) {
       throw Exception('Contact blocked');
     }
+    await ChatPrivacyService.assertCanStartChat(otherUserId);
 
     // Determine who is client and who is seller
     final myProfile = await _client.from('profiles').select('role').eq('id', user.id).single();
@@ -73,6 +75,7 @@ class ChatService {
     if (await BlockService.isContactBlocked(buyerUserId)) {
       throw Exception('Contact blocked');
     }
+    await ChatPrivacyService.assertCanStartChat(buyerUserId);
 
     return await _client.from('conversations').insert({
       'client_id': clientId,

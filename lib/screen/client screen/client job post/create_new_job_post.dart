@@ -254,6 +254,11 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
         if (_locationController.text.trim().isEmpty) {
           return l10n.pleaseEnterLocation;
         }
+        if (_locationType == JobLocationType.onsite &&
+            AttendanceMode.canUseQr(_attendanceMode) &&
+            _locationPin == null) {
+          return l10n.pleasePinJobSite;
+        }
         return null;
       default:
         return null;
@@ -880,6 +885,18 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
             value: _attendanceMode,
             onChanged: (m) => setState(() => _attendanceMode = m),
           ),
+          if (AttendanceMode.canUseQr(_attendanceMode) &&
+              _locationPin == null) ...[
+            const SizedBox(height: 8),
+            Text(
+              l10n.pleasePinJobSite,
+              style: kTextStyle.copyWith(
+                color: Colors.red.shade700,
+                fontSize: 12,
+                height: 1.35,
+              ),
+            ),
+          ],
         ],
         const SizedBox(height: 8),
       ],

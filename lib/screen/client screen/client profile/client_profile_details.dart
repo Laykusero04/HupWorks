@@ -11,6 +11,7 @@ import 'package:freelancer/services/profile_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../widgets/constant.dart';
+import '../../widgets/profile_photo_viewer.dart';
 import '../../widgets/editable_profile_avatar.dart';
 import '../../widgets/profile_detail_theme.dart';
 import '../../widgets/profile_rating_summary.dart';
@@ -147,63 +148,62 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  EditableProfileAvatar(
+              Center(
+                child: EditableProfileAvatar(
+                  imageUrl: profileImageUrl,
+                  size: 148,
+                  uploading: _uploadingPhoto,
+                  onTap: _changePhoto,
+                  onView: () => showProfilePhoto(
+                    context,
                     imageUrl: profileImageUrl,
-                    size: 72,
-                    uploading: _uploadingPhoto,
-                    onTap: _changePhoto,
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          name,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: kTextStyle.copyWith(
-                            color: kNeutralColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                        if (locationStr.isNotEmpty) ...[
-                          const SizedBox(height: 4),
-                          Row(
-                            children: [
-                              const Icon(Icons.location_on_outlined, size: 13, color: kSecondaryColor),
-                              const SizedBox(width: 3),
-                              Flexible(
-                                child: Text(
-                                  locationStr,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: kTextStyle.copyWith(
-                                    color: kLightNeutralColor,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                        if (reviewCount > 0) ...[
-                          const SizedBox(height: 8),
-                          ProfileRatingSummary(
-                            rating: rating,
-                            reviewCount: reviewCount,
-                            compact: true,
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                ],
+                ),
               ),
+              const SizedBox(height: 14),
+              Text(
+                name,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: kTextStyle.copyWith(
+                  color: kNeutralColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 22,
+                ),
+              ),
+              if (locationStr.isNotEmpty) ...[
+                const SizedBox(height: 6),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.location_on_outlined, size: 14, color: kSecondaryColor),
+                    const SizedBox(width: 3),
+                    Flexible(
+                      child: Text(
+                        locationStr,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: kTextStyle.copyWith(
+                          color: kLightNeutralColor,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+              if (reviewCount > 0) ...[
+                const SizedBox(height: 10),
+                Center(
+                  child: ProfileRatingSummary(
+                    rating: rating,
+                    reviewCount: reviewCount,
+                    compact: true,
+                  ),
+                ),
+              ],
 
               const SizedBox(height: 12),
 

@@ -190,7 +190,7 @@ class ProfileDetailsSkeleton extends StatelessWidget {
             child: Column(
               children: [
                 Center(
-                  child: ProfileSkeletonBone(listenable: shimmer, width: 110, height: 110, circular: true),
+                  child: ProfileSkeletonBone(listenable: shimmer, width: 168, height: 168, circular: true),
                 ),
                 const SizedBox(height: 14),
                 ProfileSkeletonBone(listenable: shimmer, width: 180, height: 22, borderRadius: 8),

@@ -56,7 +56,7 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>HupWorks may use the microphone when taking a profile photo with video-capable cameras.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>HupWorks uses your location to help you pick your city on the map.</string>
+	<string>HupWorks uses your location to pin job sites and to confirm you are at the site when you clock in.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

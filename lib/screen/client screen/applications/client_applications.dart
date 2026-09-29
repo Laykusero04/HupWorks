@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/chat/chat_contact_policy.dart';
 import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
 import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:freelancer/core/utils/app_date_format.dart';
@@ -127,7 +128,7 @@ class _ClientApplicationsState extends State<ClientApplications> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.couldNotOpenChatWithDetail('$e'))),
+          SnackBar(content: Text(messageForChatStartFailure(l10n, e))),
         );
       }
     }
@@ -223,63 +224,71 @@ class _ClientApplicationsState extends State<ClientApplications> {
         app['seller_id'] as String? ?? seller?['id'] as String?;
     final imageUrl = seller?['profile_image_url'] as String?;
 
+    void openProfile() {
+      if (sellerId == null) return;
+      FreelancerPublicProfile(
+        sellerId: sellerId,
+        initialName: sellerName,
+      ).launch(context);
+    }
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
       child: Material(
         color: kWhite,
         borderRadius: BorderRadius.circular(10.0),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(10.0),
-          onTap: () => _openJob(app),
-          child: Container(
-            padding: const EdgeInsets.all(12.0),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10.0),
-              border: Border.all(color: kBorderColorTextField),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10.0),
+            border: Border.all(color: kBorderColorTextField),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 12, 4, 0),
+                child: Row(
                   children: [
-                    GestureDetector(
-                      onTap: sellerId == null
-                          ? null
-                          : () => FreelancerPublicProfile(
-                                sellerId: sellerId,
-                                initialName: sellerName,
-                              ).launch(context),
-                      child: CircleAvatar(
-                        radius: 22,
-                        backgroundColor: kDarkWhite,
-                        backgroundImage: ProfileImage.provider(imageUrl),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
                     Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            sellerName,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: kTextStyle.copyWith(
-                              color: kNeutralColor,
-                              fontWeight: FontWeight.bold,
+                      child: InkWell(
+                        onTap: sellerId == null ? null : openProfile,
+                        borderRadius: BorderRadius.circular(8),
+                        child: Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 22,
+                              backgroundColor: kDarkWhite,
+                              backgroundImage: ProfileImage.provider(imageUrl),
                             ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            jobPost?['title'] ?? l10n.untitledJob,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: kTextStyle.copyWith(
-                              color: kSubTitleColor,
-                              fontSize: 13,
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    sellerName,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: kTextStyle.copyWith(
+                                      color: kNeutralColor,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    jobPost?['title'] ?? l10n.untitledJob,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: kTextStyle.copyWith(
+                                      color: kSubTitleColor,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                     Container(
@@ -316,57 +325,72 @@ class _ClientApplicationsState extends State<ClientApplications> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 8.0),
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 2.0,
-                        horizontal: 8.0,
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20.0),
-                        color: kDarkWhite,
-                      ),
-                      child: Text(
-                        _jobTypeLabel(jobPost?['job_type'] as String?),
-                        style: kTextStyle.copyWith(
-                          color: kNeutralColor,
-                          fontSize: 12.0,
+              ),
+              InkWell(
+                  onTap: () => _openJob(app),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 2.0,
+                                horizontal: 8.0,
+                              ),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20.0),
+                                color: kDarkWhite,
+                              ),
+                              child: Text(
+                                _jobTypeLabel(jobPost?['job_type'] as String?),
+                                style: kTextStyle.copyWith(
+                                  color: kNeutralColor,
+                                  fontSize: 12.0,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 10.0),
+                            Text(
+                              L10nLabels.offerAmountShort(
+                                l10n,
+                                app['price'],
+                                app['price_basis'],
+                              ),
+                              style: kTextStyle.copyWith(
+                                color: kPrimaryColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const Spacer(),
+                            Text(
+                              _formatDate(app['created_at'] as String?),
+                              style: kTextStyle.copyWith(
+                                  color: kLightNeutralColor),
+                            ),
+                          ],
                         ),
-                      ),
+                        if ((app['cover_letter'] as String?)?.isNotEmpty ??
+                            false) ...[
+                          const SizedBox(height: 8.0),
+                          Text(
+                            app['cover_letter'] as String,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: kTextStyle.copyWith(color: kSubTitleColor),
+                          ),
+                        ],
+                        const SizedBox(height: 12),
+                      ],
                     ),
-                    const SizedBox(width: 10.0),
-                    Text(
-                      L10nLabels.offerAmountShort(
-                        l10n,
-                        app['price'],
-                        app['price_basis'],
-                      ),
-                      style: kTextStyle.copyWith(
-                        color: kPrimaryColor,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const Spacer(),
-                    Text(
-                      _formatDate(app['created_at'] as String?),
-                      style: kTextStyle.copyWith(color: kLightNeutralColor),
-                    ),
-                  ],
-                ),
-                if ((app['cover_letter'] as String?)?.isNotEmpty ?? false) ...[
-                  const SizedBox(height: 8.0),
-                  Text(
-                    app['cover_letter'] as String,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: kTextStyle.copyWith(color: kSubTitleColor),
                   ),
-                ],
+                ),
                 if (statusRaw == 'pending' && jobOpen) ...[
-                  const SizedBox(height: 10),
-                  Row(
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+                    child: Row(
                     children: [
                       Expanded(
                         child: ButtonGlobalWithoutIcon(
@@ -401,12 +425,12 @@ class _ClientApplicationsState extends State<ClientApplications> {
                       ),
                     ],
                   ),
+                  ),
                 ],
               ],
             ),
           ),
         ),
-      ),
     );
   }
 }

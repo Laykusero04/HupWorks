@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:freelancer/core/chat/chat_contact_policy.dart';
 import 'package:freelancer/core/constants/support_contact.dart';
 import 'package:freelancer/core/locale/locale_controller.dart';
 import 'package:freelancer/core/locale/locale_scope.dart';
@@ -45,6 +46,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String _photoStatus = 'unverified';
   String? _photoRejectionReason;
   String _verificationStatus = 'unverified';
+  String _chatContactPolicy = ChatContactPolicy.anyone;
+  bool _savingChatPrivacy = false;
   bool _uploadingPhoto = false;
   bool _deletingAccount = false;
 
@@ -108,7 +111,104 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _photoRejectionReason =
           profile?['profile_photo_rejection_reason'] as String?;
       _verificationStatus = verificationStatus;
+      _chatContactPolicy = ChatContactPolicy.normalize(
+        profile?['chat_contact_policy'] as String?,
+      );
     });
+  }
+
+  Future<void> _pickChatPrivacy() async {
+    if (_savingChatPrivacy) return;
+    final l10n = context.l10n;
+    final selected = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: kWhite,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: RadioGroup<String>(
+            groupValue: _chatContactPolicy,
+            onChanged: (value) {
+              if (value != null) Navigator.pop(ctx, value);
+            },
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(8, 12, 8, 8),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
+                    child: Text(
+                      l10n.chatPrivacyTitle,
+                      style: kTextStyle.copyWith(
+                        color: kNeutralColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 6, 16, 8),
+                    child: Text(
+                      l10n.chatPrivacySubtitle,
+                      style: kTextStyle.copyWith(
+                        color: kSubTitleColor,
+                        fontSize: 13,
+                        height: 1.35,
+                      ),
+                    ),
+                  ),
+                  for (final policy in ChatContactPolicy.values)
+                    RadioListTile<String>(
+                      value: policy,
+                      activeColor: kPrimaryColor,
+                      title: Text(
+                        ChatContactPolicy.label(l10n, policy),
+                        style: kTextStyle.copyWith(
+                          color: kNeutralColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      subtitle: Text(
+                        ChatContactPolicy.hint(l10n, policy),
+                        style: kTextStyle.copyWith(
+                          color: kSubTitleColor,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+    if (selected == null || selected == _chatContactPolicy || !mounted) return;
+
+    final previous = _chatContactPolicy;
+    setState(() {
+      _savingChatPrivacy = true;
+      _chatContactPolicy = selected;
+    });
+    try {
+      await ProfileService.updateProfile({'chat_contact_policy': selected});
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.chatPrivacySaved)),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _chatContactPolicy = previous);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+      );
+    } finally {
+      if (mounted) setState(() => _savingChatPrivacy = false);
+    }
   }
 
   Future<void> _loadProfile() async {
@@ -412,6 +512,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     value: _pushEnabled,
                     onChanged: _pushBusy ? null : _setPushEnabled,
                   ),
+                ),
+                ListTile(
+                  onTap: _savingChatPrivacy ? null : _pickChatPrivacy,
+                  visualDensity: const VisualDensity(vertical: -3),
+                  horizontalTitleGap: 10,
+                  contentPadding: const EdgeInsets.only(bottom: 15),
+                  leading: Container(
+                    padding: const EdgeInsets.all(10.0),
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Color(0xFFF3E8FF),
+                    ),
+                    child: const Icon(
+                      Icons.privacy_tip_outlined,
+                      color: Color(0xFF7C3AED),
+                    ),
+                  ),
+                  title: Text(
+                    l10n.chatPrivacyTitle,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style: kTextStyle.copyWith(color: kNeutralColor),
+                  ),
+                  subtitle: Text(
+                    ChatContactPolicy.label(l10n, _chatContactPolicy),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12),
+                  ),
+                  trailing: const Icon(Icons.chevron_right, color: kLightNeutralColor),
                 ),
                 ListTile(
                   onTap: () => widget.languagePage.launch(context),

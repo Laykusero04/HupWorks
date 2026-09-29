@@ -312,6 +312,21 @@ class JobPostsService {
     return data;
   }
 
+  /// Save the on-site pin used by the attendance geofence.
+  static Future<void> updateJobSitePin({
+    required String jobPostId,
+    required double latitude,
+    required double longitude,
+    String? location,
+  }) async {
+    final label = location?.trim();
+    await _client.from('job_posts').update({
+      'latitude': latitude,
+      'longitude': longitude,
+      if (label != null && label.isNotEmpty) 'location': label,
+    }).eq('id', jobPostId);
+  }
+
   /// Fetch single job post details
   static Future<Map<String, dynamic>> getJobPostDetails(String jobPostId) async {
     final data = await _client

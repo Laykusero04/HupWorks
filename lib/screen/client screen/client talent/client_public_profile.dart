@@ -10,6 +10,7 @@ import 'package:freelancer/services/profile_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../widgets/constant.dart';
+import '../../widgets/profile_photo_viewer.dart';
 import '../../widgets/profile_detail_theme.dart';
 import '../../widgets/profile_rating_summary.dart';
 import '../../widgets/profile_skeleton.dart';
@@ -159,12 +160,18 @@ class _ClientPublicProfileState extends State<ClientPublicProfile> {
             children: [
               const SizedBox(height: 8),
               Center(
-                child: Container(
-                  height: 110,
-                  width: 110,
-                  decoration: ProfileDetailTheme.avatarDecoration(
-                    ProfileImage.provider(profileImageUrl),
-                    accent: kPrimaryColor,
+                child: GestureDetector(
+                  onTap: () => showProfilePhoto(
+                    context,
+                    imageUrl: profileImageUrl,
+                  ),
+                  child: Container(
+                    height: 168,
+                    width: 168,
+                    decoration: ProfileDetailTheme.avatarDecoration(
+                      ProfileImage.provider(profileImageUrl),
+                      accent: kPrimaryColor,
+                    ),
                   ),
                 ),
               ),

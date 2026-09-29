@@ -1,4 +1,9 @@
+import 'dart:io';
+import 'dart:ui' as ui;
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/utils/attendance_location.dart';
 import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/widgets/brand_painting_qr.dart';
@@ -28,6 +33,7 @@ class _AttendanceQrDisplayScreenState extends State<AttendanceQrDisplayScreen> {
   String? _qrPayload;
   bool _isLoading = true;
   bool _isRegenerating = false;
+  bool _isSharing = false;
 
   @override
   void initState() {
@@ -52,7 +58,7 @@ class _AttendanceQrDisplayScreenState extends State<AttendanceQrDisplayScreen> {
       if (mounted) {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+          SnackBar(content: Text(attendanceRpcMessage(context.l10n, e))),
         );
       }
     }
@@ -90,21 +96,84 @@ class _AttendanceQrDisplayScreenState extends State<AttendanceQrDisplayScreen> {
       if (mounted) {
         setState(() => _isRegenerating = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+          SnackBar(content: Text(attendanceRpcMessage(context.l10n, e))),
         );
       }
     }
   }
 
   Future<void> _share() async {
-    if (_qrPayload == null) return;
-    await SharePlus.instance.share(
-      ShareParams(
-        text: 'HupWorks attendance QR for "${widget.jobTitle}":\n$_qrPayload\n\n'
-            'Post this code at the job site. Freelancers scan it to clock in and out.',
-        subject: 'HupWorks attendance QR',
-      ),
-    );
+    final payload = _qrPayload;
+    if (payload == null || _isSharing) return;
+
+    final l10n = context.l10n;
+    final box = context.findRenderObject() as RenderBox?;
+    final origin = box == null || !box.hasSize
+        ? null
+        : box.localToGlobal(Offset.zero) & box.size;
+
+    setState(() => _isSharing = true);
+    ui.Image? image;
+    File? file;
+    try {
+      image = await BrandPaintingQr.posterImage(
+        data: payload,
+        title: widget.jobTitle,
+        caption: l10n.attendanceShareQrCaption,
+      );
+      final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+      if (bytes == null) {
+        throw StateError('Could not encode attendance QR');
+      }
+      final png = bytes.buffer.asUint8List();
+      // Instructions only. The token stays inside the image, not the message.
+      final message = l10n.attendanceShareQrMessage(widget.jobTitle);
+
+      if (kIsWeb) {
+        await SharePlus.instance.share(
+          ShareParams(
+            files: [
+              XFile.fromData(
+                png,
+                mimeType: 'image/png',
+                name: 'hupworks-attendance-qr.png',
+              ),
+            ],
+            text: message,
+            subject: l10n.attendanceShareQrSubject,
+            sharePositionOrigin: origin,
+          ),
+        );
+      } else {
+        file = File(
+          '${Directory.systemTemp.path}/hupworks-attendance-qr-${DateTime.now().millisecondsSinceEpoch}.png',
+        );
+        await file.writeAsBytes(png, flush: true);
+        await SharePlus.instance.share(
+          ShareParams(
+            files: [
+              XFile(
+                file.path,
+                mimeType: 'image/png',
+                name: 'hupworks-attendance-qr.png',
+              ),
+            ],
+            text: message,
+            subject: l10n.attendanceShareQrSubject,
+            sharePositionOrigin: origin,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+        );
+      }
+    } finally {
+      image?.dispose();
+      if (mounted) setState(() => _isSharing = false);
+    }
   }
 
   @override
@@ -166,7 +235,7 @@ class _AttendanceQrDisplayScreenState extends State<AttendanceQrDisplayScreen> {
                       buttonDecoration:
                           kButtonDecoration.copyWith(color: kPrimaryColor),
                       buttonTextColor: kWhite,
-                      onPressed: _qrPayload == null ? () {} : _share,
+                      onPressed: _qrPayload == null || _isSharing ? null : _share,
                     ),
                     const SizedBox(height: 12),
                     ButtonGlobalWithoutIcon(

@@ -30,6 +30,13 @@ create table public.profiles (
   bio text,
   rating numeric(2,1) default 0,
   balance numeric(12,2) default 0,
+  chat_contact_policy text not null default 'anyone'
+    check (chat_contact_policy in ('anyone', 'verified', 'connections', 'nobody')),
+  charity_cause text
+    check (
+      charity_cause is null
+      or charity_cause in ('food', 'education', 'health', 'shelter')
+    ),
   created_at timestamptz default now()
 );
 
@@ -983,3 +990,10 @@ insert into public.categories (name, icon, description, name_i18n, description_i
     '{"en":"Sailing","nl":"Zeilen","bn":"নৌকা চালনা"}'::jsonb,
     '{"en":"Deckhands, marina helpers, boat maintenance, sailing support","nl":"Matrozen, jachthavenhelpers, bootonderhoud, zeilondersteuning","bn":"ডেকহ্যান্ড, মেরিনা সহায়ক, নৌকা রক্ষণাবেক্ষণ, পালতোলা সহায়তা"}'::jsonb
   );
+
+-- ============================================
+-- PLATFORM CONTRIBUTION (see migrations/0049_platform_contribution.sql)
+-- ============================================
+-- my_platform_contribution() returns the signed-in user's share of
+-- completed shifts, accepted hours, and agreed amounts. Apply 0049
+-- after hour_reports exists. It does not issue equity or a payout.

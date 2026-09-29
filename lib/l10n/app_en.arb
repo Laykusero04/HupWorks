@@ -1574,5 +1574,6 @@
   "charityCauseHealth": "Health",
   "charityCauseHealthHint": "Care and health support.",
   "charityCauseShelter": "Shelter",
-  "charityCauseShelterHint": "Housing and a safe place to stay."
+  "charityCauseShelterHint": "Housing and a safe place to stay.",
+  "accountBlocked": "This account has been blocked. Contact support if you think this is a mistake."
 }

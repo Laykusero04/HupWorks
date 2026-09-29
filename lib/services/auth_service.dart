@@ -57,6 +57,12 @@ class AuthService {
     );
   }
 
+  /// True when Supabase refused sign-in because an admin banned the account.
+  static bool isAccountBlockedError(Object error) {
+    final text = error.toString().toLowerCase();
+    return text.contains('banned') || text.contains('user is not allowed');
+  }
+
   /// Sign in with email and password
   static Future<AuthResponse> signIn({
     required String email,

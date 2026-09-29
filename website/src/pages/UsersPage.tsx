@@ -5,7 +5,7 @@ import { PageHeader } from '../components/PageHeader'
 import { PageSection } from '../components/PageSection'
 import { QueueToolbar } from '../components/QueueToolbar'
 import { StatusAlert } from '../components/StatusAlert'
-import { deleteUser, fetchUsers, statusLabel, type AdminUserRow } from '../lib/adminApi'
+import { deleteUser, fetchUsers, setUserBlocked, statusLabel, type AdminUserRow } from '../lib/adminApi'
 
 type RoleFilter = 'all' | 'client' | 'seller' | 'incomplete'
 
@@ -16,6 +16,12 @@ function formatWhen(value: string | null | undefined) {
   } catch {
     return value
   }
+}
+
+function isAccountBlocked(until: string | null | undefined) {
+  if (!until) return false
+  const time = new Date(until).getTime()
+  return Number.isFinite(time) && time > Date.now()
 }
 
 function statusVariant(status: string | null | undefined) {
@@ -33,6 +39,7 @@ export function UsersPage() {
   const [role, setRole] = useState<RoleFilter>('all')
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [blockingId, setBlockingId] = useState<string | null>(null)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -61,6 +68,26 @@ export function UsersPage() {
       sellers: rows.filter((r) => r.role === 'seller').length,
     }
   }, [rows])
+
+  async function handleBlock(row: AdminUserRow, blocked: boolean) {
+    const label = row.name || row.email || row.id
+    const ok = window.confirm(
+      blocked
+        ? `Block ${label}?\n\nThey will not be able to sign in. Open jobs and contracts stay as they are. You can unblock them later.`
+        : `Unblock ${label}?\n\nThey will be able to sign in again.`,
+    )
+    if (!ok) return
+    setBlockingId(row.id)
+    setError(null)
+    try {
+      await setUserBlocked(row.id, blocked)
+      await load()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err))
+    } finally {
+      setBlockingId(null)
+    }
+  }
 
   async function handleDelete(row: AdminUserRow) {
     const label = row.name || row.email || row.id
@@ -129,6 +156,8 @@ export function UsersPage() {
               const roleLabel =
                 row.role === 'seller' ? 'Seller' : row.role === 'client' ? 'Client' : row.role
               const deleting = deletingId === row.id
+              const blocking = blockingId === row.id
+              const blocked = isAccountBlocked(row.auth?.banned_until)
               return (
                 <PageSection key={row.id} bodyClassName="py-3">
                   <button
@@ -159,6 +188,7 @@ export function UsersPage() {
                               Onboarding {row.seller_onboarding_completed ? 'done' : 'incomplete'}
                             </Badge>
                           )}
+                          {blocked && <Badge bg="danger">Blocked</Badge>}
                         </div>
                       </div>
                       <span className="small text-secondary flex-shrink-0">{open ? 'Hide' : 'Details'}</span>
@@ -228,11 +258,19 @@ export function UsersPage() {
                             </a>
                           </div>
                         )}
-                        <div className="col-12">
+                        <div className="col-12 d-flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            className={`btn btn-sm ${blocked ? 'btn-outline-secondary' : 'btn-outline-warning'}`}
+                            disabled={blocking || deleting}
+                            onClick={() => void handleBlock(row, !blocked)}
+                          >
+                            {blocking ? 'Saving…' : blocked ? 'Unblock account' : 'Block account'}
+                          </button>
                           <button
                             type="button"
                             className="btn btn-outline-danger btn-sm"
-                            disabled={deleting}
+                            disabled={deleting || blocking}
                             onClick={() => void handleDelete(row)}
                           >
                             {deleting ? 'Deleting…' : 'Delete account'}

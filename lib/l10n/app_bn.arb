@@ -1684,5 +1684,6 @@
   "charityCauseHealth": "স্বাস্থ্য",
   "charityCauseHealthHint": "চিকিৎসা ও স্বাস্থ্য সহায়তা।",
   "charityCauseShelter": "আশ্রয়",
-  "charityCauseShelterHint": "বাসস্থান ও নিরাপদ থাকার জায়গা।"
+  "charityCauseShelterHint": "বাসস্থান ও নিরাপদ থাকার জায়গা।",
+  "accountBlocked": "এই অ্যাকাউন্ট ব্লক করা হয়েছে। ভুল মনে হলে সাপোর্টে যোগাযোগ করুন।"
 }

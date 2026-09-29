@@ -77,8 +77,11 @@ class _UnifiedLogInState extends State<UnifiedLogIn> {
       }
     } catch (e) {
       if (mounted) {
+        final message = AuthService.isAccountBlockedError(e)
+            ? l10n.accountBlocked
+            : l10n.errorWithDetail(e.toString());
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.errorWithDetail(e.toString()))),
+          SnackBar(content: Text(message)),
         );
       }
     } finally {

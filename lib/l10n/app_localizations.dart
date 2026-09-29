@@ -6862,6 +6862,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Housing and a safe place to stay.'**
   String get charityCauseShelterHint;
+
+  /// No description provided for @accountBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'This account has been blocked. Contact support if you think this is a mistake.'**
+  String get accountBlocked;
 }
 
 class _AppLocalizationsDelegate

@@ -3786,4 +3786,8 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get charityCauseShelterHint => 'Huisvesting en een veilige plek.';
+
+  @override
+  String get accountBlocked =>
+      'Dit account is geblokkeerd. Neem contact op met support als je denkt dat dit een vergissing is.';
 }

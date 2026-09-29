@@ -3756,4 +3756,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get charityCauseShelterHint => 'Housing and a safe place to stay.';
+
+  @override
+  String get accountBlocked =>
+      'This account has been blocked. Contact support if you think this is a mistake.';
 }

@@ -241,6 +241,16 @@ export async function deleteUser(userId: string) {
   )
 }
 
+export async function setUserBlocked(userId: string, blocked: boolean) {
+  return postJson<{
+    ok: boolean
+    userId?: string
+    blocked?: boolean
+    banned_until?: string | null
+    error?: string
+  }>('/api/admin/users-block', { userId, blocked })
+}
+
 export async function updateCategory(input: {
   id: string
   nameI18n: Record<string, string>

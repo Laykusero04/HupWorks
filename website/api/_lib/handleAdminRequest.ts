@@ -857,6 +857,34 @@ export async function handleAdminRequest(req: AdminRequest): Promise<AdminRespon
       return { status: 200, body: { ok: true, deletedUserId: userId } }
     }
 
+    if (
+      (path === '/api/admin/users-block' || path === '/api/admin/users/block') &&
+      method === 'POST'
+    ) {
+      const body = (req.body ?? {}) as { userId?: string; blocked?: boolean }
+      const userId = (body.userId ?? '').trim()
+      const blocked = body.blocked === true
+      if (!userId) {
+        return { status: 400, body: { ok: false, error: 'userId is required' } }
+      }
+
+      // ~100 years matches the Supabase dashboard "ban" action. 'none' lifts it.
+      const { data, error } = await sb.auth.admin.updateUserById(userId, {
+        ban_duration: blocked ? '876000h' : 'none',
+      })
+      if (error) throw error
+
+      return {
+        status: 200,
+        body: {
+          ok: true,
+          userId,
+          blocked,
+          banned_until: data.user?.banned_until ?? null,
+        },
+      }
+    }
+
     return { status: 404, body: { ok: false, error: 'Not found' } }
   } catch (err) {
     return { status: 500, body: { ok: false, error: errorMessage(err) } }

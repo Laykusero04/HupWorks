@@ -3762,4 +3762,8 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get charityCauseShelterHint => 'বাসস্থান ও নিরাপদ থাকার জায়গা।';
+
+  @override
+  String get accountBlocked =>
+      'এই অ্যাকাউন্ট ব্লক করা হয়েছে। ভুল মনে হলে সাপোর্টে যোগাযোগ করুন।';
 }

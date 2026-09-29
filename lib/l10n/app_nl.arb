@@ -1351,5 +1351,6 @@
   "charityCauseHealth": "Gezondheid",
   "charityCauseHealthHint": "Zorg en gezondheidsondersteuning.",
   "charityCauseShelter": "Opvang",
-  "charityCauseShelterHint": "Huisvesting en een veilige plek."
+  "charityCauseShelterHint": "Huisvesting en een veilige plek.",
+  "accountBlocked": "Dit account is geblokkeerd. Neem contact op met support als je denkt dat dit een vergissing is."
 }

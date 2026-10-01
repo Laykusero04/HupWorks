@@ -13,6 +13,7 @@ import 'package:freelancer/services/verification_service.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../widgets/constant.dart';
+import '../../widgets/profile_photo_viewer.dart';
 import '../../widgets/editable_profile_avatar.dart';
 import '../../widgets/profile_detail_theme.dart';
 import '../../widgets/profile_rating_summary.dart';
@@ -170,88 +171,85 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Identity header: avatar + name stack + standing
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Center(
+                child: EditableProfileAvatar(
+                  imageUrl: ProfileImage.normalize(
+                    profileImageUrl is String ? profileImageUrl : null,
+                  ),
+                  size: 148,
+                  accent: brand,
+                  uploading: _uploadingPhoto,
+                  onTap: _changePhoto,
+                  onView: () => showProfilePhoto(
+                    context,
+                    imageUrl: profileImageUrl is String ? profileImageUrl : null,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 14),
+              Text(
+                name,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: kTextStyle.copyWith(
+                  color: kNeutralColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 22,
+                ),
+              ),
+              if (jobTitle != null && jobTitle.isNotEmpty) ...[
+                const SizedBox(height: 4),
+                Text(
+                  jobTitle,
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 14),
+                ),
+              ],
+              if (address != null && address.isNotEmpty) ...[
+                const SizedBox(height: 6),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.location_on_outlined, size: 14, color: kSellerAccent),
+                    const SizedBox(width: 3),
+                    Flexible(
+                      child: Text(
+                        address,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: kTextStyle.copyWith(
+                          color: kLightNeutralColor,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+              const SizedBox(height: 10),
+              Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 8,
+                runSpacing: 6,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
-                  EditableProfileAvatar(
-                    imageUrl: ProfileImage.normalize(
-                      profileImageUrl is String ? profileImageUrl : null,
-                    ),
-                    size: 72,
-                    accent: brand,
-                    uploading: _uploadingPhoto,
-                    onTap: _changePhoto,
+                  VerificationStatusBadge(
+                    status: verificationStatus,
+                    score: verificationScore,
+                    onTap: openVerification,
+                    compact: true,
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          name,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: kTextStyle.copyWith(
-                            color: kNeutralColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                        if (jobTitle != null && jobTitle.isNotEmpty) ...[
-                          const SizedBox(height: 2),
-                          Text(
-                            jobTitle,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13),
-                          ),
-                        ],
-                        if (address != null && address.isNotEmpty) ...[
-                          const SizedBox(height: 4),
-                          Row(
-                            children: [
-                              const Icon(Icons.location_on_outlined, size: 13, color: kSellerAccent),
-                              const SizedBox(width: 3),
-                              Flexible(
-                                child: Text(
-                                  address,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: kTextStyle.copyWith(
-                                    color: kLightNeutralColor,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                        const SizedBox(height: 8),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 6,
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          children: [
-                            VerificationStatusBadge(
-                              status: verificationStatus,
-                              score: verificationScore,
-                              onTap: openVerification,
-                              compact: true,
-                            ),
-                            if (reviewCount > 0)
-                              ProfileRatingSummary(
-                                rating: rating,
-                                reviewCount: reviewCount,
-                                compact: true,
-                                accentColor: brand,
-                              ),
-                          ],
-                        ),
-                      ],
+                  if (reviewCount > 0)
+                    ProfileRatingSummary(
+                      rating: rating,
+                      reviewCount: reviewCount,
+                      compact: true,
+                      accentColor: brand,
                     ),
-                  ),
-                  const SizedBox(width: 8),
                   SellerStandingBadge(
                     rating: rating,
                     reviewCount: reviewCount,

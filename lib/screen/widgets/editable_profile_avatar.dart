@@ -10,6 +10,7 @@ class EditableProfileAvatar extends StatelessWidget {
     this.size = 110,
     this.accent = kPrimaryColor,
     this.onTap,
+    this.onView,
     this.uploading = false,
     this.showCameraBadge = true,
   });
@@ -17,22 +18,28 @@ class EditableProfileAvatar extends StatelessWidget {
   final String? imageUrl;
   final double size;
   final Color accent;
+
+  /// Camera badge (or the whole photo when [onView] is null).
   final VoidCallback? onTap;
+
+  /// Tap the photo itself, for example to open it large.
+  final VoidCallback? onView;
   final bool uploading;
   final bool showCameraBadge;
 
   @override
   Widget build(BuildContext context) {
     final badgeSize = size * 0.28;
-    return GestureDetector(
-      onTap: uploading ? null : onTap,
-      child: SizedBox(
-        width: size,
-        height: size,
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Container(
+    final photoTap = uploading ? null : (onView ?? onTap);
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          GestureDetector(
+            onTap: photoTap,
+            child: Container(
               width: size,
               height: size,
               decoration: BoxDecoration(
@@ -44,6 +51,7 @@ class EditableProfileAvatar extends StatelessWidget {
                 ),
               ),
             ),
+          ),
             if (uploading)
               Container(
                 width: size,
@@ -66,23 +74,25 @@ class EditableProfileAvatar extends StatelessWidget {
               Positioned(
                 right: 0,
                 bottom: 0,
-                child: Container(
-                  width: badgeSize,
-                  height: badgeSize,
-                  decoration: BoxDecoration(
-                    color: accent,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: kWhite, width: 2),
-                  ),
-                  child: Icon(
-                    Icons.camera_alt,
-                    size: badgeSize * 0.5,
-                    color: kWhite,
+                child: GestureDetector(
+                  onTap: uploading ? null : onTap,
+                  child: Container(
+                    width: badgeSize,
+                    height: badgeSize,
+                    decoration: BoxDecoration(
+                      color: accent,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: kWhite, width: 2),
+                    ),
+                    child: Icon(
+                      Icons.camera_alt,
+                      size: badgeSize * 0.5,
+                      color: kWhite,
+                    ),
                   ),
                 ),
               ),
-          ],
-        ),
+        ],
       ),
     );
   }

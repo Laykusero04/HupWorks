@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/app_logger.dart';
+import 'package:freelancer/core/utils/attendance_location.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/services/attendance_service.dart';
 import 'package:freelancer/services/job_posts_service.dart';
@@ -89,7 +90,7 @@ class _AttendanceScanScreenState extends State<AttendanceScanScreen> {
       if (mounted) {
         setState(() => _isProcessing = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+          SnackBar(content: Text(attendanceRpcMessage(context.l10n, e))),
         );
         await _controller.start();
       }

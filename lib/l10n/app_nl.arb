@@ -1,4 +1,4 @@
-﻿{
+{
   "@@locale": "nl",
   "appTitle": "HupWorks",
   "language": "Taal",
@@ -100,13 +100,17 @@
   "reportReportingUser": "Rapportage van: {name}",
   "@reportReportingUser": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "reportReportingJob": "Job: {title}",
   "@reportReportingJob": {
     "placeholders": {
-      "title": { "type": "String" }
+      "title": {
+        "type": "String"
+      }
     }
   },
   "reportReportingContract": "Gekoppeld aan dit overeenkomst",
@@ -122,14 +126,14 @@
   "attendanceModeDisabled": "Aanwezigheid uit",
   "attendanceClientHintQrInOut": "Plaats een QR op locatie voor alle ingehuurde werknemers. Iedereen klokt een keer in en uit per dienst (op locatie).",
   "attendanceClientHintQrOnce": "Plaats een QR op locatie voor alle ingehuurde werknemers. Iedereen scant een keer per dienst om in te checken (op locatie).",
-  "attendanceClientHintSelfReport": "Werknemers klokken in en uit in de app — geen QR nodig.",
+  "attendanceClientHintSelfReport": "Werknemers klokken in en uit in de app â€” geen QR nodig.",
   "attendanceClientHintDisabled": "Aanwezigheidsregistratie staat uit voor deze job.",
-  "attendanceFreelancerHintQrInOut": "Scan de QR op locatie om een keer in en uit te klokken per dienst.",
-  "attendanceFreelancerHintQrOnce": "Scan de QR een keer per dienst bij aankomst.",
+  "attendanceFreelancerHintQrInOut": "Scan de QR op locatie om in en uit te klokken. Je moet op de werklocatie zijn.",
+  "attendanceFreelancerHintQrOnce": "Scan de QR een keer bij aankomst. Je moet op de werklocatie zijn.",
   "attendanceFreelancerHintSelfReport": "Tik op inklokken bij start en uitklokken bij vertrek.",
   "attendanceFreelancerHintDisabled": "Je werkgever heeft aanwezigheid niet ingeschakeld voor deze job.",
-  "attendanceOnboardingQrInOut": "Open Aanwezigheid in HupWorks en scan de QR-code op de werklocatie om in te klokken bij aankomst en uit te klokken bij vertrek.",
-  "attendanceOnboardingQrOnce": "Bij aankomst open je Aanwezigheid in HupWorks en scan je de QR-code op locatie. Je hoeft maar een keer per dienst in te checken.",
+  "attendanceOnboardingQrInOut": "Open Aanwezigheid in HupWorks en scan de QR-code op de werklocatie om in te klokken bij aankomst en uit te klokken bij vertrek. De app controleert of je binnen 200 meter van de locatiepin bent.",
+  "attendanceOnboardingQrOnce": "Bij aankomst open je Aanwezigheid in HupWorks en scan je de QR-code op locatie. Je hoeft maar een keer per dag in te checken. De app controleert of je binnen 200 meter van de locatiepin bent.",
   "attendanceOnboardingSelfReport": "Open Aanwezigheid in HupWorks op dit overeenkomst en tik op Inklokken bij start en Uitklokken bij vertrek. Geen QR-scan nodig.",
   "attendanceOnboardingDisabled": "Aanwezigheid wordt niet bijgehouden in de app voor deze job. Volg de instructies van je supervisor op locatie.",
   "attendanceTracking": "Aanwezigheidsregistratie",
@@ -178,7 +182,9 @@
   "platformRulesStepLabel": "Stap {step}",
   "@platformRulesStepLabel": {
     "placeholders": {
-      "step": { "type": "int" }
+      "step": {
+        "type": "int"
+      }
     }
   },
   "authWelcomeHowToUse": "Hoe wil je HupWorks gebruiken?",
@@ -424,7 +430,9 @@
   "ratingAtLeast": "{rating}+",
   "@ratingAtLeast": {
     "placeholders": {
-      "rating": { "type": "String" }
+      "rating": {
+        "type": "String"
+      }
     }
   },
   "noApplicationsYet": "Nog geen aanmeldingen",
@@ -507,7 +515,13 @@
   "chatSendFailed": "Bericht kon niet worden verzonden",
   "failedTapToRetry": "Mislukt â€” tik om opnieuw te proberen",
   "couldNotOpenChatWithDetail": "Kon chat niet openen: {message}",
-  "@couldNotOpenChatWithDetail": { "placeholders": { "message": { "type": "String" } } },
+  "@couldNotOpenChatWithDetail": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
   "chooseFromGallery": "Kies uit galerij",
   "filterClear": "Wis",
   "filterApply": "Toepassen",
@@ -518,7 +532,13 @@
   "maxSize1Gb": "Max. grootte 1 GB",
   "addCustomSkill": "Vaardigheid toevoegen",
   "skillAlreadyAdded": "U heeft \"{skill}\" al toegevoegd",
-  "@skillAlreadyAdded": { "placeholders": { "skill": { "type": "String" } } },
+  "@skillAlreadyAdded": {
+    "placeholders": {
+      "skill": {
+        "type": "String"
+      }
+    }
+  },
   "noWithdrawalHistory": "Geen opnamegeschiedenis",
   "paymentPayPal": "PayPal",
   "paymentCreditCard": "Creditcard",
@@ -536,7 +556,9 @@
   "threadContextRelatedCount": "{count} gerelateerde items",
   "@threadContextRelatedCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "threadContextLoading": "Gerelateerd werk laden…",
@@ -553,7 +575,13 @@
   "requiredFieldMark": "*",
   "writeReviewAction": "Beoordeling schrijven",
   "deliveryDaysCount": "{count} Dagen",
-  "@deliveryDaysCount": { "placeholders": { "count": { "type": "int" } } },
+  "@deliveryDaysCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "chatAttachment": "Bijlage",
   "calendarYesterday": "Gisteren",
   "noConversationsYet": "Nog geen gesprekken",
@@ -654,7 +682,9 @@
   "rejectApplicationConfirmBody": "Aanmelding van {name} afwijzen? Dit kan niet ongedaan worden gemaakt.",
   "@rejectApplicationConfirmBody": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "closeJobTitle": "Deze job sluiten?",
@@ -694,7 +724,9 @@
   "maxJobSkillsSnackbar": "Je kunt maximaal {max} vaardigheden toevoegen.",
   "@maxJobSkillsSnackbar": {
     "placeholders": {
-      "max": { "type": "int" }
+      "max": {
+        "type": "int"
+      }
     }
   },
   "shiftTimesBothOrNeither": "Stel zowel start- als eindtijd in, of laat beide leeg.",
@@ -705,7 +737,9 @@
   "savedAsCategory": "Opgeslagen als: {name}",
   "@savedAsCategory": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "jobSkillsTagHint": "Tag vaardigheden die freelancers nodig hebben (optioneel).",
@@ -730,27 +764,49 @@
   "hireConfirmUnlimited": "Aanbod van {name} ({price}) accepteren? De job blijft open zodat je meer freelancers kunt inhuren tot je hem sluit.",
   "@hireConfirmUnlimited": {
     "placeholders": {
-      "name": { "type": "String" },
-      "price": { "type": "String" }
+      "name": {
+        "type": "String"
+      },
+      "price": {
+        "type": "String"
+      }
     }
   },
   "hireConfirmFillsAll": "Aanbod van {name} ({price}) accepteren? Dit vult je laatste plek ({filled} van {cap}). De job sluit voor nieuwe aanmelders. Andere aanmeldingen blijven open — wijs ze alleen af als je ze niet wilt.",
   "@hireConfirmFillsAll": {
     "placeholders": {
-      "name": { "type": "String" },
-      "price": { "type": "String" },
-      "filled": { "type": "int" },
-      "cap": { "type": "int" }
+      "name": {
+        "type": "String"
+      },
+      "price": {
+        "type": "String"
+      },
+      "filled": {
+        "type": "int"
+      },
+      "cap": {
+        "type": "int"
+      }
     }
   },
   "hireConfirmRemaining": "Aanbod van {name} ({price}) accepteren? Na deze hire heb je nog {remaining} open plekken ({filled} van {cap} gevuld). Andere openstaande aanmeldingen blijven open.",
   "@hireConfirmRemaining": {
     "placeholders": {
-      "name": { "type": "String" },
-      "price": { "type": "String" },
-      "remaining": { "type": "int" },
-      "filled": { "type": "int" },
-      "cap": { "type": "int" }
+      "name": {
+        "type": "String"
+      },
+      "price": {
+        "type": "String"
+      },
+      "remaining": {
+        "type": "int"
+      },
+      "filled": {
+        "type": "int"
+      },
+      "cap": {
+        "type": "int"
+      }
     }
   },
   "hiredJobFull": "Ingehuurd! Deze job is vol en gesloten voor nieuwe aanmelders.",
@@ -762,14 +818,16 @@
   "applicationsCount": "Aanmeldingen ({count})",
   "@applicationsCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "messageFreelancerTooltip": "Bericht freelancer",
   "attendanceQrShort": "QR",
-  "attendanceLocationRequired": "Locatie vereist",
+  "attendanceLocationRequired": "Zet locatie aan zodat we kunnen controleren dat je op de werklocatie bent.",
   "attendanceJobSiteNotSet": "Werklocatie niet ingesteld",
-  "attendanceTooFarFromSite": "Te ver van de werklocatie",
+  "attendanceTooFarFromSite": "Je moet op de werklocatie zijn om aanwezigheid te registreren. Ga dichterbij en probeer opnieuw.",
   "attendanceOutsideShiftWindow": "Buiten het dienstrooster",
   "attendanceShiftAlreadyComplete": "Aanwezigheid voor deze dienst al afgerond",
   "attendanceShiftAlreadyCompleteMessage": "Je hebt voor deze dienst al in- en uitgeklokt.",
@@ -791,9 +849,15 @@
   "stepProgressWithLabel": "Stap {current} van {total} · {label}",
   "@stepProgressWithLabel": {
     "placeholders": {
-      "current": { "type": "int" },
-      "total": { "type": "int" },
-      "label": { "type": "String" }
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "label": {
+        "type": "String"
+      }
     }
   },
   "totalJobPostCount": "Totaal jobs ({count})",
@@ -829,20 +893,28 @@
   "offerMessageMinHint": "Als je een bericht toevoegt, gebruik dan minstens {count} tekens",
   "@offerMessageMinHint": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "offerMessageMinChars": "Schrijf minstens {count} tekens in je bericht",
   "@offerMessageMinChars": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "offerMessageCharCount": "{current} / {min} tekens minimum",
   "@offerMessageCharCount": {
     "placeholders": {
-      "current": { "type": "int" },
-      "min": { "type": "int" }
+      "current": {
+        "type": "int"
+      },
+      "min": {
+        "type": "int"
+      }
     }
   },
   "findJobsTitle": "Jobs zoeken",
@@ -1088,13 +1160,17 @@
   "jobAlertWithinKm": "Binnen {km} km",
   "@jobAlertWithinKm": {
     "placeholders": {
-      "km": { "type": "int" }
+      "km": {
+        "type": "int"
+      }
     }
   },
   "jobAlertCategoriesCount": "{count} categorieën",
   "@jobAlertCategoriesCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "jobAlertNameLabel": "Naam melding (optioneel)",
@@ -1124,16 +1200,21 @@
   "workTrustCompletedMonthLabel": "{month} {year}",
   "@workTrustCompletedMonthLabel": {
     "placeholders": {
-      "month": { "type": "String" },
-      "year": { "type": "int" }
+      "month": {
+        "type": "String"
+      },
+      "year": {
+        "type": "int"
+      }
     }
   },
-
   "tapSetBirthDateRequired": "Tik om je geboortedatum in te stellen (verplicht)",
   "ageBirthDateStaysPrivate": "Leeftijd {age} (geboortedatum blijft privé)",
   "@ageBirthDateStaysPrivate": {
     "placeholders": {
-      "age": { "type": "int" }
+      "age": {
+        "type": "int"
+      }
     }
   },
   "pleaseSetDateOfBirth": "Stel je geboortedatum in",
@@ -1177,7 +1258,9 @@
   "trustScoreSubtitle": "{score}/100 betrouwbaarheidsscore",
   "@trustScoreSubtitle": {
     "placeholders": {
-      "score": { "type": "int" }
+      "score": {
+        "type": "int"
+      }
     }
   },
   "fullyVerified": "Volledig geverifieerd",
@@ -1205,7 +1288,9 @@
   "jobsCount": "{count, plural, =1{1 job} other{{count} jobs}}",
   "@jobsCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "noOpenJobsRightNow": "Nu geen open jobs",
@@ -1233,7 +1318,9 @@
   "notificationOpenFailed": "Openen mislukt: {detail}",
   "@notificationOpenFailed": {
     "placeholders": {
-      "detail": { "type": "String" }
+      "detail": {
+        "type": "String"
+      }
     }
   },
   "notificationContractUnavailable": "Overeenkomst is niet meer beschikbaar.",
@@ -1268,7 +1355,9 @@
   "employerStandingHint": "{count, plural, =0{Nog geen voltooide betaalde hires} =1{1 voltooide betaalde hire} other{{count} voltooide betaalde hires}}",
   "@employerStandingHint": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "verifiedEmployer": "Geverifieerde werkgever",
@@ -1284,7 +1373,9 @@
   "supportEmailSubtitle": "Mail ons op {email}",
   "@supportEmailSubtitle": {
     "placeholders": {
-      "email": { "type": "String" }
+      "email": {
+        "type": "String"
+      }
     }
   },
   "supportEmailCopied": "Support-e-mail gekopieerd naar klembord",
@@ -1329,5 +1420,65 @@
   "faqGetPaidQ": "Hoe krijg ik betaald?",
   "faqGetPaidA": "HupWorks houdt of verplaatst geen geld. Na afronding van het werk ontvang je betaling rechtstreeks van de werkgever (contant, bankoverschrijving of lokale e-wallet) volgens het afgesproken bedrag.",
   "faqAttendanceQ": "Hoe werkt aanwezigheid / inchecken?",
-  "faqAttendanceA": "Profielmenu → Aanwezigheid. Op locatie scan je de QR van de werkgever (gedeeld door alle ingehuurde werknemers). Iedereen mag een keer in- en uitklokken per dienst. Je moet binnen 200 m van de job-pin zijn. De QR-poster is alleen een afbeelding zodat de deep link niet te kopiëren is."
+  "faqAttendanceA": "Profielmenu → Aanwezigheid. Op locatie scan je de QR van de werkgever (gedeeld door alle ingehuurde werknemers). Iedereen mag een keer in- en uitklokken per dienst. Je moet binnen 200 m van de job-pin zijn. De QR-poster is alleen een afbeelding zodat de deep link niet te kopiëren is.",
+  "pleasePinJobSite": "Zet de werklocatie op de kaart. QR-aanwezigheid werkt alleen op die plek.",
+  "setSitePin": "Locatie vastzetten",
+  "attendancePinSiteToUseQr": "Zet eerst een pin op de kaart. Werknemers kunnen alleen inklokken binnen 200 meter van die pin.",
+  "attendanceLocationCheckHint": "HupWorks controleert of je op de werklocatie bent voordat dit wordt opgeslagen.",
+  "attendanceLocationDenied": "Locatietoestemming is nodig om in te klokken op de werklocatie.",
+  "attendanceLocationDeniedForever": "Locatietoestemming is geblokkeerd. Zet die aan in Instellingen om in te klokken.",
+  "attendanceLocationServicesOff": "Zet locatievoorzieningen aan om in te klokken op de werklocatie.",
+  "attendanceNoSitePin": "Deze job heeft nog geen locatiepin. Vraag de werkgever om de locatie op de kaart te zetten.",
+  "attendanceShareQrSubject": "HupWorks aanwezigheids-QR",
+  "attendanceShareQrCaption": "Scan in HupWorks op de werklocatie",
+  "attendanceShareQrMessage": "Print deze QR en hang hem op bij \"{job}\". Ingehuurde werknemers scannen hem in HupWorks terwijl ze op locatie zijn.",
+  "@attendanceShareQrMessage": {
+    "placeholders": {
+      "job": {
+        "type": "String"
+      }
+    }
+  },
+  "chatPrivacyTitle": "Wie kan je berichten",
+  "chatPrivacySubtitle": "Kies welke profielen een nieuw gesprek mogen starten. Dit helpt spam en ongewenste berichten te voorkomen.",
+  "chatPrivacyAnyone": "Iedereen",
+  "chatPrivacyAnyoneHint": "Elk profiel kan een nieuw gesprek met je starten.",
+  "chatPrivacyVerified": "Alleen geverifieerde profielen",
+  "chatPrivacyVerifiedHint": "Alleen mensen die hun identiteit hebben geverifieerd kunnen een nieuw gesprek starten.",
+  "chatPrivacyConnections": "Mensen met wie ik heb gewerkt",
+  "chatPrivacyConnectionsHint": "Alleen profielen waarmee je al een sollicitatie of contract deelt.",
+  "chatPrivacyNobody": "Geen nieuwe berichten",
+  "chatPrivacyNobodyHint": "Niemand nieuw kan een gesprek starten. Bestaande gesprekken en open contracten blijven open.",
+  "chatPrivacySaved": "Berichtvoorkeur opgeslagen",
+  "chatPrivacyDeniedNobody": "Deze persoon ontvangt geen nieuwe berichten.",
+  "chatPrivacyDeniedVerified": "Deze persoon ontvangt alleen berichten van geverifieerde profielen.",
+  "chatPrivacyDeniedConnections": "Deze persoon ontvangt alleen berichten van mensen met wie die al werkt.",
+  "platformShareTitle": "Jouw aandeel",
+  "platformShareMenuSubtitle": "Zie het werk dat via jou loopt",
+  "platformShareHeadline": "Zie jouw aandeel in het werk dat het platform draait.",
+  "platformShareSellerNote": "Geteld op diensten die jij hebt afgerond.",
+  "platformShareClientNote": "Geteld op diensten die jij hebt ingehuurd en als afgerond hebt gemarkeerd.",
+  "platformShareOfCompletedWork": "van afgerond werk",
+  "platformShareShifts": "Afgeronde diensten",
+  "platformShareHours": "Geaccepteerde uren",
+  "platformShareValue": "Afgerond werk",
+  "platformShareCountOf": "{yours} van {total}",
+  "platformShareEmpty": "Rond een dienst af om jouw aandeel in het platform te zien.",
+  "platformShareDisclaimer": "Dit is jouw aandeel in afgeronde diensten. Het is geen eigendom van het bedrijf en geen uitbetaling.",
+  "charityCauseTitle": "Steun een doel",
+  "charityCauseHeadline": "Kies een doel dat bij jouw aandeel hoort.",
+  "charityCauseBody": "Dit verandert je percentage niet. HupWorks stuurt geen geld van je diensten. Je keuze wordt bewaard voor een latere gift van het platform.",
+  "charityCauseShareLabel": "Doel dat je steunt",
+  "charityCauseShareEmpty": "Kies een doel",
+  "charityCauseNone": "Geen doel",
+  "charityCauseNoneHint": "Je aandeel blijft alleen een overzicht van afgerond werk.",
+  "charityCauseFood": "Voedsel",
+  "charityCauseFoodHint": "Maaltijden en voedselhulp.",
+  "charityCauseEducation": "Onderwijs",
+  "charityCauseEducationHint": "Leren en schoolondersteuning.",
+  "charityCauseHealth": "Gezondheid",
+  "charityCauseHealthHint": "Zorg en gezondheidsondersteuning.",
+  "charityCauseShelter": "Opvang",
+  "charityCauseShelterHint": "Huisvesting en een veilige plek.",
+  "accountBlocked": "Dit account is geblokkeerd. Neem contact op met support als je denkt dat dit een vergissing is."
 }

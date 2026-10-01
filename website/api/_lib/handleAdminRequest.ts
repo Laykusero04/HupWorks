@@ -858,44 +858,29 @@ export async function handleAdminRequest(req: AdminRequest): Promise<AdminRespon
     }
 
     if (
-      (path === '/api/admin/users-ban' || path === '/api/admin/users/ban') &&
+      (path === '/api/admin/users-block' || path === '/api/admin/users/block') &&
       method === 'POST'
     ) {
-      const body = (req.body ?? {}) as {
-        userId?: string
-        ban?: boolean
-        banDuration?: string
-      }
+      const body = (req.body ?? {}) as { userId?: string; blocked?: boolean }
       const userId = (body.userId ?? '').trim()
+      const blocked = body.blocked === true
       if (!userId) {
         return { status: 400, body: { ok: false, error: 'userId is required' } }
       }
 
-      // Go duration units only (ns|us|ms|s|m|h). "none" clears the ban.
-      // Default block ≈ 100 years (permanent soft-ban without deleting).
-      const ban =
-        body.ban === false ? false : body.ban === true ? true : body.banDuration !== 'none'
-      const ban_duration = ban
-        ? (typeof body.banDuration === 'string' && body.banDuration.trim() && body.banDuration !== 'none'
-            ? body.banDuration.trim()
-            : '876000h')
-        : 'none'
-
+      // ~100 years matches the Supabase dashboard "ban" action. 'none' lifts it.
       const { data, error } = await sb.auth.admin.updateUserById(userId, {
-        ban_duration,
+        ban_duration: blocked ? '876000h' : 'none',
       })
       if (error) throw error
-
-      const bannedUntil =
-        (data.user as { banned_until?: string | null } | null)?.banned_until ?? null
 
       return {
         status: 200,
         body: {
           ok: true,
           userId,
-          ban,
-          banned_until: bannedUntil,
+          blocked,
+          banned_until: data.user?.banned_until ?? null,
         },
       }
     }

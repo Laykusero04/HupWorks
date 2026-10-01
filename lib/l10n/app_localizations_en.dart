@@ -362,11 +362,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get attendanceClientHintQrInOut =>
-      'Post one QR at the site for all hired workers. Each worker clocks in once and out once per shift (must be on-site).';
+      'Post one QR at the pinned site for all hired workers. Each worker clocks in once and out once per shift within 200 meters of that pin.';
 
   @override
   String get attendanceClientHintQrOnce =>
-      'Post one QR at the site for all hired workers. Each worker scans once per shift to check in (must be on-site).';
+      'Post one QR at the pinned site for all hired workers. Each worker scans once per shift to check in within 200 meters of that pin.';
 
   @override
   String get attendanceClientHintSelfReport =>
@@ -378,11 +378,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get attendanceFreelancerHintQrInOut =>
-      'Scan the site QR to clock in and clock out once per shift.';
+      'Scan the site QR to clock in and clock out once per shift. You must be within 200 meters of the job site.';
 
   @override
   String get attendanceFreelancerHintQrOnce =>
-      'Scan the site QR once per shift when you arrive.';
+      'Scan the site QR once per shift when you arrive. You must be within 200 meters of the job site.';
 
   @override
   String get attendanceFreelancerHintSelfReport =>
@@ -394,11 +394,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get attendanceOnboardingQrInOut =>
-      'Open Attendance in HupWorks and scan the QR code at the job site to clock in when you arrive and clock out when you leave.';
+      'Open Attendance in HupWorks and scan the QR code at the job site to clock in when you arrive and clock out when you leave. The app checks that you are within 200 meters of the site pin.';
 
   @override
   String get attendanceOnboardingQrOnce =>
-      'When you arrive, open Attendance in HupWorks and scan the QR code posted on site. You only need to check in once per shift.';
+      'When you arrive, open Attendance in HupWorks and scan the QR code posted on site. You only need to check in once per shift. The app checks that you are within 200 meters of the site pin.';
 
   @override
   String get attendanceOnboardingSelfReport =>
@@ -1488,7 +1488,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get attendanceHowItWorksBody =>
-      '1. Print and tape this QR at the workplace (one code for all hired workers).\n2. Hired freelancers open HupWorks and scan it on site.\n3. Each worker confirms clock in or clock out on their phone — once per shift.\n4. You can view today\'s attendance on the job details screen.\n\nAnti-fraud: punches need GPS within 200 m of your map pin. Sharing sends a poster image only (no copyable deep link).';
+      '1. Pin the workplace on the map, then print and tape this QR there (one code for all hired workers).\n2. Hired freelancers open HupWorks and scan it while they are at the site.\n3. Each worker confirms clock in or clock out on their phone — once per shift. The punch is accepted only within 200 meters of the pin.\n4. You can view today\'s attendance on the job details screen.\n\nAnti-fraud: sharing sends a poster image only (no copyable deep link).';
 
   @override
   String get noOnsiteJobsYet => 'No on-site jobs yet';
@@ -2637,13 +2637,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get attendanceQrShort => 'QR';
 
   @override
-  String get attendanceLocationRequired => 'Location required';
+  String get attendanceLocationRequired =>
+      'Turn on location so we can confirm you are at the job site.';
 
   @override
   String get attendanceJobSiteNotSet => 'Job site not set';
 
   @override
-  String get attendanceTooFarFromSite => 'Too far from site';
+  String get attendanceTooFarFromSite =>
+      'You need to be at the job site to record attendance. Move closer and try again.';
 
   @override
   String get attendanceOutsideShiftWindow => 'Outside shift window';
@@ -3701,4 +3703,189 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get faqAttendanceA =>
       'Profile menu → Attendance. At the job site, scan the employer\'s QR (shared by all hired workers). Each person may clock in once and out once per shift. You must be within 200 m of the job pin. The QR poster share is image-only so the deep link cannot be copied.';
+
+  @override
+  String get pleasePinJobSite =>
+      'Pin the job site on the map. QR attendance only works at that location.';
+
+  @override
+  String get setSitePin => 'Set site pin';
+
+  @override
+  String get attendancePinSiteToUseQr =>
+      'Set a map pin before using QR attendance. Workers can only clock in within 200 meters of that pin.';
+
+  @override
+  String get attendanceLocationCheckHint =>
+      'HupWorks checks that you are at the job site before recording this.';
+
+  @override
+  String get attendanceLocationDenied =>
+      'Location permission is required to clock in at the job site.';
+
+  @override
+  String get attendanceLocationDeniedForever =>
+      'Location permission is blocked. Enable it in Settings to clock in.';
+
+  @override
+  String get attendanceLocationServicesOff =>
+      'Turn on location services to clock in at the job site.';
+
+  @override
+  String get attendanceNoSitePin =>
+      'This job has no site pin yet. Ask the client to set the location on the map.';
+
+  @override
+  String get attendanceShareQrSubject => 'HupWorks attendance QR';
+
+  @override
+  String get attendanceShareQrCaption => 'Scan in HupWorks at the job site';
+
+  @override
+  String attendanceShareQrMessage(String job) {
+    return 'Print this QR and post it at \"$job\". Hired workers scan it in HupWorks while they are at the site.';
+  }
+
+  @override
+  String get chatPrivacyTitle => 'Who can message you';
+
+  @override
+  String get chatPrivacySubtitle =>
+      'Choose which profiles can start a new chat. This helps stop spam and unwanted messages.';
+
+  @override
+  String get chatPrivacyAnyone => 'Anyone';
+
+  @override
+  String get chatPrivacyAnyoneHint =>
+      'Any profile can start a new chat with you.';
+
+  @override
+  String get chatPrivacyVerified => 'Verified profiles only';
+
+  @override
+  String get chatPrivacyVerifiedHint =>
+      'Only people who completed identity verification can start a new chat.';
+
+  @override
+  String get chatPrivacyConnections => 'People I\'ve worked with';
+
+  @override
+  String get chatPrivacyConnectionsHint =>
+      'Only profiles that already share an application or contract with you.';
+
+  @override
+  String get chatPrivacyNobody => 'No new messages';
+
+  @override
+  String get chatPrivacyNobodyHint =>
+      'Nobody new can start a chat. Existing conversations and open contracts stay open.';
+
+  @override
+  String get chatPrivacySaved => 'Messaging preference saved';
+
+  @override
+  String get chatPrivacyDeniedNobody =>
+      'This person isn\'t accepting new messages.';
+
+  @override
+  String get chatPrivacyDeniedVerified =>
+      'This person only accepts messages from verified profiles.';
+
+  @override
+  String get chatPrivacyDeniedConnections =>
+      'This person only accepts messages from people they already work with.';
+
+  @override
+  String get platformShareTitle => 'Your share';
+
+  @override
+  String get platformShareMenuSubtitle => 'See the work that runs through you';
+
+  @override
+  String get platformShareHeadline =>
+      'See your share of the work that runs the platform.';
+
+  @override
+  String get platformShareSellerNote => 'Counted from shifts you finished.';
+
+  @override
+  String get platformShareClientNote =>
+      'Counted from shifts you hired and marked complete.';
+
+  @override
+  String get platformShareOfCompletedWork => 'of completed work';
+
+  @override
+  String get platformShareShifts => 'Shifts completed';
+
+  @override
+  String get platformShareHours => 'Hours accepted';
+
+  @override
+  String get platformShareValue => 'Completed work';
+
+  @override
+  String platformShareCountOf(String yours, String total) {
+    return '$yours of $total';
+  }
+
+  @override
+  String get platformShareEmpty =>
+      'Complete a shift to see your share of the platform.';
+
+  @override
+  String get platformShareDisclaimer =>
+      'This is your share of completed shifts. It is not company ownership and it is not a payout.';
+
+  @override
+  String get charityCauseTitle => 'Support a cause';
+
+  @override
+  String get charityCauseHeadline => 'Choose a cause to stand with your share.';
+
+  @override
+  String get charityCauseBody =>
+      'This does not change your percentage. HupWorks does not send money from your shifts. Your choice is saved for a later platform gift.';
+
+  @override
+  String get charityCauseShareLabel => 'Cause you support';
+
+  @override
+  String get charityCauseShareEmpty => 'Choose a cause';
+
+  @override
+  String get charityCauseNone => 'No cause';
+
+  @override
+  String get charityCauseNoneHint =>
+      'Your share stays as a record of completed work only.';
+
+  @override
+  String get charityCauseFood => 'Food';
+
+  @override
+  String get charityCauseFoodHint => 'Meals and food support.';
+
+  @override
+  String get charityCauseEducation => 'Education';
+
+  @override
+  String get charityCauseEducationHint => 'Learning and school support.';
+
+  @override
+  String get charityCauseHealth => 'Health';
+
+  @override
+  String get charityCauseHealthHint => 'Care and health support.';
+
+  @override
+  String get charityCauseShelter => 'Shelter';
+
+  @override
+  String get charityCauseShelterHint => 'Housing and a safe place to stay.';
+
+  @override
+  String get accountBlocked =>
+      'This account has been blocked. Contact support if you think this is a mistake.';
 }

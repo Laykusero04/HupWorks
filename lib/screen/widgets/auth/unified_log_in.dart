@@ -8,7 +8,6 @@ import 'package:freelancer/screen/widgets/auth/auth_ui.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
 import 'package:freelancer/services/auth_service.dart';
 import 'package:nb_utils/nb_utils.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../app_config/app_config.dart';
 
@@ -78,35 +77,16 @@ class _UnifiedLogInState extends State<UnifiedLogIn> {
       }
     } catch (e) {
       if (mounted) {
-        final blocked = _isAccountBlockedError(e);
+        final message = AuthService.isAccountBlockedError(e)
+            ? l10n.accountBlocked
+            : l10n.errorWithDetail(e.toString());
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              blocked
-                  ? l10n.accountBlockedLoginMessage
-                  : l10n.errorWithDetail(e.toString()),
-            ),
-          ),
+          SnackBar(content: Text(message)),
         );
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
-  }
-
-  static bool _isAccountBlockedError(Object error) {
-    if (error is AuthException) {
-      final code = error.code?.toLowerCase() ?? '';
-      final message = error.message.toLowerCase();
-      if (code == 'user_banned') return true;
-      if (message.contains('banned') || message.contains('user is banned')) {
-        return true;
-      }
-    }
-    final s = error.toString().toLowerCase();
-    return s.contains('user_banned') ||
-        s.contains('user is banned') ||
-        (s.contains('banned') && s.contains('user'));
   }
 
   @override

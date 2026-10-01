@@ -279,17 +279,26 @@ class ProfileService {
   }
 
   /// Public seller profile for clients (Talent browse, service details).
+  ///
+  /// Applicants whose `profiles.role` is still `client` are included so an
+  /// employer can open the photo and name from a job application.
   static Future<Map<String, dynamic>?> getPublicSellerProfile(String sellerId) async {
-    final data = await _client
+    const columns =
+        'id, name, profile_image_url, bio, rating, created_at, verification_status, '
+        'profile_photo_status, profile_photo_rejection_reason, '
+        'seller_profiles(job_title, about, skills, address, birth_year, birth_month, birth_day, languages, education, experience)';
+    final seller = await _client
         .from('profiles')
-        .select(
-          'id, name, profile_image_url, bio, rating, created_at, verification_status, '
-          'profile_photo_status, profile_photo_rejection_reason, '
-          'seller_profiles(job_title, about, skills, address, birth_year, birth_month, birth_day, languages, education, experience)',
-        )
+        .select(columns)
         .eq('id', sellerId)
         .eq('role', 'seller')
         .maybeSingle();
+    final data = seller ??
+        await _client
+            .from('profiles')
+            .select(columns)
+            .eq('id', sellerId)
+            .maybeSingle();
     if (data == null) return null;
 
     final profile = Map<String, dynamic>.from(data);

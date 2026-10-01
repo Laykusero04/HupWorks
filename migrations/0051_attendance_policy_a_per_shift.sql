@@ -1,5 +1,6 @@
 -- ============================================
--- Migration 0048 — Attendance Policy A (per-worker / per-shift)
+-- Migration 0051 - Attendance Policy A (per-worker / per-shift)
+-- Runs after 0048_attendance_qr_geofence; keeps 200m geofence and adds Policy A.
 -- ============================================
 -- Product choice: Policy A (not single-use token B).
 --
@@ -440,7 +441,7 @@ begin
 end;
 $$;
 
--- Record punch with Policy A + existing geofence (0047).
+-- Record punch with Policy A + geofence from 0048 + Policy A per-shift.
 create or replace function public.record_attendance_punch(
   p_token text,
   p_punch_type text,
@@ -479,7 +480,7 @@ begin
   end if;
 
   if p_latitude is null or p_longitude is null then
-    raise exception 'Location required';
+    raise exception 'ATTENDANCE_LOCATION_REQUIRED';
   end if;
 
   select t.job_post_id into v_job_post_id
@@ -510,14 +511,14 @@ begin
   end if;
 
   if v_job_lat is null or v_job_lng is null then
-    raise exception 'Job site not set';
+    raise exception 'ATTENDANCE_NO_SITE_PIN';
   end if;
 
   v_distance_km := public.haversine_km(
     p_latitude, p_longitude, v_job_lat, v_job_lng
   );
   if v_distance_km is null or v_distance_km > 0.2 then
-    raise exception 'Too far from site';
+    raise exception 'ATTENDANCE_TOO_FAR';
   end if;
 
   select o.id into v_order_id

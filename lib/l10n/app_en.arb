@@ -38,7 +38,9 @@
   "noSearchResults": "No services or freelancers match \"{query}\"",
   "@noSearchResults": {
     "placeholders": {
-      "query": { "type": "String" }
+      "query": {
+        "type": "String"
+      }
     }
   },
   "noPopularResults": "No popular results yet",
@@ -68,7 +70,9 @@
   "errorWithDetail": "Error: {message}",
   "@errorWithDetail": {
     "placeholders": {
-      "message": { "type": "String" }
+      "message": {
+        "type": "String"
+      }
     }
   },
   "errorLoading": "Could not load data",
@@ -89,19 +93,25 @@
   "minutesAgo": "{count}m ago",
   "@minutesAgo": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "hoursAgo": "{count}h ago",
   "@hoursAgo": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "daysAgo": "{count}d ago",
   "@daysAgo": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "orderStatusActive": "Active",
@@ -125,13 +135,17 @@
   "reportReportingUser": "Reporting: {name}",
   "@reportReportingUser": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "reportReportingJob": "Job: {title}",
   "@reportReportingJob": {
     "placeholders": {
-      "title": { "type": "String" }
+      "title": {
+        "type": "String"
+      }
     }
   },
   "reportReportingContract": "Linked to this contract",
@@ -145,16 +159,16 @@
   "attendanceModeQrOnce": "QR check-in (once per shift)",
   "attendanceModeSelfReport": "Self-report in app",
   "attendanceModeDisabled": "Attendance off",
-  "attendanceClientHintQrInOut": "Post one QR at the site for all hired workers. Each worker clocks in once and out once per shift (must be on-site).",
-  "attendanceClientHintQrOnce": "Post one QR at the site for all hired workers. Each worker scans once per shift to check in (must be on-site).",
+  "attendanceClientHintQrInOut": "Post one QR at the pinned site for all hired workers. Each worker clocks in once and out once per shift within 200 meters of that pin.",
+  "attendanceClientHintQrOnce": "Post one QR at the pinned site for all hired workers. Each worker scans once per shift to check in within 200 meters of that pin.",
   "attendanceClientHintSelfReport": "Workers clock in and out in the app — no QR needed.",
   "attendanceClientHintDisabled": "Attendance tracking is turned off for this job.",
-  "attendanceFreelancerHintQrInOut": "Scan the site QR to clock in and clock out once per shift.",
-  "attendanceFreelancerHintQrOnce": "Scan the site QR once per shift when you arrive.",
+  "attendanceFreelancerHintQrInOut": "Scan the site QR to clock in and clock out once per shift. You must be within 200 meters of the job site.",
+  "attendanceFreelancerHintQrOnce": "Scan the site QR once per shift when you arrive. You must be within 200 meters of the job site.",
   "attendanceFreelancerHintSelfReport": "Tap clock in when you start and clock out when you leave.",
   "attendanceFreelancerHintDisabled": "Your client has not enabled attendance for this job.",
-  "attendanceOnboardingQrInOut": "Open Attendance in HupWorks and scan the QR code at the job site to clock in when you arrive and clock out when you leave.",
-  "attendanceOnboardingQrOnce": "When you arrive, open Attendance in HupWorks and scan the QR code posted on site. You only need to check in once per shift.",
+  "attendanceOnboardingQrInOut": "Open Attendance in HupWorks and scan the QR code at the job site to clock in when you arrive and clock out when you leave. The app checks that you are within 200 meters of the site pin.",
+  "attendanceOnboardingQrOnce": "When you arrive, open Attendance in HupWorks and scan the QR code posted on site. You only need to check in once per shift. The app checks that you are within 200 meters of the site pin.",
   "attendanceOnboardingSelfReport": "Open Attendance in HupWorks on this contract and tap Clock in when you start and Clock out when you leave. No QR scan is required.",
   "attendanceOnboardingDisabled": "Attendance is not tracked in the app for this job. Follow your supervisor's instructions on site.",
   "attendanceTracking": "Attendance tracking",
@@ -203,7 +217,9 @@
   "platformRulesStepLabel": "Step {step}",
   "@platformRulesStepLabel": {
     "placeholders": {
-      "step": { "type": "int" }
+      "step": {
+        "type": "int"
+      }
     }
   },
   "authWelcomeHowToUse": "How will you use HupWorks?",
@@ -282,8 +298,12 @@
   "stepOf": "Step {current} of {total}",
   "@stepOf": {
     "placeholders": {
-      "current": { "type": "int" },
-      "total": { "type": "int" }
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     }
   },
   "browseCategories": "Browse Categories",
@@ -328,7 +348,9 @@
   "hoursWorkedFormat": "{hours}h",
   "@hoursWorkedFormat": {
     "placeholders": {
-      "hours": { "type": "String" }
+      "hours": {
+        "type": "String"
+      }
     }
   },
   "paymentReceivedValue": "Marked paid (outside app)",
@@ -346,7 +368,9 @@
   "paymentMarkedOn": "Marked on {date}",
   "@paymentMarkedOn": {
     "placeholders": {
-      "date": { "type": "String" }
+      "date": {
+        "type": "String"
+      }
     }
   },
   "activeContracts": "Active contracts",
@@ -355,7 +379,9 @@
   "attentionItems": "{count} items need attention",
   "@attentionItems": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "messages": "Messages",
@@ -377,7 +403,9 @@
   "sayHelloTo": "Say hello to {name}",
   "@sayHelloTo": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "block": "Block",
@@ -401,7 +429,9 @@
   "cancellationMinChars": "Please write at least {count} characters",
   "@cancellationMinChars": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "keepContract": "Keep contract",
@@ -448,14 +478,20 @@
   "cancellationCharCount": "{current} / {min} characters minimum",
   "@cancellationCharCount": {
     "placeholders": {
-      "current": { "type": "int" },
-      "min": { "type": "int" }
+      "current": {
+        "type": "int"
+      },
+      "min": {
+        "type": "int"
+      }
     }
   },
   "cancellationReasonLine": "Reason: {reason}",
   "@cancellationReasonLine": {
     "placeholders": {
-      "reason": { "type": "String" }
+      "reason": {
+        "type": "String"
+      }
     }
   },
   "reportWhyQuestion": "Why are you reporting?",
@@ -491,7 +527,9 @@
   "ratingAtLeast": "{rating}+",
   "@ratingAtLeast": {
     "placeholders": {
-      "rating": { "type": "String" }
+      "rating": {
+        "type": "String"
+      }
     }
   },
   "noApplicationsYet": "No applications yet",
@@ -503,13 +541,17 @@
   "reviewCount": "{count} reviews",
   "@reviewCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "openJobsToBrowse": "{count} open jobs to browse",
   "@openJobsToBrowse": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "periodLive": "Live",
@@ -519,14 +561,18 @@
   "attentionContractDeliveredMany": "{count} contracts delivered — waiting for client approval",
   "@attentionContractDeliveredMany": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "attentionOnsiteOne": "1 on-site contract — clock in via Attendance",
   "attentionOnsiteMany": "{count} on-site contracts — use Attendance",
   "@attentionOnsiteMany": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "attendanceOffForJob": "Attendance is off for this job.",
@@ -540,7 +586,9 @@
   "clockedInAt": "Clocked in at {time}",
   "@clockedInAt": {
     "placeholders": {
-      "time": { "type": "String" }
+      "time": {
+        "type": "String"
+      }
     }
   },
   "notClockedInToday": "Not clocked in today",
@@ -552,14 +600,20 @@
   "attendancePunchRecorded": "{punch} recorded. Today: {minutes} worked.",
   "@attendancePunchRecorded": {
     "placeholders": {
-      "punch": { "type": "String" },
-      "minutes": { "type": "String" }
+      "punch": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "String"
+      }
     }
   },
   "useSuggestedPunch": "Use suggested: {punch}",
   "@useSuggestedPunch": {
     "placeholders": {
-      "punch": { "type": "String" }
+      "punch": {
+        "type": "String"
+      }
     }
   },
   "attendanceScanCameraHint": "Point your camera at the attendance QR posted at the job site.",
@@ -567,7 +621,9 @@
   "attendanceScanningForJob": "Scanning for: {title}",
   "@attendanceScanningForJob": {
     "placeholders": {
-      "title": { "type": "String" }
+      "title": {
+        "type": "String"
+      }
     }
   },
   "viewMyOnsiteJobs": "View my on-site jobs",
@@ -583,7 +639,7 @@
   "regenerate": "Regenerate",
   "attendanceNewQrReady": "New attendance QR ready",
   "attendanceHowItWorks": "How it works",
-  "attendanceHowItWorksBody": "1. Print and tape this QR at the workplace (one code for all hired workers).\n2. Hired freelancers open HupWorks and scan it on site.\n3. Each worker confirms clock in or clock out on their phone — once per shift.\n4. You can view today's attendance on the job details screen.\n\nAnti-fraud: punches need GPS within 200 m of your map pin. Sharing sends a poster image only (no copyable deep link).",
+  "attendanceHowItWorksBody": "1. Pin the workplace on the map, then print and tape this QR there (one code for all hired workers).\n2. Hired freelancers open HupWorks and scan it while they are at the site.\n3. Each worker confirms clock in or clock out on their phone — once per shift. The punch is accepted only within 200 meters of the pin.\n4. You can view today's attendance on the job details screen.\n\nAnti-fraud: sharing sends a poster image only (no copyable deep link).",
   "noOnsiteJobsYet": "No on-site jobs yet",
   "noOnsiteJobsBody": "You need an accepted on-site contract. Your client chooses how attendance works (QR scan or self-report) when they post the job.",
   "findOnsiteJobs": "Find on-site jobs",
@@ -594,34 +650,48 @@
   "attendanceWorkedToday": "Worked today: {duration}",
   "@attendanceWorkedToday": {
     "placeholders": {
-      "duration": { "type": "String" }
+      "duration": {
+        "type": "String"
+      }
     }
   },
   "attendancePunchTodaySummary": "{punch} • {duration} today",
   "@attendancePunchTodaySummary": {
     "placeholders": {
-      "punch": { "type": "String" },
-      "duration": { "type": "String" }
+      "punch": {
+        "type": "String"
+      },
+      "duration": {
+        "type": "String"
+      }
     }
   },
   "attendanceLessThanOneMin": "Less than 1 min",
   "attendanceMinutesOnly": "{count} min",
   "@attendanceMinutesOnly": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "attendanceHoursOnly": "{count}h",
   "@attendanceHoursOnly": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "attendanceHoursMinutes": "{hours}h {minutes}m",
   "@attendanceHoursMinutes": {
     "placeholders": {
-      "hours": { "type": "int" },
-      "minutes": { "type": "int" }
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
     }
   },
   "firstDayInstructions": "First-day instructions",
@@ -661,7 +731,9 @@
   "balanceWithAmount": "Balance: {amount}",
   "@balanceWithAmount": {
     "placeholders": {
-      "amount": { "type": "String" }
+      "amount": {
+        "type": "String"
+      }
     }
   },
   "editProfileSubtitle": "Edit your profile details",
@@ -681,7 +753,9 @@
   "ageHiddenOnProfile": "Age {age} (birth date is hidden on profile)",
   "@ageHiddenOnProfile": {
     "placeholders": {
-      "age": { "type": "int" }
+      "age": {
+        "type": "int"
+      }
     }
   },
   "birthDateSaved": "Birth date saved",
@@ -698,7 +772,9 @@
   "countTotal": "{count} total",
   "@countTotal": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "noJobsPostedYet": "No jobs posted yet",
@@ -710,7 +786,9 @@
   "ageYearsOld": "{age} years old",
   "@ageYearsOld": {
     "placeholders": {
-      "age": { "type": "int" }
+      "age": {
+        "type": "int"
+      }
     }
   },
   "reviewsFromClientsHint": "Reviews from clients appear here after completed orders.",
@@ -721,7 +799,9 @@
   "couldNotLoadProfile": "Could not load profile: {message}",
   "@couldNotLoadProfile": {
     "placeholders": {
-      "message": { "type": "String" }
+      "message": {
+        "type": "String"
+      }
     }
   },
   "jobsPosted": "Jobs posted",
@@ -740,7 +820,9 @@
   "errorLoadingService": "Could not load service: {message}",
   "@errorLoadingService": {
     "placeholders": {
-      "message": { "type": "String" }
+      "message": {
+        "type": "String"
+      }
     }
   },
   "noDescriptionAvailable": "No description available.",
@@ -750,7 +832,9 @@
   "totalReviewsCount": "Total {count} Reviews",
   "@totalReviewsCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "anonymous": "Anonymous",
@@ -758,7 +842,9 @@
   "errorPlacingOrder": "Could not place order: {message}",
   "@errorPlacingOrder": {
     "placeholders": {
-      "message": { "type": "String" }
+      "message": {
+        "type": "String"
+      }
     }
   },
   "writeReview": "Write a review",
@@ -778,13 +864,17 @@
   "couldNotPublishReview": "Could not publish review: {message}",
   "@couldNotPublishReview": {
     "placeholders": {
-      "message": { "type": "String" }
+      "message": {
+        "type": "String"
+      }
     }
   },
   "couldNotOpenPicker": "Could not open picker: {message}",
   "@couldNotOpenPicker": {
     "placeholders": {
-      "message": { "type": "String" }
+      "message": {
+        "type": "String"
+      }
     }
   },
   "mapMovePinJob": "Move the map so the pin marks the job site.",
@@ -793,7 +883,9 @@
   "mapAddressLookupFailed": "Address lookup failed: {message}",
   "@mapAddressLookupFailed": {
     "placeholders": {
-      "message": { "type": "String" }
+      "message": {
+        "type": "String"
+      }
     }
   },
   "mapNoAddressForPoint": "Could not read an address for this point. Try moving the map.",
@@ -854,34 +946,48 @@
   "noFilteredContracts": "No {status} contracts",
   "@noFilteredContracts": {
     "placeholders": {
-      "status": { "type": "String" }
+      "status": {
+        "type": "String"
+      }
     }
   },
   "contractOverdue": "Overdue",
   "deadlineDaysHoursLeft": "{days}d {hours}h left",
   "@deadlineDaysHoursLeft": {
     "placeholders": {
-      "days": { "type": "int" },
-      "hours": { "type": "int" }
+      "days": {
+        "type": "int"
+      },
+      "hours": {
+        "type": "int"
+      }
     }
   },
   "deadlineHoursMinutesLeft": "{hours}h {minutes}m left",
   "@deadlineHoursMinutesLeft": {
     "placeholders": {
-      "hours": { "type": "int" },
-      "minutes": { "type": "int" }
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
     }
   },
   "deadlineMinutesLeft": "{minutes}m left",
   "@deadlineMinutesLeft": {
     "placeholders": {
-      "minutes": { "type": "int" }
+      "minutes": {
+        "type": "int"
+      }
     }
   },
   "contractStartedOn": "Started {date}",
   "@contractStartedOn": {
     "placeholders": {
-      "date": { "type": "String" }
+      "date": {
+        "type": "String"
+      }
     }
   },
   "amountCaps": "AMOUNT",
@@ -889,7 +995,9 @@
   "orderIdHash": "Order ID #{id}",
   "@orderIdHash": {
     "placeholders": {
-      "id": { "type": "String" }
+      "id": {
+        "type": "String"
+      }
     }
   },
   "sellerColon": "Seller:",
@@ -914,13 +1022,17 @@
   "markJobCompleteDeliveredBody": "You are confirming you received the work from {seller} through their delivery submission. The contract will close as completed and you can leave a review next.",
   "@markJobCompleteDeliveredBody": {
     "placeholders": {
-      "seller": { "type": "String" }
+      "seller": {
+        "type": "String"
+      }
     }
   },
   "markJobCompleteManualBody": "You are about to close this contract as finished. Use this when you have received the deliverables from {seller} (for example via chat or files), even if they have not pressed \"Submit delivery\" yet.",
   "@markJobCompleteManualBody": {
     "placeholders": {
-      "seller": { "type": "String" }
+      "seller": {
+        "type": "String"
+      }
     }
   },
   "notYet": "Not yet",
@@ -932,7 +1044,9 @@
   "couldNotCompleteJob": "Could not complete job: {message}",
   "@couldNotCompleteJob": {
     "placeholders": {
-      "message": { "type": "String" }
+      "message": {
+        "type": "String"
+      }
     }
   },
   "couldNotOpenReviewMissingSeller": "Could not open review (missing seller).",
@@ -943,7 +1057,9 @@
   "cancellationRequestBannerBody": "{seller} asked to cancel this contract. You can approve or keep it active. If you do not respond within 48 hours, the contract stays active.",
   "@cancellationRequestBannerBody": {
     "placeholders": {
-      "seller": { "type": "String" }
+      "seller": {
+        "type": "String"
+      }
     }
   },
   "respondUsingBanner": "Respond using the banner above.",
@@ -951,13 +1067,17 @@
   "errorLoadingOrder": "Error loading order: {message}",
   "@errorLoadingOrder": {
     "placeholders": {
-      "message": { "type": "String" }
+      "message": {
+        "type": "String"
+      }
     }
   },
   "errorLoadingOrders": "Error loading orders: {message}",
   "@errorLoadingOrders": {
     "placeholders": {
-      "message": { "type": "String" }
+      "message": {
+        "type": "String"
+      }
     }
   },
   "onboardingNotSet": "Not set",
@@ -984,7 +1104,9 @@
   "errorLoadingApplications": "Error loading applications: {message}",
   "@errorLoadingApplications": {
     "placeholders": {
-      "message": { "type": "String" }
+      "message": {
+        "type": "String"
+      }
     }
   },
   "messageClientTooltip": "Message client",
@@ -995,7 +1117,9 @@
   "errorLoadingJobPosts": "Error loading job posts: {message}",
   "@errorLoadingJobPosts": {
     "placeholders": {
-      "message": { "type": "String" }
+      "message": {
+        "type": "String"
+      }
     }
   },
   "jobPostClosed": "Job post closed",
@@ -1011,7 +1135,9 @@
   "rejectApplicationConfirmBody": "Reject {name}'s application? This can't be undone.",
   "@rejectApplicationConfirmBody": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "closeJobTitle": "Close this job?",
@@ -1051,7 +1177,9 @@
   "maxJobSkillsSnackbar": "You can add up to {max} skills.",
   "@maxJobSkillsSnackbar": {
     "placeholders": {
-      "max": { "type": "int" }
+      "max": {
+        "type": "int"
+      }
     }
   },
   "shiftTimesBothOrNeither": "Set both start and end time, or leave both empty.",
@@ -1062,7 +1190,9 @@
   "savedAsCategory": "Saved as: {name}",
   "@savedAsCategory": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "jobSkillsTagHint": "Tag skills freelancers need for this job (optional).",
@@ -1087,27 +1217,49 @@
   "hireConfirmUnlimited": "Accept {name}'s offer ({price})? The job stays open so you can hire more freelancers until you close it.",
   "@hireConfirmUnlimited": {
     "placeholders": {
-      "name": { "type": "String" },
-      "price": { "type": "String" }
+      "name": {
+        "type": "String"
+      },
+      "price": {
+        "type": "String"
+      }
     }
   },
   "hireConfirmFillsAll": "Accept {name}'s offer ({price})? This fills your last hire spot ({filled} of {cap}). The job will close to new applicants. Other applications stay on your list as pending — reject them only if you do not want them.",
   "@hireConfirmFillsAll": {
     "placeholders": {
-      "name": { "type": "String" },
-      "price": { "type": "String" },
-      "filled": { "type": "int" },
-      "cap": { "type": "int" }
+      "name": {
+        "type": "String"
+      },
+      "price": {
+        "type": "String"
+      },
+      "filled": {
+        "type": "int"
+      },
+      "cap": {
+        "type": "int"
+      }
     }
   },
   "hireConfirmRemaining": "Accept {name}'s offer ({price})? After this hire you will have {remaining} more open spots ({filled} of {cap} filled). Other pending applications stay open.",
   "@hireConfirmRemaining": {
     "placeholders": {
-      "name": { "type": "String" },
-      "price": { "type": "String" },
-      "remaining": { "type": "int" },
-      "filled": { "type": "int" },
-      "cap": { "type": "int" }
+      "name": {
+        "type": "String"
+      },
+      "price": {
+        "type": "String"
+      },
+      "remaining": {
+        "type": "int"
+      },
+      "filled": {
+        "type": "int"
+      },
+      "cap": {
+        "type": "int"
+      }
     }
   },
   "hiredJobFull": "Hired! This job is now full and closed to new applicants.",
@@ -1119,14 +1271,16 @@
   "applicationsCount": "Applications ({count})",
   "@applicationsCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "messageFreelancerTooltip": "Message freelancer",
   "attendanceQrShort": "QR",
-  "attendanceLocationRequired": "Location required",
+  "attendanceLocationRequired": "Turn on location so we can confirm you are at the job site.",
   "attendanceJobSiteNotSet": "Job site not set",
-  "attendanceTooFarFromSite": "Too far from site",
+  "attendanceTooFarFromSite": "You need to be at the job site to record attendance. Move closer and try again.",
   "attendanceOutsideShiftWindow": "Outside shift window",
   "attendanceShiftAlreadyComplete": "Already completed attendance for this shift",
   "attendanceShiftAlreadyCompleteMessage": "You already clocked in and out for this shift.",
@@ -1148,15 +1302,23 @@
   "stepProgressWithLabel": "Step {current} of {total} · {label}",
   "@stepProgressWithLabel": {
     "placeholders": {
-      "current": { "type": "int" },
-      "total": { "type": "int" },
-      "label": { "type": "String" }
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "label": {
+        "type": "String"
+      }
     }
   },
   "totalJobPostCount": "Total Job Post ({count})",
   "@totalJobPostCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "applicationsSection": "Applications",
@@ -1178,7 +1340,9 @@
   "yourApplicationAmount": "Your application: {amount}",
   "@yourApplicationAmount": {
     "placeholders": {
-      "amount": { "type": "String" }
+      "amount": {
+        "type": "String"
+      }
     }
   },
   "customBidIntroWithBudget": "Enter your own amount if you want to bid differently from the client's budget.",
@@ -1186,7 +1350,9 @@
   "clientPostedPrefix": "Client posted: {amount}",
   "@clientPostedPrefix": {
     "placeholders": {
-      "amount": { "type": "String" }
+      "amount": {
+        "type": "String"
+      }
     }
   },
   "yourOfferAmount": "Your application amount",
@@ -1201,20 +1367,28 @@
   "offerMessageMinHint": "If you include a message, use at least {count} characters",
   "@offerMessageMinHint": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "offerMessageMinChars": "Please write at least {count} characters in your message",
   "@offerMessageMinChars": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "offerMessageCharCount": "{current} / {min} characters minimum",
   "@offerMessageCharCount": {
     "placeholders": {
-      "current": { "type": "int" },
-      "min": { "type": "int" }
+      "current": {
+        "type": "int"
+      },
+      "min": {
+        "type": "int"
+      }
     }
   },
   "findJobsTitle": "Find Jobs",
@@ -1226,7 +1400,9 @@
   "offersCount": "{count} applications",
   "@offersCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "locationLabel": "Location",
@@ -1234,7 +1410,9 @@
   "couldNotOpenChatWithDetail": "Could not open chat: {message}",
   "@couldNotOpenChatWithDetail": {
     "placeholders": {
-      "message": { "type": "String" }
+      "message": {
+        "type": "String"
+      }
     }
   },
   "chooseFromGallery": "Choose from gallery",
@@ -1249,7 +1427,9 @@
   "skillAlreadyAdded": "You already added \"{skill}\"",
   "@skillAlreadyAdded": {
     "placeholders": {
-      "skill": { "type": "String" }
+      "skill": {
+        "type": "String"
+      }
     }
   },
   "noWithdrawalHistory": "No withdrawal history",
@@ -1269,7 +1449,9 @@
   "threadContextRelatedCount": "{count} related items",
   "@threadContextRelatedCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "threadContextLoading": "Loading related work…",
@@ -1288,7 +1470,9 @@
   "deliveryDaysCount": "{count} Days",
   "@deliveryDaysCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "delete": "Delete",
@@ -1305,13 +1489,17 @@
   "jobAlertWithinKm": "Within {km} km",
   "@jobAlertWithinKm": {
     "placeholders": {
-      "km": { "type": "int" }
+      "km": {
+        "type": "int"
+      }
     }
   },
   "jobAlertCategoriesCount": "{count} categories",
   "@jobAlertCategoriesCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "jobAlertNameLabel": "Alert name (optional)",
@@ -1341,16 +1529,21 @@
   "workTrustCompletedMonthLabel": "{month} {year}",
   "@workTrustCompletedMonthLabel": {
     "placeholders": {
-      "month": { "type": "String" },
-      "year": { "type": "int" }
+      "month": {
+        "type": "String"
+      },
+      "year": {
+        "type": "int"
+      }
     }
   },
-
   "tapSetBirthDateRequired": "Tap to set your birth date (required)",
   "ageBirthDateStaysPrivate": "Age {age} (birth date stays private)",
   "@ageBirthDateStaysPrivate": {
     "placeholders": {
-      "age": { "type": "int" }
+      "age": {
+        "type": "int"
+      }
     }
   },
   "pleaseSetDateOfBirth": "Please set your date of birth",
@@ -1394,7 +1587,9 @@
   "trustScoreSubtitle": "{score}/100 trust score",
   "@trustScoreSubtitle": {
     "placeholders": {
-      "score": { "type": "int" }
+      "score": {
+        "type": "int"
+      }
     }
   },
   "fullyVerified": "Fully verified",
@@ -1422,7 +1617,9 @@
   "jobsCount": "{count, plural, =1{1 job} other{{count} jobs}}",
   "@jobsCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "noOpenJobsRightNow": "No open jobs right now",
@@ -1450,7 +1647,9 @@
   "notificationOpenFailed": "Could not open: {detail}",
   "@notificationOpenFailed": {
     "placeholders": {
-      "detail": { "type": "String" }
+      "detail": {
+        "type": "String"
+      }
     }
   },
   "notificationContractUnavailable": "Contract no longer available.",
@@ -1485,7 +1684,9 @@
   "employerStandingHint": "{count, plural, =0{No completed paid hires yet} =1{1 completed paid hire} other{{count} completed paid hires}}",
   "@employerStandingHint": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "verifiedEmployer": "Verified employer",
@@ -1501,7 +1702,9 @@
   "supportEmailSubtitle": "Email us at {email}",
   "@supportEmailSubtitle": {
     "placeholders": {
-      "email": { "type": "String" }
+      "email": {
+        "type": "String"
+      }
     }
   },
   "supportEmailCopied": "Support email copied to clipboard",
@@ -1546,5 +1749,75 @@
   "faqGetPaidQ": "How do I get paid?",
   "faqGetPaidA": "HupWorks does not hold or transfer money. After you finish the work, collect payment directly from the employer (cash, bank transfer, or local e-wallet) based on the agreed amount.",
   "faqAttendanceQ": "How does attendance check-in work?",
-  "faqAttendanceA": "Profile menu → Attendance. At the job site, scan the employer's QR (shared by all hired workers). Each person may clock in once and out once per shift. You must be within 200 m of the job pin. The QR poster share is image-only so the deep link cannot be copied."
+  "faqAttendanceA": "Profile menu → Attendance. At the job site, scan the employer's QR (shared by all hired workers). Each person may clock in once and out once per shift. You must be within 200 m of the job pin. The QR poster share is image-only so the deep link cannot be copied.",
+  "pleasePinJobSite": "Pin the job site on the map. QR attendance only works at that location.",
+  "setSitePin": "Set site pin",
+  "attendancePinSiteToUseQr": "Set a map pin before using QR attendance. Workers can only clock in within 200 meters of that pin.",
+  "attendanceLocationCheckHint": "HupWorks checks that you are at the job site before recording this.",
+  "attendanceLocationDenied": "Location permission is required to clock in at the job site.",
+  "attendanceLocationDeniedForever": "Location permission is blocked. Enable it in Settings to clock in.",
+  "attendanceLocationServicesOff": "Turn on location services to clock in at the job site.",
+  "attendanceNoSitePin": "This job has no site pin yet. Ask the client to set the location on the map.",
+  "attendanceShareQrSubject": "HupWorks attendance QR",
+  "attendanceShareQrCaption": "Scan in HupWorks at the job site",
+  "attendanceShareQrMessage": "Print this QR and post it at \"{job}\". Hired workers scan it in HupWorks while they are at the site.",
+  "@attendanceShareQrMessage": {
+    "placeholders": {
+      "job": {
+        "type": "String"
+      }
+    }
+  },
+  "chatPrivacyTitle": "Who can message you",
+  "chatPrivacySubtitle": "Choose which profiles can start a new chat. This helps stop spam and unwanted messages.",
+  "chatPrivacyAnyone": "Anyone",
+  "chatPrivacyAnyoneHint": "Any profile can start a new chat with you.",
+  "chatPrivacyVerified": "Verified profiles only",
+  "chatPrivacyVerifiedHint": "Only people who completed identity verification can start a new chat.",
+  "chatPrivacyConnections": "People I've worked with",
+  "chatPrivacyConnectionsHint": "Only profiles that already share an application or contract with you.",
+  "chatPrivacyNobody": "No new messages",
+  "chatPrivacyNobodyHint": "Nobody new can start a chat. Existing conversations and open contracts stay open.",
+  "chatPrivacySaved": "Messaging preference saved",
+  "chatPrivacyDeniedNobody": "This person isn't accepting new messages.",
+  "chatPrivacyDeniedVerified": "This person only accepts messages from verified profiles.",
+  "chatPrivacyDeniedConnections": "This person only accepts messages from people they already work with.",
+  "platformShareTitle": "Your share",
+  "platformShareMenuSubtitle": "See the work that runs through you",
+  "platformShareHeadline": "See your share of the work that runs the platform.",
+  "platformShareSellerNote": "Counted from shifts you finished.",
+  "platformShareClientNote": "Counted from shifts you hired and marked complete.",
+  "platformShareOfCompletedWork": "of completed work",
+  "platformShareShifts": "Shifts completed",
+  "platformShareHours": "Hours accepted",
+  "platformShareValue": "Completed work",
+  "platformShareCountOf": "{yours} of {total}",
+  "@platformShareCountOf": {
+    "placeholders": {
+      "yours": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "platformShareEmpty": "Complete a shift to see your share of the platform.",
+  "platformShareDisclaimer": "This is your share of completed shifts. It is not company ownership and it is not a payout.",
+  "charityCauseTitle": "Support a cause",
+  "charityCauseHeadline": "Choose a cause to stand with your share.",
+  "charityCauseBody": "This does not change your percentage. HupWorks does not send money from your shifts. Your choice is saved for a later platform gift.",
+  "charityCauseShareLabel": "Cause you support",
+  "charityCauseShareEmpty": "Choose a cause",
+  "charityCauseNone": "No cause",
+  "charityCauseNoneHint": "Your share stays as a record of completed work only.",
+  "charityCauseFood": "Food",
+  "charityCauseFoodHint": "Meals and food support.",
+  "charityCauseEducation": "Education",
+  "charityCauseEducationHint": "Learning and school support.",
+  "charityCauseHealth": "Health",
+  "charityCauseHealthHint": "Care and health support.",
+  "charityCauseShelter": "Shelter",
+  "charityCauseShelterHint": "Housing and a safe place to stay.",
+  "accountBlocked": "This account has been blocked. Contact support if you think this is a mistake."
 }

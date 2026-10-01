@@ -1,10 +1,12 @@
+import 'package:freelancer/core/chat/chat_contact_policy.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
 import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/job_offer_delivery.dart';
 import 'package:freelancer/core/utils/localized_category.dart';
-import 'package:freelancer/core/utils/message_contact_preference.dart';
+import 'package:freelancer/core/utils/profile_image.dart';
+import 'package:freelancer/screen/client%20screen/client%20talent/freelancer_public_profile.dart';
 import 'package:freelancer/screen/seller%20screen/seller%20message/chat_inbox.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/core/utils/attendance_mode.dart';
@@ -18,11 +20,11 @@ import 'package:freelancer/services/job_posts_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../attendance/attendance_punch_log_section.dart';
-import '../../attendance/ensure_job_site_pin.dart';
 import '../../onboarding/hire_onboarding_editor_screen.dart';
 import '../../attendance/attendance_qr_display_screen.dart';
 import '../../widgets/constant.dart';
 import '../../widgets/job_location_map_preview.dart';
+import '../../widgets/map_location_picker_screen.dart';
 
 class JobDetails extends StatefulWidget {
   final String jobPostId;
@@ -110,6 +112,17 @@ class _JobDetailsState extends State<JobDetails> {
     }
   }
 
+  void _openSellerProfile(Map<String, dynamic> offer) {
+    final seller = offer['profiles'] as Map<String, dynamic>?;
+    final sellerId =
+        (offer['seller_id'] as String?) ?? (seller?['id'] as String?);
+    if (sellerId == null || sellerId.isEmpty) return;
+    FreelancerPublicProfile(
+      sellerId: sellerId,
+      initialName: seller?['name'] as String?,
+    ).launch(context);
+  }
+
   Future<void> _handleMessageSeller(Map<String, dynamic> offer) async {
     final seller = offer['profiles'] as Map<String, dynamic>?;
     final sellerId = offer['seller_id'] as String?;
@@ -128,11 +141,7 @@ class _JobDetailsState extends State<JobDetails> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              MessageContactPreference.openChatErrorMessage(context.l10n, e),
-            ),
-          ),
+          SnackBar(content: Text(messageForChatStartFailure(context.l10n, e))),
         );
       }
     }
@@ -575,34 +584,52 @@ class _JobDetailsState extends State<JobDetails> {
                             children: [
                               Row(
                                 children: [
-                                  CircleAvatar(
-                                    radius: 20,
-                                    backgroundImage:
-                                        seller?['profile_image_url'] != null
-                                            ? NetworkImage(
-                                                seller!['profile_image_url'])
-                                            : const AssetImage(
-                                                    'images/profilepic2.png')
-                                                as ImageProvider,
-                                  ),
-                                  const SizedBox(width: 10),
                                   Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          seller?['name'] ?? l10n.roleSeller,
-                                          style: kTextStyle.copyWith(
-                                              color: kNeutralColor,
-                                              fontWeight: FontWeight.bold),
+                                    child: InkWell(
+                                      onTap: () => _openSellerProfile(offer),
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 2,
                                         ),
-                                        Text(
-                                          '${JobPostsService.formatOfferAmountShort(offer['price'], offer['price_basis'])} • ${JobOfferDelivery.formatLabel(offer['delivery_time'], offer['delivery_time_unit'])}',
-                                          style: kTextStyle.copyWith(
-                                              color: kSubTitleColor),
+                                        child: Row(
+                                          children: [
+                                            CircleAvatar(
+                                              radius: 22,
+                                              backgroundColor: kDarkWhite,
+                                              backgroundImage:
+                                                  ProfileImage.provider(
+                                                seller?['profile_image_url']
+                                                    as String?,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 10),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    seller?['name'] ??
+                                                        l10n.roleSeller,
+                                                    style: kTextStyle.copyWith(
+                                                      color: kNeutralColor,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    '${JobPostsService.formatOfferAmountShort(offer['price'], offer['price_basis'])} • ${JobOfferDelivery.formatLabel(offer['delivery_time'], offer['delivery_time_unit'])}',
+                                                    style: kTextStyle.copyWith(
+                                                      color: kSubTitleColor,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                      ],
+                                      ),
                                     ),
                                   ),
                                   Container(
@@ -715,20 +742,88 @@ class _JobDetailsState extends State<JobDetails> {
 
   bool get _showAttendanceSection => AttendanceService.isOnsiteJob(_jobPost);
 
-  Future<void> _saveAttendanceMode(String mode) async {
-    if (AttendanceMode.canUseQr(mode) &&
-        jobPostCoordinates(_jobPost) == null) {
-      final pinned = await ensureJobSitePinForQr(
+  Future<bool> _ensureSitePin({bool explain = true}) async {
+    if (jobPostCoordinates(_jobPost) != null) return true;
+
+    if (explain) {
+      final l10n = context.l10n;
+      final proceed = await showDialog<bool>(
         context: context,
-        jobPostId: widget.jobPostId,
-        jobPost: _jobPost,
-        onUpdated: (j) {
-          if (mounted) setState(() => _jobPost = {...?_jobPost, ...j});
-        },
+        builder: (ctx) => AlertDialog(
+          title: Text(l10n.setSitePin),
+          content: Text(l10n.attendancePinSiteToUseQr),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(l10n.cancel),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text(l10n.setSitePin),
+            ),
+          ],
+        ),
       );
-      if (pinned == null || !mounted) return;
+      if (proceed != true || !mounted) return false;
     }
 
+    final existing = (_jobPost?['location'] as String?)?.trim();
+    final result = await Navigator.of(context).push<MapLocationPickerResult>(
+      MaterialPageRoute(
+        builder: (_) => MapLocationPickerScreen(
+          purpose: MapLocationPickerPurpose.job,
+          initialLocation: existing,
+          title: context.l10n.setSitePin,
+        ),
+      ),
+    );
+    if (result == null || !mounted) return false;
+
+    try {
+      final label = result.locationLabel?.trim();
+      await JobPostsService.updateJobSitePin(
+        jobPostId: widget.jobPostId,
+        latitude: result.latitude,
+        longitude: result.longitude,
+        location: label,
+      );
+      if (!mounted) return false;
+      setState(() {
+        _jobPost?['latitude'] = result.latitude;
+        _jobPost?['longitude'] = result.longitude;
+        if (label != null && label.isNotEmpty) {
+          _jobPost?['location'] = label;
+        }
+      });
+      return true;
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+        );
+      }
+      return false;
+    }
+  }
+
+  Future<void> _onAttendanceModeSelected(String mode) async {
+    if (AttendanceMode.canUseQr(mode)) {
+      final ok = await _ensureSitePin();
+      if (!ok || !mounted) return;
+    }
+    await _saveAttendanceMode(mode);
+  }
+
+  Future<void> _openAttendanceQr(String jobTitle) async {
+    final ok = await _ensureSitePin();
+    if (!ok || !mounted) return;
+    AttendanceQrDisplayScreen(
+      jobPostId: widget.jobPostId,
+      jobTitle: jobTitle,
+    ).launch(context);
+  }
+
+  Future<void> _saveAttendanceMode(String mode) async {
     setState(() => _savingAttendanceMode = true);
     try {
       await AttendanceService.updateJobAttendanceMode(widget.jobPostId, mode);
@@ -752,23 +847,6 @@ class _JobDetailsState extends State<JobDetails> {
     }
   }
 
-  Future<void> _openAttendanceQr(String jobTitle) async {
-    final pinned = await ensureJobSitePinForQr(
-      context: context,
-      jobPostId: widget.jobPostId,
-      jobPost: _jobPost,
-      onUpdated: (j) {
-        if (mounted) setState(() => _jobPost = {...?_jobPost, ...j});
-      },
-    );
-    if (pinned == null || !mounted) return;
-    AttendanceQrDisplayScreen(
-      jobPostId: widget.jobPostId,
-      jobTitle: jobTitle,
-      jobPost: pinned,
-    ).launch(context);
-  }
-
   Map<String, String> _attendanceModeLabels(AppLocalizations l10n) => {
         AttendanceMode.qrInOut: l10n.attendanceModeQrInOut,
         AttendanceMode.qrOnce: l10n.attendanceModeQrOnce,
@@ -780,6 +858,7 @@ class _JobDetailsState extends State<JobDetails> {
     final l10n = context.l10n;
     final mode = AttendanceMode.normalize(_attendanceMode);
     final showQr = AttendanceMode.canUseQr(mode);
+    final needsSitePin = showQr && jobPostCoordinates(_jobPost) == null;
     final modeLabels = _attendanceModeLabels(l10n);
 
     return Container(
@@ -843,10 +922,42 @@ class _JobDetailsState extends State<JobDetails> {
               onChanged: _savingAttendanceMode
                   ? null
                   : (v) {
-                      if (v != null) _saveAttendanceMode(v);
+                      if (v != null) _onAttendanceModeSelected(v);
                     },
             ),
           ),
+          if (needsSitePin) ...[
+            const SizedBox(height: 8),
+            Text(
+              l10n.attendancePinSiteToUseQr,
+              style: kTextStyle.copyWith(
+                color: kSubTitleColor,
+                fontSize: 12,
+                height: 1.35,
+              ),
+            ),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton(
+                onPressed: _savingAttendanceMode
+                    ? null
+                    : () => _ensureSitePin(explain: false),
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: Text(
+                  l10n.setSitePin,
+                  style: kTextStyle.copyWith(
+                    color: kPrimaryColor,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+            ),
+          ],
           if (AttendanceMode.isEnabled(mode)) ...[
             const SizedBox(height: 10),
             Text(

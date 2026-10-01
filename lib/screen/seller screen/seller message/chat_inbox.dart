@@ -63,8 +63,8 @@ class _ChatInboxState extends State<ChatInbox> {
   bool _isClientViewer = true;
   bool _contactBlocked = false;
   bool _pairBlocked = false;
-  String? _conversationClientId;
-  String? _conversationSellerId;
+  String? _otherUserRole;
+  bool? _otherIsSellerOnThread;
 
   String get _currentUserId =>
       Supabase.instance.client.auth.currentUser?.id ?? '';
@@ -172,6 +172,8 @@ class _ChatInboxState extends State<ChatInbox> {
         return;
       }
 
+      _rememberOtherUser(row);
+
       final clientId = row['client_id'] as String?;
       final sellerId = row['seller_id'] as String?;
       if (clientId == null || sellerId == null) {
@@ -187,57 +189,11 @@ class _ChatInboxState extends State<ChatInbox> {
       );
       if (!mounted) return;
       setState(() {
-        _conversationClientId = clientId;
-        _conversationSellerId = sellerId;
         _threadItems = items;
         _threadLoading = false;
       });
     } catch (_) {
       if (mounted) setState(() => _threadLoading = false);
-    }
-  }
-
-  bool get _canOpenOtherProfile {
-    final id = widget.otherUserId?.trim();
-    if (id != null && id.isNotEmpty) return true;
-    return _conversationClientId != null && _conversationSellerId != null;
-  }
-
-  void _openOtherUserProfile() {
-    final clientId = _conversationClientId;
-    final sellerId = _conversationSellerId;
-    final me = _currentUserId;
-
-    // Prefer conversation seats so job-application role overrides stay correct.
-    if (clientId != null && sellerId != null && me.isNotEmpty) {
-      if (me == clientId) {
-        FreelancerPublicProfile(
-          sellerId: sellerId,
-          initialName: widget.otherUserName,
-        ).launch(context);
-        return;
-      }
-      if (me == sellerId) {
-        ClientPublicProfile(
-          clientId: clientId,
-          initialName: widget.otherUserName,
-        ).launch(context);
-        return;
-      }
-    }
-
-    final otherId = widget.otherUserId?.trim();
-    if (otherId == null || otherId.isEmpty) return;
-    if (_isClientViewer) {
-      FreelancerPublicProfile(
-        sellerId: otherId,
-        initialName: widget.otherUserName,
-      ).launch(context);
-    } else {
-      ClientPublicProfile(
-        clientId: otherId,
-        initialName: widget.otherUserName,
-      ).launch(context);
     }
   }
 
@@ -503,48 +459,69 @@ class _ChatInboxState extends State<ChatInbox> {
         ),
       ),
       titleSpacing: 0,
-      title: InkWell(
-        onTap: _canOpenOtherProfile ? _openOtherUserProfile : null,
-        borderRadius: BorderRadius.circular(8),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _appBarAvatar(),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    widget.otherUserName,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: kTextStyle.copyWith(
-                      color: kNeutralColor,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 15,
+      title: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Tooltip(
+                  message: l10n.viewProfile,
+                  child: InkWell(
+                    onTap: _canOpenOtherProfile ? _openOtherProfile : null,
+                    borderRadius: BorderRadius.circular(8),
+                    child: Row(
+                      children: [
+                        _appBarAvatar(),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            widget.otherUserName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: kTextStyle.copyWith(
+                              color: kNeutralColor,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  if (_threadItems.isNotEmpty)
-                    Text(
-                      _threadItems.length == 1
-                          ? _threadItems.first.title
-                          : context.l10n
-                              .threadContextRelatedCount(_threadItems.length),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: kTextStyle.copyWith(
-                        color: kPrimaryColor,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
+                ),
+                if (_threadItems.isNotEmpty)
+                  InkWell(
+                    onTap: () => showChatThreadContextSheet(
+                      context,
+                      items: _threadItems,
+                      isClientViewer: _isClientViewer,
+                      highlightedOrderId: widget.orderContext?.orderId,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 48, top: 1),
+                      child: Text(
+                        _threadItems.length == 1
+                            ? _threadItems.first.title
+                            : context.l10n.threadContextRelatedCount(
+                                _threadItems.length),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: kTextStyle.copyWith(
+                          color: kPrimaryColor,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
-                ],
-              ),
+                  ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
       actions: [
         if (_threadItems.isNotEmpty)
@@ -562,7 +539,7 @@ class _ChatInboxState extends State<ChatInbox> {
                 '${_threadItems.length}',
                 style: const TextStyle(fontSize: 10),
               ),
-              child: const Icon(Icons.info_outline_rounded, color: kNeutralColor),
+              child: const Icon(Icons.work_outline_rounded, color: kNeutralColor),
             ),
           ),
         Padding(
@@ -579,6 +556,19 @@ class _ChatInboxState extends State<ChatInbox> {
                 borderRadius: BorderRadius.circular(14),
               ),
               itemBuilder: (BuildContext bc) => [
+                if (_canOpenOtherProfile)
+                  PopupMenuItem(
+                    value: 'profile',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.person_outline_rounded,
+                            size: 18, color: kNeutralColor),
+                        const SizedBox(width: 10),
+                        Text(l10n.viewProfile,
+                            style: kTextStyle.copyWith(color: kNeutralColor)),
+                      ],
+                    ),
+                  ),
                 PopupMenuItem(
                   value: 'block',
                   child: Row(
@@ -605,7 +595,9 @@ class _ChatInboxState extends State<ChatInbox> {
                 ),
               ],
               onSelected: (value) {
-                if (value == 'block') {
+                if (value == 'profile') {
+                  Future.delayed(Duration.zero, _openOtherProfile);
+                } else if (value == 'block') {
                   Future.delayed(Duration.zero, _showBlockPopUp);
                 } else if (value == 'report') {
                   Future.delayed(Duration.zero, _openReport);
@@ -620,6 +612,56 @@ class _ChatInboxState extends State<ChatInbox> {
         child: Container(height: 1, color: kBorderColorTextField),
       ),
     );
+  }
+
+  bool get _canOpenOtherProfile {
+    final id = widget.otherUserId?.trim();
+    return id != null && id.isNotEmpty;
+  }
+
+  void _rememberOtherUser(Map<String, dynamic> row) {
+    if (_currentUserId.isEmpty) return;
+    final clientId = row['client_id'] as String?;
+    final sellerId = row['seller_id'] as String?;
+    Map? otherMap;
+    if (_currentUserId == clientId) {
+      _otherIsSellerOnThread = true;
+      otherMap = row['seller'] is Map ? row['seller'] as Map : null;
+    } else if (_currentUserId == sellerId) {
+      _otherIsSellerOnThread = false;
+      otherMap = row['client'] is Map ? row['client'] as Map : null;
+    }
+    final role = (otherMap?['role'] as String?)?.trim();
+    if (role != null && role.isNotEmpty) _otherUserRole = role;
+  }
+
+  Future<void> _openOtherProfile() async {
+    final id = widget.otherUserId?.trim();
+    if (id == null || id.isEmpty || !mounted) return;
+
+    if (_otherUserRole == null && _otherIsSellerOnThread == null) {
+      try {
+        final row = await ChatService.getConversation(widget.conversationId);
+        if (row != null) _rememberOtherUser(row);
+      } catch (_) {}
+    }
+    if (!mounted) return;
+
+    final openSellerProfile = _otherIsSellerOnThread ??
+        (_otherUserRole == 'seller' ||
+            (_otherUserRole == null && _isClientViewer));
+    if (openSellerProfile) {
+      openFreelancerPublicProfile(
+        context,
+        sellerId: id,
+        name: widget.otherUserName,
+      );
+      return;
+    }
+    ClientPublicProfile(
+      clientId: id,
+      initialName: widget.otherUserName,
+    ).launch(context);
   }
 
   Future<void> _openReport() async {
@@ -999,7 +1041,7 @@ class _ChatInboxState extends State<ChatInbox> {
     final initial = widget.otherUserName.isNotEmpty
         ? widget.otherUserName[0].toUpperCase()
         : '?';
-    return Container(
+    final avatar = Container(
       width: 28,
       height: 28,
       decoration: BoxDecoration(
@@ -1022,6 +1064,11 @@ class _ChatInboxState extends State<ChatInbox> {
                 fontSize: 11,
               ),
             ),
+    );
+    if (!_canOpenOtherProfile) return avatar;
+    return GestureDetector(
+      onTap: _openOtherProfile,
+      child: avatar,
     );
   }
 

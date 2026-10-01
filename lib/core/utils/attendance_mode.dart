@@ -53,7 +53,7 @@ class AttendanceMode {
     switch (normalize(mode)) {
       case qrOnce:
         return l10n?.attendanceClientHintQrOnce ??
-            'Post one QR at the site for all hired workers. Each worker scans once per shift to check in (must be on-site).';
+            'Post one QR at the pinned site for all hired workers. Each worker scans once per shift to check in within 200 meters of that pin.';
       case selfReport:
         return l10n?.attendanceClientHintSelfReport ??
             'Workers clock in and out in the app — no QR needed.';
@@ -63,7 +63,7 @@ class AttendanceMode {
       case qrInOut:
       default:
         return l10n?.attendanceClientHintQrInOut ??
-            'Post one QR at the site for all hired workers. Each worker clocks in once and out once per shift (must be on-site).';
+            'Post one QR at the pinned site for all hired workers. Each worker clocks in once and out once per shift within 200 meters of that pin.';
     }
   }
 
@@ -71,7 +71,7 @@ class AttendanceMode {
     switch (normalize(mode)) {
       case qrOnce:
         return l10n?.attendanceFreelancerHintQrOnce ??
-            'Scan the site QR once per shift when you arrive.';
+            'Scan the site QR once per shift when you arrive. You must be within 200 meters of the job site.';
       case selfReport:
         return l10n?.attendanceFreelancerHintSelfReport ??
             'Tap clock in when you start and clock out when you leave.';
@@ -81,7 +81,7 @@ class AttendanceMode {
       case qrInOut:
       default:
         return l10n?.attendanceFreelancerHintQrInOut ??
-            'Scan the site QR to clock in and clock out once per shift.';
+            'Scan the site QR to clock in and clock out once per shift. You must be within 200 meters of the job site.';
     }
   }
 
@@ -89,7 +89,7 @@ class AttendanceMode {
     switch (normalize(mode)) {
       case qrOnce:
         return l10n?.attendanceOnboardingQrOnce ??
-            'When you arrive, open Attendance in HupWorks and scan the QR code posted on site. You only need to check in once per shift.';
+            'When you arrive, open Attendance in HupWorks and scan the QR code posted on site. You only need to check in once per shift. The app checks that you are within 200 meters of the site pin.';
       case selfReport:
         return l10n?.attendanceOnboardingSelfReport ??
             'Open Attendance in HupWorks on this contract and tap Clock in when you start and Clock out when you leave. No QR scan is required.';
@@ -99,7 +99,7 @@ class AttendanceMode {
       case qrInOut:
       default:
         return l10n?.attendanceOnboardingQrInOut ??
-            'Open Attendance in HupWorks and scan the QR code at the job site to clock in when you arrive and clock out when you leave.';
+            'Open Attendance in HupWorks and scan the QR code at the job site to clock in when you arrive and clock out when you leave. The app checks that you are within 200 meters of the site pin.';
     }
   }
 

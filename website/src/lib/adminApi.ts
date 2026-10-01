@@ -241,19 +241,14 @@ export async function deleteUser(userId: string) {
   )
 }
 
-/** Block (Auth ban) or unblock a user without deleting their account. */
-export async function setUserBan(
-  userId: string,
-  ban: boolean,
-  banDuration = '876000h',
-) {
+export async function setUserBlocked(userId: string, blocked: boolean) {
   return postJson<{
     ok: boolean
     userId?: string
-    ban?: boolean
+    blocked?: boolean
     banned_until?: string | null
     error?: string
-  }>('/api/admin/users-ban', { userId, ban, banDuration })
+  }>('/api/admin/users-block', { userId, blocked })
 }
 
 export async function updateCategory(input: {

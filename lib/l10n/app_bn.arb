@@ -100,13 +100,17 @@
   "reportReportingUser": "রিপোর্ট করা হচ্ছে: {name}",
   "@reportReportingUser": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "reportReportingJob": "কাজ: {title}",
   "@reportReportingJob": {
     "placeholders": {
-      "title": { "type": "String" }
+      "title": {
+        "type": "String"
+      }
     }
   },
   "reportReportingContract": "এই চুক্তির সাথে লিঙ্ক করা",
@@ -124,12 +128,12 @@
   "attendanceClientHintQrOnce": "সব নিয়োগপ্রাপ্ত কর্মীর জন্য সাইটে একটি QR পোস্ট করুন। প্রত্যেকে শিফট প্রতি একবার চেক-ইন স্ক্যান করবে (সাইটে থাকতে হবে)।",
   "attendanceClientHintSelfReport": "কর্মীরা অ্যাপে ইন ও আউট ক্লক করবে — QR লাগবে না।",
   "attendanceClientHintDisabled": "এই কাজের জন্য উপস্থিতি ট্র্যাকিং বন্ধ আছে।",
-  "attendanceFreelancerHintQrInOut": "শিফট প্রতি একবার ইন ও আউট ক্লক করতে সাইটের QR স্ক্যান করুন।",
-  "attendanceFreelancerHintQrOnce": "পৌঁছালে শিফট প্রতি একবার সাইটের QR স্ক্যান করুন।",
+  "attendanceFreelancerHintQrInOut": "ইন ও আউট ক্লক করতে সাইটের QR স্ক্যান করুন। আপনাকে কাজের স্থানে থাকতে হবে।",
+  "attendanceFreelancerHintQrOnce": "পৌঁছালে সাইটের QR একবার স্ক্যান করুন। আপনাকে কাজের স্থানে থাকতে হবে।",
   "attendanceFreelancerHintSelfReport": "শুরুতে ক্লক ইন এবং চলে যাওয়ার সময় ক্লক আউট ট্যাপ করুন।",
   "attendanceFreelancerHintDisabled": "আপনার ক্লায়েন্ট এই কাজের জন্য উপস্থিতি চালু করেনি।",
-  "attendanceOnboardingQrInOut": "HupWorks-এ উপস্থিতি খুলে জব সাইটের QR স্ক্যান করে আগমনে ক্লক ইন এবং প্রস্থানে ক্লক আউট করুন।",
-  "attendanceOnboardingQrOnce": "পৌঁছালে HupWorks-এ উপস্থিতি খুলে সাইটে পোস্ট করা QR স্ক্যান করুন। শিফট প্রতি একবার চেক-ইনই যথেষ্ট।",
+  "attendanceOnboardingQrInOut": "HupWorks-এ উপস্থিতি খুলে জব সাইটের QR স্ক্যান করে আগমনে ক্লক ইন এবং প্রস্থানে ক্লক আউট করুন। অ্যাপ যাচাই করে যে আপনি সাইট পিনের ২০০ মিটারের মধ্যে আছেন।",
+  "attendanceOnboardingQrOnce": "পৌঁছালে HupWorks-এ উপস্থিতি খুলে সাইটে পোস্ট করা QR স্ক্যান করুন। দিনে একবার চেক-ইনই যথেষ্ট। অ্যাপ যাচাই করে যে আপনি সাইট পিনের ২০০ মিটারের মধ্যে আছেন।",
   "attendanceOnboardingSelfReport": "এই চুক্তিতে HupWorks উপস্থিতি খুলে শুরুতে ক্লক ইন এবং চলে যাওয়ার সময় ক্লক আউট ট্যাপ করুন। QR স্ক্যান লাগবে না।",
   "attendanceOnboardingDisabled": "এই কাজের জন্য অ্যাপে উপস্থিতি ট্র্যাক হয় না। সাইটে সুপারভাইজারের নির্দেশ অনুসরণ করুন।",
   "attendanceTracking": "উপস্থিতি ট্র্যাকিং",
@@ -178,7 +182,9 @@
   "platformRulesStepLabel": "ধাপ {step}",
   "@platformRulesStepLabel": {
     "placeholders": {
-      "step": { "type": "int" }
+      "step": {
+        "type": "int"
+      }
     }
   },
   "authWelcomeHowToUse": "আপনি HupWorks কীভাবে ব্যবহার করবেন?",
@@ -424,7 +430,9 @@
   "ratingAtLeast": "{rating}+",
   "@ratingAtLeast": {
     "placeholders": {
-      "rating": { "type": "String" }
+      "rating": {
+        "type": "String"
+      }
     }
   },
   "noApplicationsYet": "এখনও কোনো আবেদন নেই",
@@ -1113,7 +1121,9 @@
   "rejectApplicationConfirmBody": "Reject {name}'s application? This can't be undone.",
   "@rejectApplicationConfirmBody": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "closeJobTitle": "Close this job?",
@@ -1153,7 +1163,9 @@
   "maxJobSkillsSnackbar": "You can add up to {max} skills.",
   "@maxJobSkillsSnackbar": {
     "placeholders": {
-      "max": { "type": "int" }
+      "max": {
+        "type": "int"
+      }
     }
   },
   "shiftTimesBothOrNeither": "Set both start and end time, or leave both empty.",
@@ -1164,7 +1176,9 @@
   "savedAsCategory": "Saved as: {name}",
   "@savedAsCategory": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "jobSkillsTagHint": "Tag skills freelancers need for this job (optional).",
@@ -1189,27 +1203,49 @@
   "hireConfirmUnlimited": "Accept {name}'s offer ({price})? The job stays open so you can hire more freelancers until you close it.",
   "@hireConfirmUnlimited": {
     "placeholders": {
-      "name": { "type": "String" },
-      "price": { "type": "String" }
+      "name": {
+        "type": "String"
+      },
+      "price": {
+        "type": "String"
+      }
     }
   },
   "hireConfirmFillsAll": "Accept {name}'s offer ({price})? This fills your last hire spot ({filled} of {cap}). The job will close to new applicants. Other applications stay on your list as pending — reject them only if you do not want them.",
   "@hireConfirmFillsAll": {
     "placeholders": {
-      "name": { "type": "String" },
-      "price": { "type": "String" },
-      "filled": { "type": "int" },
-      "cap": { "type": "int" }
+      "name": {
+        "type": "String"
+      },
+      "price": {
+        "type": "String"
+      },
+      "filled": {
+        "type": "int"
+      },
+      "cap": {
+        "type": "int"
+      }
     }
   },
   "hireConfirmRemaining": "Accept {name}'s offer ({price})? After this hire you will have {remaining} more open spots ({filled} of {cap} filled). Other pending applications stay open.",
   "@hireConfirmRemaining": {
     "placeholders": {
-      "name": { "type": "String" },
-      "price": { "type": "String" },
-      "remaining": { "type": "int" },
-      "filled": { "type": "int" },
-      "cap": { "type": "int" }
+      "name": {
+        "type": "String"
+      },
+      "price": {
+        "type": "String"
+      },
+      "remaining": {
+        "type": "int"
+      },
+      "filled": {
+        "type": "int"
+      },
+      "cap": {
+        "type": "int"
+      }
     }
   },
   "hiredJobFull": "Hired! This job is now full and closed to new applicants.",
@@ -1221,14 +1257,16 @@
   "applicationsCount": "Applications ({count})",
   "@applicationsCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "messageFreelancerTooltip": "Message freelancer",
   "attendanceQrShort": "QR",
-  "attendanceLocationRequired": "অবস্থান প্রয়োজন",
+  "attendanceLocationRequired": "আপনি কাজের স্থানে আছেন কিনা যাচাই করতে লোকেশন চালু করুন।",
   "attendanceJobSiteNotSet": "কাজের স্থান সেট করা নেই",
-  "attendanceTooFarFromSite": "সাইট থেকে অনেক দূরে",
+  "attendanceTooFarFromSite": "উপস্থিতি নথি করতে আপনাকে কাজের স্থানে থাকতে হবে। কাছে গিয়ে আবার চেষ্টা করুন।",
   "attendanceOutsideShiftWindow": "শিফট উইন্ডোর বাইরে",
   "attendanceShiftAlreadyComplete": "এই শিফটের উপস্থিতি ইতিমধ্যে সম্পন্ন",
   "attendanceShiftAlreadyCompleteMessage": "আপনি এই শিফটে ইতিমধ্যে ইন ও আউট ক্লক করেছেন।",
@@ -1250,9 +1288,15 @@
   "stepProgressWithLabel": "Step {current} of {total} · {label}",
   "@stepProgressWithLabel": {
     "placeholders": {
-      "current": { "type": "int" },
-      "total": { "type": "int" },
-      "label": { "type": "String" }
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "label": {
+        "type": "String"
+      }
     }
   },
   "totalJobPostCount": "Total Job Post ({count})",
@@ -1309,20 +1353,28 @@
   "offerMessageMinHint": "If you include a message, use at least {count} characters",
   "@offerMessageMinHint": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "offerMessageMinChars": "Please write at least {count} characters in your message",
   "@offerMessageMinChars": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "offerMessageCharCount": "{current} / {min} characters minimum",
   "@offerMessageCharCount": {
     "placeholders": {
-      "current": { "type": "int" },
-      "min": { "type": "int" }
+      "current": {
+        "type": "int"
+      },
+      "min": {
+        "type": "int"
+      }
     }
   },
   "findJobsTitle": "Find Jobs",
@@ -1383,7 +1435,9 @@
   "threadContextRelatedCount": "{count} related items",
   "@threadContextRelatedCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "threadContextLoading": "Loading related work…",
@@ -1421,13 +1475,17 @@
   "jobAlertWithinKm": "Within {km} km",
   "@jobAlertWithinKm": {
     "placeholders": {
-      "km": { "type": "int" }
+      "km": {
+        "type": "int"
+      }
     }
   },
   "jobAlertCategoriesCount": "{count} categories",
   "@jobAlertCategoriesCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "jobAlertNameLabel": "Alert name (optional)",
@@ -1457,16 +1515,21 @@
   "workTrustCompletedMonthLabel": "{month} {year}",
   "@workTrustCompletedMonthLabel": {
     "placeholders": {
-      "month": { "type": "String" },
-      "year": { "type": "int" }
+      "month": {
+        "type": "String"
+      },
+      "year": {
+        "type": "int"
+      }
     }
   },
-
   "tapSetBirthDateRequired": "জন্ম তারিখ সেট করতে ট্যাপ করুন (আবশ্যক)",
   "ageBirthDateStaysPrivate": "বয়স {age} (জন্ম তারিখ গোপন থাকে)",
   "@ageBirthDateStaysPrivate": {
     "placeholders": {
-      "age": { "type": "int" }
+      "age": {
+        "type": "int"
+      }
     }
   },
   "pleaseSetDateOfBirth": "অনুগ্রহ করে আপনার জন্ম তারিখ সেট করুন",
@@ -1510,7 +1573,9 @@
   "trustScoreSubtitle": "{score}/১০০ ট্রাস্ট স্কোর",
   "@trustScoreSubtitle": {
     "placeholders": {
-      "score": { "type": "int" }
+      "score": {
+        "type": "int"
+      }
     }
   },
   "fullyVerified": "সম্পূর্ণ যাচাইকৃত",
@@ -1538,7 +1603,9 @@
   "jobsCount": "{count, plural, =1{১টি কাজ} other{{count}টি কাজ}}",
   "@jobsCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "noOpenJobsRightNow": "এখন কোনো খোলা কাজ নেই",
@@ -1566,7 +1633,9 @@
   "notificationOpenFailed": "খোলা যায়নি: {detail}",
   "@notificationOpenFailed": {
     "placeholders": {
-      "detail": { "type": "String" }
+      "detail": {
+        "type": "String"
+      }
     }
   },
   "notificationContractUnavailable": "কন্ট্রাক্ট আর উপলব্ধ নেই।",
@@ -1601,7 +1670,9 @@
   "employerStandingHint": "{count, plural, =0{এখনও কোনো সম্পন্ন পেইড হায়ার নেই} =1{১টি সম্পন্ন পেইড হায়ার} other{{count}টি সম্পন্ন পেইড হায়ার}}",
   "@employerStandingHint": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "verifiedEmployer": "যাচাইকৃত নিয়োগকর্তা",
@@ -1617,7 +1688,9 @@
   "supportEmailSubtitle": "{email}-এ ইমেইল করুন",
   "@supportEmailSubtitle": {
     "placeholders": {
-      "email": { "type": "String" }
+      "email": {
+        "type": "String"
+      }
     }
   },
   "supportEmailCopied": "সাপোর্ট ইমেইল ক্লিপবোর্ডে কপি হয়েছে",
@@ -1662,5 +1735,65 @@
   "faqGetPaidQ": "কীভাবে পেমেন্ট পাব?",
   "faqGetPaidA": "HupWorks টাকা ধরে রাখে বা স্থানান্তর করে না। কাজ শেষে সম্মত পরিমাণ অনুযায়ী সরাসরি নিয়োগকর্তার কাছ থেকে পেমেন্ট নিন।",
   "faqAttendanceQ": "উপস্থিতি চেক-ইন কীভাবে কাজ করে?",
-  "faqAttendanceA": "প্রোফাইল মেনু → Attendance। জব সাইটে নিয়োগকর্তার QR স্ক্যান করুন (সব নিয়োগপ্রাপ্ত কর্মী একই কোড ব্যবহার করে)। প্রত্যেকে শিফট প্রতি একবার ইন ও আউট করতে পারে। জব পিন থেকে ২০০ মিটারের মধ্যে থাকতে হবে। QR পোস্টার শেয়ার শুধু ইমেজ — ডিপ লিংক কপি করা যায় না।"
+  "faqAttendanceA": "প্রোফাইল মেনু → Attendance। জব সাইটে নিয়োগকর্তার QR স্ক্যান করুন (সব নিয়োগপ্রাপ্ত কর্মী একই কোড ব্যবহার করে)। প্রত্যেকে শিফট প্রতি একবার ইন ও আউট করতে পারে। জব পিন থেকে ২০০ মিটারের মধ্যে থাকতে হবে। QR পোস্টার শেয়ার শুধু ইমেজ — ডিপ লিংক কপি করা যায় না।",
+  "pleasePinJobSite": "মানচিত্রে কাজের স্থান পিন করুন। QR উপস্থিতি শুধু সেই স্থানে কাজ করে।",
+  "setSitePin": "সাইট পিন সেট করুন",
+  "attendancePinSiteToUseQr": "QR উপস্থিতি ব্যবহারের আগে মানচিত্রে পিন সেট করুন। কর্মীরা শুধু সেই পিনের ২০০ মিটারের মধ্যে ক্লক ইন করতে পারবে।",
+  "attendanceLocationCheckHint": "রেকর্ড করার আগে HupWorks যাচাই করে যে আপনি কাজের স্থানে আছেন।",
+  "attendanceLocationDenied": "কাজের স্থানে ক্লক ইন করতে লোকেশন অনুমতি দরকার।",
+  "attendanceLocationDeniedForever": "লোকেশন অনুমতি বন্ধ আছে। ক্লক ইন করতে সেটিংসে চালু করুন।",
+  "attendanceLocationServicesOff": "কাজের স্থানে ক্লক ইন করতে লোকেশন সার্ভিস চালু করুন।",
+  "attendanceNoSitePin": "এই কাজের এখনো কোনো সাইট পিন নেই। ক্লায়েন্টকে মানচিত্রে স্থান সেট করতে বলুন।",
+  "attendanceShareQrSubject": "HupWorks উপস্থিতি QR",
+  "attendanceShareQrCaption": "কাজের স্থানে HupWorks-এ স্ক্যান করুন",
+  "attendanceShareQrMessage": "এই QR প্রিন্ট করে \"{job}\" এ পোস্ট করুন। নিয়োগপ্রাপ্ত কর্মীরা সাইটে থেকে HupWorks-এ স্ক্যান করবে।",
+  "@attendanceShareQrMessage": {
+    "placeholders": {
+      "job": {
+        "type": "String"
+      }
+    }
+  },
+  "chatPrivacyTitle": "কে আপনাকে বার্তা পাঠাতে পারবে",
+  "chatPrivacySubtitle": "কোন প্রোফাইল নতুন চ্যাট শুরু করতে পারবে তা বেছে নিন। এতে স্প্যাম ও অবাঞ্ছিত বার্তা কমে।",
+  "chatPrivacyAnyone": "যে কেউ",
+  "chatPrivacyAnyoneHint": "যেকোনো প্রোফাইল আপনার সাথে নতুন চ্যাট শুরু করতে পারবে।",
+  "chatPrivacyVerified": "শুধু যাচাইকৃত প্রোফাইল",
+  "chatPrivacyVerifiedHint": "শুধু যাদের পরিচয় যাচাই হয়েছে তারা নতুন চ্যাট শুরু করতে পারবে।",
+  "chatPrivacyConnections": "যাদের সাথে কাজ করেছি",
+  "chatPrivacyConnectionsHint": "শুধু যাদের সাথে ইতিমধ্যে আবেদন বা চুক্তি আছে।",
+  "chatPrivacyNobody": "নতুন বার্তা নয়",
+  "chatPrivacyNobodyHint": "নতুন কেউ চ্যাট শুরু করতে পারবে না। আগের কথোপকথন ও চালু চুক্তি খোলা থাকবে।",
+  "chatPrivacySaved": "বার্তার পছন্দ সংরক্ষিত হয়েছে",
+  "chatPrivacyDeniedNobody": "এই ব্যক্তি নতুন বার্তা নিচ্ছেন না।",
+  "chatPrivacyDeniedVerified": "এই ব্যক্তি শুধু যাচাইকৃত প্রোফাইল থেকে বার্তা নেন।",
+  "chatPrivacyDeniedConnections": "এই ব্যক্তি শুধু যাদের সাথে আগে কাজ করেছেন তাদের বার্তা নেন।",
+  "platformShareTitle": "আপনার অংশ",
+  "platformShareMenuSubtitle": "আপনার মধ্য দিয়ে চলা কাজ দেখুন",
+  "platformShareHeadline": "প্ল্যাটফর্ম যে কাজ নিয়ে চলে, তার মধ্যে আপনার অংশ দেখুন।",
+  "platformShareSellerNote": "আপনি যে শিফট শেষ করেছেন সেগুলো থেকে গণনা করা।",
+  "platformShareClientNote": "আপনি যে শিফট নিয়োগ করেছেন এবং সম্পন্ন হিসেবে চিহ্নিত করেছেন সেগুলো থেকে গণনা করা।",
+  "platformShareOfCompletedWork": "সম্পন্ন কাজের",
+  "platformShareShifts": "সম্পন্ন শিফট",
+  "platformShareHours": "গৃহীত ঘণ্টা",
+  "platformShareValue": "সম্পন্ন কাজ",
+  "platformShareCountOf": "{total}-এর মধ্যে {yours}",
+  "platformShareEmpty": "প্ল্যাটফর্মে আপনার অংশ দেখতে একটি শিফট সম্পন্ন করুন।",
+  "platformShareDisclaimer": "এটি সম্পন্ন শিফটের আপনার অংশ। এটি কোম্পানির মালিকানা নয় এবং কোনো পেআউট নয়।",
+  "charityCauseTitle": "একটি উদ্দেশ্য সমর্থন করুন",
+  "charityCauseHeadline": "আপনার অংশের সাথে একটি উদ্দেশ্য বেছে নিন।",
+  "charityCauseBody": "এতে আপনার শতাংশ বদলায় না। HupWorks শিফটের টাকা পাঠায় না। আপনার পছন্দ রাখা হয়, যাতে পরে প্ল্যাটফর্মের উপহার সেদিকে যায়।",
+  "charityCauseShareLabel": "আপনি যে উদ্দেশ্য সমর্থন করেন",
+  "charityCauseShareEmpty": "একটি উদ্দেশ্য বেছে নিন",
+  "charityCauseNone": "কোনো উদ্দেশ্য নয়",
+  "charityCauseNoneHint": "আপনার অংশ শুধু সম্পন্ন কাজের হিসাব হিসেবে থাকে।",
+  "charityCauseFood": "খাদ্য",
+  "charityCauseFoodHint": "খাবার ও খাদ্য সহায়তা।",
+  "charityCauseEducation": "শিক্ষা",
+  "charityCauseEducationHint": "শেখা ও স্কুল সহায়তা।",
+  "charityCauseHealth": "স্বাস্থ্য",
+  "charityCauseHealthHint": "চিকিৎসা ও স্বাস্থ্য সহায়তা।",
+  "charityCauseShelter": "আশ্রয়",
+  "charityCauseShelterHint": "বাসস্থান ও নিরাপদ থাকার জায়গা।",
+  "accountBlocked": "এই অ্যাকাউন্ট ব্লক করা হয়েছে। ভুল মনে হলে সাপোর্টে যোগাযোগ করুন।"
 }

@@ -158,6 +158,15 @@ class _ClientProfileState extends State<ClientProfile> {
                   onTap: () => const ClientDashBoard().launch(context),
                 ),
                 ProfileMenuListTile(
+                  icon: Icons.pie_chart_outline,
+                  title: l10n.platformShareTitle,
+                  subtitle: l10n.platformShareMenuSubtitle,
+                  onTap: () {
+                    Navigator.pop(context);
+                    context.push(AppRoutes.clientPlatformShare);
+                  },
+                ),
+                ProfileMenuListTile(
                   icon: Icons.bookmark_border,
                   title: l10n.favourites,
                   onTap: () => const ClientFavList().launch(context),

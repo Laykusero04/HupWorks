@@ -55,6 +55,7 @@ import '../screen/seller screen/setup seller profile/setup_profile.dart';
 import '../screen/attendance/attendance_scan_screen.dart';
 import '../screen/attendance/seller_attendance_hub_screen.dart';
 import '../screen/widgets/auth/update_password_screen.dart';
+import '../screen/widgets/platform_contribution_screen.dart';
 import '../screen/widgets/shell_tab_header.dart';
 import 'route_names.dart';
 
@@ -363,6 +364,11 @@ GoRouter createRouter() {
         builder: (context, state) => const ClientDashBoard(),
       ),
       GoRoute(
+        path: AppRoutes.clientPlatformShare,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const PlatformContributionScreen(),
+      ),
+      GoRoute(
         path: AppRoutes.clientProfileDetails,
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const ClientProfileDetails(),
@@ -434,6 +440,11 @@ GoRouter createRouter() {
         path: AppRoutes.sellerDashboard,
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const SellerDashBoard(),
+      ),
+      GoRoute(
+        path: AppRoutes.sellerPlatformShare,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const PlatformContributionScreen(),
       ),
       GoRoute(
         path: AppRoutes.sellerProfileDetails,

@@ -1,92 +1,11 @@
 import 'dart:io';
-import 'package:freelancer/core/utils/message_contact_preference.dart';
 import 'package:freelancer/data/models/chat_inbox_filter.dart';
 import 'package:freelancer/services/block_service.dart';
+import 'package:freelancer/services/chat_privacy_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ChatService {
   static final _client = Supabase.instance.client;
-
-  /// Soft block + recipient "who can message me" gate for **new** conversations.
-  /// Existing threads are always allowed (caller must check existence first).
-  static Future<void> _assertMayStartConversation(String otherUserId) async {
-    if (await BlockService.isContactBlocked(otherUserId)) {
-      throw Exception('Contact blocked');
-    }
-
-    // Prefer server RPC when migration 0049 is applied; fall back to a
-    // client-side preference read so UX still works before deploy.
-    try {
-      final allowed = await _client.rpc(
-        'can_start_conversation',
-        params: {'p_other_user_id': otherUserId},
-      );
-      if (allowed == true) return;
-      if (allowed == false) {
-        final pref = await _readContactPreference(otherUserId);
-        throw Exception(_deniedException(pref));
-      }
-    } on PostgrestException catch (e) {
-      // RPC missing (migration not applied yet) — check column directly.
-      if (e.code != 'PGRST202' && e.code != '42883') rethrow;
-    }
-
-    final pref = await _readContactPreference(otherUserId);
-    if (pref == MessageContactPreference.everyone) return;
-    if (pref == MessageContactPreference.nobody) {
-      throw Exception(_deniedException(pref));
-    }
-    final hasHire = await _pairHasAnyHire(otherUserId);
-    if (!hasHire) {
-      throw Exception(_deniedException(pref));
-    }
-  }
-
-  static String _deniedException(String pref) =>
-      'Messaging preference denied: ${MessageContactPreference.parse(pref)}';
-
-  static Future<String> _readContactPreference(String userId) async {
-    try {
-      final row = await _client
-          .from('profiles')
-          .select('message_contact_preference')
-          .eq('id', userId)
-          .maybeSingle();
-      return MessageContactPreference.parse(
-        row?['message_contact_preference'],
-      );
-    } on PostgrestException {
-      // Column not migrated yet — treat as everyone.
-      return MessageContactPreference.everyone;
-    }
-  }
-
-  static Future<bool> _pairHasAnyHire(String otherUserId) async {
-    final user = _client.auth.currentUser;
-    if (user == null) return false;
-    try {
-      final raw = await _client.rpc(
-        'pair_has_any_hire',
-        params: {
-          'p_user_a': user.id,
-          'p_user_b': otherUserId,
-        },
-      );
-      if (raw == true || raw == false) return raw == true;
-    } on PostgrestException {
-      // Fall through to direct orders query.
-    }
-
-    final rows = await _client
-        .from('orders')
-        .select('id')
-        .or(
-          'and(client_id.eq.${user.id},seller_id.eq.$otherUserId),'
-          'and(client_id.eq.$otherUserId,seller_id.eq.${user.id})',
-        )
-        .limit(1);
-    return (rows as List).isNotEmpty;
-  }
 
   /// Get or create a conversation between the current user and another user.
   /// Determines client/seller roles from profiles.
@@ -104,7 +23,10 @@ class ChatService {
 
     if (existing != null) return existing;
 
-    await _assertMayStartConversation(otherUserId);
+    if (await BlockService.isContactBlocked(otherUserId)) {
+      throw Exception('Contact blocked');
+    }
+    await ChatPrivacyService.assertCanStartChat(otherUserId);
 
     // Determine who is client and who is seller
     final myProfile = await _client.from('profiles').select('role').eq('id', user.id).single();
@@ -113,15 +35,12 @@ class ChatService {
     final clientId = myRole == 'client' ? user.id : otherUserId;
     final sellerId = myRole == 'seller' ? user.id : otherUserId;
 
-    try {
-      final newConversation = await _client.from('conversations').insert({
-        'client_id': clientId,
-        'seller_id': sellerId,
-      }).select().single();
-      return newConversation;
-    } on PostgrestException catch (e) {
-      _rethrowPreferenceDenied(e);
-    }
+    final newConversation = await _client.from('conversations').insert({
+      'client_id': clientId,
+      'seller_id': sellerId,
+    }).select().single();
+
+    return newConversation;
   }
 
   /// Job-board applications: the **buyer** (job poster) is always `client_id`,
@@ -153,27 +72,15 @@ class ChatService {
 
     if (existing != null) return existing;
 
-    await _assertMayStartConversation(buyerUserId);
+    if (await BlockService.isContactBlocked(buyerUserId)) {
+      throw Exception('Contact blocked');
+    }
+    await ChatPrivacyService.assertCanStartChat(buyerUserId);
 
-    try {
-      return await _client.from('conversations').insert({
-        'client_id': clientId,
-        'seller_id': sellerId,
-      }).select().single();
-    } on PostgrestException catch (e) {
-      _rethrowPreferenceDenied(e);
-    }
-  }
-
-  static Never _rethrowPreferenceDenied(PostgrestException e) {
-    final msg = '${e.message} ${e.details ?? ''} ${e.hint ?? ''}';
-    if (msg.contains('MESSAGING_PREFERENCE_DENIED:nobody')) {
-      throw Exception('Messaging preference denied: nobody');
-    }
-    if (msg.contains('MESSAGING_PREFERENCE_DENIED:hired_only')) {
-      throw Exception('Messaging preference denied: hired_only');
-    }
-    throw e;
+    return await _client.from('conversations').insert({
+      'client_id': clientId,
+      'seller_id': sellerId,
+    }).select().single();
   }
 
   /// Fetch conversation list for the current user, joined with profile info

@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/constants/brand_qr_palette.dart';
@@ -16,6 +17,91 @@ class BrandPaintingQr extends StatelessWidget {
   final String data;
   final double size;
   final double padding;
+
+  /// Printable poster. [caption] is instructions only — never the token.
+  static Future<ui.Image> posterImage({
+    required String data,
+    required String title,
+    required String caption,
+  }) async {
+    const width = 1080.0;
+    const pad = 72.0;
+    const qrSize = 760.0;
+    const titleStyle = TextStyle(
+      color: Color(0xFF1A2B24),
+      fontSize: 48,
+      fontWeight: FontWeight.w700,
+      height: 1.2,
+    );
+    const captionStyle = TextStyle(
+      color: Color(0xFF5C6B66),
+      fontSize: 32,
+      height: 1.35,
+    );
+
+    final titlePainter = TextPainter(
+      text: TextSpan(text: title, style: titleStyle),
+      textDirection: TextDirection.ltr,
+      textAlign: TextAlign.center,
+      maxLines: 3,
+      ellipsis: '…',
+    )..layout(maxWidth: width - pad * 2);
+
+    final captionPainter = TextPainter(
+      text: TextSpan(text: caption, style: captionStyle),
+      textDirection: TextDirection.ltr,
+      textAlign: TextAlign.center,
+    )..layout(maxWidth: width - pad * 2);
+
+    final height =
+        pad + titlePainter.height + 40 + qrSize + 40 + captionPainter.height + pad;
+
+    final recorder = ui.PictureRecorder();
+    final canvas = Canvas(recorder);
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, width, height),
+      Paint()..color = const Color(0xFFFFFFFF),
+    );
+
+    titlePainter.paint(
+      canvas,
+      Offset((width - titlePainter.width) / 2, pad),
+    );
+
+    final qrTop = pad + titlePainter.height + 40;
+    final qrLeft = (width - qrSize) / 2;
+    canvas.save();
+    canvas.translate(qrLeft, qrTop);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        const Rect.fromLTWH(0, 0, qrSize, qrSize),
+        const Radius.circular(36),
+      ),
+      Paint()..color = BrandQrPalette.background,
+    );
+    const inner = 40.0;
+    canvas.save();
+    canvas.translate(inner, inner);
+    _BrandPaintingQrPainter(data: data).paint(
+      canvas,
+      const Size.square(qrSize - inner * 2),
+    );
+    canvas.restore();
+    canvas.restore();
+
+    captionPainter.paint(
+      canvas,
+      Offset((width - captionPainter.width) / 2, qrTop + qrSize + 40),
+    );
+
+    titlePainter.dispose();
+    captionPainter.dispose();
+
+    final picture = recorder.endRecording();
+    final image = await picture.toImage(width.ceil(), height.ceil());
+    picture.dispose();
+    return image;
+  }
 
   @override
   Widget build(BuildContext context) {

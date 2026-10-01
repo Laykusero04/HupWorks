@@ -372,7 +372,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get attendanceClientHintSelfReport =>
-      'Werknemers klokken in en uit in de app — geen QR nodig.';
+      'Werknemers klokken in en uit in de app â€” geen QR nodig.';
 
   @override
   String get attendanceClientHintDisabled =>
@@ -380,11 +380,11 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get attendanceFreelancerHintQrInOut =>
-      'Scan de QR op locatie om een keer in en uit te klokken per dienst.';
+      'Scan de QR op locatie om in en uit te klokken. Je moet op de werklocatie zijn.';
 
   @override
   String get attendanceFreelancerHintQrOnce =>
-      'Scan de QR een keer per dienst bij aankomst.';
+      'Scan de QR een keer bij aankomst. Je moet op de werklocatie zijn.';
 
   @override
   String get attendanceFreelancerHintSelfReport =>
@@ -396,11 +396,11 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get attendanceOnboardingQrInOut =>
-      'Open Aanwezigheid in HupWorks en scan de QR-code op de werklocatie om in te klokken bij aankomst en uit te klokken bij vertrek.';
+      'Open Aanwezigheid in HupWorks en scan de QR-code op de werklocatie om in te klokken bij aankomst en uit te klokken bij vertrek. De app controleert of je binnen 200 meter van de locatiepin bent.';
 
   @override
   String get attendanceOnboardingQrOnce =>
-      'Bij aankomst open je Aanwezigheid in HupWorks en scan je de QR-code op locatie. Je hoeft maar een keer per dienst in te checken.';
+      'Bij aankomst open je Aanwezigheid in HupWorks en scan je de QR-code op locatie. Je hoeft maar een keer per dag in te checken. De app controleert of je binnen 200 meter van de locatiepin bent.';
 
   @override
   String get attendanceOnboardingSelfReport =>
@@ -2657,13 +2657,15 @@ class AppLocalizationsNl extends AppLocalizations {
   String get attendanceQrShort => 'QR';
 
   @override
-  String get attendanceLocationRequired => 'Locatie vereist';
+  String get attendanceLocationRequired =>
+      'Zet locatie aan zodat we kunnen controleren dat je op de werklocatie bent.';
 
   @override
   String get attendanceJobSiteNotSet => 'Werklocatie niet ingesteld';
 
   @override
-  String get attendanceTooFarFromSite => 'Te ver van de werklocatie';
+  String get attendanceTooFarFromSite =>
+      'Je moet op de werklocatie zijn om aanwezigheid te registreren. Ga dichterbij en probeer opnieuw.';
 
   @override
   String get attendanceOutsideShiftWindow => 'Buiten het dienstrooster';
@@ -3730,4 +3732,191 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get faqAttendanceA =>
       'Profielmenu → Aanwezigheid. Op locatie scan je de QR van de werkgever (gedeeld door alle ingehuurde werknemers). Iedereen mag een keer in- en uitklokken per dienst. Je moet binnen 200 m van de job-pin zijn. De QR-poster is alleen een afbeelding zodat de deep link niet te kopiëren is.';
+
+  @override
+  String get pleasePinJobSite =>
+      'Zet de werklocatie op de kaart. QR-aanwezigheid werkt alleen op die plek.';
+
+  @override
+  String get setSitePin => 'Locatie vastzetten';
+
+  @override
+  String get attendancePinSiteToUseQr =>
+      'Zet eerst een pin op de kaart. Werknemers kunnen alleen inklokken binnen 200 meter van die pin.';
+
+  @override
+  String get attendanceLocationCheckHint =>
+      'HupWorks controleert of je op de werklocatie bent voordat dit wordt opgeslagen.';
+
+  @override
+  String get attendanceLocationDenied =>
+      'Locatietoestemming is nodig om in te klokken op de werklocatie.';
+
+  @override
+  String get attendanceLocationDeniedForever =>
+      'Locatietoestemming is geblokkeerd. Zet die aan in Instellingen om in te klokken.';
+
+  @override
+  String get attendanceLocationServicesOff =>
+      'Zet locatievoorzieningen aan om in te klokken op de werklocatie.';
+
+  @override
+  String get attendanceNoSitePin =>
+      'Deze job heeft nog geen locatiepin. Vraag de werkgever om de locatie op de kaart te zetten.';
+
+  @override
+  String get attendanceShareQrSubject => 'HupWorks aanwezigheids-QR';
+
+  @override
+  String get attendanceShareQrCaption => 'Scan in HupWorks op de werklocatie';
+
+  @override
+  String attendanceShareQrMessage(String job) {
+    return 'Print deze QR en hang hem op bij \"$job\". Ingehuurde werknemers scannen hem in HupWorks terwijl ze op locatie zijn.';
+  }
+
+  @override
+  String get chatPrivacyTitle => 'Wie kan je berichten';
+
+  @override
+  String get chatPrivacySubtitle =>
+      'Kies welke profielen een nieuw gesprek mogen starten. Dit helpt spam en ongewenste berichten te voorkomen.';
+
+  @override
+  String get chatPrivacyAnyone => 'Iedereen';
+
+  @override
+  String get chatPrivacyAnyoneHint =>
+      'Elk profiel kan een nieuw gesprek met je starten.';
+
+  @override
+  String get chatPrivacyVerified => 'Alleen geverifieerde profielen';
+
+  @override
+  String get chatPrivacyVerifiedHint =>
+      'Alleen mensen die hun identiteit hebben geverifieerd kunnen een nieuw gesprek starten.';
+
+  @override
+  String get chatPrivacyConnections => 'Mensen met wie ik heb gewerkt';
+
+  @override
+  String get chatPrivacyConnectionsHint =>
+      'Alleen profielen waarmee je al een sollicitatie of contract deelt.';
+
+  @override
+  String get chatPrivacyNobody => 'Geen nieuwe berichten';
+
+  @override
+  String get chatPrivacyNobodyHint =>
+      'Niemand nieuw kan een gesprek starten. Bestaande gesprekken en open contracten blijven open.';
+
+  @override
+  String get chatPrivacySaved => 'Berichtvoorkeur opgeslagen';
+
+  @override
+  String get chatPrivacyDeniedNobody =>
+      'Deze persoon ontvangt geen nieuwe berichten.';
+
+  @override
+  String get chatPrivacyDeniedVerified =>
+      'Deze persoon ontvangt alleen berichten van geverifieerde profielen.';
+
+  @override
+  String get chatPrivacyDeniedConnections =>
+      'Deze persoon ontvangt alleen berichten van mensen met wie die al werkt.';
+
+  @override
+  String get platformShareTitle => 'Jouw aandeel';
+
+  @override
+  String get platformShareMenuSubtitle => 'Zie het werk dat via jou loopt';
+
+  @override
+  String get platformShareHeadline =>
+      'Zie jouw aandeel in het werk dat het platform draait.';
+
+  @override
+  String get platformShareSellerNote =>
+      'Geteld op diensten die jij hebt afgerond.';
+
+  @override
+  String get platformShareClientNote =>
+      'Geteld op diensten die jij hebt ingehuurd en als afgerond hebt gemarkeerd.';
+
+  @override
+  String get platformShareOfCompletedWork => 'van afgerond werk';
+
+  @override
+  String get platformShareShifts => 'Afgeronde diensten';
+
+  @override
+  String get platformShareHours => 'Geaccepteerde uren';
+
+  @override
+  String get platformShareValue => 'Afgerond werk';
+
+  @override
+  String platformShareCountOf(String yours, String total) {
+    return '$yours van $total';
+  }
+
+  @override
+  String get platformShareEmpty =>
+      'Rond een dienst af om jouw aandeel in het platform te zien.';
+
+  @override
+  String get platformShareDisclaimer =>
+      'Dit is jouw aandeel in afgeronde diensten. Het is geen eigendom van het bedrijf en geen uitbetaling.';
+
+  @override
+  String get charityCauseTitle => 'Steun een doel';
+
+  @override
+  String get charityCauseHeadline =>
+      'Kies een doel dat bij jouw aandeel hoort.';
+
+  @override
+  String get charityCauseBody =>
+      'Dit verandert je percentage niet. HupWorks stuurt geen geld van je diensten. Je keuze wordt bewaard voor een latere gift van het platform.';
+
+  @override
+  String get charityCauseShareLabel => 'Doel dat je steunt';
+
+  @override
+  String get charityCauseShareEmpty => 'Kies een doel';
+
+  @override
+  String get charityCauseNone => 'Geen doel';
+
+  @override
+  String get charityCauseNoneHint =>
+      'Je aandeel blijft alleen een overzicht van afgerond werk.';
+
+  @override
+  String get charityCauseFood => 'Voedsel';
+
+  @override
+  String get charityCauseFoodHint => 'Maaltijden en voedselhulp.';
+
+  @override
+  String get charityCauseEducation => 'Onderwijs';
+
+  @override
+  String get charityCauseEducationHint => 'Leren en schoolondersteuning.';
+
+  @override
+  String get charityCauseHealth => 'Gezondheid';
+
+  @override
+  String get charityCauseHealthHint => 'Zorg en gezondheidsondersteuning.';
+
+  @override
+  String get charityCauseShelter => 'Opvang';
+
+  @override
+  String get charityCauseShelterHint => 'Huisvesting en een veilige plek.';
+
+  @override
+  String get accountBlocked =>
+      'Dit account is geblokkeerd. Neem contact op met support als je denkt dat dit een vergissing is.';
 }

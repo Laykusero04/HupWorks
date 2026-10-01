@@ -145,6 +145,15 @@ class _SellerProfileState extends State<SellerProfile> {
                   },
                 ),
                 ProfileMenuListTile(
+                  icon: Icons.pie_chart_outline,
+                  title: l10n.platformShareTitle,
+                  subtitle: l10n.platformShareMenuSubtitle,
+                  onTap: () {
+                    Navigator.pop(context);
+                    context.push(AppRoutes.sellerPlatformShare);
+                  },
+                ),
+                ProfileMenuListTile(
                   icon: Icons.verified_user_outlined,
                   title: l10n.identityVerification,
                   subtitle: l10n.trustScoreSubtitle(

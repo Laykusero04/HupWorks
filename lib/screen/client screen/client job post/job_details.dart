@@ -4,6 +4,7 @@ import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/job_offer_delivery.dart';
 import 'package:freelancer/core/utils/localized_category.dart';
+import 'package:freelancer/core/utils/message_contact_preference.dart';
 import 'package:freelancer/screen/seller%20screen/seller%20message/chat_inbox.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/core/utils/attendance_mode.dart';
@@ -17,6 +18,7 @@ import 'package:freelancer/services/job_posts_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../attendance/attendance_punch_log_section.dart';
+import '../../attendance/ensure_job_site_pin.dart';
 import '../../onboarding/hire_onboarding_editor_screen.dart';
 import '../../attendance/attendance_qr_display_screen.dart';
 import '../../widgets/constant.dart';
@@ -126,7 +128,11 @@ class _JobDetailsState extends State<JobDetails> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.couldNotOpenChatWithDetail('$e'))),
+          SnackBar(
+            content: Text(
+              MessageContactPreference.openChatErrorMessage(context.l10n, e),
+            ),
+          ),
         );
       }
     }
@@ -710,6 +716,19 @@ class _JobDetailsState extends State<JobDetails> {
   bool get _showAttendanceSection => AttendanceService.isOnsiteJob(_jobPost);
 
   Future<void> _saveAttendanceMode(String mode) async {
+    if (AttendanceMode.canUseQr(mode) &&
+        jobPostCoordinates(_jobPost) == null) {
+      final pinned = await ensureJobSitePinForQr(
+        context: context,
+        jobPostId: widget.jobPostId,
+        jobPost: _jobPost,
+        onUpdated: (j) {
+          if (mounted) setState(() => _jobPost = {...?_jobPost, ...j});
+        },
+      );
+      if (pinned == null || !mounted) return;
+    }
+
     setState(() => _savingAttendanceMode = true);
     try {
       await AttendanceService.updateJobAttendanceMode(widget.jobPostId, mode);
@@ -731,6 +750,23 @@ class _JobDetailsState extends State<JobDetails> {
         );
       }
     }
+  }
+
+  Future<void> _openAttendanceQr(String jobTitle) async {
+    final pinned = await ensureJobSitePinForQr(
+      context: context,
+      jobPostId: widget.jobPostId,
+      jobPost: _jobPost,
+      onUpdated: (j) {
+        if (mounted) setState(() => _jobPost = {...?_jobPost, ...j});
+      },
+    );
+    if (pinned == null || !mounted) return;
+    AttendanceQrDisplayScreen(
+      jobPostId: widget.jobPostId,
+      jobTitle: jobTitle,
+      jobPost: pinned,
+    ).launch(context);
   }
 
   Map<String, String> _attendanceModeLabels(AppLocalizations l10n) => {
@@ -772,12 +808,7 @@ class _JobDetailsState extends State<JobDetails> {
                 TextButton(
                   onPressed: _savingAttendanceMode
                       ? null
-                      : () {
-                          AttendanceQrDisplayScreen(
-                            jobPostId: widget.jobPostId,
-                            jobTitle: jobTitle,
-                          ).launch(context);
-                        },
+                      : () => _openAttendanceQr(jobTitle),
                   style: TextButton.styleFrom(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     minimumSize: Size.zero,

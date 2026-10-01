@@ -38,7 +38,7 @@ class AttendanceMode {
   static String label(String mode, [AppLocalizations? l10n]) {
     switch (normalize(mode)) {
       case qrOnce:
-        return l10n?.attendanceModeQrOnce ?? 'QR check-in (once per day)';
+        return l10n?.attendanceModeQrOnce ?? 'QR check-in (once per shift)';
       case selfReport:
         return l10n?.attendanceModeSelfReport ?? 'Self-report in app';
       case disabled:
@@ -53,7 +53,7 @@ class AttendanceMode {
     switch (normalize(mode)) {
       case qrOnce:
         return l10n?.attendanceClientHintQrOnce ??
-            'Post a QR at the site. Workers scan once per day to check in.';
+            'Post one QR at the site for all hired workers. Each worker scans once per shift to check in (must be on-site).';
       case selfReport:
         return l10n?.attendanceClientHintSelfReport ??
             'Workers clock in and out in the app — no QR needed.';
@@ -63,7 +63,7 @@ class AttendanceMode {
       case qrInOut:
       default:
         return l10n?.attendanceClientHintQrInOut ??
-            'Post a QR at the site. Workers scan to clock in and clock out.';
+            'Post one QR at the site for all hired workers. Each worker clocks in once and out once per shift (must be on-site).';
     }
   }
 
@@ -71,7 +71,7 @@ class AttendanceMode {
     switch (normalize(mode)) {
       case qrOnce:
         return l10n?.attendanceFreelancerHintQrOnce ??
-            'Scan the site QR once when you arrive.';
+            'Scan the site QR once per shift when you arrive.';
       case selfReport:
         return l10n?.attendanceFreelancerHintSelfReport ??
             'Tap clock in when you start and clock out when you leave.';
@@ -81,7 +81,7 @@ class AttendanceMode {
       case qrInOut:
       default:
         return l10n?.attendanceFreelancerHintQrInOut ??
-            'Scan the site QR to clock in and clock out.';
+            'Scan the site QR to clock in and clock out once per shift.';
     }
   }
 
@@ -89,7 +89,7 @@ class AttendanceMode {
     switch (normalize(mode)) {
       case qrOnce:
         return l10n?.attendanceOnboardingQrOnce ??
-            'When you arrive, open Attendance in HupWorks and scan the QR code posted on site. You only need to check in once per day.';
+            'When you arrive, open Attendance in HupWorks and scan the QR code posted on site. You only need to check in once per shift.';
       case selfReport:
         return l10n?.attendanceOnboardingSelfReport ??
             'Open Attendance in HupWorks on this contract and tap Clock in when you start and Clock out when you leave. No QR scan is required.';

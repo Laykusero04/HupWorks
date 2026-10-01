@@ -5,7 +5,13 @@ import { PageHeader } from '../components/PageHeader'
 import { PageSection } from '../components/PageSection'
 import { QueueToolbar } from '../components/QueueToolbar'
 import { StatusAlert } from '../components/StatusAlert'
-import { deleteUser, fetchUsers, statusLabel, type AdminUserRow } from '../lib/adminApi'
+import {
+  deleteUser,
+  fetchUsers,
+  setUserBan,
+  statusLabel,
+  type AdminUserRow,
+} from '../lib/adminApi'
 
 type RoleFilter = 'all' | 'client' | 'seller' | 'incomplete'
 
@@ -25,6 +31,13 @@ function statusVariant(status: string | null | undefined) {
   return 'secondary'
 }
 
+function isUserBanned(row: AdminUserRow) {
+  const until = row.auth?.banned_until
+  if (!until) return false
+  const t = Date.parse(until)
+  return Number.isFinite(t) && t > Date.now()
+}
+
 export function UsersPage() {
   const [rows, setRows] = useState<AdminUserRow[]>([])
   const [error, setError] = useState<string | null>(null)
@@ -32,7 +45,8 @@ export function UsersPage() {
   const [query, setQuery] = useState('')
   const [role, setRole] = useState<RoleFilter>('all')
   const [expandedId, setExpandedId] = useState<string | null>(null)
-  const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [actionId, setActionId] = useState<string | null>(null)
+  const [actionKind, setActionKind] = useState<'ban' | 'delete' | null>(null)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -68,7 +82,8 @@ export function UsersPage() {
       `Permanently delete ${label}?\n\nThis cancels their open orders, removes profile data, and deletes the Auth user. This cannot be undone.`,
     )
     if (!ok) return
-    setDeletingId(row.id)
+    setActionId(row.id)
+    setActionKind('delete')
     setError(null)
     try {
       await deleteUser(row.id)
@@ -77,7 +92,31 @@ export function UsersPage() {
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err))
     } finally {
-      setDeletingId(null)
+      setActionId(null)
+      setActionKind(null)
+    }
+  }
+
+  async function handleToggleBan(row: AdminUserRow) {
+    const label = row.name || row.email || row.id
+    const banned = isUserBanned(row)
+    const ok = window.confirm(
+      banned
+        ? `Unblock ${label}?\n\nThey will be able to sign in again.`
+        : `Block ${label}?\n\nThey will not be able to sign in. Their account and data stay intact (unlike Delete).`,
+    )
+    if (!ok) return
+    setActionId(row.id)
+    setActionKind('ban')
+    setError(null)
+    try {
+      await setUserBan(row.id, !banned)
+      await load()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err))
+    } finally {
+      setActionId(null)
+      setActionKind(null)
     }
   }
 
@@ -128,7 +167,8 @@ export function UsersPage() {
               const open = expandedId === row.id
               const roleLabel =
                 row.role === 'seller' ? 'Seller' : row.role === 'client' ? 'Client' : row.role
-              const deleting = deletingId === row.id
+              const busy = actionId === row.id
+              const banned = isUserBanned(row)
               return (
                 <PageSection key={row.id} bodyClassName="py-3">
                   <button
@@ -159,6 +199,7 @@ export function UsersPage() {
                               Onboarding {row.seller_onboarding_completed ? 'done' : 'incomplete'}
                             </Badge>
                           )}
+                          {banned && <Badge bg="danger">Blocked</Badge>}
                         </div>
                       </div>
                       <span className="small text-secondary flex-shrink-0">{open ? 'Hide' : 'Details'}</span>
@@ -215,12 +256,21 @@ export function UsersPage() {
                             <div>{formatWhen(row.auth.last_sign_in_at)}</div>
                           </div>
                         )}
-                        {row.auth?.banned_until && (
-                          <div className="col-md-6">
-                            <div className="text-secondary">Banned until</div>
-                            <div>{formatWhen(row.auth.banned_until)}</div>
+                        <div className="col-md-6">
+                          <div className="text-secondary">Account status</div>
+                          <div>
+                            {banned ? (
+                              <>
+                                <Badge bg="danger" className="me-2">
+                                  Blocked
+                                </Badge>
+                                until {formatWhen(row.auth?.banned_until)}
+                              </>
+                            ) : (
+                              'Active'
+                            )}
                           </div>
-                        )}
+                        </div>
                         {row.profile_image_url && (
                           <div className="col-12">
                             <a href={row.profile_image_url} target="_blank" rel="noreferrer">
@@ -228,14 +278,28 @@ export function UsersPage() {
                             </a>
                           </div>
                         )}
-                        <div className="col-12">
+                        <div className="col-12 d-flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            className={`btn btn-sm ${banned ? 'btn-outline-success' : 'btn-outline-warning'}`}
+                            disabled={busy}
+                            onClick={() => void handleToggleBan(row)}
+                          >
+                            {busy && actionKind === 'ban'
+                              ? banned
+                                ? 'Unblocking…'
+                                : 'Blocking…'
+                              : banned
+                                ? 'Unblock'
+                                : 'Block'}
+                          </button>
                           <button
                             type="button"
                             className="btn btn-outline-danger btn-sm"
-                            disabled={deleting}
+                            disabled={busy}
                             onClick={() => void handleDelete(row)}
                           >
-                            {deleting ? 'Deleting…' : 'Delete account'}
+                            {busy && actionKind === 'delete' ? 'Deleting…' : 'Delete account'}
                           </button>
                         </div>
                       </div>

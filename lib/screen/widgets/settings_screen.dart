@@ -5,6 +5,7 @@ import 'package:freelancer/core/constants/support_contact.dart';
 import 'package:freelancer/core/locale/locale_controller.dart';
 import 'package:freelancer/core/locale/locale_scope.dart';
 import 'package:freelancer/core/notifications/push_notification_prefs.dart';
+import 'package:freelancer/core/utils/message_contact_preference.dart';
 import 'package:freelancer/core/utils/profile_avatar_picker.dart';
 import 'package:freelancer/core/utils/profile_image.dart';
 import 'package:freelancer/core/utils/support_chat_navigation.dart';
@@ -45,8 +46,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String _photoStatus = 'unverified';
   String? _photoRejectionReason;
   String _verificationStatus = 'unverified';
+  String _messageContactPreference = MessageContactPreference.everyone;
   bool _uploadingPhoto = false;
   bool _deletingAccount = false;
+  bool _savingContactPref = false;
 
   @override
   void initState() {
@@ -108,6 +111,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _photoRejectionReason =
           profile?['profile_photo_rejection_reason'] as String?;
       _verificationStatus = verificationStatus;
+      _messageContactPreference = MessageContactPreference.parse(
+        profile?['message_contact_preference'],
+      );
     });
   }
 
@@ -192,6 +198,101 @@ class _SettingsScreenState extends State<SettingsScreen> {
         : AppRoutes.clientProfileVerify;
     await context.push(route);
     if (mounted) await _loadProfile();
+  }
+
+  Future<void> _openMessageContactPreference() async {
+    if (_savingContactPref) return;
+    final l10n = context.l10n;
+    final selected = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: kWhite,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(8, 12, 8, 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+                  child: Text(
+                    l10n.messagingPreferenceTitle,
+                    style: kTextStyle.copyWith(
+                      color: kNeutralColor,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                  child: Text(
+                    l10n.messagingPreferenceSubtitle,
+                    style: kTextStyle.copyWith(
+                      color: kSubTitleColor,
+                      fontSize: 13,
+                    ),
+                  ),
+                ),
+                for (final value in MessageContactPreference.values)
+                  ListTile(
+                    onTap: () => Navigator.pop(ctx, value),
+                    title: Text(
+                      MessageContactPreference.label(l10n, value),
+                      style: kTextStyle.copyWith(
+                        color: kNeutralColor,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    subtitle: Text(
+                      MessageContactPreference.description(l10n, value),
+                      style: kTextStyle.copyWith(
+                        color: kSubTitleColor,
+                        fontSize: 12,
+                      ),
+                    ),
+                    trailing: value == _messageContactPreference
+                        ? const Icon(Icons.check_rounded, color: kPrimaryColor)
+                        : null,
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+    if (selected == null ||
+        selected == _messageContactPreference ||
+        !mounted) {
+      return;
+    }
+
+    final previous = _messageContactPreference;
+    setState(() {
+      _messageContactPreference = selected;
+      _savingContactPref = true;
+    });
+    try {
+      await ProfileService.updateProfile({
+        'message_contact_preference': selected,
+      });
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.messagingPreferenceSaved)),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _messageContactPreference = previous);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.errorWithDetail('$e'))),
+      );
+    } finally {
+      if (mounted) setState(() => _savingContactPref = false);
+    }
   }
 
   Future<void> _confirmDeleteAccount() async {
@@ -411,6 +512,47 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   trailing: CupertinoSwitch(
                     value: _pushEnabled,
                     onChanged: _pushBusy ? null : _setPushEnabled,
+                  ),
+                ),
+                ListTile(
+                  onTap: _savingContactPref ? null : _openMessageContactPreference,
+                  visualDensity: const VisualDensity(vertical: -3),
+                  horizontalTitleGap: 10,
+                  contentPadding: const EdgeInsets.only(bottom: 15),
+                  leading: Container(
+                    padding: const EdgeInsets.all(10.0),
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Color(0xFFE8F4FF),
+                    ),
+                    child: const Icon(
+                      Icons.forum_outlined,
+                      color: Color(0xFF2563EB),
+                    ),
+                  ),
+                  title: Text(
+                    l10n.messagingPreferenceTitle,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style: kTextStyle.copyWith(color: kNeutralColor),
+                  ),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          MessageContactPreference.label(
+                            l10n,
+                            _messageContactPreference,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          style: kTextStyle.copyWith(color: kSubTitleColor),
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      const Icon(Icons.chevron_right, color: kLightNeutralColor),
+                    ],
                   ),
                 ),
                 ListTile(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/utils/message_contact_preference.dart';
 import 'package:freelancer/data/models/chat_order_context.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/client%20screen/client%20orders/client_order_details.dart';
@@ -27,7 +28,11 @@ Future<void> openOrderChat(
   } catch (e) {
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.couldNotOpenChatWithDetail('$e'))),
+        SnackBar(
+          content: Text(
+            MessageContactPreference.openChatErrorMessage(context.l10n, e),
+          ),
+        ),
       );
     }
   }

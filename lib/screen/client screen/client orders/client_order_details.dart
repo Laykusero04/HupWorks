@@ -173,6 +173,7 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
       onboardingStatus: _onboardingStatusShort(),
       onOnboarding: _openOnboardingEditor,
       jobPost: OrderContractDisplay.jobPostFromOrder(_order),
+      onJobLocationUpdated: _loadOrder,
     );
   }
 

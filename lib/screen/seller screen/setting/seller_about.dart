@@ -12,6 +12,7 @@ class SellerAbout extends StatelessWidget {
       appBarTitle: l10n.aboutUs,
       sections: [
         (title: l10n.aboutHupWorksTitle, body: l10n.aboutHupWorksBody),
+        (title: l10n.aboutOwnershipTitle, body: l10n.aboutOwnershipBody),
       ],
     );
   }

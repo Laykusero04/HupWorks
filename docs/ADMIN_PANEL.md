@@ -143,7 +143,7 @@ After obligation clears: composer disabled; Message/Hire CTAs refuse with contac
 | Search by email / name / id | Support lookups |
 | See role, city, rating, verification, `seller_onboarding_completed` | Funnel + trust |
 | View seller public vs private details | DOB / address for compliance review (private table) |
-| Soft-disable / flag account | Abuse response (needs schema if not present yet) |
+| Soft-disable / flag account | Auth ban via Users → Block (`ban_duration`); Unblock clears ban. Does not delete. |
 | Incomplete onboarding list | Sellers with `seller_onboarding_completed = false` |
 
 ---

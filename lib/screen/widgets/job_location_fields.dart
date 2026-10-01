@@ -24,6 +24,7 @@ extension JobLocationTypeLabel on JobLocationType {
 /// - Required radio: On-site / Remote
 /// - On-site shows "Pin on map" + location text field
 /// - Remote shows the text field only (no pin)
+/// - [pinRequired] marks the map pin as required (e.g. QR attendance)
 class JobLocationFields extends StatefulWidget {
   const JobLocationFields({
     super.key,
@@ -33,6 +34,7 @@ class JobLocationFields extends StatefulWidget {
     required this.locationType,
     required this.onLocationTypeChanged,
     this.accentColor,
+    this.pinRequired = false,
   });
 
   final TextEditingController locationController;
@@ -41,6 +43,7 @@ class JobLocationFields extends StatefulWidget {
   final JobLocationType locationType;
   final ValueChanged<JobLocationType> onLocationTypeChanged;
   final Color? accentColor;
+  final bool pinRequired;
 
   @override
   State<JobLocationFields> createState() => _JobLocationFieldsState();
@@ -55,7 +58,7 @@ class _JobLocationFieldsState extends State<JobLocationFields> {
           initialLocation: widget.locationController.text,
           initialPosition: widget.pin,
           accentColor: widget.accentColor,
-          title: 'Job location',
+          title: context.l10n.jobSitePinPickerTitle,
         ),
       ),
     );
@@ -158,14 +161,31 @@ class _JobLocationFieldsState extends State<JobLocationFields> {
           OutlinedButton.icon(
             onPressed: _openMap,
             icon: Icon(FeatherIcons.mapPin, size: 18, color: accent),
-            label: Text(
-              widget.pin != null ? 'Change map pin' : 'Pin on map',
-              style: kTextStyle.copyWith(
-                  color: accent, fontWeight: FontWeight.w600),
+            label: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  widget.pin != null ? l10n.changeMapPin : l10n.pinOnMap,
+                  style: kTextStyle.copyWith(
+                      color: accent, fontWeight: FontWeight.w600),
+                ),
+                if (widget.pinRequired && widget.pin == null) ...[
+                  const SizedBox(width: 4),
+                  Text(
+                    l10n.requiredFieldMark,
+                    style: kTextStyle.copyWith(
+                        color: Colors.red, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ],
             ),
             style: OutlinedButton.styleFrom(
               foregroundColor: accent,
-              side: BorderSide(color: accent.withValues(alpha: 0.45)),
+              side: BorderSide(
+                color: widget.pinRequired && widget.pin == null
+                    ? Colors.red.withValues(alpha: 0.55)
+                    : accent.withValues(alpha: 0.45),
+              ),
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8)),
@@ -177,6 +197,13 @@ class _JobLocationFieldsState extends State<JobLocationFields> {
               '📍 ${widget.pin!.latitude.toStringAsFixed(4)}, ${widget.pin!.longitude.toStringAsFixed(4)}',
               style: kTextStyle.copyWith(
                   color: kLightNeutralColor, fontSize: 12),
+            ),
+          ] else if (widget.pinRequired) ...[
+            const SizedBox(height: 4),
+            Text(
+              l10n.jobSitePinRequiredForQr,
+              style: kTextStyle.copyWith(
+                  color: kSubTitleColor, fontSize: 12),
             ),
           ],
         ],

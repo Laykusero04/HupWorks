@@ -484,6 +484,12 @@ abstract class AppLocalizations {
   /// **'Please fill in all fields'**
   String get pleaseFillAllFields;
 
+  /// No description provided for @accountBlockedLoginMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This account has been blocked. Contact support if you think this is a mistake.'**
+  String get accountBlockedLoginMessage;
+
   /// No description provided for @pushNotifications.
   ///
   /// In en, this message translates to:
@@ -739,7 +745,7 @@ abstract class AppLocalizations {
   /// No description provided for @attendanceModeQrOnce.
   ///
   /// In en, this message translates to:
-  /// **'QR check-in (once per day)'**
+  /// **'QR check-in (once per shift)'**
   String get attendanceModeQrOnce;
 
   /// No description provided for @attendanceModeSelfReport.
@@ -757,13 +763,13 @@ abstract class AppLocalizations {
   /// No description provided for @attendanceClientHintQrInOut.
   ///
   /// In en, this message translates to:
-  /// **'Post a QR at the site. Workers scan to clock in and clock out.'**
+  /// **'Post one QR at the site for all hired workers. Each worker clocks in once and out once per shift (must be on-site).'**
   String get attendanceClientHintQrInOut;
 
   /// No description provided for @attendanceClientHintQrOnce.
   ///
   /// In en, this message translates to:
-  /// **'Post a QR at the site. Workers scan once per day to check in.'**
+  /// **'Post one QR at the site for all hired workers. Each worker scans once per shift to check in (must be on-site).'**
   String get attendanceClientHintQrOnce;
 
   /// No description provided for @attendanceClientHintSelfReport.
@@ -781,13 +787,13 @@ abstract class AppLocalizations {
   /// No description provided for @attendanceFreelancerHintQrInOut.
   ///
   /// In en, this message translates to:
-  /// **'Scan the site QR to clock in and clock out.'**
+  /// **'Scan the site QR to clock in and clock out once per shift.'**
   String get attendanceFreelancerHintQrInOut;
 
   /// No description provided for @attendanceFreelancerHintQrOnce.
   ///
   /// In en, this message translates to:
-  /// **'Scan the site QR once when you arrive.'**
+  /// **'Scan the site QR once per shift when you arrive.'**
   String get attendanceFreelancerHintQrOnce;
 
   /// No description provided for @attendanceFreelancerHintSelfReport.
@@ -811,7 +817,7 @@ abstract class AppLocalizations {
   /// No description provided for @attendanceOnboardingQrOnce.
   ///
   /// In en, this message translates to:
-  /// **'When you arrive, open Attendance in HupWorks and scan the QR code posted on site. You only need to check in once per day.'**
+  /// **'When you arrive, open Attendance in HupWorks and scan the QR code posted on site. You only need to check in once per shift.'**
   String get attendanceOnboardingQrOnce;
 
   /// No description provided for @attendanceOnboardingSelfReport.
@@ -861,6 +867,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'HupWorks is a marketplace that connects clients with freelancers and local workers for jobs and services. We help people post work, hire talent, track attendance on-site, and manage orders from start to finish.\n\nOur goal is to make hiring and getting hired simpler, clearer, and more reliable—whether you need skilled help for a project or want to grow your freelance business.'**
   String get aboutHupWorksBody;
+
+  /// No description provided for @aboutOwnershipTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Become a shareholder of the platform'**
+  String get aboutOwnershipTitle;
+
+  /// No description provided for @aboutOwnershipBody.
+  ///
+  /// In en, this message translates to:
+  /// **'We are building toward a model where strong performance and charity contributions help shape your standing — and, over time, a share in the platform story.\n\nThis is a roadmap vision for now: no live equity or transferable shares yet. Details on scoring, charity actions, and dashboards will follow in a later release.'**
+  String get aboutOwnershipBody;
 
   /// No description provided for @privacySectionCollectTitle.
   ///
@@ -1048,6 +1066,18 @@ abstract class AppLocalizations {
   /// **'That was it — went fast, right? On to the next one!'**
   String get appOnboardPage8Body;
 
+  /// No description provided for @appOnboardPage9Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Become a shareholder of the platform'**
+  String get appOnboardPage9Title;
+
+  /// No description provided for @appOnboardPage9Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Do great work, hire fairly, and take part in charity — your contribution will help rank you and, on our roadmap, grow into ownership in the platform story. Not live equity yet — a vision we are building toward together.'**
+  String get appOnboardPage9Body;
+
   /// No description provided for @platformRulesTitle.
   ///
   /// In en, this message translates to:
@@ -1057,7 +1087,7 @@ abstract class AppLocalizations {
   /// No description provided for @platformRulesSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'From signup to payment in 8 steps'**
+  /// **'From signup to ownership in 9 steps'**
   String get platformRulesSubtitle;
 
   /// No description provided for @platformRulesStepLabel.
@@ -2740,6 +2770,18 @@ abstract class AppLocalizations {
   /// **'Print this QR and post it where workers check in.'**
   String get attendancePrintQrAtSite;
 
+  /// No description provided for @attendancePrintAndPostAtSite.
+  ///
+  /// In en, this message translates to:
+  /// **'Print & post at site'**
+  String get attendancePrintAndPostAtSite;
+
+  /// No description provided for @attendanceCouldNotShareQrPoster.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not share QR poster'**
+  String get attendanceCouldNotShareQrPoster;
+
   /// No description provided for @attendanceCouldNotLoadQr.
   ///
   /// In en, this message translates to:
@@ -2791,7 +2833,7 @@ abstract class AppLocalizations {
   /// No description provided for @attendanceHowItWorksBody.
   ///
   /// In en, this message translates to:
-  /// **'1. Print and tape this QR at the workplace.\n2. Hired freelancers open HupWorks and scan it.\n3. They confirm clock in or clock out on their phone.\n4. You can view today\'s attendance on the job details screen.'**
+  /// **'1. Print and tape this QR at the workplace (one code for all hired workers).\n2. Hired freelancers open HupWorks and scan it on site.\n3. Each worker confirms clock in or clock out on their phone — once per shift.\n4. You can view today\'s attendance on the job details screen.\n\nAnti-fraud: punches need GPS within 200 m of your map pin. Sharing sends a poster image only (no copyable deep link).'**
   String get attendanceHowItWorksBody;
 
   /// No description provided for @noOnsiteJobsYet.
@@ -4681,7 +4723,7 @@ abstract class AppLocalizations {
   /// No description provided for @shiftScheduleHint.
   ///
   /// In en, this message translates to:
-  /// **'Optional work day and clock times (e.g. 06:00–15:00). Used later for attendance and timed chat.'**
+  /// **'Optional work day and clock times (e.g. 06:00–15:00). Defines the attendance shift window (±1 hour grace). If empty, the UTC calendar day is used.'**
   String get shiftScheduleHint;
 
   /// No description provided for @workDateLabel.
@@ -4852,6 +4894,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'QR'**
   String get attendanceQrShort;
+
+  /// No description provided for @attendanceLocationRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Location required'**
+  String get attendanceLocationRequired;
+
+  /// No description provided for @attendanceJobSiteNotSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Job site not set'**
+  String get attendanceJobSiteNotSet;
+
+  /// No description provided for @attendanceTooFarFromSite.
+  ///
+  /// In en, this message translates to:
+  /// **'Too far from site'**
+  String get attendanceTooFarFromSite;
+
+  /// No description provided for @attendanceOutsideShiftWindow.
+  ///
+  /// In en, this message translates to:
+  /// **'Outside shift window'**
+  String get attendanceOutsideShiftWindow;
+
+  /// No description provided for @attendanceShiftAlreadyComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Already completed attendance for this shift'**
+  String get attendanceShiftAlreadyComplete;
+
+  /// No description provided for @attendanceShiftAlreadyCompleteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You already clocked in and out for this shift.'**
+  String get attendanceShiftAlreadyCompleteMessage;
+
+  /// No description provided for @attendanceAlreadyCheckedInThisShift.
+  ///
+  /// In en, this message translates to:
+  /// **'Already checked in for this shift'**
+  String get attendanceAlreadyCheckedInThisShift;
+
+  /// No description provided for @attendanceAlreadyCheckedInThisShiftMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You have already checked in for this shift.'**
+  String get attendanceAlreadyCheckedInThisShiftMessage;
+
+  /// No description provided for @attendanceAlreadyClockedOutThisShift.
+  ///
+  /// In en, this message translates to:
+  /// **'Already clocked out for this shift'**
+  String get attendanceAlreadyClockedOutThisShift;
+
+  /// No description provided for @alreadyCheckedInThisShift.
+  ///
+  /// In en, this message translates to:
+  /// **'Already checked in for this shift'**
+  String get alreadyCheckedInThisShift;
+
+  /// No description provided for @readyForShiftCheckIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready for shift check-in'**
+  String get readyForShiftCheckIn;
+
+  /// No description provided for @notClockedInThisShift.
+  ///
+  /// In en, this message translates to:
+  /// **'Not clocked in for this shift'**
+  String get notClockedInThisShift;
+
+  /// No description provided for @attendanceQrOnceShiftHint.
+  ///
+  /// In en, this message translates to:
+  /// **'This job uses one check-in scan per shift (no clock-out scan).'**
+  String get attendanceQrOnceShiftHint;
+
+  /// No description provided for @checkInForThisShift.
+  ///
+  /// In en, this message translates to:
+  /// **'Check in for this shift'**
+  String get checkInForThisShift;
+
+  /// No description provided for @jobSitePinRequiredForQr.
+  ///
+  /// In en, this message translates to:
+  /// **'Pin the job site on the map for QR attendance'**
+  String get jobSitePinRequiredForQr;
+
+  /// No description provided for @jobSitePinRequiredTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Job site pin required'**
+  String get jobSitePinRequiredTitle;
+
+  /// No description provided for @jobSitePinRequiredBody.
+  ///
+  /// In en, this message translates to:
+  /// **'QR attendance only works on-site. Set a map pin for this job before showing the QR code.'**
+  String get jobSitePinRequiredBody;
+
+  /// No description provided for @setMapPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Set map pin'**
+  String get setMapPin;
+
+  /// No description provided for @jobSitePinPickerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Job site pin'**
+  String get jobSitePinPickerTitle;
+
+  /// No description provided for @pinOnMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Pin on map'**
+  String get pinOnMap;
+
+  /// No description provided for @changeMapPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Change map pin'**
+  String get changeMapPin;
 
   /// No description provided for @stepProgressWithLabel.
   ///
@@ -6395,6 +6563,72 @@ abstract class AppLocalizations {
   /// **'Upload ID documents for your verified badge'**
   String get settingsVerificationSubtitle;
 
+  /// No description provided for @messagingPreferenceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Who can message me'**
+  String get messagingPreferenceTitle;
+
+  /// No description provided for @messagingPreferenceSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Controls who can start a new chat with you. Existing conversations stay open. Blocking someone still overrides this.'**
+  String get messagingPreferenceSubtitle;
+
+  /// No description provided for @messagingPreferenceEveryone.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone'**
+  String get messagingPreferenceEveryone;
+
+  /// No description provided for @messagingPreferenceEveryoneDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Anyone on HupWorks can start a chat with you.'**
+  String get messagingPreferenceEveryoneDesc;
+
+  /// No description provided for @messagingPreferenceHiredOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Hired only'**
+  String get messagingPreferenceHiredOnly;
+
+  /// No description provided for @messagingPreferenceHiredOnlyDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Only people you have hired — or been hired by — can start a new chat.'**
+  String get messagingPreferenceHiredOnlyDesc;
+
+  /// No description provided for @messagingPreferenceNobody.
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody new'**
+  String get messagingPreferenceNobody;
+
+  /// No description provided for @messagingPreferenceNobodyDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'No new chats. You can still message in existing threads.'**
+  String get messagingPreferenceNobodyDesc;
+
+  /// No description provided for @messagingPreferenceSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Messaging preference saved'**
+  String get messagingPreferenceSaved;
+
+  /// No description provided for @messagingPreferenceNobodyDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'This person is not accepting new messages.'**
+  String get messagingPreferenceNobodyDenied;
+
+  /// No description provided for @messagingPreferenceHiredOnlyDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'This person only accepts messages from people they have worked with.'**
+  String get messagingPreferenceHiredOnlyDenied;
+
   /// No description provided for @faqDiffMessagesQ.
   ///
   /// In en, this message translates to:
@@ -6536,7 +6770,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqAttendanceA.
   ///
   /// In en, this message translates to:
-  /// **'Profile menu → Attendance. At the job site, scan the QR code provided by the employer to punch in or out for that order.'**
+  /// **'Profile menu → Attendance. At the job site, scan the employer\'s QR (shared by all hired workers). Each person may clock in once and out once per shift. You must be within 200 m of the job pin. The QR poster share is image-only so the deep link cannot be copied.'**
   String get faqAttendanceA;
 }
 

@@ -174,7 +174,7 @@ class L10nLabels {
         (title: l10n.privacySectionContactTitle, body: l10n.privacySectionContactBody),
       ];
 
-  /// Full platform journey: signup → payment (8 steps).
+  /// Full platform journey: signup → ownership vision (9 steps).
   static List<({String title, String body})> platformRulesSteps(
     AppLocalizations l10n,
   ) =>
@@ -187,6 +187,7 @@ class L10nLabels {
         (title: l10n.appOnboardPage6Title, body: l10n.appOnboardPage6Body),
         (title: l10n.appOnboardPage7Title, body: l10n.appOnboardPage7Body),
         (title: l10n.appOnboardPage8Title, body: l10n.appOnboardPage8Body),
+        (title: l10n.appOnboardPage9Title, body: l10n.appOnboardPage9Body),
       ];
 
   static String jobTypeLabel(AppLocalizations l10n, String? t) {

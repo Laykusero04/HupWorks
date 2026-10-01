@@ -208,6 +208,10 @@ class AppLocalizationsBn extends AppLocalizations {
   String get pleaseFillAllFields => 'সব ঘর পূরণ করুন';
 
   @override
+  String get accountBlockedLoginMessage =>
+      'এই অ্যাকাউন্ট ব্লক করা হয়েছে। ভুল মনে হলে সাপোর্টে যোগাযোগ করুন।';
+
+  @override
   String get pushNotifications => 'পুশ নোটিফিকেশন';
 
   @override
@@ -348,7 +352,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get attendanceModeQrInOut => 'QR ইন ও আউট';
 
   @override
-  String get attendanceModeQrOnce => 'QR চেক-ইন (দিনে একবার)';
+  String get attendanceModeQrOnce => 'QR চেক-ইন (শিফট প্রতি একবার)';
 
   @override
   String get attendanceModeSelfReport => 'অ্যাপে স্ব-রিপোর্ট';
@@ -358,11 +362,11 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get attendanceClientHintQrInOut =>
-      'সাইটে একটি QR পোস্ট করুন। কর্মীরা ইন ও আউট ক্লক করতে স্ক্যান করবে।';
+      'সব নিয়োগপ্রাপ্ত কর্মীর জন্য সাইটে একটি QR পোস্ট করুন। প্রত্যেকে শিফট প্রতি একবার ইন ও আউট ক্লক করবে (সাইটে থাকতে হবে)।';
 
   @override
   String get attendanceClientHintQrOnce =>
-      'সাইটে একটি QR পোস্ট করুন। কর্মীরা দিনে একবার চেক-ইন করতে স্ক্যান করবে।';
+      'সব নিয়োগপ্রাপ্ত কর্মীর জন্য সাইটে একটি QR পোস্ট করুন। প্রত্যেকে শিফট প্রতি একবার চেক-ইন স্ক্যান করবে (সাইটে থাকতে হবে)।';
 
   @override
   String get attendanceClientHintSelfReport =>
@@ -374,11 +378,11 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get attendanceFreelancerHintQrInOut =>
-      'ইন ও আউট ক্লক করতে সাইটের QR স্ক্যান করুন।';
+      'শিফট প্রতি একবার ইন ও আউট ক্লক করতে সাইটের QR স্ক্যান করুন।';
 
   @override
   String get attendanceFreelancerHintQrOnce =>
-      'পৌঁছালে সাইটের QR একবার স্ক্যান করুন।';
+      'পৌঁছালে শিফট প্রতি একবার সাইটের QR স্ক্যান করুন।';
 
   @override
   String get attendanceFreelancerHintSelfReport =>
@@ -394,7 +398,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get attendanceOnboardingQrOnce =>
-      'পৌঁছালে HupWorks-এ উপস্থিতি খুলে সাইটে পোস্ট করা QR স্ক্যান করুন। দিনে একবার চেক-ইনই যথেষ্ট।';
+      'পৌঁছালে HupWorks-এ উপস্থিতি খুলে সাইটে পোস্ট করা QR স্ক্যান করুন। শিফট প্রতি একবার চেক-ইনই যথেষ্ট।';
 
   @override
   String get attendanceOnboardingSelfReport =>
@@ -422,6 +426,13 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get aboutHupWorksBody =>
       'HupWorks একটি মার্কেটপ্লেস যা ক্লায়েন্টদের ফ্রিল্যান্সার ও স্থানীয় কর্মীদের সাথে কাজ ও সার্ভিসের জন্য সংযুক্ত করে। আমরা কাজ পোস্ট, ট্যালেন্ট নিয়োগ, সাইটে উপস্থিতি ট্র্যাক এবং অর্ডার শুরু থেকে শেষ পর্যন্ত পরিচালনায় সাহায্য করি।\n\nআমাদের লক্ষ্য নিয়োগ ও নিযুক্ত হওয়াকে সহজ, স্পষ্ট ও নির্ভরযোগ্য করা—প্রজেক্টে দক্ষ সাহায্য হোক বা আপনার ফ্রিল্যান্স ব্যবসা বাড়ান।';
+
+  @override
+  String get aboutOwnershipTitle => 'প্ল্যাটফর্মের শেয়ারহোল্ডার হোন';
+
+  @override
+  String get aboutOwnershipBody =>
+      'আমরা এমন একটি মডেলের দিকে এগোচ্ছি যেখানে ভালো পারফরম্যান্স ও দাতব্য অবদান আপনার অবস্থান গঠনে সাহায্য করবে — এবং সময়ের সাথে প্ল্যাটফর্মের গল্পে শেয়ার।\n\nএখন এটি রোডম্যাপ ভিশন: এখনও কোনো লাইভ ইকুইটি বা হস্তান্তরযোগ্য শেয়ার নেই। স্কোরিং, দাতব্য অ্যাকশন ও ড্যাশবোর্ড পরের রিলিজে আসবে।';
 
   @override
   String get privacySectionCollectTitle => 'আমরা যে তথ্য সংগ্রহ করি';
@@ -530,10 +541,17 @@ class AppLocalizationsBn extends AppLocalizations {
       'হয়ে গেল — দ্রুত হয়ে গেছে তো? চলুন পরেরটিতে!';
 
   @override
+  String get appOnboardPage9Title => 'প্ল্যাটফর্মের শেয়ারহোল্ডার হোন';
+
+  @override
+  String get appOnboardPage9Body =>
+      'ভালো কাজ করুন, ন্যায্য নিয়োগ করুন এবং দাতব্যে অংশ নিন — আপনার অবদান র‌্যাঙ্কিংয়ে সাহায্য করবে এবং আমাদের রোডম্যাপে প্ল্যাটফর্মের মালিকানার দিকে বাড়বে। এখনও লাইভ ইকুইটি নয় — একসাথে গড়ে তোলা একটি ভিশন।';
+
+  @override
   String get platformRulesTitle => 'প্ল্যাটফর্মের নিয়ম';
 
   @override
-  String get platformRulesSubtitle => 'সাইন আপ থেকে পেমেন্ট — ৮টি ধাপ';
+  String get platformRulesSubtitle => 'সাইন আপ থেকে মালিকানা — ৯টি ধাপ';
 
   @override
   String platformRulesStepLabel(int step) {
@@ -1442,6 +1460,12 @@ class AppLocalizationsBn extends AppLocalizations {
       'এই QR প্রিন্ট করে কর্মীরা চেক ইন করে এমন জায়গায় পোস্ট করুন।';
 
   @override
+  String get attendancePrintAndPostAtSite => 'প্রিন্ট করে সাইটে পোস্ট করুন';
+
+  @override
+  String get attendanceCouldNotShareQrPoster => 'QR পোস্টার শেয়ার করা যায়নি';
+
+  @override
   String get attendanceCouldNotLoadQr => 'QR লোড করা যায়নি';
 
   @override
@@ -1468,7 +1492,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get attendanceHowItWorksBody =>
-      '1. কর্মস্থলে এই QR প্রিন্ট ও টেপ করুন।\n2. নিয়োগপ্রাপ্ত ফ্রিল্যান্সাররা HupWorks খুলে স্ক্যান করে।\n3. তারা ফোনে ক্লক ইন বা ক্লক আউট নিশ্চিত করে।\n4. জব বিবরণ স্ক্রিনে আজকের উপস্থিতি দেখতে পারবেন।';
+      '1. কর্মস্থলে এই QR প্রিন্ট ও টেপ করুন (সব নিয়োগপ্রাপ্ত কর্মীর জন্য একই কোড)।\n2. নিয়োগপ্রাপ্ত ফ্রিল্যান্সাররা সাইটে HupWorks খুলে স্ক্যান করে।\n3. প্রত্যেকে ফোনে শিফট প্রতি একবার ক্লক ইন বা আউট নিশ্চিত করে।\n4. জব বিবরণ স্ক্রিনে আজকের উপস্থিতি দেখতে পারবেন।\n\nঅ্যান্টি-ফ্রড: পাঞ্চে ম্যাপ পিন থেকে ২০০ মিটারের মধ্যে GPS লাগে। শেয়ার শুধু পোস্টার ইমেজ (কপি করা যায় এমন ডিপ লিংক নয়)।';
 
   @override
   String get noOnsiteJobsYet => 'এখনও কোনো অন-সাইট জব নেই';
@@ -2521,7 +2545,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get shiftScheduleHint =>
-      'Optional work day and clock times (e.g. 06:00–15:00). Used later for attendance and timed chat.';
+      'ঐচ্ছিক কাজের দিন ও সময় (যেমন ০৬:০০–১৫:০০)। উপস্থিতির শিফট উইন্ডো (±১ ঘণ্টা গ্রেস)। খালি থাকলে UTC ক্যালেন্ডার দিন ব্যবহার হয়।';
 
   @override
   String get workDateLabel => 'Work date';
@@ -2616,6 +2640,77 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get attendanceQrShort => 'QR';
+
+  @override
+  String get attendanceLocationRequired => 'অবস্থান প্রয়োজন';
+
+  @override
+  String get attendanceJobSiteNotSet => 'কাজের স্থান সেট করা নেই';
+
+  @override
+  String get attendanceTooFarFromSite => 'সাইট থেকে অনেক দূরে';
+
+  @override
+  String get attendanceOutsideShiftWindow => 'শিফট উইন্ডোর বাইরে';
+
+  @override
+  String get attendanceShiftAlreadyComplete =>
+      'এই শিফটের উপস্থিতি ইতিমধ্যে সম্পন্ন';
+
+  @override
+  String get attendanceShiftAlreadyCompleteMessage =>
+      'আপনি এই শিফটে ইতিমধ্যে ইন ও আউট ক্লক করেছেন।';
+
+  @override
+  String get attendanceAlreadyCheckedInThisShift =>
+      'এই শিফটে ইতিমধ্যে চেক ইন করা হয়েছে';
+
+  @override
+  String get attendanceAlreadyCheckedInThisShiftMessage =>
+      'আপনি এই শিফটে ইতিমধ্যে চেক ইন করেছেন।';
+
+  @override
+  String get attendanceAlreadyClockedOutThisShift =>
+      'এই শিফটে ইতিমধ্যে ক্লক আউট করা হয়েছে';
+
+  @override
+  String get alreadyCheckedInThisShift => 'এই শিফটে ইতিমধ্যে চেক ইন করা হয়েছে';
+
+  @override
+  String get readyForShiftCheckIn => 'শিফট চেক-ইনের জন্য প্রস্তুত';
+
+  @override
+  String get notClockedInThisShift => 'এই শিফটে এখনও ক্লক ইন করেননি';
+
+  @override
+  String get attendanceQrOnceShiftHint =>
+      'এই কাজে শিফট প্রতি একবার চেক-ইন স্ক্যান লাগে (ক্লক-আউট নেই)।';
+
+  @override
+  String get checkInForThisShift => 'এই শিফটের জন্য চেক ইন';
+
+  @override
+  String get jobSitePinRequiredForQr =>
+      'QR উপস্থিতির জন্য মানচিত্রে কাজের স্থান পিন করুন';
+
+  @override
+  String get jobSitePinRequiredTitle => 'কাজের স্থানের পিন প্রয়োজন';
+
+  @override
+  String get jobSitePinRequiredBody =>
+      'QR উপস্থিতি শুধু সাইটে কাজ করে। QR দেখানোর আগে এই কাজের জন্য মানচিত্রে একটি পিন সেট করুন।';
+
+  @override
+  String get setMapPin => 'ম্যাপ পিন সেট করুন';
+
+  @override
+  String get jobSitePinPickerTitle => 'কাজের স্থানের পিন';
+
+  @override
+  String get pinOnMap => 'মানচিত্রে পিন করুন';
+
+  @override
+  String get changeMapPin => 'ম্যাপ পিন পরিবর্তন';
 
   @override
   String stepProgressWithLabel(int current, int total, String label) {
@@ -3491,6 +3586,45 @@ class AppLocalizationsBn extends AppLocalizations {
       'যাচাইকৃত ব্যাজের জন্য আইডি নথি আপলোড করুন';
 
   @override
+  String get messagingPreferenceTitle => 'কে আমাকে মেসেজ করতে পারবে';
+
+  @override
+  String get messagingPreferenceSubtitle =>
+      'কে নতুন চ্যাট শুরু করতে পারবে তা নিয়ন্ত্রণ করে। বিদ্যমান কথোপকথন খোলাই থাকে। কাউকে ব্লক করলে সেটি সবসময় অগ্রাধিকার পায়।';
+
+  @override
+  String get messagingPreferenceEveryone => 'সবাই';
+
+  @override
+  String get messagingPreferenceEveryoneDesc =>
+      'HupWorks-এর যে কেউ আপনার সাথে চ্যাট শুরু করতে পারে।';
+
+  @override
+  String get messagingPreferenceHiredOnly => 'শুধু নিয়োগকৃত';
+
+  @override
+  String get messagingPreferenceHiredOnlyDesc =>
+      'শুধু যাদের আপনি নিয়োগ করেছেন — বা যারা আপনাকে নিয়োগ করেছেন — তারা নতুন চ্যাট শুরু করতে পারে।';
+
+  @override
+  String get messagingPreferenceNobody => 'কেউ নতুন নয়';
+
+  @override
+  String get messagingPreferenceNobodyDesc =>
+      'নতুন চ্যাট নেই। বিদ্যমান থ্রেডে এখনও মেসেজ করতে পারবেন।';
+
+  @override
+  String get messagingPreferenceSaved => 'মেসেজিং পছন্দ সংরক্ষিত';
+
+  @override
+  String get messagingPreferenceNobodyDenied =>
+      'এই ব্যক্তি নতুন মেসেজ গ্রহণ করছেন না।';
+
+  @override
+  String get messagingPreferenceHiredOnlyDenied =>
+      'এই ব্যক্তি শুধু যাদের সাথে কাজ করেছেন তাদের কাছ থেকে মেসেজ গ্রহণ করেন।';
+
+  @override
   String get faqDiffMessagesQ => 'Messages এবং Help & Support-এর পার্থক্য কী?';
 
   @override
@@ -3572,5 +3706,5 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get faqAttendanceA =>
-      'প্রোফাইল মেনু → Attendance। জব সাইটে নিয়োগকর্তার দেওয়া QR স্ক্যান করে ইন/আউট করুন।';
+      'প্রোফাইল মেনু → Attendance। জব সাইটে নিয়োগকর্তার QR স্ক্যান করুন (সব নিয়োগপ্রাপ্ত কর্মী একই কোড ব্যবহার করে)। প্রত্যেকে শিফট প্রতি একবার ইন ও আউট করতে পারে। জব পিন থেকে ২০০ মিটারের মধ্যে থাকতে হবে। QR পোস্টার শেয়ার শুধু ইমেজ — ডিপ লিংক কপি করা যায় না।';
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/attendance_mode.dart';
 import 'package:freelancer/screen/attendance/attendance_qr_display_screen.dart';
+import 'package:freelancer/screen/attendance/ensure_job_site_pin.dart';
 import 'package:freelancer/services/attendance_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -11,12 +12,15 @@ class ClientSiteSetupPanel extends StatelessWidget {
   final String? onboardingStatus;
   final VoidCallback? onOnboarding;
   final Map<String, dynamic>? jobPost;
+  /// Called after the client sets a missing map pin so parent can refresh.
+  final VoidCallback? onJobLocationUpdated;
 
   const ClientSiteSetupPanel({
     super.key,
     this.onboardingStatus,
     this.onOnboarding,
     this.jobPost,
+    this.onJobLocationUpdated,
   });
 
   static bool showOnboarding(VoidCallback? onOnboarding) => onOnboarding != null;
@@ -36,14 +40,22 @@ class ClientSiteSetupPanel extends StatelessWidget {
   }) =>
       showOnboarding(onOnboarding) || showQr(jobPost);
 
-  void _openQr(BuildContext context) {
+  Future<void> _openQr(BuildContext context) async {
     final jobPostId = jobPost!['id'].toString();
     final title = (jobPost?['title'] as String?)?.trim().isNotEmpty == true
         ? (jobPost!['title'] as String).trim()
         : 'Job site';
+    final pinned = await ensureJobSitePinForQr(
+      context: context,
+      jobPostId: jobPostId,
+      jobPost: jobPost,
+      onUpdated: (_) => onJobLocationUpdated?.call(),
+    );
+    if (pinned == null || !context.mounted) return;
     AttendanceQrDisplayScreen(
       jobPostId: jobPostId,
       jobTitle: title,
+      jobPost: pinned,
     ).launch(context);
   }
 

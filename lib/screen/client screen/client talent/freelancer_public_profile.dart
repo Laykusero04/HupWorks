@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:freelancer/core/utils/app_date_format.dart';
+import 'package:freelancer/core/utils/message_contact_preference.dart';
 import 'package:freelancer/core/utils/profile_image.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/seller%20screen/seller%20message/chat_inbox.dart';
@@ -154,11 +155,12 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
       ).launch(context);
     } catch (e) {
       if (mounted) {
-        final msg = '$e'.contains('Contact blocked')
-            ? context.l10n.contactBlocked
-            : context.l10n.couldNotOpenChatWithDetail('$e');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(msg)),
+          SnackBar(
+            content: Text(
+              MessageContactPreference.openChatErrorMessage(context.l10n, e),
+            ),
+          ),
         );
       }
     }

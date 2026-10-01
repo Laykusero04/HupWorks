@@ -21,7 +21,7 @@ class _OnBoardState extends State<OnBoard> {
   final _pageController = PageController();
   int _index = 0;
 
-  static const _contentPageCount = 8;
+  static const _contentPageCount = 9;
   static const _pageCount = _contentPageCount + 1;
 
   static const _images = [

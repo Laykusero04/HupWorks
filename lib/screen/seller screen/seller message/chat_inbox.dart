@@ -16,6 +16,8 @@ import '../../../services/auth_service.dart';
 import '../../../services/block_service.dart';
 import '../../../services/chat_service.dart';
 import '../../client screen/client report/client_report.dart';
+import '../../client screen/client talent/client_public_profile.dart';
+import '../../client screen/client talent/freelancer_public_profile.dart';
 import '../../widgets/chat_job_offer_card.dart';
 import '../../widgets/chat_preferred_contact_banner.dart';
 import '../../widgets/chat_thread_context_header.dart';
@@ -61,6 +63,8 @@ class _ChatInboxState extends State<ChatInbox> {
   bool _isClientViewer = true;
   bool _contactBlocked = false;
   bool _pairBlocked = false;
+  String? _conversationClientId;
+  String? _conversationSellerId;
 
   String get _currentUserId =>
       Supabase.instance.client.auth.currentUser?.id ?? '';
@@ -183,11 +187,57 @@ class _ChatInboxState extends State<ChatInbox> {
       );
       if (!mounted) return;
       setState(() {
+        _conversationClientId = clientId;
+        _conversationSellerId = sellerId;
         _threadItems = items;
         _threadLoading = false;
       });
     } catch (_) {
       if (mounted) setState(() => _threadLoading = false);
+    }
+  }
+
+  bool get _canOpenOtherProfile {
+    final id = widget.otherUserId?.trim();
+    if (id != null && id.isNotEmpty) return true;
+    return _conversationClientId != null && _conversationSellerId != null;
+  }
+
+  void _openOtherUserProfile() {
+    final clientId = _conversationClientId;
+    final sellerId = _conversationSellerId;
+    final me = _currentUserId;
+
+    // Prefer conversation seats so job-application role overrides stay correct.
+    if (clientId != null && sellerId != null && me.isNotEmpty) {
+      if (me == clientId) {
+        FreelancerPublicProfile(
+          sellerId: sellerId,
+          initialName: widget.otherUserName,
+        ).launch(context);
+        return;
+      }
+      if (me == sellerId) {
+        ClientPublicProfile(
+          clientId: clientId,
+          initialName: widget.otherUserName,
+        ).launch(context);
+        return;
+      }
+    }
+
+    final otherId = widget.otherUserId?.trim();
+    if (otherId == null || otherId.isEmpty) return;
+    if (_isClientViewer) {
+      FreelancerPublicProfile(
+        sellerId: otherId,
+        initialName: widget.otherUserName,
+      ).launch(context);
+    } else {
+      ClientPublicProfile(
+        clientId: otherId,
+        initialName: widget.otherUserName,
+      ).launch(context);
     }
   }
 
@@ -454,14 +504,7 @@ class _ChatInboxState extends State<ChatInbox> {
       ),
       titleSpacing: 0,
       title: InkWell(
-        onTap: _threadItems.isEmpty
-            ? null
-            : () => showChatThreadContextSheet(
-                  context,
-                  items: _threadItems,
-                  isClientViewer: _isClientViewer,
-                  highlightedOrderId: widget.orderContext?.orderId,
-                ),
+        onTap: _canOpenOtherProfile ? _openOtherUserProfile : null,
         borderRadius: BorderRadius.circular(8),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -519,7 +562,7 @@ class _ChatInboxState extends State<ChatInbox> {
                 '${_threadItems.length}',
                 style: const TextStyle(fontSize: 10),
               ),
-              child: const Icon(Icons.work_outline_rounded, color: kNeutralColor),
+              child: const Icon(Icons.info_outline_rounded, color: kNeutralColor),
             ),
           ),
         Padding(

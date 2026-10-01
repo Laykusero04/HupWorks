@@ -209,6 +209,10 @@ class AppLocalizationsNl extends AppLocalizations {
   String get pleaseFillAllFields => 'Vul alle velden in';
 
   @override
+  String get accountBlockedLoginMessage =>
+      'Dit account is geblokkeerd. Neem contact op met support als je denkt dat dit een vergissing is.';
+
+  @override
   String get pushNotifications => 'Pushmeldingen';
 
   @override
@@ -350,7 +354,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get attendanceModeQrInOut => 'QR in- en uitklokken';
 
   @override
-  String get attendanceModeQrOnce => 'QR check-in (Ã©Ã©n keer per dag)';
+  String get attendanceModeQrOnce => 'QR check-in (een keer per dienst)';
 
   @override
   String get attendanceModeSelfReport => 'Zelf melden in de app';
@@ -360,15 +364,15 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get attendanceClientHintQrInOut =>
-      'Plaats een QR op locatie. Werknemers scannen om in en uit te klokken.';
+      'Plaats een QR op locatie voor alle ingehuurde werknemers. Iedereen klokt een keer in en uit per dienst (op locatie).';
 
   @override
   String get attendanceClientHintQrOnce =>
-      'Plaats een QR op locatie. Werknemers scannen Ã©Ã©n keer per dag om in te checken.';
+      'Plaats een QR op locatie voor alle ingehuurde werknemers. Iedereen scant een keer per dienst om in te checken (op locatie).';
 
   @override
   String get attendanceClientHintSelfReport =>
-      'Werknemers klokken in en uit in de app â€” geen QR nodig.';
+      'Werknemers klokken in en uit in de app — geen QR nodig.';
 
   @override
   String get attendanceClientHintDisabled =>
@@ -376,11 +380,11 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get attendanceFreelancerHintQrInOut =>
-      'Scan de QR op locatie om in en uit te klokken.';
+      'Scan de QR op locatie om een keer in en uit te klokken per dienst.';
 
   @override
   String get attendanceFreelancerHintQrOnce =>
-      'Scan de QR Ã©Ã©n keer bij aankomst.';
+      'Scan de QR een keer per dienst bij aankomst.';
 
   @override
   String get attendanceFreelancerHintSelfReport =>
@@ -396,7 +400,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get attendanceOnboardingQrOnce =>
-      'Bij aankomst open je Aanwezigheid in HupWorks en scan je de QR-code op locatie. Je hoeft maar Ã©Ã©n keer per dag in te checken.';
+      'Bij aankomst open je Aanwezigheid in HupWorks en scan je de QR-code op locatie. Je hoeft maar een keer per dienst in te checken.';
 
   @override
   String get attendanceOnboardingSelfReport =>
@@ -425,6 +429,13 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get aboutHupWorksBody =>
       'HupWorks is een marktplaats die werkgevers verbindt met freelancers en lokale werknemers voor jobs en diensten. We helpen mensen werk te plaatsen, freelancers in te huren, aanwezigheid op locatie te volgen en orders van begin tot eind te beheren.\n\nOns doel is huren en gehuurd worden eenvoudiger, duidelijker en betrouwbaarder te makenâ€”of je nu geschoolde hulp nodig hebt of je freelancebedrijf wilt laten groeien.';
+
+  @override
+  String get aboutOwnershipTitle => 'Word aandeelhouder van het platform';
+
+  @override
+  String get aboutOwnershipBody =>
+      'We bouwen toe naar een model waarin sterke prestaties en bijdragen aan goede doelen je positie mee bepalen — en op termijn een aandeel in het platformverhaal.\n\nDit is voorlopig een roadmap-visie: nog geen live aandelen of overdraagbaar eigendom. Scoring, charity-acties en dashboards volgen in een latere release.';
 
   @override
   String get privacySectionCollectTitle => 'Gegevens die we verzamelen';
@@ -535,10 +546,18 @@ class AppLocalizationsNl extends AppLocalizations {
       'Dat was hem, ging snel he? Op naar de volgende!';
 
   @override
+  String get appOnboardPage9Title => 'Word aandeelhouder van het platform';
+
+  @override
+  String get appOnboardPage9Body =>
+      'Lever sterk werk, huur eerlijk in en doe mee aan goede doelen — jouw bijdrage helpt je ranking en groeit op onze roadmap toe naar ownership in het platformverhaal. Nog geen live aandelen — een visie die we samen opbouwen.';
+
+  @override
   String get platformRulesTitle => 'Spelregels van het platform';
 
   @override
-  String get platformRulesSubtitle => 'Van aanmelden tot betaling in 8 stappen';
+  String get platformRulesSubtitle =>
+      'Van aanmelden tot ownership in 9 stappen';
 
   @override
   String platformRulesStepLabel(int step) {
@@ -1447,6 +1466,12 @@ class AppLocalizationsNl extends AppLocalizations {
       'Print deze QR en hang hem op waar werknemers inchecken.';
 
   @override
+  String get attendancePrintAndPostAtSite => 'Print & hang op op locatie';
+
+  @override
+  String get attendanceCouldNotShareQrPoster => 'QR-poster delen mislukt';
+
+  @override
   String get attendanceCouldNotLoadQr => 'QR kon niet worden geladen';
 
   @override
@@ -1473,7 +1498,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get attendanceHowItWorksBody =>
-      '1. Print en plak deze QR op de werkplek.\n2. Ingehuurde freelancers openen HupWorks en scannen.\n3. Ze bevestigen in- of uitklokken op hun telefoon.\n4. Bekijk de aanwezigheid van vandaag op het jobdetailscherm.';
+      '1. Print en plak deze QR op de werkplek (een code voor alle ingehuurde werknemers).\n2. Ingehuurde freelancers openen HupWorks en scannen op locatie.\n3. Iedereen bevestigt in- of uitklokken op de telefoon — een keer per dienst.\n4. Bekijk de aanwezigheid van vandaag op het jobdetailscherm.\n\nAnti-fraude: punches vereisen GPS binnen 200 m van je kaartpin. Delen stuurt alleen een posterafbeelding (geen kopieerbare deep link).';
 
   @override
   String get noOnsiteJobsYet => 'Nog geen jobs op locatie';
@@ -2535,7 +2560,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get shiftScheduleHint =>
-      'Optionele werkdag en tijden (bijv. 06:00–15:00). Later gebruikt voor aanwezigheid en timed chat.';
+      'Optionele werkdag en tijden (bijv. 06:00–15:00). Bepaalt het aanwezigheidsvenster (±1 uur marge). Leeg = UTC-kalenderdag.';
 
   @override
   String get workDateLabel => 'Werkdatum';
@@ -2630,6 +2655,77 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get attendanceQrShort => 'QR';
+
+  @override
+  String get attendanceLocationRequired => 'Locatie vereist';
+
+  @override
+  String get attendanceJobSiteNotSet => 'Werklocatie niet ingesteld';
+
+  @override
+  String get attendanceTooFarFromSite => 'Te ver van de werklocatie';
+
+  @override
+  String get attendanceOutsideShiftWindow => 'Buiten het dienstrooster';
+
+  @override
+  String get attendanceShiftAlreadyComplete =>
+      'Aanwezigheid voor deze dienst al afgerond';
+
+  @override
+  String get attendanceShiftAlreadyCompleteMessage =>
+      'Je hebt voor deze dienst al in- en uitgeklokt.';
+
+  @override
+  String get attendanceAlreadyCheckedInThisShift =>
+      'Al ingecheckt voor deze dienst';
+
+  @override
+  String get attendanceAlreadyCheckedInThisShiftMessage =>
+      'Je hebt al ingecheckt voor deze dienst.';
+
+  @override
+  String get attendanceAlreadyClockedOutThisShift =>
+      'Al uitgeklokt voor deze dienst';
+
+  @override
+  String get alreadyCheckedInThisShift => 'Al ingecheckt voor deze dienst';
+
+  @override
+  String get readyForShiftCheckIn => 'Klaar voor dienst-check-in';
+
+  @override
+  String get notClockedInThisShift => 'Nog niet ingeklokt voor deze dienst';
+
+  @override
+  String get attendanceQrOnceShiftHint =>
+      'Deze job gebruikt één check-in-scan per dienst (geen uitklok-scan).';
+
+  @override
+  String get checkInForThisShift => 'Check in voor deze dienst';
+
+  @override
+  String get jobSitePinRequiredForQr =>
+      'Zet een kaartpin op de werklocatie voor QR-aanwezigheid';
+
+  @override
+  String get jobSitePinRequiredTitle => 'Werklocatie-pin vereist';
+
+  @override
+  String get jobSitePinRequiredBody =>
+      'QR-aanwezigheid werkt alleen op locatie. Zet eerst een kaartpin voor deze job voordat je de QR toont.';
+
+  @override
+  String get setMapPin => 'Kaartpin zetten';
+
+  @override
+  String get jobSitePinPickerTitle => 'Werklocatie-pin';
+
+  @override
+  String get pinOnMap => 'Pin op kaart';
+
+  @override
+  String get changeMapPin => 'Kaartpin wijzigen';
 
   @override
   String stepProgressWithLabel(int current, int total, String label) {
@@ -3512,6 +3608,45 @@ class AppLocalizationsNl extends AppLocalizations {
       'Upload ID-documenten voor je geverifieerde badge';
 
   @override
+  String get messagingPreferenceTitle => 'Wie mag mij berichten';
+
+  @override
+  String get messagingPreferenceSubtitle =>
+      'Bepaalt wie een nieuwe chat met jou mag starten. Bestaande gesprekken blijven open. Blokkeren heeft altijd voorrang.';
+
+  @override
+  String get messagingPreferenceEveryone => 'Iedereen';
+
+  @override
+  String get messagingPreferenceEveryoneDesc =>
+      'Iedereen op HupWorks mag een chat met jou starten.';
+
+  @override
+  String get messagingPreferenceHiredOnly => 'Alleen ingehuurd';
+
+  @override
+  String get messagingPreferenceHiredOnlyDesc =>
+      'Alleen mensen die je hebt ingehuurd — of door wie jij bent ingehuurd — mogen een nieuwe chat starten.';
+
+  @override
+  String get messagingPreferenceNobody => 'Niemand nieuw';
+
+  @override
+  String get messagingPreferenceNobodyDesc =>
+      'Geen nieuwe chats. Je kunt wel blijven berichten in bestaande threads.';
+
+  @override
+  String get messagingPreferenceSaved => 'Berichtvoorkeur opgeslagen';
+
+  @override
+  String get messagingPreferenceNobodyDenied =>
+      'Deze persoon accepteert geen nieuwe berichten.';
+
+  @override
+  String get messagingPreferenceHiredOnlyDenied =>
+      'Deze persoon accepteert alleen berichten van mensen met wie ze hebben gewerkt.';
+
+  @override
   String get faqDiffMessagesQ =>
       'Wat is het verschil tussen Berichten en Help & ondersteuning?';
 
@@ -3594,5 +3729,5 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get faqAttendanceA =>
-      'Profielmenu → Aanwezigheid. Op locatie scan je de QR-code van de werkgever om in of uit te klokken voor die order.';
+      'Profielmenu → Aanwezigheid. Op locatie scan je de QR van de werkgever (gedeeld door alle ingehuurde werknemers). Iedereen mag een keer in- en uitklokken per dienst. Je moet binnen 200 m van de job-pin zijn. De QR-poster is alleen een afbeelding zodat de deep link niet te kopiëren is.';
 }

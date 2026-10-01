@@ -69,6 +69,8 @@ class AttendanceResolveResult extends Equatable {
   final String suggestedAction;
   final bool isClockedIn;
   final bool checkedInToday;
+  final bool checkedOutThisShift;
+  final bool shiftComplete;
   final String? lastPunchType;
   final DateTime? lastPunchedAt;
   final List<AttendancePunchSummary> todayPunches;
@@ -86,6 +88,8 @@ class AttendanceResolveResult extends Equatable {
     required this.suggestedAction,
     required this.isClockedIn,
     this.checkedInToday = false,
+    this.checkedOutThisShift = false,
+    this.shiftComplete = false,
     this.lastPunchType,
     this.lastPunchedAt,
     this.todayPunches = const [],
@@ -96,12 +100,19 @@ class AttendanceResolveResult extends Equatable {
     final List<AttendancePunchSummary> punches;
     if (rawPunches is List) {
       punches = rawPunches
-          .whereType<Map<String, dynamic>>()
-          .map(AttendancePunchSummary.fromJson)
+          .whereType<Map>()
+          .map((e) => AttendancePunchSummary.fromJson(
+                Map<String, dynamic>.from(e),
+              ))
           .toList();
     } else {
       punches = const [];
     }
+
+    final checkedIn = (json['checked_in_today'] as bool?) ?? false;
+    final checkedOut = (json['checked_out_this_shift'] as bool?) ?? false;
+    final complete = (json['shift_complete'] as bool?) ??
+        (checkedIn && checkedOut);
 
     return AttendanceResolveResult(
       jobPostId: json['job_post_id'] as String,
@@ -114,7 +125,9 @@ class AttendanceResolveResult extends Equatable {
       clientName: json['client_name'] as String? ?? 'Client',
       attendanceMode: json['attendance_mode'] as String? ?? 'qr_in_out',
       suggestedAction: json['suggested_action'] as String? ?? 'in',
-      checkedInToday: (json['checked_in_today'] as bool?) ?? false,
+      checkedInToday: checkedIn,
+      checkedOutThisShift: checkedOut,
+      shiftComplete: complete,
       isClockedIn: (json['is_clocked_in'] as bool?) ?? false,
       lastPunchType: json['last_punch_type'] as String?,
       lastPunchedAt: json['last_punched_at'] != null
@@ -139,6 +152,8 @@ class AttendanceResolveResult extends Equatable {
         attendanceMode,
         suggestedAction,
         checkedInToday,
+        checkedOutThisShift,
+        shiftComplete,
         isClockedIn,
         lastPunchType,
         lastPunchedAt,

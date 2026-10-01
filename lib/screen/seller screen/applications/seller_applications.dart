@@ -4,6 +4,7 @@ import 'package:freelancer/core/widgets/loading_widget.dart';
 
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/app_date_format.dart';
+import 'package:freelancer/core/utils/message_contact_preference.dart';
 import 'package:freelancer/core/widgets/empty_state_widget.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/l10n/l10n_labels.dart';
@@ -152,7 +153,11 @@ class _SellerApplicationsState extends State<SellerApplications> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.couldNotOpenChatWithDetail('$e'))),
+          SnackBar(
+            content: Text(
+              MessageContactPreference.openChatErrorMessage(l10n, e),
+            ),
+          ),
         );
       }
     }

@@ -1,5 +1,6 @@
 import 'package:freelancer/core/utils/attendance_mode.dart';
 import 'package:freelancer/data/models/attendance_punch_model.dart';
+import 'package:freelancer/l10n/app_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Active on-site contract row for the attendance hub.
@@ -33,7 +34,7 @@ class OnsiteAttendanceJob {
   String get statusLabel {
     if (!attendanceEnabled) return 'Attendance off';
     if (attendanceMode == AttendanceMode.qrOnce) {
-      return checkedInToday ? 'Checked in today' : 'Not checked in yet';
+      return checkedInToday ? 'Checked in this shift' : 'Not checked in yet';
     }
     if (isClockedIn) return 'Clocked in';
     if (checkedInToday) return 'Clocked out';
@@ -118,6 +119,37 @@ class AttendanceService {
     return AttendancePunchRecordResult.fromJson(
       Map<String, dynamic>.from(data as Map),
     );
+  }
+
+  /// Maps server / geofence punch errors to short user-facing copy.
+  static String punchErrorMessage(Object error, AppLocalizations l10n) {
+    final raw = error is PostgrestException
+        ? (error.message.isNotEmpty ? error.message : error.toString())
+        : error.toString();
+    final lower = raw.toLowerCase();
+    if (lower.contains('location required')) {
+      return l10n.attendanceLocationRequired;
+    }
+    if (lower.contains('job site not set')) {
+      return l10n.attendanceJobSiteNotSet;
+    }
+    if (lower.contains('too far from site')) {
+      return l10n.attendanceTooFarFromSite;
+    }
+    if (lower.contains('outside shift window')) {
+      return l10n.attendanceOutsideShiftWindow;
+    }
+    if (lower.contains('already completed attendance for this shift')) {
+      return l10n.attendanceShiftAlreadyComplete;
+    }
+    if (lower.contains('already checked in for this shift') ||
+        lower.contains('already checked in today')) {
+      return l10n.attendanceAlreadyCheckedInThisShift;
+    }
+    if (lower.contains('already clocked out for this shift')) {
+      return l10n.attendanceAlreadyClockedOutThisShift;
+    }
+    return l10n.errorWithDetail(raw);
   }
 
   static Future<AttendancePunchRecordResult> recordSelfReportPunch({

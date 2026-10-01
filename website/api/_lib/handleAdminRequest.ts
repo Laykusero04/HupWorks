@@ -857,6 +857,49 @@ export async function handleAdminRequest(req: AdminRequest): Promise<AdminRespon
       return { status: 200, body: { ok: true, deletedUserId: userId } }
     }
 
+    if (
+      (path === '/api/admin/users-ban' || path === '/api/admin/users/ban') &&
+      method === 'POST'
+    ) {
+      const body = (req.body ?? {}) as {
+        userId?: string
+        ban?: boolean
+        banDuration?: string
+      }
+      const userId = (body.userId ?? '').trim()
+      if (!userId) {
+        return { status: 400, body: { ok: false, error: 'userId is required' } }
+      }
+
+      // Go duration units only (ns|us|ms|s|m|h). "none" clears the ban.
+      // Default block ≈ 100 years (permanent soft-ban without deleting).
+      const ban =
+        body.ban === false ? false : body.ban === true ? true : body.banDuration !== 'none'
+      const ban_duration = ban
+        ? (typeof body.banDuration === 'string' && body.banDuration.trim() && body.banDuration !== 'none'
+            ? body.banDuration.trim()
+            : '876000h')
+        : 'none'
+
+      const { data, error } = await sb.auth.admin.updateUserById(userId, {
+        ban_duration,
+      })
+      if (error) throw error
+
+      const bannedUntil =
+        (data.user as { banned_until?: string | null } | null)?.banned_until ?? null
+
+      return {
+        status: 200,
+        body: {
+          ok: true,
+          userId,
+          ban,
+          banned_until: bannedUntil,
+        },
+      }
+    }
+
     return { status: 404, body: { ok: false, error: 'Not found' } }
   } catch (err) {
     return { status: 500, body: { ok: false, error: errorMessage(err) } }

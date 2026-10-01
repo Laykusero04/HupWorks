@@ -322,6 +322,35 @@ class JobPostsService {
     return data;
   }
 
+  /// Update job site map pin (and optional address text) for an owned job.
+  static Future<Map<String, dynamic>> updateJobLocation({
+    required String jobPostId,
+    required double latitude,
+    required double longitude,
+    String? location,
+  }) async {
+    final user = _client.auth.currentUser;
+    if (user == null) throw Exception('Not logged in');
+
+    final payload = <String, dynamic>{
+      'latitude': latitude,
+      'longitude': longitude,
+    };
+    final trimmed = location?.trim();
+    if (trimmed != null && trimmed.isNotEmpty) {
+      payload['location'] = trimmed;
+    }
+
+    final data = await _client
+        .from('job_posts')
+        .update(payload)
+        .eq('id', jobPostId)
+        .eq('client_id', user.id)
+        .select()
+        .single();
+    return data;
+  }
+
   /// Fetch seller offers on a job post
   static Future<List<Map<String, dynamic>>> getJobOffers(String jobPostId) async {
     final data = await _client

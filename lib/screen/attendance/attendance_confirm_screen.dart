@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:freelancer/core/utils/attendance_format.dart';
 import 'package:freelancer/core/utils/attendance_mode.dart';
+import 'package:freelancer/core/utils/device_location.dart';
 import 'package:freelancer/data/models/attendance_punch_model.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/services/attendance_service.dart';
+import 'package:geolocator/geolocator.dart';
 
 import '../widgets/button_global.dart';
 import '../widgets/constant.dart';
@@ -38,9 +40,34 @@ class _AttendanceConfirmScreenState extends State<AttendanceConfirmScreen> {
     final l10n = context.l10n;
     setState(() => _isSubmitting = true);
     try {
+      final fix = await DeviceLocation.getCurrentFix();
+      if (!mounted) return;
+      if (!fix.isOk) {
+        setState(() => _isSubmitting = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.attendanceLocationRequired),
+            action: fix.errorCode == 'services_off'
+                ? SnackBarAction(
+                    label: l10n.settings,
+                    onPressed: () => Geolocator.openLocationSettings(),
+                  )
+                : fix.errorCode == 'denied_forever'
+                    ? SnackBarAction(
+                        label: l10n.settings,
+                        onPressed: () => Geolocator.openAppSettings(),
+                      )
+                    : null,
+          ),
+        );
+        return;
+      }
+
       final result = await AttendanceService.recordAttendancePunch(
         token: widget.token,
         punchType: _selectedPunchType,
+        latitude: fix.latitude,
+        longitude: fix.longitude,
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -60,7 +87,9 @@ class _AttendanceConfirmScreenState extends State<AttendanceConfirmScreen> {
       if (mounted) {
         setState(() => _isSubmitting = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.errorWithDetail('$e'))),
+          SnackBar(
+            content: Text(AttendanceService.punchErrorMessage(e, l10n)),
+          ),
         );
       }
     }
@@ -69,15 +98,16 @@ class _AttendanceConfirmScreenState extends State<AttendanceConfirmScreen> {
   String _statusText(AppLocalizations l10n, String locale) {
     final r = widget.resolve;
     if (AttendanceMode.normalize(r.attendanceMode) == AttendanceMode.qrOnce) {
-      if (r.checkedInToday) return l10n.alreadyCheckedInToday;
-      return l10n.readyForDailyCheckIn;
+      if (r.checkedInToday) return l10n.alreadyCheckedInThisShift;
+      return l10n.readyForShiftCheckIn;
     }
+    if (r.shiftComplete) return l10n.attendanceShiftAlreadyComplete;
     if (r.isClockedIn && r.lastPunchedAt != null) {
       return l10n.clockedInAt(
         AttendanceFormat.timeOfDay(r.lastPunchedAt!, locale),
       );
     }
-    return l10n.notClockedInToday;
+    return l10n.notClockedInThisShift;
   }
 
   bool get _isQrOnceMode =>
@@ -218,14 +248,19 @@ class _AttendanceConfirmScreenState extends State<AttendanceConfirmScreen> {
             if (_isQrOnceMode) ...[
               if (r.checkedInToday)
                 Text(
-                  l10n.alreadyCheckedInTodayMessage,
+                  l10n.attendanceAlreadyCheckedInThisShiftMessage,
                   style: kTextStyle.copyWith(color: kSubTitleColor, height: 1.35),
                 )
               else
                 Text(
-                  l10n.attendanceQrOnceDailyHint,
+                  l10n.attendanceQrOnceShiftHint,
                   style: kTextStyle.copyWith(color: kSubTitleColor, height: 1.35),
                 ),
+            ] else if (r.shiftComplete) ...[
+              Text(
+                l10n.attendanceShiftAlreadyCompleteMessage,
+                style: kTextStyle.copyWith(color: kSubTitleColor, height: 1.35),
+              ),
             ] else ...[
               Row(
                 children: [
@@ -255,15 +290,16 @@ class _AttendanceConfirmScreenState extends State<AttendanceConfirmScreen> {
             else
               ButtonGlobalWithoutIcon(
                 buttontext: _isQrOnceMode
-                    ? l10n.checkInForToday
+                    ? l10n.checkInForThisShift
                     : AttendanceFormat.punchLabel(_selectedPunchType, l10n),
                 buttonDecoration: kButtonDecoration.copyWith(
                   color: primaryIsIn ? const Color(0xFF2E7D32) : Colors.orange,
                 ),
                 buttonTextColor: kWhite,
-                onPressed: (r.checkedInToday && _isQrOnceMode) ? () {} : _submit,
+                onPressed: r.shiftComplete ? () {} : _submit,
               ),
             if (!_isQrOnceMode &&
+                !r.shiftComplete &&
                 r.suggestClockIn != (_selectedPunchType == 'in')) ...[
               const SizedBox(height: 12),
               Center(

@@ -55,7 +55,6 @@ class ClientSiteSetupPanel extends StatelessWidget {
     AttendanceQrDisplayScreen(
       jobPostId: jobPostId,
       jobTitle: title,
-      jobPost: pinned,
     ).launch(context);
   }
 

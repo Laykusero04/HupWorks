@@ -484,12 +484,6 @@ abstract class AppLocalizations {
   /// **'Please fill in all fields'**
   String get pleaseFillAllFields;
 
-  /// No description provided for @accountBlockedLoginMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'This account has been blocked. Contact support if you think this is a mistake.'**
-  String get accountBlockedLoginMessage;
-
   /// No description provided for @pushNotifications.
   ///
   /// In en, this message translates to:
@@ -6562,72 +6556,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Upload ID documents for your verified badge'**
   String get settingsVerificationSubtitle;
-
-  /// No description provided for @messagingPreferenceTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Who can message me'**
-  String get messagingPreferenceTitle;
-
-  /// No description provided for @messagingPreferenceSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Controls who can start a new chat with you. Existing conversations stay open. Blocking someone still overrides this.'**
-  String get messagingPreferenceSubtitle;
-
-  /// No description provided for @messagingPreferenceEveryone.
-  ///
-  /// In en, this message translates to:
-  /// **'Everyone'**
-  String get messagingPreferenceEveryone;
-
-  /// No description provided for @messagingPreferenceEveryoneDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'Anyone on HupWorks can start a chat with you.'**
-  String get messagingPreferenceEveryoneDesc;
-
-  /// No description provided for @messagingPreferenceHiredOnly.
-  ///
-  /// In en, this message translates to:
-  /// **'Hired only'**
-  String get messagingPreferenceHiredOnly;
-
-  /// No description provided for @messagingPreferenceHiredOnlyDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'Only people you have hired — or been hired by — can start a new chat.'**
-  String get messagingPreferenceHiredOnlyDesc;
-
-  /// No description provided for @messagingPreferenceNobody.
-  ///
-  /// In en, this message translates to:
-  /// **'Nobody new'**
-  String get messagingPreferenceNobody;
-
-  /// No description provided for @messagingPreferenceNobodyDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'No new chats. You can still message in existing threads.'**
-  String get messagingPreferenceNobodyDesc;
-
-  /// No description provided for @messagingPreferenceSaved.
-  ///
-  /// In en, this message translates to:
-  /// **'Messaging preference saved'**
-  String get messagingPreferenceSaved;
-
-  /// No description provided for @messagingPreferenceNobodyDenied.
-  ///
-  /// In en, this message translates to:
-  /// **'This person is not accepting new messages.'**
-  String get messagingPreferenceNobodyDenied;
-
-  /// No description provided for @messagingPreferenceHiredOnlyDenied.
-  ///
-  /// In en, this message translates to:
-  /// **'This person only accepts messages from people they have worked with.'**
-  String get messagingPreferenceHiredOnlyDenied;
 
   /// No description provided for @faqDiffMessagesQ.
   ///

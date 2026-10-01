@@ -209,10 +209,6 @@ class AppLocalizationsNl extends AppLocalizations {
   String get pleaseFillAllFields => 'Vul alle velden in';
 
   @override
-  String get accountBlockedLoginMessage =>
-      'Dit account is geblokkeerd. Neem contact op met support als je denkt dat dit een vergissing is.';
-
-  @override
   String get pushNotifications => 'Pushmeldingen';
 
   @override
@@ -3608,45 +3604,6 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get settingsVerificationSubtitle =>
       'Upload ID-documenten voor je geverifieerde badge';
-
-  @override
-  String get messagingPreferenceTitle => 'Wie mag mij berichten';
-
-  @override
-  String get messagingPreferenceSubtitle =>
-      'Bepaalt wie een nieuwe chat met jou mag starten. Bestaande gesprekken blijven open. Blokkeren heeft altijd voorrang.';
-
-  @override
-  String get messagingPreferenceEveryone => 'Iedereen';
-
-  @override
-  String get messagingPreferenceEveryoneDesc =>
-      'Iedereen op HupWorks mag een chat met jou starten.';
-
-  @override
-  String get messagingPreferenceHiredOnly => 'Alleen ingehuurd';
-
-  @override
-  String get messagingPreferenceHiredOnlyDesc =>
-      'Alleen mensen die je hebt ingehuurd — of door wie jij bent ingehuurd — mogen een nieuwe chat starten.';
-
-  @override
-  String get messagingPreferenceNobody => 'Niemand nieuw';
-
-  @override
-  String get messagingPreferenceNobodyDesc =>
-      'Geen nieuwe chats. Je kunt wel blijven berichten in bestaande threads.';
-
-  @override
-  String get messagingPreferenceSaved => 'Berichtvoorkeur opgeslagen';
-
-  @override
-  String get messagingPreferenceNobodyDenied =>
-      'Deze persoon accepteert geen nieuwe berichten.';
-
-  @override
-  String get messagingPreferenceHiredOnlyDenied =>
-      'Deze persoon accepteert alleen berichten van mensen met wie ze hebben gewerkt.';
 
   @override
   String get faqDiffMessagesQ =>

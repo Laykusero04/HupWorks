@@ -208,10 +208,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pleaseFillAllFields => 'Please fill in all fields';
 
   @override
-  String get accountBlockedLoginMessage =>
-      'This account has been blocked. Contact support if you think this is a mistake.';
-
-  @override
   String get pushNotifications => 'Push Notifications';
 
   @override
@@ -3579,45 +3575,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get settingsVerificationSubtitle =>
       'Upload ID documents for your verified badge';
-
-  @override
-  String get messagingPreferenceTitle => 'Who can message me';
-
-  @override
-  String get messagingPreferenceSubtitle =>
-      'Controls who can start a new chat with you. Existing conversations stay open. Blocking someone still overrides this.';
-
-  @override
-  String get messagingPreferenceEveryone => 'Everyone';
-
-  @override
-  String get messagingPreferenceEveryoneDesc =>
-      'Anyone on HupWorks can start a chat with you.';
-
-  @override
-  String get messagingPreferenceHiredOnly => 'Hired only';
-
-  @override
-  String get messagingPreferenceHiredOnlyDesc =>
-      'Only people you have hired — or been hired by — can start a new chat.';
-
-  @override
-  String get messagingPreferenceNobody => 'Nobody new';
-
-  @override
-  String get messagingPreferenceNobodyDesc =>
-      'No new chats. You can still message in existing threads.';
-
-  @override
-  String get messagingPreferenceSaved => 'Messaging preference saved';
-
-  @override
-  String get messagingPreferenceNobodyDenied =>
-      'This person is not accepting new messages.';
-
-  @override
-  String get messagingPreferenceHiredOnlyDenied =>
-      'This person only accepts messages from people they have worked with.';
 
   @override
   String get faqDiffMessagesQ =>

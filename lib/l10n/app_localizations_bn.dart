@@ -208,10 +208,6 @@ class AppLocalizationsBn extends AppLocalizations {
   String get pleaseFillAllFields => 'সব ঘর পূরণ করুন';
 
   @override
-  String get accountBlockedLoginMessage =>
-      'এই অ্যাকাউন্ট ব্লক করা হয়েছে। ভুল মনে হলে সাপোর্টে যোগাযোগ করুন।';
-
-  @override
   String get pushNotifications => 'পুশ নোটিফিকেশন';
 
   @override
@@ -3586,45 +3582,6 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get settingsVerificationSubtitle =>
       'যাচাইকৃত ব্যাজের জন্য আইডি নথি আপলোড করুন';
-
-  @override
-  String get messagingPreferenceTitle => 'কে আমাকে মেসেজ করতে পারবে';
-
-  @override
-  String get messagingPreferenceSubtitle =>
-      'কে নতুন চ্যাট শুরু করতে পারবে তা নিয়ন্ত্রণ করে। বিদ্যমান কথোপকথন খোলাই থাকে। কাউকে ব্লক করলে সেটি সবসময় অগ্রাধিকার পায়।';
-
-  @override
-  String get messagingPreferenceEveryone => 'সবাই';
-
-  @override
-  String get messagingPreferenceEveryoneDesc =>
-      'HupWorks-এর যে কেউ আপনার সাথে চ্যাট শুরু করতে পারে।';
-
-  @override
-  String get messagingPreferenceHiredOnly => 'শুধু নিয়োগকৃত';
-
-  @override
-  String get messagingPreferenceHiredOnlyDesc =>
-      'শুধু যাদের আপনি নিয়োগ করেছেন — বা যারা আপনাকে নিয়োগ করেছেন — তারা নতুন চ্যাট শুরু করতে পারে।';
-
-  @override
-  String get messagingPreferenceNobody => 'কেউ নতুন নয়';
-
-  @override
-  String get messagingPreferenceNobodyDesc =>
-      'নতুন চ্যাট নেই। বিদ্যমান থ্রেডে এখনও মেসেজ করতে পারবেন।';
-
-  @override
-  String get messagingPreferenceSaved => 'মেসেজিং পছন্দ সংরক্ষিত';
-
-  @override
-  String get messagingPreferenceNobodyDenied =>
-      'এই ব্যক্তি নতুন মেসেজ গ্রহণ করছেন না।';
-
-  @override
-  String get messagingPreferenceHiredOnlyDenied =>
-      'এই ব্যক্তি শুধু যাদের সাথে কাজ করেছেন তাদের কাছ থেকে মেসেজ গ্রহণ করেন।';
 
   @override
   String get faqDiffMessagesQ => 'Messages এবং Help & Support-এর পার্থক্য কী?';

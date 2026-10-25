@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:freelancer/core/utils/app_date_format.dart';
 import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/router/route_names.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
 import 'package:freelancer/services/orders_service.dart';
 import 'package:freelancer/services/recently_viewed_service.dart';
 import 'package:freelancer/screen/client%20screen/client%20talent/freelancer_public_profile.dart';
 import 'package:freelancer/services/service_details_service.dart';
+import 'package:go_router/go_router.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -36,6 +38,7 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
   List<Map<String, dynamic>> _reviews = [];
   List<Map<String, dynamic>> _requirements = [];
   bool _isLoading = true;
+  bool _placingOrder = false;
 
   void _scrollListener() {
     if (_isShrink != lastStatus) {
@@ -119,6 +122,72 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
 
   final CarouselSliderController _controller = CarouselSliderController();
 
+  Future<void> _placeOrder() async {
+    if (_placingOrder) return;
+    final l10n = context.l10n;
+    final sellerId = _seller?['id']?.toString();
+    if (widget.serviceId == null || _service == null || sellerId == null || sellerId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.errorPlacingOrder(l10n.missingOrderDetails))),
+      );
+      return;
+    }
+
+    final price = double.tryParse(_service!['price'].toString()) ?? 0;
+    final rawDays = _service!['delivery_time'];
+    final deliveryDays = rawDays is int ? rawDays : int.tryParse('$rawDays') ?? 7;
+
+    setState(() => _placingOrder = true);
+    try {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: Text(l10n.orderNow),
+          content: Text(
+            '${l10n.budgetLabel}: $currencySign$price\n'
+            '${l10n.deliveryDays}: ${l10n.deliveryDaysCount(deliveryDays)}',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: Text(l10n.cancel),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: Text(l10n.confirm),
+            ),
+          ],
+        ),
+      );
+      if (confirmed != true || !mounted) return;
+
+      final order = await OrdersService.createOrder(
+        serviceId: widget.serviceId!,
+        sellerId: sellerId,
+        price: price,
+        deliveryDays: deliveryDays,
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.orderPlacedSuccess)),
+      );
+      final orderId = order['id']?.toString();
+      if (orderId != null && orderId.isNotEmpty) {
+        context.push(AppRoutes.clientOrderDetailsOf(orderId));
+      } else {
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.errorPlacingOrder('$e'))),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _placingOrder = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -142,34 +211,12 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
     return SafeArea(
       child: Scaffold(
         bottomNavigationBar: ButtonGlobalWithoutIcon(
-            buttontext: 'Order Now',
+            buttontext: context.l10n.orderNow,
             buttonDecoration: kButtonDecoration.copyWith(
-              color: kPrimaryColor,
+              color: _placingOrder ? kLightNeutralColor : kPrimaryColor,
               borderRadius: BorderRadius.circular(30.0),
             ),
-            onPressed: () async {
-              if (widget.serviceId == null || _service == null || _seller == null) return;
-              try {
-                await OrdersService.createOrder(
-                  serviceId: widget.serviceId!,
-                  sellerId: _seller!['id'],
-                  price: double.tryParse(_service!['price'].toString()) ?? 0,
-                  deliveryDays: _service!['delivery_time'] ?? 7,
-                );
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(context.l10n.orderPlacedSuccess)),
-                  );
-                  Navigator.pop(context);
-                }
-              } catch (e) {
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(context.l10n.errorPlacingOrder('$e'))),
-                  );
-                }
-              }
-            },
+            onPressed: _placingOrder ? null : _placeOrder,
             buttonTextColor: kWhite),
         backgroundColor: kWhite,
         body: NestedScrollView(

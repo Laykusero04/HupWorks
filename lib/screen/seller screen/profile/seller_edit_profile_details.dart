@@ -129,6 +129,12 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
   }
 
   Future<void> _handleSave() async {
+    if (_nameController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.pleaseEnterName)),
+      );
+      return;
+    }
     final skillError = SellerSkillsValidation.validate(_skills);
     if (skillError != null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(skillError)));
@@ -141,8 +147,6 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
         'name': _nameController.text.trim(),
         'phone': _phoneController.text.trim(),
         'gender': _selectedGender,
-        'country': null,
-        'city': null,
       });
       await ProfileService.updateSellerProfile(
         jobTitle: _jobTitleController.text.trim(),
@@ -150,6 +154,7 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
         skills: _skills,
         dateOfBirth: _dateOfBirth,
         address: _addressController.text.trim(),
+        clearPublicCountryCity: false,
       );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.profileUpdatedShort)));

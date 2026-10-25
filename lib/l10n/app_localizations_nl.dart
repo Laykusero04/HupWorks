@@ -1863,6 +1863,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get orderPlacedSuccess => 'Bestelling geplaatst!';
 
   @override
+  String get missingOrderDetails => 'Dienst- of freelancergegevens ontbreken';
+
+  @override
   String errorPlacingOrder(String message) {
     return 'Bestelling plaatsen mislukt: $message';
   }
@@ -2492,6 +2495,13 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get budgetMaxHint => 'Max (optioneel)';
+
+  @override
+  String get invalidBudgetAmount => 'Voer een geldig budgetbedrag in';
+
+  @override
+  String get budgetMaxBelowMin =>
+      'Het maximumbudget moet minstens het minimum zijn';
 
   @override
   String get rateTypeLabel => 'Tarieftype';

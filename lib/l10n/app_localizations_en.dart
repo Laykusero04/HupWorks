@@ -1850,6 +1850,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get orderPlacedSuccess => 'Order placed successfully!';
 
   @override
+  String get missingOrderDetails => 'Service or seller details are missing';
+
+  @override
   String errorPlacingOrder(String message) {
     return 'Could not place order: $message';
   }
@@ -2472,6 +2475,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get budgetMaxHint => 'Max (optional)';
+
+  @override
+  String get invalidBudgetAmount => 'Enter a valid budget amount';
+
+  @override
+  String get budgetMaxBelowMin => 'Maximum budget must be at least the minimum';
 
   @override
   String get rateTypeLabel => 'Rate type';

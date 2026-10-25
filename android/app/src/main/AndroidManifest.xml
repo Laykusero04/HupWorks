@@ -17,7 +17,12 @@
         android:label="HupWorks"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
-        android:localeConfig="@xml/locales_config">
+        android:localeConfig="@xml/locales_config"
+        android:allowBackup="false"
+        android:fullBackupContent="@xml/backup_rules"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:usesCleartextTraffic="false"
+        tools:replace="android:allowBackup,android:fullBackupContent,android:dataExtractionRules,android:usesCleartextTraffic">
         <activity
             android:name=".MainActivity"
             android:exported="true"

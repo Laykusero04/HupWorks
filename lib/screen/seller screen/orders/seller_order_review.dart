@@ -1,13 +1,8 @@
-import 'dart:io';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/screen/widgets/interactive_star_rating.dart';
 import 'package:freelancer/services/orders_service.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../../widgets/constant.dart';
 import '../seller popUp/seller_popup.dart';
@@ -44,10 +39,8 @@ class SellerOrderReview extends StatefulWidget {
 
 class _SellerOrderReviewState extends State<SellerOrderReview> {
   final TextEditingController _feedbackController = TextEditingController();
-  final ImagePicker _picker = ImagePicker();
 
   int _stars = 0;
-  XFile? _pickedImage;
   bool _isSubmitting = false;
 
   @override
@@ -87,92 +80,6 @@ class _SellerOrderReviewState extends State<SellerOrderReview> {
     return const AssetImage('images/profilepic2.png');
   }
 
-  Future<void> _openImagePicker() async {
-    final l10n = context.l10n;
-    final action = await showModalBottomSheet<String>(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (ctx) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.photo_library_outlined),
-              title: Text(l10n.chooseFromGallery),
-              onTap: () => Navigator.pop(ctx, 'gallery'),
-            ),
-            ListTile(
-              leading: const Icon(Icons.photo_camera_outlined),
-              title: Text(l10n.takePhoto),
-              onTap: () => Navigator.pop(ctx, 'camera'),
-            ),
-            if (_pickedImage != null)
-              ListTile(
-                leading: const Icon(Icons.delete_outline, color: Colors.red),
-                title: Text(l10n.removePhoto,
-                    style: kTextStyle.copyWith(color: Colors.red)),
-                onTap: () => Navigator.pop(ctx, 'remove'),
-              ),
-          ],
-        ),
-      ),
-    );
-
-    if (!mounted || action == null) return;
-
-    if (action == 'remove') {
-      setState(() => _pickedImage = null);
-      return;
-    }
-
-    final source =
-        action == 'camera' ? ImageSource.camera : ImageSource.gallery;
-    try {
-      final file = await _picker.pickImage(
-          source: source, maxWidth: 2000, imageQuality: 88);
-      if (file != null && mounted) setState(() => _pickedImage = file);
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.couldNotOpenPicker('$e'))),
-        );
-      }
-    }
-  }
-
-  Widget _pickedImagePreview() {
-    final x = _pickedImage;
-    if (x == null) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(IconlyBold.camera, color: kLightNeutralColor, size: 32),
-          const SizedBox(height: 6),
-          Text(
-            context.l10n.tapToAdd,
-            style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
-          ),
-        ],
-      );
-    }
-    if (kIsWeb) {
-      return Image.network(
-        x.path,
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) =>
-            const Center(child: Icon(Icons.broken_image_outlined)),
-      );
-    }
-    return Image.file(
-      File(x.path),
-      fit: BoxFit.cover,
-      errorBuilder: (_, __, ___) =>
-          const Center(child: Icon(Icons.broken_image_outlined)),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -204,7 +111,7 @@ class _SellerOrderReviewState extends State<SellerOrderReview> {
                 borderRadius: BorderRadius.circular(30.0),
               ),
               onPressed: _isSubmitting
-                  ? () {}
+                  ? null
                   : () async {
                       if (_stars <= 0) {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -339,49 +246,6 @@ class _SellerOrderReviewState extends State<SellerOrderReview> {
                         hintStyle:
                             kTextStyle.copyWith(color: kLightNeutralColor),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    Text(
-                      l10n.uploadImageOptional,
-                      style: kTextStyle.copyWith(
-                        color: kNeutralColor,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Material(
-                      color: kDarkWhite,
-                      borderRadius: BorderRadius.circular(12),
-                      clipBehavior: Clip.antiAlias,
-                      child: InkWell(
-                        onTap: _openImagePicker,
-                        child: SizedBox(
-                          height: 120,
-                          width: double.infinity,
-                          child: Stack(
-                            fit: StackFit.expand,
-                            children: [
-                              _pickedImagePreview(),
-                              if (_pickedImage != null)
-                                Positioned(
-                                  top: 6,
-                                  right: 6,
-                                  child: Material(
-                                    color: Colors.black54,
-                                    shape: const CircleBorder(),
-                                    child: IconButton(
-                                      visualDensity: VisualDensity.compact,
-                                      icon: const Icon(Icons.close,
-                                          color: Colors.white, size: 20),
-                                      onPressed: () =>
-                                          setState(() => _pickedImage = null),
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
                       ),
                     ),
                   ],

@@ -838,6 +838,7 @@
   },
   "anonymous": "Anonymous",
   "orderPlacedSuccess": "Order placed successfully!",
+  "missingOrderDetails": "Service or seller details are missing",
   "errorPlacingOrder": "Could not place order: {message}",
   "@errorPlacingOrder": {
     "placeholders": {
@@ -1165,6 +1166,8 @@
   "budgetMaxLabel": "Max",
   "budgetMinHint": "Min (optional)",
   "budgetMaxHint": "Max (optional)",
+  "invalidBudgetAmount": "Enter a valid budget amount",
+  "budgetMaxBelowMin": "Maximum budget must be at least the minimum",
   "rateTypeLabel": "Rate type",
   "budgetBasisFixed": "Fixed — total project",
   "budgetBasisPerHour": "Per hour",

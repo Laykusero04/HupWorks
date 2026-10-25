@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:freelancer/core/auth/secure_session_storage.dart';
 import 'package:freelancer/core/locale/locale_controller.dart';
 import 'package:freelancer/core/notifications/push_notification_prefs.dart';
 import 'package:freelancer/core/onboarding/onboarding_prefs.dart';
@@ -12,9 +13,16 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
 
+  final supabaseUrl = dotenv.env['SUPABASE_URL']!;
   await Supabase.initialize(
-    url: dotenv.env['SUPABASE_URL']!,
+    url: supabaseUrl,
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
+    authOptions: FlutterAuthClientOptions(
+      localStorage: SecureSessionStorage(
+        persistSessionKey: supabaseSessionStorageKey(supabaseUrl),
+      ),
+      pkceAsyncStorage: SecurePkceStorage(),
+    ),
   );
 
   await PushNotificationPrefs.load();

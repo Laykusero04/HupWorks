@@ -824,6 +824,7 @@
   },
   "anonymous": "অজ্ঞাত",
   "orderPlacedSuccess": "অর্ডার সফলভাবে দেওয়া হয়েছে!",
+  "missingOrderDetails": "সার্ভিস বা ফ্রিল্যান্সারের তথ্য নেই",
   "errorPlacingOrder": "অর্ডার দেওয়া যায়নি: {message}",
   "@errorPlacingOrder": {
     "placeholders": {
@@ -1151,6 +1152,8 @@
   "budgetMaxLabel": "Max",
   "budgetMinHint": "Min (optional)",
   "budgetMaxHint": "Max (optional)",
+  "invalidBudgetAmount": "একটি সঠিক বাজেট পরিমাণ লিখুন",
+  "budgetMaxBelowMin": "সর্বোচ্চ বাজেট সর্বনিম্নের সমান বা তার বেশি হতে হবে",
   "rateTypeLabel": "Rate type",
   "budgetBasisFixed": "Fixed — total project",
   "budgetBasisPerHour": "Per hour",

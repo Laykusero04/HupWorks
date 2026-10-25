@@ -260,6 +260,19 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
           return l10n.jobSitePinRequiredForQr;
         }
         return null;
+      case 3:
+        final minText = _budgetMinController.text.trim();
+        final maxText = _budgetMaxController.text.trim();
+        final min = minText.isEmpty ? null : double.tryParse(minText);
+        final max = maxText.isEmpty ? null : double.tryParse(maxText);
+        if ((minText.isNotEmpty && min == null) ||
+            (maxText.isNotEmpty && max == null)) {
+          return l10n.invalidBudgetAmount;
+        }
+        if (min != null && max != null && max < min) {
+          return l10n.budgetMaxBelowMin;
+        }
+        return null;
       default:
         return null;
     }
@@ -1006,6 +1019,14 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
                 shiftEnd: _shiftEnd,
               ).displayLabel ??
               '—',
+          budget: () {
+            final label = JobPostsService.formatBudgetRange(
+              double.tryParse(_budgetMinController.text.trim()),
+              double.tryParse(_budgetMaxController.text.trim()),
+              _budgetBasis,
+            );
+            return label.isEmpty ? '—' : label;
+          }(),
         ),
         const SizedBox(height: 8),
       ],
@@ -1021,6 +1042,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
     required String locationType,
     required String workers,
     required String shift,
+    required String budget,
   }) {
     final l10n = context.l10n;
     return Container(
@@ -1046,6 +1068,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
           _reviewLine(l10n.shiftLabel, shift),
           _reviewLine(l10n.locationLabel, '$locationType · $location'),
           _reviewLine(l10n.workersLabel, workers),
+          _reviewLine(l10n.budgetLabel, budget),
         ],
       ),
     );

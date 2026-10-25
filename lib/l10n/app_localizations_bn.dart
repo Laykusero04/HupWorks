@@ -1853,6 +1853,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get orderPlacedSuccess => 'অর্ডার সফলভাবে দেওয়া হয়েছে!';
 
   @override
+  String get missingOrderDetails => 'সার্ভিস বা ফ্রিল্যান্সারের তথ্য নেই';
+
+  @override
   String errorPlacingOrder(String message) {
     return 'অর্ডার দেওয়া যায়নি: $message';
   }
@@ -2477,6 +2480,13 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get budgetMaxHint => 'Max (optional)';
+
+  @override
+  String get invalidBudgetAmount => 'একটি সঠিক বাজেট পরিমাণ লিখুন';
+
+  @override
+  String get budgetMaxBelowMin =>
+      'সর্বোচ্চ বাজেট সর্বনিম্নের সমান বা তার বেশি হতে হবে';
 
   @override
   String get rateTypeLabel => 'Rate type';

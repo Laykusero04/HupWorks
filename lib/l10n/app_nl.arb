@@ -712,6 +712,8 @@
   "budgetMaxLabel": "Max",
   "budgetMinHint": "Min (optioneel)",
   "budgetMaxHint": "Max (optioneel)",
+  "invalidBudgetAmount": "Voer een geldig budgetbedrag in",
+  "budgetMaxBelowMin": "Het maximumbudget moet minstens het minimum zijn",
   "rateTypeLabel": "Tarieftype",
   "budgetBasisFixed": "Vast — totaal project",
   "budgetBasisPerHour": "Per uur",
@@ -1047,6 +1049,7 @@
   },
   "anonymous": "Anoniem",
   "orderPlacedSuccess": "Bestelling geplaatst!",
+  "missingOrderDetails": "Dienst- of freelancergegevens ontbreken",
   "errorPlacingOrder": "Bestelling plaatsen mislukt: {message}",
   "@errorPlacingOrder": {
     "placeholders": {

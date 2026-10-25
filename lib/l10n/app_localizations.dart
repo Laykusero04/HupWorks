@@ -3484,6 +3484,12 @@ abstract class AppLocalizations {
   /// **'Order placed successfully!'**
   String get orderPlacedSuccess;
 
+  /// No description provided for @missingOrderDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Service or seller details are missing'**
+  String get missingOrderDetails;
+
   /// No description provided for @errorPlacingOrder.
   ///
   /// In en, this message translates to:
@@ -4611,6 +4617,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Max (optional)'**
   String get budgetMaxHint;
+
+  /// No description provided for @invalidBudgetAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid budget amount'**
+  String get invalidBudgetAmount;
+
+  /// No description provided for @budgetMaxBelowMin.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum budget must be at least the minimum'**
+  String get budgetMaxBelowMin;
 
   /// No description provided for @rateTypeLabel.
   ///

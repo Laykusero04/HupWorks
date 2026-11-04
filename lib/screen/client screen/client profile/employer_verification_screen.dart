@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:freelancer/core/widgets/empty_state_widget.dart';
 import 'package:freelancer/core/widgets/loading_widget.dart';
 
 import 'package:flutter/material.dart';
@@ -27,12 +28,14 @@ class EmployerVerificationScreen extends StatefulWidget {
 class _EmployerVerificationScreenState
     extends State<EmployerVerificationScreen> {
   String _upgradeType = EmployerVerificationService.verifyTypePersonalId;
+  String? _storedVerifyType;
   String _status = 'unverified';
   String? _rejectionReason;
   String? _submittedDocUrl;
   Map<String, dynamic>? _profile;
   File? _pickedFile;
   bool _loading = true;
+  bool _loadFailed = false;
   bool _submitting = false;
   int _completedPaidHires = 0;
 
@@ -93,9 +96,11 @@ class _EmployerVerificationScreenState
                 row?['rejection_reason'] as String?;
         _submittedDocUrl = signedUrl;
         _completedPaidHires = paidHires;
+        _loadFailed = false;
         if (row != null) {
-          _upgradeType = (row['verify_type'] as String?) ??
+          _storedVerifyType = (row['verify_type'] as String?) ??
               EmployerVerificationService.verifyTypePersonalId;
+          _upgradeType = _storedVerifyType!;
           _companyNameController.text =
               (row['company_name'] as String?) ??
                   (profile?['company_name'] as String?) ??
@@ -108,6 +113,7 @@ class _EmployerVerificationScreenState
               (profile?['company_website'] as String?) ??
               '';
         } else {
+          _storedVerifyType = null;
           _companyNameController.text =
               (profile?['company_name'] as String?) ?? '';
           _registrationController.text =
@@ -117,12 +123,12 @@ class _EmployerVerificationScreenState
         }
         _loading = false;
       });
-    } catch (e) {
+    } catch (_) {
       if (mounted) {
-        setState(() => _loading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
-        );
+        setState(() {
+          _loading = false;
+          _loadFailed = true;
+        });
       }
     }
   }
@@ -200,6 +206,8 @@ class _EmployerVerificationScreenState
 
   ImageProvider? get _previewImage {
     if (_pickedFile != null) return FileImage(_pickedFile!);
+    final stored = _storedVerifyType;
+    if (stored == null || stored != _upgradeType) return null;
     final url = _submittedDocUrl;
     if (url != null && url.isNotEmpty) return NetworkImage(url);
     return null;
@@ -211,6 +219,33 @@ class _EmployerVerificationScreenState
     if (_loading) {
       return const Scaffold(
         body: const LoadingWidget(),
+      );
+    }
+
+    if (_loadFailed) {
+      return Scaffold(
+        backgroundColor: kDarkWhite,
+        appBar: AppBar(
+          backgroundColor: kDarkWhite,
+          elevation: 0,
+          iconTheme: const IconThemeData(color: kNeutralColor),
+          title: Text(
+            l10n.employerVerification,
+            style: kTextStyle.copyWith(
+              color: kNeutralColor,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          centerTitle: true,
+        ),
+        body: EmptyStateWidget(
+          message: l10n.somethingWentWrong,
+          actionLabel: l10n.retry,
+          onAction: () {
+            setState(() => _loading = true);
+            _load();
+          },
+        ),
       );
     }
 

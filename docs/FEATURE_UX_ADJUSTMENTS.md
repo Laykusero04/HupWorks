@@ -38,14 +38,14 @@ Copy these prompts in this order.
 
 Copy these prompts in this order. Hire comes before the contract screens because it creates the contract those screens open.
 
-- [ ] [Job details](#job-details)
-- [ ] [Hire from the inbox](#hire-from-the-inbox)
-- [ ] [Contract details](#contract-details)
-- [ ] [Contract details and delivery](#contract-details-and-delivery)
-- [ ] [Off-app payment](#off-app-payment)
-- [ ] [Cancellation and delivery files](#cancellation-and-delivery-files)
-- [ ] [Favourites](#favourites)
-- [ ] [Attendance](#attendance)
+- [x] [Job details](#job-details)
+- [x] [Hire from the inbox](#hire-from-the-inbox)
+- [x] [Contract details](#contract-details)
+- [x] [Contract details and delivery](#contract-details-and-delivery)
+- [x] [Off-app payment](#off-app-payment)
+- [x] [Cancellation and delivery files](#cancellation-and-delivery-files)
+- [x] [Favourites](#favourites)
+- [x] [Attendance](#attendance)
 
 **Exit.** A failed job or seller contract load cannot close, cancel, or deliver. Inbox hire opens the same instructions sheet as job details and passes the site. Client open contracts message the freelancer. Payment undo, cancellation submit, favourite remove, and self-report clock-out confirm before they change data. Delivery files open.
 
@@ -53,17 +53,17 @@ Copy these prompts in this order. Hire comes before the contract screens because
 
 Copy these prompts in this order. Splash is first because a stuck role blocks every later test. Verification is next because a failed load currently invites a new submission.
 
-- [ ] [Splash](#splash)
-- [ ] [Employer verification](#employer-verification)
-- [ ] [Identity verification](#identity-verification)
-- [ ] [Seller home](#seller-home)
-- [ ] [Contracts](#contracts)
-- [ ] [Find jobs and job details](#find-jobs-and-job-details)
-- [ ] [My applications](#my-applications)
-- [ ] [Job alerts](#job-alerts)
-- [ ] [Categories](#categories)
-- [ ] [My jobs](#my-jobs)
-- [ ] [Applications inbox](#applications-inbox)
+- [x] [Splash](#splash)
+- [x] [Employer verification](#employer-verification)
+- [x] [Identity verification](#identity-verification)
+- [x] [Seller home](#seller-home)
+- [x] [Contracts](#contracts)
+- [x] [Find jobs and job details](#find-jobs-and-job-details)
+- [x] [My applications](#my-applications)
+- [x] [Job alerts](#job-alerts)
+- [x] [Categories](#categories)
+- [x] [My jobs](#my-jobs)
+- [x] [Applications inbox](#applications-inbox)
 
 **Exit.** Each of these screens has a Retry state for a thrown request, and a successful empty or filtered-empty list keeps its current action (post, browse, create, or clear filter). Splash stops retrying and offers Sign out.
 
@@ -71,10 +71,10 @@ Copy these prompts in this order. Splash is first because a stuck role blocks ev
 
 Copy these prompts in this order.
 
-- [ ] [Onboarding](#onboarding)
-- [ ] [Login and password reset](#login-and-password-reset)
-- [ ] [Email confirmation](#email-confirmation)
-- [ ] [Seller screens outside the shell](#seller-screens-outside-the-shell)
+- [x] [Onboarding](#onboarding)
+- [x] [Login and password reset](#login-and-password-reset)
+- [x] [Email confirmation](#email-confirmation)
+- [x] [Seller screens outside the shell](#seller-screens-outside-the-shell)
 
 **Exit.** Language is an explicit first step, keyboard Done logs in, the reset snackbar survives the pop, Resend has a cooldown, Back does not stack another login, and seller routes outside the tab shell use the seller theme.
 
@@ -82,20 +82,20 @@ Copy these prompts in this order.
 
 Copy these prompts in this order.
 
-- [ ] [Chat](#chat)
-- [ ] [Notifications](#notifications)
-- [ ] [Search, categories, and the map pin](#search-categories-and-the-map-pin)
-- [ ] [Report a user](#report-a-user)
+- [x] [Chat](#chat)
+- [x] [Notifications](#notifications)
+- [x] [Search, categories, and the map pin](#search-categories-and-the-map-pin)
+- [x] [Report a user](#report-a-user)
 
 **Exit.** Attach can use the camera, unread state shows on every shell tab, search and map errors are localized, Add category stays available when search matches nothing, and a short report note shows an error on the field.
 
 ## Shared entry and shell
 
-- [ ] Splash — Phase 3
-- [ ] Onboarding — Phase 4
-- [ ] Login and password reset — Phase 4
-- [ ] Email confirmation — Phase 4
-- [ ] Seller screens outside the shell — Phase 4
+- [x] Splash — Phase 3
+- [x] Onboarding — Phase 4
+- [x] Login and password reset — Phase 4
+- [x] Email confirmation — Phase 4
+- [x] Seller screens outside the shell — Phase 4
 
 ### Splash
 
@@ -120,12 +120,12 @@ The status line is also hardcoded English (`Getting things ready…`).
 
 **Checklist**
 
-- [ ] `_goNext` stops after about 8 retries when `cachedRole` stays null.
-- [ ] The failure state shows Retry and Sign out.
-- [ ] Retry runs the same role warm-up and can navigate once the role arrives.
-- [ ] Sign out clears the session and goes to `/welcome`.
-- [ ] A successful role load still goes to the role home. A logged-out user still goes to `/onboard` or `/welcome`.
-- [ ] Status and version copy come from `app_en.arb` and `app_nl.arb`.
+- [x] `_goNext` stops after about 8 retries when `cachedRole` stays null.
+- [x] The failure state shows Retry and Sign out.
+- [x] Retry runs the same role warm-up and can navigate once the role arrives.
+- [x] Sign out clears the session and goes to `/welcome`.
+- [x] A successful role load still goes to the role home. A logged-out user still goes to `/onboard` or `/welcome`.
+- [x] Status and version copy come from `app_en.arb` and `app_nl.arb`.
 
 **Prompt**
 
@@ -148,10 +148,10 @@ Replace the hardcoded splash status and version strings with l10n keys.
 
 **Checklist**
 
-- [ ] Page 0 shows Continue and does not call `_finish()`.
-- [ ] Pages 1–9 still show Skip, and Skip still marks onboarding seen and goes to `/welcome`.
-- [ ] A text counter such as `2 / 10` replaces the 10-dot indicator.
-- [ ] Language selection still writes the locale through `_LanguageOptionTile`.
+- [x] Page 0 shows Continue and does not call `_finish()`.
+- [x] Pages 1–9 still show Skip, and Skip still marks onboarding seen and goes to `/welcome`.
+- [x] A text counter such as `2 / 10` replaces the 10-dot indicator.
+- [x] Language selection still writes the locale through `_LanguageOptionTile`.
 
 **Prompt**
 
@@ -174,12 +174,12 @@ Do not change the rule copy or the language tiles.
 
 **Checklist**
 
-- [ ] Keyboard Done on the password field calls `_handleLogin`.
-- [ ] Email and password fields have autofill hints inside an `AutofillGroup`.
-- [ ] A successful reset pops first, and the login screen shows `authResetLinkSent`.
-- [ ] A failed reset stays on the forgot-password screen with the email still filled.
-- [ ] The save-password row has at least a 44 px tap target.
-- [ ] Client and seller login both get the change, because both use `UnifiedLogIn`.
+- [x] Keyboard Done on the password field calls `_handleLogin`.
+- [x] Email and password fields have autofill hints inside an `AutofillGroup`.
+- [x] A successful reset pops first, and the login screen shows `authResetLinkSent`.
+- [x] A failed reset stays on the forgot-password screen with the email still filled.
+- [x] The save-password row has at least a 44 px tap target.
+- [x] Client and seller login both get the change, because both use `UnifiedLogIn`.
 
 **Prompt**
 
@@ -203,12 +203,12 @@ Do not change the login API calls.
 
 **Checklist**
 
-- [ ] Resend is a button that disables for 60 seconds after a successful send.
-- [ ] The label shows the remaining seconds during the cooldown.
-- [ ] A failed resend does not start the cooldown.
-- [ ] Back uses `context.go` to the client or seller login route for the signup role.
-- [ ] Open email app launches the mail client.
-- [ ] Both client and seller signup pass the role into this screen.
+- [x] Resend is a button that disables for 60 seconds after a successful send.
+- [x] The label shows the remaining seconds during the cooldown.
+- [x] A failed resend does not start the cooldown.
+- [x] Back uses `context.go` to the client or seller login route for the signup role.
+- [x] Open email app launches the mail client.
+- [x] Both client and seller signup pass the role into this screen.
 
 **Prompt**
 
@@ -232,11 +232,11 @@ Seller blue is applied only inside the seller `StatefulShellRoute` in `lib/route
 
 **Checklist**
 
-- [ ] One helper builds the seller theme already used inside the seller shell.
-- [ ] Seller attendance, notifications, settings, order details, chat inbox, and seller profile routes use that theme.
-- [ ] Client routes stay on the green theme.
-- [ ] On narrow widths, bottom-nav tiles show the icon and a tooltip when the label would clip.
-- [ ] Each tile has `Semantics` with the label and selected state.
+- [x] One helper builds the seller theme already used inside the seller shell.
+- [x] Seller attendance, notifications, settings, order details, chat inbox, and seller profile routes use that theme.
+- [x] Client routes stay on the green theme.
+- [x] On narrow widths, bottom-nav tiles show the icon and a tooltip when the label would clip.
+- [x] Each tile has `Semantics` with the label and selected state.
 
 **Prompt**
 
@@ -253,14 +253,14 @@ Do not change route paths.
 ## Client features
 
 - [x] Post a job — Phase 1
-- [ ] My jobs — Phase 3
-- [ ] Job details — Phase 2
-- [ ] Applications inbox — Phase 3
-- [ ] Hire from the inbox — Phase 2
-- [ ] Contract details — Phase 2
+- [x] My jobs — Phase 3
+- [x] Job details — Phase 2
+- [x] Applications inbox — Phase 3
+- [x] Hire from the inbox — Phase 2
+- [x] Contract details — Phase 2
 - [x] Buy a service — Phase 1
-- [ ] Categories — Phase 3
-- [ ] Employer verification — Phase 3
+- [x] Categories — Phase 3
+- [x] Employer verification — Phase 3
 
 ### Post a job
 
@@ -308,11 +308,11 @@ Keep the existing step 0–2 checks and the existing _handlePost validation loop
 
 **Checklist**
 
-- [ ] A type filter that matches nothing shows a clear-filter empty state.
-- [ ] Clear filter sets `_typeFilter` back so all posts show again.
-- [ ] A truly empty job list still offers Post a job.
-- [ ] Cards use `l10n.categoryLabel`, `l10n.categoryGeneral`, and `l10n.untitled`.
-- [ ] Status uses `l10n.open` and `l10n.closed`.
+- [x] A type filter that matches nothing shows a clear-filter empty state.
+- [x] Clear filter sets `_typeFilter` back so all posts show again.
+- [x] A truly empty job list still offers Post a job.
+- [x] Cards use `l10n.categoryLabel`, `l10n.categoryGeneral`, and `l10n.untitled`.
+- [x] Status uses `l10n.open` and `l10n.closed`.
 
 **Prompt**
 
@@ -335,11 +335,11 @@ Do not change how jobs are loaded.
 
 **Checklist**
 
-- [ ] A failed load sets a failure flag and does not treat the job as open.
-- [ ] The failure state is `EmptyStateWidget` with Retry and no Close job menu.
-- [ ] Retry calls `_loadData`.
-- [ ] Close job is a menu item with `value: 'close'`, handled in `onSelected`.
-- [ ] The existing close confirmation dialog still runs before `closeJobPost`.
+- [x] A failed load sets a failure flag and does not treat the job as open.
+- [x] The failure state is `EmptyStateWidget` with Retry and no Close job menu.
+- [x] Retry calls `_loadData`.
+- [x] Close job is a menu item with `value: 'close'`, handled in `onSelected`.
+- [x] The existing close confirmation dialog still runs before `closeJobPost`.
 
 **Prompt**
 
@@ -362,11 +362,11 @@ Keep the existing close confirmation dialog.
 
 **Checklist**
 
-- [ ] Post a job appears only when `_applications` is empty.
-- [ ] A non-empty list with no rows for the current chip shows a filter-empty state.
-- [ ] That action clears `_statusFilter` and does not open the job form.
-- [ ] The filter-empty state can pull to refresh.
-- [ ] Hire and Reject on pending cards stay as they are.
+- [x] Post a job appears only when `_applications` is empty.
+- [x] A non-empty list with no rows for the current chip shows a filter-empty state.
+- [x] That action clears `_statusFilter` and does not open the job form.
+- [x] The filter-empty state can pull to refresh.
+- [x] Hire and Reject on pending cards stay as they are.
 
 **Prompt**
 
@@ -390,11 +390,11 @@ Hiring from job details confirms, creates the order, then opens a sheet: Add ins
 
 **Checklist**
 
-- [ ] Inbox hire shows the same post-hire instructions sheet as `JobDetails`.
-- [ ] The editor receives job location, location type, and attendance mode.
-- [ ] An Open contract action opens the new client order, not the editor.
-- [ ] If the onboarding packet fails to load, the editor shows Retry and hides Save and Publish.
-- [ ] Hiring from job details keeps its current behavior.
+- [x] Inbox hire shows the same post-hire instructions sheet as `JobDetails`.
+- [x] The editor receives job location, location type, and attendance mode.
+- [x] An Open contract action opens the new client order, not the editor.
+- [x] If the onboarding packet fails to load, the editor shows Retry and hides Save and Publish.
+- [x] Hiring from job details keeps its current behavior.
 
 **Prompt**
 
@@ -430,12 +430,12 @@ Message is only in the overflow menu. Approving a cancellation has no confirm di
 
 **Checklist**
 
-- [ ] Active and pending contracts use a Message bottom button that calls `_handleMessageSeller`.
-- [ ] Approving cancellation shows a confirm dialog before the request.
-- [ ] Keeping the contract stays one tap.
-- [ ] A missing seller id shows a chat error, not the review-missing-seller string.
-- [ ] `ClientSiteSetupPanel` uses existing l10n strings for its six English labels.
-- [ ] Mark complete and Write a review stay as they are.
+- [x] Active and pending contracts use a Message bottom button that calls `_handleMessageSeller`.
+- [x] Approving cancellation shows a confirm dialog before the request.
+- [x] Keeping the contract stays one tap.
+- [x] A missing seller id shows a chat error, not the review-missing-seller string.
+- [x] `ClientSiteSetupPanel` uses existing l10n strings for its six English labels.
+- [x] Mark complete and Write a review stay as they are.
 
 **Prompt**
 
@@ -489,10 +489,10 @@ Home tiles open `ClientAllCategories` (`lib/screen/client screen/client home/cli
 
 **Checklist**
 
-- [ ] Tapping a category opens marketplace search for that category name.
-- [ ] A failed load shows Retry and does not show “no categories yet.”
-- [ ] A search with no matches still shows the no-match message.
-- [ ] Home category tiles can still open this list.
+- [x] Tapping a category opens marketplace search for that category name.
+- [x] A failed load shows Retry and does not show “no categories yet.”
+- [x] A search with no matches still shows the no-match message.
+- [x] Home category tiles can still open this list.
 
 **Prompt**
 
@@ -515,10 +515,10 @@ Do not change the home category tiles.
 
 **Checklist**
 
-- [ ] A failed load shows Retry and hides the submit form.
-- [ ] The stored document preview appears only when the selected path matches the stored `verify_type`.
-- [ ] Switching path still clears the newly picked file.
-- [ ] Submit still requires a newly picked file.
+- [x] A failed load shows Retry and hides the submit form.
+- [x] The stored document preview appears only when the selected path matches the stored `verify_type`.
+- [x] Switching path still clears the newly picked file.
+- [x] Submit still requires a newly picked file.
 
 **Prompt**
 
@@ -534,15 +534,15 @@ Keep the rule that Submit requires a newly picked file.
 ## Seller features
 
 - [x] Edit profile — Phase 1
-- [ ] Seller home — Phase 3
-- [ ] Contracts — Phase 3
-- [ ] Contract details and delivery — Phase 2
-- [ ] Find jobs and job details — Phase 3
-- [ ] My applications — Phase 3
-- [ ] Job alerts — Phase 3
-- [ ] Attendance — Phase 2
-- [ ] Favourites — Phase 2
-- [ ] Identity verification — Phase 3
+- [x] Seller home — Phase 3
+- [x] Contracts — Phase 3
+- [x] Contract details and delivery — Phase 2
+- [x] Find jobs and job details — Phase 3
+- [x] My applications — Phase 3
+- [x] Job alerts — Phase 3
+- [x] Attendance — Phase 2
+- [x] Favourites — Phase 2
+- [x] Identity verification — Phase 3
 
 ### Edit profile
 
@@ -593,11 +593,11 @@ Do not add a city field to this form, and do not change MapLocationPickerScreen.
 
 **Checklist**
 
-- [ ] A failed overview load shows Retry instead of zeros.
-- [ ] Withdrawn applications use the withdrawn colors from `SellerApplications`.
-- [ ] Tapping a home application opens that job and reloads home on return.
-- [ ] Delivered, active, and completed taps open `/seller/orders` on that status tab.
-- [ ] `SellerOrderList` reads the status query and selects that tab on open.
+- [x] A failed overview load shows Retry instead of zeros.
+- [x] Withdrawn applications use the withdrawn colors from `SellerApplications`.
+- [x] Tapping a home application opens that job and reloads home on return.
+- [x] Delivered, active, and completed taps open `/seller/orders` on that status tab.
+- [x] `SellerOrderList` reads the status query and selects that tab on open.
 
 **Prompt**
 
@@ -621,10 +621,10 @@ Do not change how the overview numbers are calculated.
 
 **Checklist**
 
-- [ ] A failed load with an empty list shows Retry, not “no contracts” or Browse jobs.
-- [ ] A successful empty All tab still offers Browse jobs.
-- [ ] A Cancelled chip filters to cancelled contracts.
-- [ ] Contract cards show the client profile photo when `profile_image_url` exists.
+- [x] A failed load with an empty list shows Retry, not “no contracts” or Browse jobs.
+- [x] A successful empty All tab still offers Browse jobs.
+- [x] A Cancelled chip filters to cancelled contracts.
+- [x] Contract cards show the client profile photo when `profile_image_url` exists.
 
 **Prompt**
 
@@ -647,11 +647,11 @@ Extend the client select to name, profile_image_url and use it in the card avata
 
 **Checklist**
 
-- [ ] A failed order load shows Retry and no bottom action bar.
-- [ ] Deliver is disabled while `_actionBusy` is true.
-- [ ] Withdraw cancellation asks for confirmation before the request.
-- [ ] The shift row uses a localized label.
-- [ ] A successful load still shows Request cancel and Deliver work for an open contract.
+- [x] A failed order load shows Retry and no bottom action bar.
+- [x] Deliver is disabled while `_actionBusy` is true.
+- [x] Withdraw cancellation asks for confirmation before the request.
+- [x] The shift row uses a localized label.
+- [x] A successful load still shows Request cancel and Deliver work for an open contract.
 
 **Prompt**
 
@@ -675,11 +675,11 @@ Do not change SellerDeliverOrder.
 
 **Checklist**
 
-- [ ] A failed job load shows Retry and hides Submit offer.
-- [ ] Closed, own-job, and already-applied reasons use existing l10n strings.
-- [ ] Pull to refresh reloads the job.
-- [ ] Category, skills, budget, workers, shift, posted date, and read more/less use existing l10n keys.
-- [ ] Returning from `CreateCustomerOffer` still reloads and can show “already submitted.”
+- [x] A failed job load shows Retry and hides Submit offer.
+- [x] Closed, own-job, and already-applied reasons use existing l10n strings.
+- [x] Pull to refresh reloads the job.
+- [x] Category, skills, budget, workers, shift, posted date, and read more/less use existing l10n keys.
+- [x] Returning from `CreateCustomerOffer` still reloads and can show “already submitted.”
 
 **Prompt**
 
@@ -702,10 +702,10 @@ Do not change CreateCustomerOffer validation.
 
 **Checklist**
 
-- [ ] Returning from a job reloads the applications list without a full-screen loader.
-- [ ] Chat shows only for pending and accepted applications.
-- [ ] A failed load shows Retry, not “no applications.”
-- [ ] Withdraw still confirms and updates the row to withdrawn.
+- [x] Returning from a job reloads the applications list without a full-screen loader.
+- [x] Chat shows only for pending and accepted applications.
+- [x] A failed load shows Retry, not “no applications.”
+- [x] Withdraw still confirms and updates the row to withdrawn.
 
 **Prompt**
 
@@ -728,11 +728,11 @@ Keep the existing withdraw confirmation.
 
 **Checklist**
 
-- [ ] A failed rule list shows Retry and hides the create button.
-- [ ] A successful empty list still shows the create action.
-- [ ] A switch cannot be toggled again while `setEnabled` is in flight.
-- [ ] A failed editor bootstrap shows Retry instead of an empty category and skill form.
-- [ ] Distance validation in the editor stays as it is.
+- [x] A failed rule list shows Retry and hides the create button.
+- [x] A successful empty list still shows the create action.
+- [x] A switch cannot be toggled again while `setEnabled` is in flight.
+- [x] A failed editor bootstrap shows Retry instead of an empty category and skill form.
+- [x] Distance validation in the editor stays as it is.
 
 **Prompt**
 
@@ -763,11 +763,11 @@ The scanner uses `noDuplicates`, so a bad code may never fire again until the ca
 
 **Checklist**
 
-- [ ] Self-report clock-out asks for confirmation before recording the punch.
-- [ ] Self-report clock-in stays one tap.
-- [ ] An unreadable QR shows a localized snackbar and the camera can scan again.
-- [ ] Clock-out success uses an ARB string for “hours sent for employer review” in English and Dutch.
-- [ ] A failed hub load shows Retry. A successful empty hub still says there are no onsite jobs.
+- [x] Self-report clock-out asks for confirmation before recording the punch.
+- [x] Self-report clock-in stays one tap.
+- [x] An unreadable QR shows a localized snackbar and the camera can scan again.
+- [x] Clock-out success uses an ARB string for “hours sent for employer review” in English and Dutch.
+- [x] A failed hub load shows Retry. A successful empty hub still says there are no onsite jobs.
 
 **Prompt**
 
@@ -791,11 +791,11 @@ Do not change the QR confirm screen's GPS checks.
 
 **Checklist**
 
-- [ ] Removal finds the row by favourite id, not by the index captured at tap time.
-- [ ] The row disappears immediately, and the snackbar has an undo action.
-- [ ] Undo restores the row and calls `FavouriteService.toggleFavourite`.
-- [ ] A failed delete puts the row back and shows the existing error snackbar.
-- [ ] The bookmark tooltip is a remove label, not the past-tense success string.
+- [x] Removal finds the row by favourite id, not by the index captured at tap time.
+- [x] The row disappears immediately, and the snackbar has an undo action.
+- [x] Undo restores the row and calls `FavouriteService.toggleFavourite`.
+- [x] A failed delete puts the row back and shows the existing error snackbar.
+- [x] The bookmark tooltip is a remove label, not the past-tense success string.
 
 **Prompt**
 
@@ -819,9 +819,9 @@ Change the IconButton tooltip from the success string to a remove label.
 
 **Checklist**
 
-- [ ] A failed load does not set the status to unverified.
-- [ ] The failure state shows Retry and hides the submit form.
-- [ ] A successful unverified response still shows the submit form.
+- [x] A failed load does not set the status to unverified.
+- [x] The failure state shows Retry and hides the submit form.
+- [x] A successful unverified response still shows the submit form.
 
 **Prompt**
 
@@ -835,13 +835,13 @@ Do not change the submit or upload flow.
 
 ## Shared work features
 
-- [ ] Chat — Phase 5
-- [ ] Notifications — Phase 5
+- [x] Chat — Phase 5
+- [x] Notifications — Phase 5
 - [x] Reviews — Phase 1
-- [ ] Off-app payment — Phase 2
-- [ ] Cancellation and delivery files — Phase 2
-- [ ] Search, categories, and the map pin — Phase 5
-- [ ] Report a user — Phase 5
+- [x] Off-app payment — Phase 2
+- [x] Cancellation and delivery files — Phase 2
+- [x] Search, categories, and the map pin — Phase 5
+- [x] Report a user — Phase 5
 
 ### Chat
 
@@ -853,12 +853,12 @@ Do not change the submit or upload flow.
 
 **Checklist**
 
-- [ ] Attach opens a sheet with Gallery and Camera.
-- [ ] The attach control is at least 44 px and has a tooltip.
-- [ ] A denied camera or photo permission shows a snackbar with an App settings action.
-- [ ] The control stays disabled while an attachment is uploading.
-- [ ] The empty seller inbox has a Browse jobs action to `/seller/find-jobs`.
-- [ ] Failed message retry stays as it is.
+- [x] Attach opens a sheet with Gallery and Camera.
+- [x] The attach control is at least 44 px and has a tooltip.
+- [x] A denied camera or photo permission shows a snackbar with an App settings action.
+- [x] The control stays disabled while an attachment is uploading.
+- [x] The empty seller inbox has a Browse jobs action to `/seller/find-jobs`.
+- [x] Failed message retry stays as it is.
 
 **Prompt**
 
@@ -882,11 +882,11 @@ Keep the existing failed-send retry and the upload lock.
 
 **Checklist**
 
-- [ ] Chat, jobs, orders, and talent app bars show the same unread bell as home, for both roles.
-- [ ] List rows use a type-specific icon for chat, work, attendance, and reviews.
-- [ ] Read all is disabled and shows progress while `markAllAsRead` runs.
-- [ ] A failed mark-all shows a snackbar and leaves the unread state unchanged.
-- [ ] The in-app banner can be swiped away.
+- [x] Chat, jobs, orders, and talent app bars show the same unread bell as home, for both roles.
+- [x] List rows use a type-specific icon for chat, work, attendance, and reviews.
+- [x] Read all is disabled and shows progress while `markAllAsRead` runs.
+- [x] A failed mark-all shows a snackbar and leaves the unread state unchanged.
+- [x] The in-app banner can be swiped away.
 
 **Prompt**
 
@@ -937,11 +937,11 @@ Keep the star requirement and the duplicate-review snackbar.
 
 **Checklist**
 
-- [ ] Undo opens a confirm dialog before clearing payment received.
-- [ ] The dialog says this only clears the in-app record.
-- [ ] Confirm still calls `_setReceived(false)` and shows `paymentReceivedCleared`.
-- [ ] The button stays disabled while `_busy` is true.
-- [ ] Mark paid is unchanged.
+- [x] Undo opens a confirm dialog before clearing payment received.
+- [x] The dialog says this only clears the in-app record.
+- [x] Confirm still calls `_setReceived(false)` and shows `paymentReceivedCleared`.
+- [x] The button stays disabled while `_busy` is true.
+- [x] Mark paid is unchanged.
 
 **Prompt**
 
@@ -964,11 +964,11 @@ Do not add a bKash, PayPal, or other payment-provider flow.
 
 **Checklist**
 
-- [ ] Submit stays disabled until the note reaches `OrderCancellationReason.minNoteLength`.
-- [ ] The sheet pops only after the cancellation request succeeds.
-- [ ] A failed request keeps the note on screen.
-- [ ] Submit and Back use `onPressed: null` while the request is running.
-- [ ] Delivery file chips, including a broken image fallback, open `attachmentUrl` externally.
+- [x] Submit stays disabled until the note reaches `OrderCancellationReason.minNoteLength`.
+- [x] The sheet pops only after the cancellation request succeeds.
+- [x] A failed request keeps the note on screen.
+- [x] Submit and Back use `onPressed: null` while the request is running.
+- [x] Delivery file chips, including a broken image fallback, open `attachmentUrl` externally.
 
 **Prompt**
 
@@ -992,12 +992,12 @@ Add an open icon so the chip looks tappable.
 
 **Checklist**
 
-- [ ] Search hint comes from l10n when the caller does not pass one.
-- [ ] A search failure shows `couldNotLoadResults` and Retry, not the raw exception.
-- [ ] Add category stays visible when the category search matches nothing.
-- [ ] Category picker labels use l10n in English and Dutch.
-- [ ] GPS errors use l10n, including the Settings action.
-- [ ] Opening the map with GPS off and no initial pin shows the location-services snackbar once.
+- [x] Search hint comes from l10n when the caller does not pass one.
+- [x] A search failure shows `couldNotLoadResults` and Retry, not the raw exception.
+- [x] Add category stays visible when the category search matches nothing.
+- [x] Category picker labels use l10n in English and Dutch.
+- [x] GPS errors use l10n, including the Settings action.
+- [x] Opening the map with GPS off and no initial pin shows the location-services snackbar once.
 
 **Prompt**
 
@@ -1022,10 +1022,10 @@ Do not change the 350 ms search debounce or the map confirm result.
 
 **Checklist**
 
-- [ ] A note shorter than 10 characters sets `errorText` on the details field.
-- [ ] The error clears when the note becomes long enough.
-- [ ] Submit still sends the report when the note is valid.
-- [ ] Client and seller report entry points both use this screen, so both get the change.
+- [x] A note shorter than 10 characters sets `errorText` on the details field.
+- [x] The error clears when the note becomes long enough.
+- [x] Submit still sends the report when the note is valid.
+- [x] Client and seller report entry points both use this screen, so both get the change.
 
 **Prompt**
 

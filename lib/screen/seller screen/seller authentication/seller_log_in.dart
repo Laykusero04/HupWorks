@@ -1,6 +1,6 @@
 import 'package:freelancer/screen/widgets/auth/unified_log_in.dart';
 
-/// Alias for [UnifiedLogIn] — same screen for all users.
+/// Freelancer login: cyan actions and a Freelancer chip.
 class SellerLogIn extends UnifiedLogIn {
-  const SellerLogIn({super.key});
+  const SellerLogIn({super.key}) : super(role: 'seller');
 }

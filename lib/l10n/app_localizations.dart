@@ -337,7 +337,7 @@ abstract class AppLocalizations {
   /// No description provided for @settings.
   ///
   /// In en, this message translates to:
-  /// **'Setting'**
+  /// **'Settings'**
   String get settings;
 
   /// No description provided for @helpSupport.
@@ -1687,7 +1687,7 @@ abstract class AppLocalizations {
   /// No description provided for @myApplications.
   ///
   /// In en, this message translates to:
-  /// **'My shifts'**
+  /// **'Applications'**
   String get myApplications;
 
   /// No description provided for @browseJobs.
@@ -7036,6 +7036,174 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This account has been blocked. Contact support if you think this is a mistake.'**
   String get accountBlocked;
+
+  /// No description provided for @siteSetup.
+  ///
+  /// In en, this message translates to:
+  /// **'Site setup'**
+  String get siteSetup;
+
+  /// No description provided for @editAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get editAction;
+
+  /// No description provided for @openAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get openAction;
+
+  /// No description provided for @undoAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get undoAction;
+
+  /// No description provided for @removeFavourite.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from saved'**
+  String get removeFavourite;
+
+  /// No description provided for @undoPaymentReceivedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This only clears the in-app record. It does not move money.'**
+  String get undoPaymentReceivedBody;
+
+  /// No description provided for @approveCancellationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve this cancellation?'**
+  String get approveCancellationTitle;
+
+  /// No description provided for @approveCancellationBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Approving closes this contract.'**
+  String get approveCancellationBody;
+
+  /// No description provided for @withdrawCancellationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw cancellation request?'**
+  String get withdrawCancellationTitle;
+
+  /// No description provided for @withdrawCancellationConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The contract stays active.'**
+  String get withdrawCancellationConfirmBody;
+
+  /// No description provided for @hoursSentForEmployerReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Hours sent for employer review.'**
+  String get hoursSentForEmployerReview;
+
+  /// No description provided for @notAnAttendanceCode.
+  ///
+  /// In en, this message translates to:
+  /// **'This is not an attendance code.'**
+  String get notAnAttendanceCode;
+
+  /// No description provided for @confirmClockOutTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Clock out?'**
+  String get confirmClockOutTitle;
+
+  /// No description provided for @confirmClockOutBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This records your clock-out and sends today\'s hours for employer review.'**
+  String get confirmClockOutBody;
+
+  /// No description provided for @splashGettingReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Getting things ready…'**
+  String get splashGettingReady;
+
+  /// No description provided for @splashVersionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Version'**
+  String get splashVersionLabel;
+
+  /// No description provided for @jobClosedNoApplications.
+  ///
+  /// In en, this message translates to:
+  /// **'This job is closed and is not accepting applications.'**
+  String get jobClosedNoApplications;
+
+  /// No description provided for @cannotApplyToOwnJob.
+  ///
+  /// In en, this message translates to:
+  /// **'You cannot apply to your own job post.'**
+  String get cannotApplyToOwnJob;
+
+  /// No description provided for @alreadySubmittedApplication.
+  ///
+  /// In en, this message translates to:
+  /// **'You have already submitted an application for this job.'**
+  String get alreadySubmittedApplication;
+
+  /// No description provided for @authResendIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend in {seconds}s'**
+  String authResendIn(int seconds);
+
+  /// No description provided for @openEmailApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Open email app'**
+  String get openEmailApp;
+
+  /// No description provided for @addCategoryNotListed.
+  ///
+  /// In en, this message translates to:
+  /// **'Add category (not listed)'**
+  String get addCategoryNotListed;
+
+  /// No description provided for @mapTurnOnLocationServices.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on location services to use GPS'**
+  String get mapTurnOnLocationServices;
+
+  /// No description provided for @mapLocationPermissionNeeded.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permission is needed to use current GPS'**
+  String get mapLocationPermissionNeeded;
+
+  /// No description provided for @mapLocationPermissionBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permission is blocked. Enable it in App settings.'**
+  String get mapLocationPermissionBlocked;
+
+  /// No description provided for @mapLocationPluginNotLoaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Location plugin not loaded. Fully stop the app and run a fresh rebuild (not hot restart).'**
+  String get mapLocationPluginNotLoaded;
+
+  /// No description provided for @mapCouldNotGetGps.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not get GPS: {detail}'**
+  String mapCouldNotGetGps(String detail);
+
+  /// No description provided for @mediaPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera or photo access is blocked. Enable it in App settings.'**
+  String get mediaPermissionDenied;
 }
 
 class _AppLocalizationsDelegate

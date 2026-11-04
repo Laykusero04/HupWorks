@@ -6,7 +6,13 @@ import 'package:freelancer/services/auth_service.dart';
 import '../../widgets/constant.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
-  const ForgotPasswordScreen({Key? key}) : super(key: key);
+  const ForgotPasswordScreen({
+    Key? key,
+    this.resetPassword,
+  }) : super(key: key);
+
+  /// When set, used instead of [AuthService.resetPassword].
+  final Future<void> Function({required String email})? resetPassword;
 
   @override
   State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
@@ -36,13 +42,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     setState(() => isLoading = true);
 
     try {
-      await AuthService.resetPassword(email: email);
+      final reset = widget.resetPassword ?? AuthService.resetPassword;
+      await reset(email: email);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.authResetLinkSent)),
-        );
+        final messenger = ScaffoldMessenger.of(context);
+        final message = l10n.authResetLinkSent;
         Navigator.pop(context);
+        messenger.showSnackBar(
+          SnackBar(content: Text(message)),
+        );
       }
     } catch (e) {
       if (mounted) {

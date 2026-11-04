@@ -1,9 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -290,6 +292,51 @@ class _ChatInboxState extends State<ChatInbox> {
     await _flushPending(pending);
   }
 
+  bool _isMediaPermissionDenied(PlatformException error) {
+    final code = error.code.toLowerCase();
+    return code.contains('denied') ||
+        code.contains('restricted') ||
+        code.contains('permission');
+  }
+
+  void _showMediaPermissionSnack() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(context.l10n.mediaPermissionDenied),
+        action: SnackBarAction(
+          label: context.l10n.settings,
+          onPressed: Geolocator.openAppSettings,
+        ),
+      ),
+    );
+  }
+
+  Future<ImageSource?> _chooseImageSource() {
+    final l10n = context.l10n;
+    return showModalBottomSheet<ImageSource>(
+      context: context,
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo_library_outlined),
+                title: Text(l10n.photoGallery),
+                onTap: () => Navigator.pop(sheetContext, ImageSource.gallery),
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_camera_outlined),
+                title: Text(l10n.takePhoto),
+                onTap: () => Navigator.pop(sheetContext, ImageSource.camera),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Future<void> _pickAndSendImage() async {
     if (_isUploadingAttachment) return;
     if (_contactBlocked) {
@@ -298,9 +345,11 @@ class _ChatInboxState extends State<ChatInbox> {
       );
       return;
     }
+    final source = await _chooseImageSource();
+    if (source == null || !mounted) return;
     try {
       final picked = await _imagePicker.pickImage(
-        source: ImageSource.gallery,
+        source: source,
         imageQuality: 70,
       );
       if (picked == null) return;
@@ -324,6 +373,17 @@ class _ChatInboxState extends State<ChatInbox> {
       });
       _scrollToBottom();
       await _flushPending(pending);
+    } on PlatformException catch (e) {
+      if (mounted) {
+        setState(() => _isUploadingAttachment = false);
+        if (_isMediaPermissionDenied(e)) {
+          _showMediaPermissionSnack();
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+          );
+        }
+      }
     } catch (e) {
       if (mounted) {
         setState(() => _isUploadingAttachment = false);
@@ -1134,31 +1194,30 @@ class _ChatInboxState extends State<ChatInbox> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  GestureDetector(
-                    onTap: _isUploadingAttachment ? null : _pickAndSendImage,
-                    child: Container(
-                      margin: const EdgeInsets.all(2),
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: kPrimaryColor.withOpacity(0.10),
-                        shape: BoxShape.circle,
-                      ),
-                      child: _isUploadingAttachment
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                    kPrimaryColor),
-                              ),
-                            )
-                          : const Icon(
-                              Icons.attach_file_rounded,
-                              color: kPrimaryColor,
-                              size: 20,
-                            ),
+                  IconButton(
+                    tooltip: l10n.chatAttachment,
+                    onPressed:
+                        _isUploadingAttachment ? null : _pickAndSendImage,
+                    style: IconButton.styleFrom(
+                      minimumSize: const Size(44, 44),
+                      backgroundColor: kPrimaryColor.withOpacity(0.10),
+                      disabledBackgroundColor: kPrimaryColor.withOpacity(0.10),
                     ),
+                    icon: _isUploadingAttachment
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  kPrimaryColor),
+                            ),
+                          )
+                        : const Icon(
+                            Icons.attach_file_rounded,
+                            color: kPrimaryColor,
+                            size: 22,
+                          ),
                   ),
                   const SizedBox(width: 4),
                   Expanded(

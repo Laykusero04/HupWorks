@@ -101,6 +101,49 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
   }
 
   Future<void> _respondToCancellation({required bool approve}) async {
+    if (approve) {
+      final l10n = context.l10n;
+      final confirmed = await showDialog<bool>(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) => AlertDialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: Text(
+            l10n.approveCancellationTitle,
+            style: kTextStyle.copyWith(
+              color: kNeutralColor,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: Text(
+            l10n.approveCancellationBody,
+            style: kTextStyle.copyWith(color: kSubTitleColor, height: 1.35),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(
+                l10n.notYet,
+                style: kTextStyle.copyWith(color: kLightNeutralColor),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text(
+                l10n.approveCancellation,
+                style: kTextStyle.copyWith(
+                  color: StatusColors.danger,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+      if (confirmed != true || !mounted) return;
+    }
+
     setState(() => _cancellationBusy = true);
     try {
       await OrdersService.respondToCancellation(
@@ -334,7 +377,7 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
     if (sellerId == null || sellerId.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.couldNotOpenReviewMissingSeller)),
+          SnackBar(content: Text(context.l10n.couldNotOpenChat)),
         );
       }
       return;
@@ -613,10 +656,10 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
         decoration: const BoxDecoration(color: kWhite),
         padding: const EdgeInsets.fromLTRB(12, 10, 12, 16),
         child: ButtonGlobalWithoutIcon(
-          buttontext: l10n.waitingForDelivery,
+          buttontext: l10n.message,
           buttonTextColor: kWhite,
-          buttonDecoration: kButtonDecoration.copyWith(color: kLightNeutralColor),
-          onPressed: () {},
+          buttonDecoration: kButtonDecoration.copyWith(color: kPrimaryColor),
+          onPressed: _handleMessageSeller,
         ),
       );
     }

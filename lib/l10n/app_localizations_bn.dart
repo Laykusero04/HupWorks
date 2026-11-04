@@ -3861,4 +3861,102 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get accountBlocked =>
       'এই অ্যাকাউন্ট ব্লক করা হয়েছে। ভুল মনে হলে সাপোর্টে যোগাযোগ করুন।';
+
+  @override
+  String get siteSetup => 'সাইট সেটআপ';
+
+  @override
+  String get editAction => 'সম্পাদনা';
+
+  @override
+  String get openAction => 'খুলুন';
+
+  @override
+  String get undoAction => 'পূর্বাবস্থায় আনুন';
+
+  @override
+  String get removeFavourite => 'সংরক্ষণ থেকে সরান';
+
+  @override
+  String get undoPaymentReceivedBody =>
+      'এটি শুধু অ্যাপের রেকর্ড মুছে। টাকা স্থানান্তর হয় না।';
+
+  @override
+  String get approveCancellationTitle => 'এই বাতিলকরণ অনুমোদন করবেন?';
+
+  @override
+  String get approveCancellationBody =>
+      'অনুমোদন করলে এই চুক্তি বন্ধ হয়ে যাবে।';
+
+  @override
+  String get withdrawCancellationTitle => 'বাতিলের অনুরোধ প্রত্যাহার করবেন?';
+
+  @override
+  String get withdrawCancellationConfirmBody => 'চুক্তি সক্রিয় থাকবে।';
+
+  @override
+  String get hoursSentForEmployerReview =>
+      'ঘণ্টা নিয়োগকর্তার পর্যালোচনার জন্য পাঠানো হয়েছে।';
+
+  @override
+  String get notAnAttendanceCode => 'এটি কোনো উপস্থিতি কোড নয়।';
+
+  @override
+  String get confirmClockOutTitle => 'ক্লক আউট করবেন?';
+
+  @override
+  String get confirmClockOutBody =>
+      'এতে আপনার ক্লক-আউট রেকর্ড হবে এবং আজকের ঘণ্টা নিয়োগকর্তার পর্যালোচনার জন্য যাবে।';
+
+  @override
+  String get splashGettingReady => 'প্রস্তুত করা হচ্ছে…';
+
+  @override
+  String get splashVersionLabel => 'সংস্করণ';
+
+  @override
+  String get jobClosedNoApplications => 'এই কাজ বন্ধ এবং আর আবেদন নিচ্ছে না।';
+
+  @override
+  String get cannotApplyToOwnJob => 'আপনি নিজের কাজে আবেদন করতে পারবেন না।';
+
+  @override
+  String get alreadySubmittedApplication =>
+      'আপনি এই কাজের জন্য ইতিমধ্যে আবেদন করেছেন।';
+
+  @override
+  String authResendIn(int seconds) {
+    return '$secondsসেকেন্ডে আবার পাঠান';
+  }
+
+  @override
+  String get openEmailApp => 'ইমেইল অ্যাপ খুলুন';
+
+  @override
+  String get addCategoryNotListed => 'ক্যাটাগরি যোগ করুন (তালিকায় নেই)';
+
+  @override
+  String get mapTurnOnLocationServices =>
+      'GPS ব্যবহার করতে লোকেশন সার্ভিস চালু করুন';
+
+  @override
+  String get mapLocationPermissionNeeded =>
+      'বর্তমান GPS ব্যবহার করতে লোকেশন অনুমতি দরকার';
+
+  @override
+  String get mapLocationPermissionBlocked =>
+      'লোকেশন অনুমতি বন্ধ আছে। অ্যাপ সেটিংস থেকে চালু করুন।';
+
+  @override
+  String get mapLocationPluginNotLoaded =>
+      'লোকেশন প্লাগইন লোড হয়নি। অ্যাপ পুরোপুরি বন্ধ করে নতুন বিল্ড চালান (হট রিস্টার্ট নয়)।';
+
+  @override
+  String mapCouldNotGetGps(String detail) {
+    return 'GPS পাওয়া যায়নি: $detail';
+  }
+
+  @override
+  String get mediaPermissionDenied =>
+      'ক্যামেরা বা ছবির অনুমতি বন্ধ আছে। অ্যাপ সেটিংস থেকে চালু করুন।';
 }

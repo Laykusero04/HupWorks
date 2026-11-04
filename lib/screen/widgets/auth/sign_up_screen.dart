@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/l10n/l10n.dart';
-import 'package:freelancer/screen/widgets/auth/unified_log_in.dart';
 import 'package:freelancer/screen/widgets/auth/auth_ui.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
 import 'package:freelancer/services/auth_service.dart';
-import 'package:nb_utils/nb_utils.dart';
+import 'package:go_router/go_router.dart';
 
 class SignUpScreen extends StatefulWidget {
   final String role;
@@ -162,7 +161,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
             prefix: '${l10n.authAlreadyHaveAccountShort} ',
             action: l10n.authLogIn,
             accentColor: accent,
-            onTap: () => const UnifiedLogIn().launch(context),
+            onTap: () => context.go(
+              widget.role == 'seller'
+                  ? '/auth/seller/login'
+                  : '/auth/client/login',
+            ),
           ),
         ],
       ),

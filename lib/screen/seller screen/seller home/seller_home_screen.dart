@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/empty_state_widget.dart';
 import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
-import 'package:freelancer/core/notifications/notification_scope.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/core/utils/job_offer_delivery.dart';
+import 'package:freelancer/screen/seller%20screen/buyer%20request/buyer_request_details.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
 import 'package:freelancer/services/seller_home_service.dart';
 import 'package:freelancer/services/seller_orders_service.dart';
 import 'package:freelancer/router/route_names.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nb_utils/nb_utils.dart';
 
 import '../../widgets/client_shell_app_bar.dart';
 import '../../widgets/shell_tab_header.dart';
@@ -26,6 +28,8 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
   Map<String, dynamic> _overview = {};
   List<Map<String, dynamic>> _myApplications = [];
   bool _isLoading = true;
+  bool _loadFailed = false;
+  bool _workOverviewOpen = false;
 
   @override
   void initState() {
@@ -34,34 +38,6 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
       if (!mounted) return;
       _loadData();
     });
-  }
-
-  List<Widget> _homeAppBarActions() {
-    final notifications = NotificationScope.of(context);
-    return [
-      ListenableBuilder(
-        listenable: notifications,
-        builder: (context, _) {
-          final count = notifications.unreadCount;
-          return IconButton(
-            tooltip: context.l10n.notifications,
-            onPressed: () async {
-              await context.push(AppRoutes.sellerNotifications);
-              if (mounted) await notifications.refreshUnreadCount();
-            },
-            icon: count > 0
-                ? Badge(
-                    label: Text(
-                      count > 9 ? '9+' : '$count',
-                      style: const TextStyle(fontSize: 10),
-                    ),
-                    child: const Icon(Icons.notifications_outlined),
-                  )
-                : const Icon(Icons.notifications_outlined),
-          );
-        },
-      ),
-    ];
   }
 
   Future<void> _loadData() async {
@@ -77,14 +53,21 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
           _overview = results[0] as Map<String, dynamic>;
           _myApplications = apps.take(5).toList();
           _isLoading = false;
+          _loadFailed = false;
         });
       }
     } catch (e) {
       if (mounted) {
-        setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
-        );
+        final hadOverview = _overview.isNotEmpty;
+        setState(() {
+          _isLoading = false;
+          _loadFailed = !hadOverview;
+        });
+        if (hadOverview) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+          );
+        }
       }
     }
   }
@@ -118,11 +101,19 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
       appBar: ClientShellAppBar(
         title: l10n.home,
         persona: ShellPersona.seller,
-        actions: _isLoading ? null : _homeAppBarActions(),
       ),
       body: _isLoading
           ? const _SellerHomeLoading()
-          : RubikRefreshIndicator(
+          : _loadFailed
+              ? EmptyStateWidget(
+                  message: l10n.somethingWentWrong,
+                  actionLabel: l10n.retry,
+                  onAction: () {
+                    setState(() => _isLoading = true);
+                    _loadData();
+                  },
+                )
+              : RubikRefreshIndicator(
               onRefresh: _loadData,
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(
@@ -278,11 +269,10 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
                                 children: _myApplications.map((app) {
                               final jobPost = app['job_posts'] as Map<String, dynamic>?;
                               final status = (app['status'] as String?) ?? 'pending';
-                              final (Color statusBg, Color statusFg, String statusLabel) = switch (status) {
-                                'accepted' => (StatusColors.successBg, StatusColors.success, l10n.statusAccepted),
-                                'rejected' => (StatusColors.dangerBg, StatusColors.danger, l10n.statusRejected),
-                                _          => (StatusColors.warningBg, StatusColors.warning, l10n.statusPending),
-                              };
+                              final (statusFg, statusBg) =
+                                  StatusColors.application(status);
+                              final statusLabel =
+                                  L10nLabels.applicationStatus(l10n, status);
 
                               return Padding(
                                 padding: const EdgeInsets.only(bottom: 10.0),
@@ -291,7 +281,10 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
                                   child: InkWell(
                                     borderRadius: BorderRadius.circular(12),
                                     onTap: () async {
-                                      await context.push(AppRoutes.sellerApplications);
+                                      final id = jobPost?['id'] as String?;
+                                      if (id == null) return;
+                                      await BuyerRequestDetails(jobPostId: id)
+                                          .launch(context);
                                       if (mounted) _loadData();
                                     },
                                     child: Ink(
@@ -356,10 +349,22 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
 
     return _buildCard(
       title: l10n.yourWork,
-      dropdown: Text(
-        l10n.periodLive,
-        style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
+      dropdown: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            l10n.periodLive,
+            style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
+          ),
+          Icon(
+            _workOverviewOpen ? Icons.expand_less : Icons.expand_more,
+            size: 20,
+            color: kLightNeutralColor,
+          ),
+        ],
       ),
+      onHeaderTap: () => setState(() => _workOverviewOpen = !_workOverviewOpen),
+      showChild: _workOverviewOpen,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -458,7 +463,8 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
                           label: l10n.jobsCompleted,
                           icon: Icons.check_circle_outline,
                           color: StatusColors.success,
-                          onTap: () => context.go('/seller/orders'),
+                          onTap: () =>
+                              context.go('/seller/orders?status=completed'),
                         ),
                       ),
                       Container(
@@ -472,7 +478,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
                           label: l10n.activeContracts,
                           icon: Icons.work_outline_rounded,
                           color: kSecondaryColor,
-                          onTap: () => context.go('/seller/orders'),
+                          onTap: () => context.go('/seller/orders?status=active'),
                         ),
                       ),
                     ],
@@ -508,7 +514,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
               text: delivered == 1
                   ? l10n.attentionContractDeliveredOne
                   : l10n.attentionContractDeliveredMany(delivered),
-              onTap: () => context.go('/seller/orders'),
+              onTap: () => context.go('/seller/orders?status=delivered'),
             ),
           if (delivered > 0 && onsite > 0) const SizedBox(height: 8),
           if (onsite > 0)
@@ -577,7 +583,20 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
     );
   }
 
-  Widget _buildCard({required String title, required Widget dropdown, required Widget child}) {
+  Widget _buildCard({
+    required String title,
+    required Widget dropdown,
+    required Widget child,
+    VoidCallback? onHeaderTap,
+    bool showChild = true,
+  }) {
+    final header = Row(
+      children: [
+        Text(title, style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)),
+        const Spacer(),
+        dropdown,
+      ],
+    );
     return Container(
       padding: const EdgeInsets.all(10.0),
       decoration: BoxDecoration(
@@ -590,15 +609,22 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            children: [
-              Text(title, style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)),
-              const Spacer(),
-              dropdown,
-            ],
-          ),
-          const SizedBox(height: 15.0),
-          child,
+          if (onHeaderTap == null)
+            header
+          else
+            InkWell(
+              onTap: onHeaderTap,
+              borderRadius: BorderRadius.circular(8),
+              child: Semantics(
+                button: true,
+                expanded: showChild,
+                child: header,
+              ),
+            ),
+          if (showChild) ...[
+            const SizedBox(height: 15.0),
+            child,
+          ],
         ],
       ),
     );

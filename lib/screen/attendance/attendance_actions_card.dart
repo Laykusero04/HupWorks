@@ -89,7 +89,7 @@ class _AttendanceActionsCardState extends State<AttendanceActionsCard> {
         SnackBar(
           content: Text(
             result.hourReportId != null && result.punchType == 'out'
-                ? '${l10n.attendancePunchTodaySummary(AttendanceFormat.punchLabel(result.punchType, l10n), AttendanceFormat.minutesLabel(result.minutesWorkedToday, l10n))} Hours sent for employer review.'
+                ? '${l10n.attendancePunchTodaySummary(AttendanceFormat.punchLabel(result.punchType, l10n), AttendanceFormat.minutesLabel(result.minutesWorkedToday, l10n))} ${l10n.hoursSentForEmployerReview}'
                 : l10n.attendancePunchTodaySummary(
                     AttendanceFormat.punchLabel(result.punchType, l10n),
                     AttendanceFormat.minutesLabel(result.minutesWorkedToday, l10n),
@@ -110,21 +110,43 @@ class _AttendanceActionsCardState extends State<AttendanceActionsCard> {
     }
   }
 
+  Future<void> _confirmClockOut() async {
+    final l10n = context.l10n;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.confirmClockOutTitle),
+        content: Text(l10n.confirmClockOutBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.clockOut),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && mounted) await _selfReport('out');
+  }
+
   void _openScan() {
     context.push('/seller/attendance/scan?jobPostId=${widget.jobPostId}');
   }
 
-  Widget _statusChip(String mode, AppLocalizations l10n) {
+  Widget _statusChip(String mode, AppLocalizations l10n, Color primary) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: kPrimaryColor.withValues(alpha: 0.1),
+        color: primary.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
         AttendanceMode.label(mode, l10n),
         style: kTextStyle.copyWith(
-          color: kPrimaryColor,
+          color: primary,
           fontSize: 11,
           fontWeight: FontWeight.w600,
         ),
@@ -162,7 +184,7 @@ class _AttendanceActionsCardState extends State<AttendanceActionsCard> {
     return SizedBox(width: double.infinity, child: btn);
   }
 
-  Widget _buildActions(String mode, AppLocalizations l10n) {
+  Widget _buildActions(String mode, AppLocalizations l10n, Color primary) {
     if (!AttendanceMode.isEnabled(mode)) {
       return Text(
         l10n.attendanceOffForJob,
@@ -176,7 +198,7 @@ class _AttendanceActionsCardState extends State<AttendanceActionsCard> {
         label: done
             ? l10n.checkedIn
             : (mode == AttendanceMode.qrOnce ? l10n.checkIn : l10n.scanAttendanceQr),
-        color: done ? kLightNeutralColor : const Color(0xFF2E7D32),
+        color: done ? kLightNeutralColor : primary,
         icon: Icons.qr_code_scanner,
         onPressed: _busy || done ? null : _openScan,
       );
@@ -187,7 +209,7 @@ class _AttendanceActionsCardState extends State<AttendanceActionsCard> {
         children: [
           _actionButton(
             label: l10n.clockIn,
-            color: const Color(0xFF2E7D32),
+            color: primary,
             icon: Icons.login_rounded,
             expanded: true,
             onPressed:
@@ -196,11 +218,10 @@ class _AttendanceActionsCardState extends State<AttendanceActionsCard> {
           const SizedBox(width: 8),
           _actionButton(
             label: l10n.clockOut,
-            color: Colors.orange,
+            color: primary,
             icon: Icons.logout_rounded,
             expanded: true,
-            onPressed:
-                _busy || !widget.isClockedIn ? null : () => _selfReport('out'),
+            onPressed: _busy || !widget.isClockedIn ? null : _confirmClockOut,
           ),
         ],
       );
@@ -212,13 +233,14 @@ class _AttendanceActionsCardState extends State<AttendanceActionsCard> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final primary = Theme.of(context).colorScheme.primary;
     final mode = AttendanceMode.normalize(widget.attendanceMode);
 
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(widget.compact ? 12 : 14),
       decoration: BoxDecoration(
-        color: kPrimaryColor.withValues(alpha: 0.05),
+        color: primary.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: kBorderColorTextField),
       ),
@@ -236,7 +258,7 @@ class _AttendanceActionsCardState extends State<AttendanceActionsCard> {
                 ),
               ),
               const SizedBox(width: 8),
-              _statusChip(mode, l10n),
+              _statusChip(mode, l10n, primary),
               const Spacer(),
               if (widget.statusLabel != null)
                 Text(
@@ -263,7 +285,7 @@ class _AttendanceActionsCardState extends State<AttendanceActionsCard> {
             ),
           ],
           const SizedBox(height: 10),
-          _buildActions(mode, l10n),
+          _buildActions(mode, l10n, primary),
           if (AttendanceMode.isEnabled(mode)) ...[
             const SizedBox(height: 10),
             AttendancePunchCells(

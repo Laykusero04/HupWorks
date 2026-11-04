@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:freelancer/core/widgets/empty_state_widget.dart';
 import 'package:freelancer/core/widgets/loading_widget.dart';
 
 import 'package:flutter/material.dart';
@@ -29,6 +30,7 @@ class _SellerIdentityVerificationScreenState
   Map<String, dynamic>? _profile;
   File? _pickedSelfie;
   bool _loading = true;
+  bool _loadFailed = false;
   bool _submitting = false;
 
   @override
@@ -57,13 +59,14 @@ class _SellerIdentityVerificationScreenState
         _profile = profile;
         _submittedSelfieUrl = signedUrl;
         _loading = false;
+        _loadFailed = false;
       });
-    } catch (e) {
+    } catch (_) {
       if (mounted) {
-        setState(() => _loading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
-        );
+        setState(() {
+          _loading = false;
+          _loadFailed = true;
+        });
       }
     }
   }
@@ -128,6 +131,33 @@ class _SellerIdentityVerificationScreenState
     if (_loading) {
       return const Scaffold(
         body: const LoadingWidget(),
+      );
+    }
+
+    if (_loadFailed) {
+      return Scaffold(
+        backgroundColor: kDarkWhite,
+        appBar: AppBar(
+          backgroundColor: kDarkWhite,
+          elevation: 0,
+          iconTheme: const IconThemeData(color: kNeutralColor),
+          title: Text(
+            l10n.identityVerification,
+            style: kTextStyle.copyWith(
+              color: kNeutralColor,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          centerTitle: true,
+        ),
+        body: EmptyStateWidget(
+          message: l10n.somethingWentWrong,
+          actionLabel: l10n.retry,
+          onAction: () {
+            setState(() => _loading = true);
+            _load();
+          },
+        ),
       );
     }
 

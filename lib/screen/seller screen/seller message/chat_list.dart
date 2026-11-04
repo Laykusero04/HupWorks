@@ -284,10 +284,14 @@ class _ChatScreenState extends State<ChatScreen> {
     final filtered = _filteredConversations;
 
     if (_conversations.isEmpty) {
+      final isSeller =
+          GoRouterState.of(context).uri.path.startsWith('/seller');
       return _emptyState(
         icon: Icons.chat_bubble_outline_rounded,
         title: l10n.noConversationsYet,
         subtitle: l10n.noConversationsHint,
+        actionLabel: isSeller ? l10n.browseJobs : null,
+        onAction: isSeller ? () => context.go('/seller/find-jobs') : null,
       );
     }
 
@@ -320,6 +324,8 @@ class _ChatScreenState extends State<ChatScreen> {
     required IconData icon,
     required String title,
     required String subtitle,
+    String? actionLabel,
+    VoidCallback? onAction,
   }) {
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
@@ -358,6 +364,15 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
         ),
+        if (actionLabel != null && onAction != null) ...[
+          const SizedBox(height: 16),
+          Center(
+            child: FilledButton(
+              onPressed: onAction,
+              child: Text(actionLabel),
+            ),
+          ),
+        ],
       ],
     );
   }

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/utils/attendance_mode.dart';
 import 'package:freelancer/core/utils/job_offer_delivery.dart';
 import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/screen/client%20screen/client%20orders/client_order_details.dart';
 import 'package:freelancer/screen/onboarding/hire_onboarding_editor_screen.dart';
+import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/services/chat_service.dart';
-import 'package:freelancer/services/hire_onboarding_service.dart';
 import 'package:freelancer/services/job_posts_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -132,6 +134,8 @@ class JobOfferChatActions {
       final orderId =
           await JobPostsService.acceptJobOffer(offer['id'] as String);
       if (!context.mounted) return;
+      final hiredJobPost = await _jobPostWithSite(jobPost);
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -139,9 +143,17 @@ class JobOfferChatActions {
           ),
           action: SnackBarAction(
             label: l10n.openContract,
-            onPressed: () => _openOnboardingIfNeeded(context, orderId),
+            onPressed: () {
+              if (!context.mounted) return;
+              ClientOrderDetails(orderId: orderId).launch(context);
+            },
           ),
         ),
+      );
+      _showPostHireOnboardingSheet(
+        context,
+        orderId: orderId,
+        jobPost: hiredJobPost,
       );
       onComplete?.call();
     } catch (e) {
@@ -153,20 +165,93 @@ class JobOfferChatActions {
     }
   }
 
-  static Future<void> _openOnboardingIfNeeded(
-    BuildContext context,
-    String orderId,
+  /// Inbox and chat offers only embed a short job post. Load the site fields
+  /// the instructions editor needs when they were not selected with the offer.
+  static Future<Map<String, dynamic>> _jobPostWithSite(
+    Map<String, dynamic> jobPost,
   ) async {
-    try {
-      final packet = await HireOnboardingService.getPacketForOrder(orderId);
-      if (!context.mounted) return;
-      await HireOnboardingEditorScreen(orderId: orderId).launch(context);
-      if (packet == null && context.mounted) {
-        // Editor opened for new draft; no extra action needed.
-      }
-    } catch (_) {
-      // Non-blocking — hire already succeeded.
+    final id = jobPost['id']?.toString();
+    if (id == null || id.isEmpty) return jobPost;
+    if (jobPost.containsKey('location') &&
+        jobPost.containsKey('location_type') &&
+        jobPost.containsKey('attendance_mode')) {
+      return jobPost;
     }
+    try {
+      final details = await JobPostsService.getJobPostDetails(id);
+      return {...jobPost, ...details};
+    } catch (_) {
+      return jobPost;
+    }
+  }
+
+  static void _showPostHireOnboardingSheet(
+    BuildContext context, {
+    required String orderId,
+    required Map<String, dynamic> jobPost,
+  }) {
+    showModalBottomSheet<void>(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) {
+        final l10n = ctx.l10n;
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  l10n.addFirstDayInstructionsTitle,
+                  style: kTextStyle.copyWith(
+                    color: kNeutralColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  l10n.addFirstDayInstructionsBody,
+                  style: kTextStyle.copyWith(
+                    color: kSubTitleColor,
+                    height: 1.35,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                ButtonGlobalWithoutIcon(
+                  buttontext: l10n.addInstructionsNow,
+                  buttonDecoration:
+                      kButtonDecoration.copyWith(color: kPrimaryColor),
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                    if (!context.mounted) return;
+                    HireOnboardingEditorScreen(
+                      orderId: orderId,
+                      jobLocation: jobPost['location'] as String?,
+                      jobLocationType: jobPost['location_type'] as String?,
+                      attendanceMode:
+                          AttendanceMode.effectiveForJobPost(jobPost),
+                    ).launch(context);
+                  },
+                  buttonTextColor: kWhite,
+                ),
+                const SizedBox(height: 10),
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: Text(
+                    l10n.sendLater,
+                    style: kTextStyle.copyWith(color: kLightNeutralColor),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   static Future<void> showCounterOfferDialog(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/empty_state_widget.dart';
 import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
 import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
@@ -90,10 +91,13 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
       }
     } catch (e) {
       if (mounted) {
+        final keepExisting = _order != null;
         setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
-        );
+        if (keepExisting) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+          );
+        }
       }
     }
   }
@@ -114,23 +118,31 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
   }
 
   Future<void> _requestCancellation() async {
-    final result = await OrderCancellationSheet.show(context);
-    if (result == null || !mounted) return;
+    var reasonCode = '';
+    var reasonNote = '';
+    final submitted = await OrderCancellationSheet.show(
+      context,
+      onSubmit: (code, note) async {
+        await SellerOrdersService.requestCancellation(
+          orderId: widget.orderId,
+          reasonCode: code,
+          reasonNote: note,
+        );
+        reasonCode = code;
+        reasonNote = note;
+      },
+    );
+    if (!submitted || !mounted) return;
 
     setState(() => _actionBusy = true);
     try {
-      await SellerOrdersService.requestCancellation(
-        orderId: widget.orderId,
-        reasonCode: result.reasonCode,
-        reasonNote: result.reasonNote,
-      );
       final clientId = _order?['client_id']?.toString();
       if (clientId != null && clientId.isNotEmpty) {
         await SellerOrdersService.notifyClientCancellationRequest(
           orderId: widget.orderId,
           clientId: clientId,
-          reasonCode: result.reasonCode,
-          reasonNote: result.reasonNote,
+          reasonCode: reasonCode,
+          reasonNote: reasonNote,
         );
       }
       if (mounted) {
@@ -153,6 +165,26 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
   }
 
   Future<void> _withdrawCancellation() async {
+    final l10n = context.l10n;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.withdrawCancellationTitle),
+        content: Text(l10n.withdrawCancellationConfirmBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.withdrawCancelRequest),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
     setState(() => _actionBusy = true);
     try {
       await SellerOrdersService.withdrawCancellation(widget.orderId);
@@ -305,13 +337,15 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
             buttontext: l10n.deliverWork,
             buttonTextColor: kWhite,
             buttonDecoration: kButtonDecoration.copyWith(
-              color: kPrimaryColor,
+              color: _actionBusy ? kLightNeutralColor : kPrimaryColor,
             ),
-            onPressed: () async {
-              await SellerDeliverOrder(orderId: widget.orderId)
-                  .launch(context);
-              _loadOrder();
-            },
+            onPressed: _actionBusy
+                ? null
+                : () async {
+                    await SellerDeliverOrder(orderId: widget.orderId)
+                        .launch(context);
+                    _loadOrder();
+                  },
           ),
         ),
       ],
@@ -450,6 +484,33 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
       return const Scaffold(
         backgroundColor: kDarkWhite,
         body: const LoadingWidget(),
+      );
+    }
+
+    if (_order == null) {
+      return Scaffold(
+        backgroundColor: kDarkWhite,
+        appBar: AppBar(
+          backgroundColor: kDarkWhite,
+          elevation: 0,
+          iconTheme: const IconThemeData(color: kNeutralColor),
+          title: Text(
+            l10n.orderDetailsTitle,
+            style: kTextStyle.copyWith(
+              color: kNeutralColor,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          centerTitle: true,
+        ),
+        body: EmptyStateWidget(
+          message: l10n.somethingWentWrong,
+          actionLabel: l10n.retry,
+          onAction: () {
+            setState(() => _isLoading = true);
+            _loadOrder();
+          },
+        ),
       );
     }
 
@@ -696,7 +757,7 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails> {
                           null) ...[
                         const SizedBox(height: 8.0),
                         _row(
-                          'Shift',
+                          l10n.shiftLabel,
                           ShiftSchedule.fromOrderMap(_order).displayLabel!,
                         ),
                       ],

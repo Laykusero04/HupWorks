@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/app_date_format.dart';
 import 'package:freelancer/data/models/order_delivery_model.dart';
 import 'package:freelancer/l10n/l10n.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'constant.dart';
 
@@ -166,6 +167,7 @@ class _DeliveryBlock extends StatelessWidget {
                   errorBuilder: (_, __, ___) => _FileChip(
                     label: delivery.attachmentFileName,
                     fallback: l10n.chatAttachment,
+                    url: url,
                   ),
                 ),
               ),
@@ -174,6 +176,7 @@ class _DeliveryBlock extends StatelessWidget {
             _FileChip(
               label: delivery.attachmentFileName,
               fallback: l10n.chatAttachment,
+              url: url,
             ),
         ],
       ],
@@ -184,35 +187,65 @@ class _DeliveryBlock extends StatelessWidget {
 class _FileChip extends StatelessWidget {
   final String label;
   final String fallback;
+  final String? url;
 
-  const _FileChip({required this.label, required this.fallback});
+  const _FileChip({
+    required this.label,
+    required this.fallback,
+    required this.url,
+  });
+
+  Future<void> _open(BuildContext context) async {
+    final raw = url?.trim();
+    if (raw == null || raw.isEmpty) return;
+    final uri = Uri.tryParse(raw);
+    if (uri == null) return;
+    final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!opened && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.somethingWentWrong)),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      decoration: BoxDecoration(
-        color: kPrimaryColor.withOpacity(0.12),
+    final canOpen = url != null && url!.trim().isNotEmpty;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: canOpen ? () => _open(context) : null,
         borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.insert_drive_file_rounded,
-              color: kPrimaryColor, size: 18),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              label.isEmpty ? fallback : label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: kTextStyle.copyWith(
-                color: kPrimaryColor,
-                fontWeight: FontWeight.w600,
-                fontSize: 13,
-              ),
-            ),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          decoration: BoxDecoration(
+            color: kPrimaryColor.withOpacity(0.12),
+            borderRadius: BorderRadius.circular(10),
           ),
-        ],
+          child: Row(
+            children: [
+              const Icon(Icons.insert_drive_file_rounded,
+                  color: kPrimaryColor, size: 18),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  label.isEmpty ? fallback : label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: kTextStyle.copyWith(
+                    color: kPrimaryColor,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+              if (canOpen) ...[
+                const SizedBox(width: 8),
+                const Icon(Icons.open_in_new, color: kPrimaryColor, size: 16),
+              ],
+            ],
+          ),
+        ),
       ),
     );
   }

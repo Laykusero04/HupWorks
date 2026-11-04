@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui' show SemanticsRole;
 
 import 'package:flutter/material.dart';
 import 'package:freelancer/l10n/l10n.dart';
@@ -72,6 +73,40 @@ final clientShellScaffoldKey = GlobalKey<ScaffoldState>();
 final sellerShellScaffoldKey = GlobalKey<ScaffoldState>();
 
 /// Opens the client or seller shell drawer based on the current shell route.
+ThemeData sellerShellTheme(ThemeData base) {
+  return base.copyWith(
+    colorScheme: base.colorScheme.copyWith(
+      primary: kSellerPrimary,
+      secondary: kSellerAccent,
+      onPrimary: kWhite,
+    ),
+    primaryColor: kSellerPrimary,
+    scaffoldBackgroundColor: kSellerSurface,
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: kSellerPrimary,
+        foregroundColor: kWhite,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30.0),
+        ),
+      ),
+    ),
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      backgroundColor: kSellerPrimary,
+      foregroundColor: kWhite,
+    ),
+    progressIndicatorTheme:
+        const ProgressIndicatorThemeData(color: kSellerPrimary),
+  );
+}
+
+Widget withSellerTheme(BuildContext context, Widget child) {
+  return Theme(
+    data: sellerShellTheme(Theme.of(context)),
+    child: child,
+  );
+}
+
 void openRoleShellDrawer(BuildContext context) {
   final path = GoRouterState.of(context).uri.path;
   if (path.startsWith('/seller')) {
@@ -247,31 +282,8 @@ GoRouter createRouter() {
       // Seller shell: blue primary, tinted scaffold (see [kSellerSurface]).
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
-          final base = Theme.of(context);
           return Theme(
-            data: base.copyWith(
-              colorScheme: base.colorScheme.copyWith(
-                primary: kSellerPrimary,
-                secondary: kSellerAccent,
-                onPrimary: kWhite,
-              ),
-              primaryColor: kSellerPrimary,
-              scaffoldBackgroundColor: kSellerSurface,
-              elevatedButtonTheme: ElevatedButtonThemeData(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: kSellerPrimary,
-                  foregroundColor: kWhite,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0),
-                  ),
-                ),
-              ),
-              floatingActionButtonTheme: const FloatingActionButtonThemeData(
-                backgroundColor: kSellerPrimary,
-                foregroundColor: kWhite,
-              ),
-              progressIndicatorTheme: const ProgressIndicatorThemeData(color: kSellerPrimary),
-            ),
+            data: sellerShellTheme(Theme.of(context)),
             child: _ScaffoldWithNavBar(
               persona: ShellPersona.seller,
               scaffoldKey: sellerShellScaffoldKey,
@@ -305,7 +317,9 @@ GoRouter createRouter() {
           StatefulShellBranch(routes: [
             GoRoute(
               path: '/seller/orders',
-              builder: (context, state) => const SellerOrderList(),
+              builder: (context, state) => SellerOrderList(
+                initialStatus: state.uri.queryParameters['status'],
+              ),
             ),
           ]),
         ],
@@ -389,13 +403,19 @@ GoRouter createRouter() {
       GoRoute(
         path: AppRoutes.sellerApplications,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const SellerApplications(),
+        builder: (context, state) => withSellerTheme(
+          context,
+          const SellerApplications(),
+        ),
       ),
       GoRoute(
         path: AppRoutes.sellerOrderDetails,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => SellerOrderDetails(
-          orderId: state.pathParameters['id']!,
+        builder: (context, state) => withSellerTheme(
+          context,
+          SellerOrderDetails(
+            orderId: state.pathParameters['id']!,
+          ),
         ),
       ),
       GoRoute(
@@ -408,33 +428,44 @@ GoRouter createRouter() {
       GoRoute(
         path: AppRoutes.sellerChatInbox,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => ChatInboxRoute(
-          conversationId: state.pathParameters['id']!,
+        builder: (context, state) => withSellerTheme(
+          context,
+          ChatInboxRoute(
+            conversationId: state.pathParameters['id']!,
+          ),
         ),
       ),
       GoRoute(
         path: AppRoutes.sellerAttendance,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => SellerAttendanceHubScreen(
-          highlightJobPostId: state.uri.queryParameters['jobPostId'],
+        builder: (context, state) => withSellerTheme(
+          context,
+          SellerAttendanceHubScreen(
+            highlightJobPostId: state.uri.queryParameters['jobPostId'],
+          ),
         ),
       ),
       GoRoute(
         path: AppRoutes.sellerAttendanceScan,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => AttendanceScanScreen(
-          hintJobPostId: state.uri.queryParameters['jobPostId'],
+        builder: (context, state) => withSellerTheme(
+          context,
+          AttendanceScanScreen(
+            hintJobPostId: state.uri.queryParameters['jobPostId'],
+          ),
         ),
       ),
       GoRoute(
         path: AppRoutes.sellerNotifications,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const SellerNotification(),
+        builder: (context, state) =>
+            withSellerTheme(context, const SellerNotification()),
       ),
       GoRoute(
         path: AppRoutes.sellerSettings,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const SellerSetting(),
+        builder: (context, state) =>
+            withSellerTheme(context, const SellerSetting()),
       ),
       GoRoute(
         path: AppRoutes.sellerDashboard,
@@ -449,17 +480,22 @@ GoRouter createRouter() {
       GoRoute(
         path: AppRoutes.sellerProfileDetails,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const SellerProfileDetails(),
+        builder: (context, state) =>
+            withSellerTheme(context, const SellerProfileDetails()),
       ),
       GoRoute(
         path: AppRoutes.sellerProfileEdit,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const SellerEditProfile(),
+        builder: (context, state) =>
+            withSellerTheme(context, const SellerEditProfile()),
       ),
       GoRoute(
         path: AppRoutes.sellerProfileVerify,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const SellerIdentityVerificationScreen(),
+        builder: (context, state) => withSellerTheme(
+          context,
+          const SellerIdentityVerificationScreen(),
+        ),
       ),
     ],
   );
@@ -595,6 +631,27 @@ Widget _badgedNavIcon(IconData icon, int count) {
   );
 }
 
+/// Builds the shell bottom nav so tests can read which tab is selected.
+@visibleForTesting
+Widget debugShellBottomNav({
+  required int currentIndex,
+  required List<String> labels,
+}) {
+  return _ShellBottomNav(
+    accent: kPrimaryColor,
+    currentIndex: currentIndex,
+    items: [
+      for (final label in labels)
+        _ShellNavItem(
+          icon: const Icon(Icons.circle_outlined),
+          activeIcon: const Icon(Icons.circle),
+          label: label,
+        ),
+    ],
+    onTap: (_) {},
+  );
+}
+
 /// Compact shell bottom nav — clear selected state, tight safe-area padding.
 class _ShellBottomNav extends StatelessWidget {
   const _ShellBottomNav({
@@ -630,20 +687,25 @@ class _ShellBottomNav extends StatelessWidget {
             ),
           ],
         ),
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(6, 6, 6, bottomInset > 0 ? bottomInset : 8),
-          child: Row(
-            children: [
-              for (var i = 0; i < items.length; i++)
-                Expanded(
-                  child: _ShellBottomNavTile(
-                    item: items[i],
-                    selected: i == currentIndex,
-                    accent: accent,
-                    onTap: () => onTap(i),
+        child: Semantics(
+          role: SemanticsRole.tabBar,
+          explicitChildNodes: true,
+          container: true,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(6, 6, 6, bottomInset > 0 ? bottomInset : 8),
+            child: Row(
+              children: [
+                for (var i = 0; i < items.length; i++)
+                  Expanded(
+                    child: _ShellBottomNavTile(
+                      item: items[i],
+                      selected: i == currentIndex,
+                      accent: accent,
+                      onTap: () => onTap(i),
+                    ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -667,46 +729,71 @@ class _ShellBottomNavTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = selected ? accent : kLightNeutralColor;
+    final labelStyle = TextStyle(
+      color: color,
+      fontSize: 11,
+      fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+      height: 1.1,
+    );
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(14),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
-              curve: Curves.easeOut,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              decoration: BoxDecoration(
-                color: selected
-                    ? accent.withValues(alpha: 0.12)
-                    : Colors.transparent,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: IconTheme(
-                data: IconThemeData(color: color, size: 22),
-                child: selected ? item.activeIcon : item.icon,
-              ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final painter = TextPainter(
+          text: TextSpan(text: item.label, style: labelStyle),
+          maxLines: 1,
+          textDirection: Directionality.of(context),
+        )..layout();
+        final labelClips = painter.width > constraints.maxWidth - 4;
+        painter.dispose();
+
+        final icon = AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOut,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          decoration: BoxDecoration(
+            color: selected ? accent.withValues(alpha: 0.12) : Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: IconTheme(
+            data: IconThemeData(color: color, size: 22),
+            child: selected ? item.activeIcon : item.icon,
+          ),
+        );
+
+        final tile = InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(14),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                icon,
+                if (!labelClips) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    item.label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    style: labelStyle,
+                  ),
+                ],
+              ],
             ),
-            const SizedBox(height: 2),
-            Text(
-              item.label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: color,
-                fontSize: 11,
-                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                height: 1.1,
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+
+        return Semantics(
+          role: SemanticsRole.tab,
+          selected: selected,
+          label: item.label,
+          onTap: onTap,
+          child: ExcludeSemantics(
+            child: labelClips ? Tooltip(message: item.label, child: tile) : tile,
+          ),
+        );
+      },
     );
   }
 }

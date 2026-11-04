@@ -21,7 +21,7 @@ class SellerSignUp extends StatelessWidget {
           await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => OtpVerification(email: email),
+              builder: (_) => OtpVerification(email: email, role: 'seller'),
             ),
           );
         },

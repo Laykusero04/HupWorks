@@ -40,6 +40,29 @@ class _OrderPaymentReceivedCardState extends State<OrderPaymentReceivedCard> {
     return AppDateFormat.mmmDY(dt, AppDateFormat.localeOf(context));
   }
 
+  Future<void> _confirmClearReceived() async {
+    if (_busy) return;
+    final l10n = context.l10n;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.undoPaymentReceived),
+        content: Text(l10n.undoPaymentReceivedBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.confirm),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && mounted) await _setReceived(false);
+  }
+
   Future<void> _setReceived(bool received) async {
     if (_busy) return;
     setState(() => _busy = true);
@@ -151,7 +174,7 @@ class _OrderPaymentReceivedCardState extends State<OrderPaymentReceivedCard> {
             )
           else
             TextButton(
-              onPressed: _busy ? null : () => _setReceived(false),
+              onPressed: _busy ? null : _confirmClearReceived,
               child: Text(
                 l10n.undoPaymentReceived,
                 style: kTextStyle.copyWith(

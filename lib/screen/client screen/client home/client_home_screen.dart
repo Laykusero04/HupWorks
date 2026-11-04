@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
-import 'package:freelancer/core/notifications/notification_scope.dart';
 import 'package:freelancer/core/utils/client_profile_completeness.dart';
 import 'package:freelancer/core/utils/profile_image.dart';
 import 'package:freelancer/l10n/l10n.dart';
@@ -159,7 +158,6 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
       backgroundColor: kDarkWhite,
       appBar: ClientShellAppBar(
         title: l10n.home,
-        actions: _isLoading ? null : _homeAppBarActions(),
       ),
       body: _isLoading
           ? const _ClientHomeLoading()
@@ -211,34 +209,6 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
               ),
             ),
     );
-  }
-
-  List<Widget> _homeAppBarActions() {
-    final notifications = NotificationScope.of(context);
-    return [
-      ListenableBuilder(
-        listenable: notifications,
-        builder: (context, _) {
-          final count = notifications.unreadCount;
-          return IconButton(
-            tooltip: context.l10n.notifications,
-            onPressed: () async {
-              await context.push(AppRoutes.clientNotifications);
-              if (mounted) await notifications.refreshUnreadCount();
-            },
-            icon: count > 0
-                ? Badge(
-                    label: Text(
-                      count > 9 ? '9+' : '$count',
-                      style: const TextStyle(fontSize: 10),
-                    ),
-                    child: const Icon(Icons.notifications_outlined),
-                  )
-                : const Icon(Icons.notifications_outlined),
-          );
-        },
-      ),
-    ];
   }
 
   Widget _buildProfileNudge() {
@@ -323,7 +293,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
         onTap: () {
           showSearch(
             context: context,
-            delegate: CustomSearchDelegate(searchHint: context.l10n.searchHint),
+            delegate: CustomSearchDelegate(l10nContext: context),
           );
         },
         child: Container(

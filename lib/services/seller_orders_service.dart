@@ -17,7 +17,7 @@ class SellerOrdersService {
     var query = _client
         .from('orders')
         .select(
-          '*, services!service_id(title, images), client:profiles!client_id(name), '
+          '*, services!service_id(title, images), client:profiles!client_id(name, profile_image_url), '
           'job_offers!job_offer_id(job_posts(title))',
         )
         .eq('seller_id', user.id);

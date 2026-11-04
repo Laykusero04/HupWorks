@@ -13,19 +13,17 @@ import 'package:freelancer/screen/widgets/talent_filter_sheet.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 class CustomSearchDelegate extends SearchDelegate<void> {
-  CustomSearchDelegate({String? searchHint})
-      : _searchHint = searchHint ?? 'Search services or freelancers' {
+  CustomSearchDelegate({String? searchHint, BuildContext? l10nContext})
+      : super(
+          searchFieldLabel:
+              searchHint ?? l10nContext?.l10n.searchHint,
+        ) {
     _loadOrigin();
   }
-
-  final String _searchHint;
   final ValueNotifier<TalentSellerFilters> filters =
       ValueNotifier(TalentSellerFilters.empty);
   final ValueNotifier<TalentFilterOrigin> origin =
       ValueNotifier(TalentFilterOrigin.empty);
-
-  @override
-  String get searchFieldLabel => _searchHint;
 
   Future<void> _loadOrigin() async {
     try {
@@ -260,10 +258,11 @@ class _MarketplaceSearchBodyState extends State<_MarketplaceSearchBody> {
         _lastFetchedKey = key;
         _loading = false;
       });
-    } catch (e) {
+    } catch (e, stack) {
+      debugPrint('Search failed: $e\n$stack');
       if (!mounted) return;
       setState(() {
-        _error = e.toString();
+        _error = '';
         _loading = false;
       });
     }
@@ -349,12 +348,7 @@ class _MarketplaceSearchBodyState extends State<_MarketplaceSearchBody> {
                   Text(
                     context.l10n.couldNotLoadResults,
                     style: kTextStyle.copyWith(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    _error!,
                     textAlign: TextAlign.center,
-                    style: kTextStyle.copyWith(color: kSubTitleColor),
                   ),
                   const SizedBox(height: 16),
                   TextButton(

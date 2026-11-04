@@ -118,6 +118,13 @@ class _JobPostState extends State<JobPost> {
                     _loadJobPosts();
                   },
                 )
+              : _visibleJobPosts.isEmpty
+                  ? EmptyStateWidget(
+                      message: l10n.noJobsMatchFilters,
+                      icon: Icons.filter_alt_off_outlined,
+                      actionLabel: l10n.clearFilters,
+                      onAction: () => setState(() => _typeFilter = null),
+                    )
               : RubikRefreshIndicator(
                   onRefresh: _loadJobPosts,
                   child: SingleChildScrollView(
@@ -215,7 +222,7 @@ class _JobPostState extends State<JobPost> {
                                                     Expanded(
                                                       child: Text(
                                                         job['title'] ??
-                                                            'Untitled',
+                                                            l10n.untitled,
                                                         style:
                                                             kTextStyle.copyWith(
                                                                 color:
@@ -266,7 +273,7 @@ class _JobPostState extends State<JobPost> {
                                                 const SizedBox(height: 10.0),
                                                 RichText(
                                                   text: TextSpan(
-                                                    text: 'Category: ',
+                                                    text: '${l10n.categoryLabel}: ',
                                                     style: kTextStyle.copyWith(
                                                         color: kNeutralColor),
                                                     children: [
@@ -274,7 +281,7 @@ class _JobPostState extends State<JobPost> {
                                                         text: LocalizedCategory.name(
                                                           category,
                                                           LocalizedCategory.languageCodeOf(context),
-                                                          fallback: 'General',
+                                                          fallback: l10n.categoryGeneral,
                                                         ),
                                                         style: kTextStyle.copyWith(
                                                             color:
@@ -356,15 +363,15 @@ class _JobPostState extends State<JobPost> {
                                                             : kDarkWhite,
                                                       ),
                                                       child: Text(
-                                                        (job['status'] ??
-                                                                    'open')
-                                                                .toString()
-                                                                .substring(0, 1)
-                                                                .toUpperCase() +
-                                                            (job['status'] ??
-                                                                    'open')
-                                                                .toString()
-                                                                .substring(1),
+                                                        switch ((job['status']
+                                                                as String?) ??
+                                                            '') {
+                                                          'open' => l10n.open,
+                                                          'closed' =>
+                                                              l10n.closed,
+                                                          '' => l10n.unknown,
+                                                          final other => other,
+                                                        },
                                                         style:
                                                             kTextStyle.copyWith(
                                                           color: job['status'] ==

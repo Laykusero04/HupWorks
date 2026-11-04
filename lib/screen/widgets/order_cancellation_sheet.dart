@@ -6,12 +6,18 @@ import 'package:freelancer/screen/widgets/constant.dart';
 
 /// Bottom sheet for freelancer to request contract cancellation.
 class OrderCancellationSheet extends StatefulWidget {
-  const OrderCancellationSheet({super.key});
+  final Future<void> Function(String reasonCode, String reasonNote) onSubmit;
 
-  static Future<({String reasonCode, String reasonNote})?> show(
-    BuildContext context,
-  ) {
-    return showModalBottomSheet<({String reasonCode, String reasonNote})?>(
+  const OrderCancellationSheet({super.key, required this.onSubmit});
+
+  /// Pops with `true` only after [onSubmit] succeeds. A failed request stays
+  /// on the sheet so the note is not discarded.
+  static Future<bool> show(
+    BuildContext context, {
+    required Future<void> Function(String reasonCode, String reasonNote)
+        onSubmit,
+  }) async {
+    final submitted = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       backgroundColor: kWhite,
@@ -20,9 +26,10 @@ class OrderCancellationSheet extends StatefulWidget {
       ),
       builder: (ctx) => Padding(
         padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(ctx).bottom),
-        child: const OrderCancellationSheet(),
+        child: OrderCancellationSheet(onSubmit: onSubmit),
       ),
     );
+    return submitted == true;
   }
 
   @override
@@ -44,6 +51,7 @@ class _OrderCancellationSheetState extends State<OrderCancellationSheet> {
   Future<void> _submit() async {
     final l10n = context.l10n;
     final note = _noteController.text.trim();
+    if (_submitting) return;
     if (note.length < OrderCancellationReason.minNoteLength) {
       setState(() => _error =
           l10n.cancellationMinChars(OrderCancellationReason.minNoteLength));
@@ -53,11 +61,17 @@ class _OrderCancellationSheetState extends State<OrderCancellationSheet> {
       _submitting = true;
       _error = null;
     });
-    if (!mounted) return;
-    Navigator.pop(
-      context,
-      (reasonCode: _reasonCode, reasonNote: note),
-    );
+    try {
+      await widget.onSubmit(_reasonCode, note);
+      if (mounted) Navigator.pop(context, true);
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _submitting = false;
+          _error = context.l10n.errorWithDetail('$e');
+        });
+      }
+    }
   }
 
   @override
@@ -65,6 +79,7 @@ class _OrderCancellationSheetState extends State<OrderCancellationSheet> {
     final l10n = context.l10n;
     final noteLen = _noteController.text.trim().length;
     final min = OrderCancellationReason.minNoteLength;
+    final canSubmit = !_submitting && noteLen >= min;
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
@@ -188,7 +203,7 @@ class _OrderCancellationSheetState extends State<OrderCancellationSheet> {
                         color: kWhite,
                         border: Border.all(color: kBorderColorTextField),
                       ),
-                      onPressed: _submitting ? () {} : () => Navigator.pop(context),
+                      onPressed: _submitting ? null : () => Navigator.pop(context),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -197,9 +212,9 @@ class _OrderCancellationSheetState extends State<OrderCancellationSheet> {
                       buttontext: _submitting ? l10n.sending : l10n.cancellationSubmit,
                       buttonTextColor: kWhite,
                       buttonDecoration: kButtonDecoration.copyWith(
-                        color: _submitting ? kLightNeutralColor : Colors.red.shade700,
+                        color: canSubmit ? Colors.red.shade700 : kLightNeutralColor,
                       ),
-                      onPressed: _submitting ? () {} : _submit,
+                      onPressed: canSubmit ? _submit : null,
                     ),
                   ),
                 ],

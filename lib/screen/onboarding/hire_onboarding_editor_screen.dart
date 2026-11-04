@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/empty_state_widget.dart';
 import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:freelancer/data/models/hire_onboarding_packet_model.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/services/hire_onboarding_service.dart';
-import 'package:nb_utils/nb_utils.dart';
 
 import '../widgets/button_global.dart';
 import '../widgets/constant.dart';
@@ -72,13 +72,8 @@ class _HireOnboardingEditorScreenState extends State<HireOnboardingEditorScreen>
       } else {
         setState(() => _loading = false);
       }
-    } catch (e) {
-      if (mounted) {
-        setState(() => _loading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
-        );
-      }
+    } catch (_) {
+      if (mounted) setState(() => _loading = false);
     }
   }
 
@@ -177,7 +172,16 @@ class _HireOnboardingEditorScreenState extends State<HireOnboardingEditorScreen>
       ),
       body: _loading
           ? const LoadingWidget()
-          : Column(
+          : _packet == null
+              ? EmptyStateWidget(
+                  message: l10n.somethingWentWrong,
+                  actionLabel: l10n.retry,
+                  onAction: () {
+                    setState(() => _loading = true);
+                    _load();
+                  },
+                )
+              : Column(
               children: [
                 Expanded(
                   child: SingleChildScrollView(

@@ -1,5 +1,6 @@
 import 'package:freelancer/core/chat/chat_contact_policy.dart';
 import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/core/widgets/empty_state_widget.dart';
 import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
 import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
@@ -39,6 +40,7 @@ class _JobDetailsState extends State<JobDetails> {
   Map<String, dynamic>? _jobPost;
   List<Map<String, dynamic>> _offers = [];
   bool _isLoading = true;
+  bool _loadFailed = false;
   String _attendanceMode = AttendanceMode.qrInOut;
   bool _savingAttendanceMode = false;
 
@@ -60,14 +62,21 @@ class _JobDetailsState extends State<JobDetails> {
           _offers = results[1] as List<Map<String, dynamic>>;
           _attendanceMode = AttendanceMode.effectiveForJobPost(_jobPost);
           _isLoading = false;
+          _loadFailed = false;
         });
       }
     } catch (e) {
       if (mounted) {
-        setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
-        );
+        final keepExisting = _jobPost != null;
+        setState(() {
+          _isLoading = false;
+          if (!keepExisting) _loadFailed = true;
+        });
+        if (keepExisting) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+          );
+        }
       }
     }
   }
@@ -393,6 +402,33 @@ class _JobDetailsState extends State<JobDetails> {
       );
     }
 
+    if (_loadFailed || _jobPost == null) {
+      return Scaffold(
+        backgroundColor: kDarkWhite,
+        appBar: AppBar(
+          backgroundColor: kDarkWhite,
+          elevation: 0,
+          iconTheme: const IconThemeData(color: kNeutralColor),
+          title: Text(
+            l10n.buyerRequestDetailsTitle,
+            style: kTextStyle.copyWith(
+              color: kNeutralColor,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          centerTitle: true,
+        ),
+        body: EmptyStateWidget(
+          message: l10n.somethingWentWrong,
+          actionLabel: l10n.retry,
+          onAction: () {
+            setState(() => _isLoading = true);
+            _loadData();
+          },
+        ),
+      );
+    }
+
     final title = _jobPost?['title'] ?? l10n.jobPostFallback;
     final description = _jobPost?['description'] ?? '';
     final category = LocalizedCategory.name(
@@ -400,15 +436,15 @@ class _JobDetailsState extends State<JobDetails> {
       LocalizedCategory.languageCodeOf(context),
       fallback: l10n.categoryGeneral,
     );
-    final status = _jobPost?['status'] ?? 'open';
+    final status = (_jobPost?['status'] as String?) ?? '';
     final budgetMin = _jobPost?['budget_min'];
     final budgetMax = _jobPost?['budget_max'];
     final isOpen = status == 'open';
-    final statusLabel = switch (status.toString()) {
+    final statusLabel = switch (status) {
       'open' => l10n.open,
       'closed' => l10n.closed,
-      _ => status.toString().substring(0, 1).toUpperCase() +
-          status.toString().substring(1),
+      '' => l10n.unknown,
+      _ => status.substring(0, 1).toUpperCase() + status.substring(1),
     };
 
     return Scaffold(
@@ -425,16 +461,20 @@ class _JobDetailsState extends State<JobDetails> {
         centerTitle: true,
         actions: [
           if (isOpen)
-            PopupMenuButton(
+            PopupMenuButton<String>(
               padding: EdgeInsets.zero,
               itemBuilder: (BuildContext context) => [
-                PopupMenuItem(
-                  child: Text(l10n.closeJob,
-                          style: kTextStyle.copyWith(color: Colors.red))
-                      .onTap(() => _handleCloseJob()),
+                PopupMenuItem<String>(
+                  value: 'close',
+                  child: Text(
+                    l10n.closeJob,
+                    style: kTextStyle.copyWith(color: Colors.red),
+                  ),
                 ),
               ],
-              onSelected: (value) {},
+              onSelected: (value) {
+                if (value == 'close') _handleCloseJob();
+              },
               child: const Padding(
                 padding: EdgeInsets.only(right: 10.0),
                 child: Icon(Icons.more_vert_rounded, color: kNeutralColor),

@@ -21,6 +21,8 @@ class SellerJobAlertsScreen extends StatefulWidget {
 class _SellerJobAlertsScreenState extends State<SellerJobAlertsScreen> {
   List<SellerJobAlertRule> _rules = [];
   bool _loading = true;
+  bool _loadFailed = false;
+  final Set<String> _togglingIds = {};
 
   @override
   void initState() {
@@ -29,10 +31,20 @@ class _SellerJobAlertsScreenState extends State<SellerJobAlertsScreen> {
   }
 
   Future<void> _load() async {
-    setState(() => _loading = true);
+    setState(() {
+      _loading = true;
+      _loadFailed = false;
+    });
     try {
       final rules = await SellerJobAlertService.listMyRules();
-      if (mounted) setState(() => _rules = rules);
+      if (mounted) {
+        setState(() {
+          _rules = rules;
+          _loadFailed = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _loadFailed = true);
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -48,6 +60,8 @@ class _SellerJobAlertsScreenState extends State<SellerJobAlertsScreen> {
   }
 
   Future<void> _toggle(SellerJobAlertRule rule, bool enabled) async {
+    if (_togglingIds.contains(rule.id)) return;
+    setState(() => _togglingIds.add(rule.id));
     try {
       await SellerJobAlertService.setEnabled(rule.id, enabled);
       if (mounted) {
@@ -63,6 +77,8 @@ class _SellerJobAlertsScreenState extends State<SellerJobAlertsScreen> {
           SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
       }
+    } finally {
+      if (mounted) setState(() => _togglingIds.remove(rule.id));
     }
   }
 
@@ -128,15 +144,25 @@ class _SellerJobAlertsScreenState extends State<SellerJobAlertsScreen> {
         foregroundColor: kWhite,
         title: Text(l10n.jobAlertsTitle),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _openEditor(),
-        backgroundColor: primary,
-        icon: const Icon(Icons.add),
-        label: Text(l10n.jobAlertNew),
-      ),
+      floatingActionButton: _loadFailed
+          ? null
+          : FloatingActionButton.extended(
+              onPressed: () => _openEditor(),
+              backgroundColor: primary,
+              icon: const Icon(Icons.add),
+              label: Text(l10n.jobAlertNew),
+            ),
       body: _loading
           ? const LoadingWidget()
-          : RubikRefreshIndicator(
+          : _loadFailed
+              ? EmptyStateWidget(
+                  message: l10n.somethingWentWrong,
+                  actionLabel: l10n.retry,
+                  onAction: () {
+                    _load();
+                  },
+                )
+              : RubikRefreshIndicator(
               onRefresh: _load,
               child: _rules.isEmpty
                   ? ListView(
@@ -188,7 +214,9 @@ class _SellerJobAlertsScreenState extends State<SellerJobAlertsScreen> {
                                       ),
                                       Switch(
                                         value: rule.enabled,
-                                        onChanged: (v) => _toggle(rule, v),
+                                        onChanged: _togglingIds.contains(rule.id)
+                                            ? null
+                                            : (v) => _toggle(rule, v),
                                         activeThumbColor: primary,
                                       ),
                                     ],

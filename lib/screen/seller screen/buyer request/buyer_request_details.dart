@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/empty_state_widget.dart';
 import 'package:freelancer/core/widgets/loading_widget.dart';
+import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
 import 'package:freelancer/core/utils/app_date_format.dart';
 import 'package:freelancer/core/utils/localized_category.dart';
 import 'package:freelancer/core/utils/shift_schedule.dart';
@@ -57,8 +59,13 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
       }
     } catch (e) {
       if (mounted) {
+        final keepJob = _jobPost != null;
         setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.errorWithDetail('$e'))));
+        if (keepJob) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+          );
+        }
       }
     }
   }
@@ -96,12 +103,39 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
     if (_isLoading) return const Scaffold(backgroundColor: kDarkWhite, body: const LoadingWidget());
 
     final l10n = context.l10n;
+    if (_jobPost == null) {
+      return Scaffold(
+        backgroundColor: kDarkWhite,
+        appBar: AppBar(
+          backgroundColor: kDarkWhite,
+          elevation: 0,
+          iconTheme: const IconThemeData(color: kNeutralColor),
+          title: Text(
+            l10n.buyerRequestDetailsTitle,
+            style: kTextStyle.copyWith(
+              color: kNeutralColor,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          centerTitle: true,
+        ),
+        body: EmptyStateWidget(
+          message: l10n.somethingWentWrong,
+          actionLabel: l10n.retry,
+          onAction: () {
+            setState(() => _isLoading = true);
+            _loadDetails();
+          },
+        ),
+      );
+    }
+
     final category = LocalizedCategory.name(
       _jobPost?['categories'] as Map<String, dynamic>?,
       LocalizedCategory.languageCodeOf(context),
-      fallback: 'General',
+      fallback: l10n.categoryGeneral,
     );
-    final title = _jobPost?['title'] ?? 'Job Post';
+    final title = _jobPost?['title'] ?? l10n.jobPostFallback;
     final description = _jobPost?['description'] ?? '';
     final budgetMin = _jobPost?['budget_min'];
     final budgetMax = _jobPost?['budget_max'];
@@ -113,15 +147,15 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
 
     String? applyBlockedReason() {
       if (jobStatus.toLowerCase() != 'open') {
-        return 'This job is closed and is not accepting applications.';
+        return l10n.jobClosedNoApplications;
       }
       if (myUid != null && clientId != null && myUid == clientId) {
-        return 'You cannot apply to your own job post.';
+        return l10n.cannotApplyToOwnJob;
       }
       if (myOffer != null) {
         final st = (myOffer['status'] as String?)?.toLowerCase();
         if (st == 'pending' || st == 'accepted') {
-          return 'You have already submitted an application for this job.';
+          return l10n.alreadySubmittedApplication;
         }
       }
       return null;
@@ -214,8 +248,12 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
           padding: const EdgeInsets.only(left: 15.0, right: 15.0),
           width: context.width(),
           decoration: const BoxDecoration(color: kWhite, borderRadius: BorderRadius.only(topLeft: Radius.circular(30.0), topRight: Radius.circular(30.0))),
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
+          child: RubikRefreshIndicator(
+            onRefresh: _loadDetails,
+            child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -232,36 +270,37 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
                   description,
                   style: kTextStyle.copyWith(color: kSubTitleColor),
                   trimLines: 3, colorClickableText: kPrimaryColor, trimMode: TrimMode.Line,
-                  trimCollapsedText: '..Read more', trimExpandedText: '..Read less',
+                  trimCollapsedText: l10n.readMoreSuffix, trimExpandedText: l10n.readLessSuffix,
                 ),
                 const SizedBox(height: 15.0),
 
                 // Details
-                _row('Category', category),
+                _row(l10n.categoryLabel, category),
                 const SizedBox(height: 8.0),
                 if (JobPostsService.skillNamesFromJob(_jobPost).isNotEmpty) ...[
                   _row(
-                    'Skills',
+                    l10n.skills,
                     JobPostsService.skillNamesFromJob(_jobPost).join(', '),
                   ),
                   const SizedBox(height: 8.0),
                 ],
                 if (budgetMin != null || budgetMax != null) ...[
-                  _row('Budget', JobPostsService.formatBudgetRange(budgetMin, budgetMax, _jobPost?['budget_basis'])),
+                  _row(l10n.budgetLabel, JobPostsService.formatBudgetRange(budgetMin, budgetMax, _jobPost?['budget_basis'])),
                   const SizedBox(height: 8.0),
                 ],
                 _buildLocationSection(_jobPost),
-                _row('Workers needed', JobPostsService.workersNeededDetailLabel(_jobPost?['workers_needed'])),
+                _row(l10n.workersNeeded, JobPostsService.workersNeededDetailLabel(_jobPost?['workers_needed'])),
                 const SizedBox(height: 8.0),
                 if (ShiftSchedule.fromMap(_jobPost).displayLabel != null) ...[
-                  _row('Shift', ShiftSchedule.fromMap(_jobPost).displayLabel!),
+                  _row(l10n.shiftLabel, ShiftSchedule.fromMap(_jobPost).displayLabel!),
                   const SizedBox(height: 8.0),
                 ],
                 _row(l10n.applicationsReceived, '$offerCount'),
                 const SizedBox(height: 8.0),
-                _row('Job posted', _formatDate(_jobPost?['created_at'])),
+                _row(l10n.dateLabel, _formatDate(_jobPost?['created_at'])),
                 SizedBox(height: bottomLift + 24),
               ],
+            ),
             ),
           ),
         ),

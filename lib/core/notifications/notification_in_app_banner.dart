@@ -23,6 +23,7 @@ class _NotificationInAppBannerState extends State<NotificationInAppBanner>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<Offset> _slide;
+  bool _closed = false;
 
   @override
   void initState() {
@@ -40,10 +41,17 @@ class _NotificationInAppBannerState extends State<NotificationInAppBanner>
     });
   }
 
+  void _close() {
+    if (_closed) return;
+    _closed = true;
+    widget.onDismiss();
+  }
+
   Future<void> _dismiss() async {
+    if (_closed) return;
     if (!_controller.isAnimating && _controller.value == 0) return;
     await _controller.reverse();
-    widget.onDismiss();
+    _close();
   }
 
   @override
@@ -61,7 +69,11 @@ class _NotificationInAppBannerState extends State<NotificationInAppBanner>
       right: 12,
       child: SlideTransition(
         position: _slide,
-        child: Material(
+        child: Dismissible(
+          key: ValueKey(widget.notification.id),
+          direction: DismissDirection.vertical,
+          onDismissed: (_) => _close(),
+          child: Material(
           elevation: 6,
           borderRadius: BorderRadius.circular(12),
           color: kWhite,
@@ -114,6 +126,7 @@ class _NotificationInAppBannerState extends State<NotificationInAppBanner>
               ),
             ),
           ),
+        ),
         ),
       ),
     );

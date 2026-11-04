@@ -30,6 +30,7 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
 
   bool _isLoading = true;
   bool _isLoadingMore = false;
+  bool _markingAll = false;
   bool _hasMore = true;
   int _nextOffset = 0;
   late final NotificationRepository _repository;
@@ -151,6 +152,44 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
     );
   }
 
+  IconData _iconForType(String? type) {
+    switch ((type ?? '').toLowerCase()) {
+      case 'message':
+        return Icons.chat_bubble_outline;
+      case 'order':
+      case 'hire_onboarding':
+      case 'job_offer':
+      case 'job_match':
+        return Icons.work_outline;
+      case 'attendance':
+      case 'hour_report':
+        return Icons.qr_code_2_outlined;
+      case 'review':
+        return Icons.star_outline;
+      default:
+        return FeatherIcons.bell;
+    }
+  }
+
+  Future<void> _markAllRead() async {
+    if (_markingAll) return;
+    setState(() => _markingAll = true);
+    try {
+      await _repository.markAllAsRead();
+      if (!mounted) return;
+      await _loadInitial();
+      if (mounted) await NotificationScope.of(context).refreshUnreadCount();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _markingAll = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -170,12 +209,17 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
         actions: [
           if (hasUnread)
             TextButton(
-              onPressed: () async {
-                await _repository.markAllAsRead();
-                await _loadInitial();
-                if (mounted) await NotificationScope.of(context).refreshUnreadCount();
-              },
-              child: Text(l10n.readAll, style: kTextStyle.copyWith(color: kPrimaryColor)),
+              onPressed: _markingAll ? null : _markAllRead,
+              child: _markingAll
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Text(
+                      l10n.readAll,
+                      style: kTextStyle.copyWith(color: kPrimaryColor),
+                    ),
             ),
         ],
       ),
@@ -237,7 +281,7 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
                                   color: isRead ? kDarkWhite : kPrimaryColor.withOpacity(0.1),
                                 ),
                                 child: Icon(
-                                  FeatherIcons.bell,
+                                  _iconForType(notif.type),
                                   color: isRead ? kLightNeutralColor : kPrimaryColor,
                                 ),
                               ),

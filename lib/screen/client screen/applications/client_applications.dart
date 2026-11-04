@@ -178,16 +178,43 @@ class _ClientApplicationsState extends State<ClientApplications> {
                 child: _isLoading
                     ? const LoadingWidget()
                     : visible.isEmpty
-                        ? EmptyStateWidget(
-                            message: l10n.noApplicationsYet,
-                            hint: l10n.noClientApplicationsYetHint,
-                            icon: Icons.inbox_outlined,
-                            actionLabel: l10n.postAJob,
-                            onAction: () async {
-                              await const CreateNewJobPost().launch(context);
-                              if (mounted) _load(showLoader: false);
-                            },
-                          )
+                        ? _applications.isEmpty
+                            ? EmptyStateWidget(
+                                message: l10n.noApplicationsYet,
+                                hint: l10n.noClientApplicationsYetHint,
+                                icon: Icons.inbox_outlined,
+                                actionLabel: l10n.postAJob,
+                                onAction: () async {
+                                  await const CreateNewJobPost()
+                                      .launch(context);
+                                  if (mounted) _load(showLoader: false);
+                                },
+                              )
+                            : RubikRefreshIndicator(
+                                onRefresh: () => _load(showLoader: false),
+                                child: ListView(
+                                  physics:
+                                      const AlwaysScrollableScrollPhysics(
+                                    parent: BouncingScrollPhysics(),
+                                  ),
+                                  children: [
+                                    SizedBox(
+                                      height:
+                                          MediaQuery.sizeOf(context).height *
+                                              0.12,
+                                    ),
+                                    EmptyStateWidget(
+                                      message: l10n.noFilteredApplications,
+                                      hint: l10n.noFilteredApplicationsHint,
+                                      icon: Icons.filter_alt_off_outlined,
+                                      actionLabel: l10n.clearFilters,
+                                      onAction: () => setState(
+                                        () => _statusFilter = null,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
                         : RubikRefreshIndicator(
                             onRefresh: () => _load(showLoader: false),
                             child: ListView.builder(

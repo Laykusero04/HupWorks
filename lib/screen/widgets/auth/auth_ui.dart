@@ -174,6 +174,8 @@ class AuthTextField extends StatelessWidget {
     this.keyboardType,
     this.obscureText = false,
     this.textInputAction,
+    this.onFieldSubmitted,
+    this.autofillHints,
     this.suffixIcon,
     this.focusedBorderColor = kPrimaryColor,
   });
@@ -184,6 +186,8 @@ class AuthTextField extends StatelessWidget {
   final TextInputType? keyboardType;
   final bool obscureText;
   final TextInputAction? textInputAction;
+  final ValueChanged<String>? onFieldSubmitted;
+  final Iterable<String>? autofillHints;
   final Widget? suffixIcon;
   final Color focusedBorderColor;
 
@@ -194,6 +198,8 @@ class AuthTextField extends StatelessWidget {
       keyboardType: keyboardType,
       obscureText: obscureText,
       textInputAction: textInputAction,
+      onFieldSubmitted: onFieldSubmitted,
+      autofillHints: autofillHints,
       cursorColor: focusedBorderColor,
       style: kTextStyle.copyWith(fontSize: 15),
       decoration: authInputDecoration(

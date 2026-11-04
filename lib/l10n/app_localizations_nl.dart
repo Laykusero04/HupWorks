@@ -865,7 +865,7 @@ class AppLocalizationsNl extends AppLocalizations {
       'Bekijk openstaande shifts en meld je aan in minuten.';
 
   @override
-  String get myApplications => 'Mijn shifts';
+  String get myApplications => 'Aanmeldingen';
 
   @override
   String get browseJobs => 'Jobs bekijken';
@@ -3886,4 +3886,104 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get accountBlocked =>
       'Dit account is geblokkeerd. Neem contact op met support als je denkt dat dit een vergissing is.';
+
+  @override
+  String get siteSetup => 'Locatie-instellingen';
+
+  @override
+  String get editAction => 'Bewerken';
+
+  @override
+  String get openAction => 'Openen';
+
+  @override
+  String get undoAction => 'Ongedaan maken';
+
+  @override
+  String get removeFavourite => 'Verwijderen uit opgeslagen';
+
+  @override
+  String get undoPaymentReceivedBody =>
+      'Dit wist alleen de registratie in de app. Er wordt geen geld verplaatst.';
+
+  @override
+  String get approveCancellationTitle => 'Deze annulering goedkeuren?';
+
+  @override
+  String get approveCancellationBody => 'Goedkeuren sluit deze overeenkomst.';
+
+  @override
+  String get withdrawCancellationTitle => 'Annuleringsverzoek intrekken?';
+
+  @override
+  String get withdrawCancellationConfirmBody =>
+      'De overeenkomst blijft actief.';
+
+  @override
+  String get hoursSentForEmployerReview =>
+      'Uren verstuurd ter beoordeling door de werkgever.';
+
+  @override
+  String get notAnAttendanceCode => 'Dit is geen aanwezigheidscode.';
+
+  @override
+  String get confirmClockOutTitle => 'Uitklokken?';
+
+  @override
+  String get confirmClockOutBody =>
+      'Dit registreert je uitklok en stuurt de uren van vandaag ter beoordeling.';
+
+  @override
+  String get splashGettingReady => 'Even geduld…';
+
+  @override
+  String get splashVersionLabel => 'Versie';
+
+  @override
+  String get jobClosedNoApplications =>
+      'Deze job is gesloten en neemt geen sollicitaties meer aan.';
+
+  @override
+  String get cannotApplyToOwnJob =>
+      'Je kunt niet solliciteren op je eigen job.';
+
+  @override
+  String get alreadySubmittedApplication =>
+      'Je hebt al een sollicitatie voor deze job ingediend.';
+
+  @override
+  String authResendIn(int seconds) {
+    return 'Opnieuw versturen over ${seconds}s';
+  }
+
+  @override
+  String get openEmailApp => 'Open e-mailapp';
+
+  @override
+  String get addCategoryNotListed => 'Categorie toevoegen (niet in de lijst)';
+
+  @override
+  String get mapTurnOnLocationServices =>
+      'Zet locatievoorzieningen aan om GPS te gebruiken';
+
+  @override
+  String get mapLocationPermissionNeeded =>
+      'Locatietoestemming is nodig om de huidige GPS te gebruiken';
+
+  @override
+  String get mapLocationPermissionBlocked =>
+      'Locatietoestemming is geblokkeerd. Schakel die in via de app-instellingen.';
+
+  @override
+  String get mapLocationPluginNotLoaded =>
+      'De locatieplugin is niet geladen. Stop de app volledig en start een nieuwe build (geen hot restart).';
+
+  @override
+  String mapCouldNotGetGps(String detail) {
+    return 'GPS ophalen mislukt: $detail';
+  }
+
+  @override
+  String get mediaPermissionDenied =>
+      'Camera- of fototoegang is geblokkeerd. Schakel die in via de app-instellingen.';
 }

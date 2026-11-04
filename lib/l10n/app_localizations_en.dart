@@ -129,7 +129,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get home => 'Home';
 
   @override
-  String get settings => 'Setting';
+  String get settings => 'Settings';
 
   @override
   String get helpSupport => 'Help & Support';
@@ -858,7 +858,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Browse open roles and apply in minutes.';
 
   @override
-  String get myApplications => 'My shifts';
+  String get myApplications => 'Applications';
 
   @override
   String get browseJobs => 'Browse jobs';
@@ -3854,4 +3854,101 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get accountBlocked =>
       'This account has been blocked. Contact support if you think this is a mistake.';
+
+  @override
+  String get siteSetup => 'Site setup';
+
+  @override
+  String get editAction => 'Edit';
+
+  @override
+  String get openAction => 'Open';
+
+  @override
+  String get undoAction => 'Undo';
+
+  @override
+  String get removeFavourite => 'Remove from saved';
+
+  @override
+  String get undoPaymentReceivedBody =>
+      'This only clears the in-app record. It does not move money.';
+
+  @override
+  String get approveCancellationTitle => 'Approve this cancellation?';
+
+  @override
+  String get approveCancellationBody => 'Approving closes this contract.';
+
+  @override
+  String get withdrawCancellationTitle => 'Withdraw cancellation request?';
+
+  @override
+  String get withdrawCancellationConfirmBody => 'The contract stays active.';
+
+  @override
+  String get hoursSentForEmployerReview => 'Hours sent for employer review.';
+
+  @override
+  String get notAnAttendanceCode => 'This is not an attendance code.';
+
+  @override
+  String get confirmClockOutTitle => 'Clock out?';
+
+  @override
+  String get confirmClockOutBody =>
+      'This records your clock-out and sends today\'s hours for employer review.';
+
+  @override
+  String get splashGettingReady => 'Getting things ready…';
+
+  @override
+  String get splashVersionLabel => 'Version';
+
+  @override
+  String get jobClosedNoApplications =>
+      'This job is closed and is not accepting applications.';
+
+  @override
+  String get cannotApplyToOwnJob => 'You cannot apply to your own job post.';
+
+  @override
+  String get alreadySubmittedApplication =>
+      'You have already submitted an application for this job.';
+
+  @override
+  String authResendIn(int seconds) {
+    return 'Resend in ${seconds}s';
+  }
+
+  @override
+  String get openEmailApp => 'Open email app';
+
+  @override
+  String get addCategoryNotListed => 'Add category (not listed)';
+
+  @override
+  String get mapTurnOnLocationServices =>
+      'Turn on location services to use GPS';
+
+  @override
+  String get mapLocationPermissionNeeded =>
+      'Location permission is needed to use current GPS';
+
+  @override
+  String get mapLocationPermissionBlocked =>
+      'Location permission is blocked. Enable it in App settings.';
+
+  @override
+  String get mapLocationPluginNotLoaded =>
+      'Location plugin not loaded. Fully stop the app and run a fresh rebuild (not hot restart).';
+
+  @override
+  String mapCouldNotGetGps(String detail) {
+    return 'Could not get GPS: $detail';
+  }
+
+  @override
+  String get mediaPermissionDenied =>
+      'Camera or photo access is blocked. Enable it in App settings.';
 }

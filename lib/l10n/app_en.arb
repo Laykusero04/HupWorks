@@ -46,7 +46,7 @@
   "noPopularResults": "No popular results yet",
   "couldNotLoadResults": "Could not load results",
   "home": "Home",
-  "settings": "Setting",
+  "settings": "Settings",
   "helpSupport": "Help & Support",
   "logOut": "Log Out",
   "logOutConfirmTitle": "Log out?",
@@ -330,7 +330,7 @@
   "noFreelancersMatch": "No matching freelancers",
   "findYourNextJob": "Find your next job",
   "findYourNextJobSubtitle": "Browse open roles and apply in minutes.",
-  "myApplications": "My shifts",
+  "myApplications": "Applications",
   "browseJobs": "Browse jobs",
   "statusAccepted": "Accepted",
   "statusRejected": "Rejected",
@@ -1810,5 +1810,43 @@
   "charityCauseHealthHint": "Care and health support.",
   "charityCauseShelter": "Shelter",
   "charityCauseShelterHint": "Housing and a safe place to stay.",
-  "accountBlocked": "This account has been blocked. Contact support if you think this is a mistake."
+  "accountBlocked": "This account has been blocked. Contact support if you think this is a mistake.",
+  "siteSetup": "Site setup",
+  "editAction": "Edit",
+  "openAction": "Open",
+  "undoAction": "Undo",
+  "removeFavourite": "Remove from saved",
+  "undoPaymentReceivedBody": "This only clears the in-app record. It does not move money.",
+  "approveCancellationTitle": "Approve this cancellation?",
+  "approveCancellationBody": "Approving closes this contract.",
+  "withdrawCancellationTitle": "Withdraw cancellation request?",
+  "withdrawCancellationConfirmBody": "The contract stays active.",
+  "hoursSentForEmployerReview": "Hours sent for employer review.",
+  "notAnAttendanceCode": "This is not an attendance code.",
+  "confirmClockOutTitle": "Clock out?",
+  "confirmClockOutBody": "This records your clock-out and sends today's hours for employer review.",
+  "splashGettingReady": "Getting things ready…",
+  "splashVersionLabel": "Version",
+  "jobClosedNoApplications": "This job is closed and is not accepting applications.",
+  "cannotApplyToOwnJob": "You cannot apply to your own job post.",
+  "alreadySubmittedApplication": "You have already submitted an application for this job.",
+  "authResendIn": "Resend in {seconds}s",
+  "@authResendIn": {
+    "placeholders": {
+      "seconds": {"type": "int"}
+    }
+  },
+  "openEmailApp": "Open email app",
+  "addCategoryNotListed": "Add category (not listed)",
+  "mapTurnOnLocationServices": "Turn on location services to use GPS",
+  "mapLocationPermissionNeeded": "Location permission is needed to use current GPS",
+  "mapLocationPermissionBlocked": "Location permission is blocked. Enable it in App settings.",
+  "mapLocationPluginNotLoaded": "Location plugin not loaded. Fully stop the app and run a fresh rebuild (not hot restart).",
+  "mapCouldNotGetGps": "Could not get GPS: {detail}",
+  "@mapCouldNotGetGps": {
+    "placeholders": {
+      "detail": {"type": "String"}
+    }
+  },
+  "mediaPermissionDenied": "Camera or photo access is blocked. Enable it in App settings."
 }

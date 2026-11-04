@@ -21,7 +21,8 @@ class ClientSignUp extends StatelessWidget {
           await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => ClientOtpVerification(email: email),
+              builder: (_) =>
+                  ClientOtpVerification(email: email, role: 'client'),
             ),
           );
         },

@@ -1,9 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:freelancer/l10n/l10n.dart';
-import 'package:freelancer/screen/widgets/auth/unified_log_in.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/services/auth_service.dart';
-import 'package:nb_utils/nb_utils.dart';
+import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../widgets/constant.dart';
 
@@ -11,10 +13,12 @@ import '../../widgets/constant.dart';
 /// User must open the link in their email before they can sign in.
 class OtpVerificationScreen extends StatefulWidget {
   final String email;
+  final String role;
 
   const OtpVerificationScreen({
     Key? key,
     required this.email,
+    required this.role,
   }) : super(key: key);
 
   @override
@@ -23,14 +27,40 @@ class OtpVerificationScreen extends StatefulWidget {
 
 class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   bool _isResending = false;
+  int _cooldown = 0;
+  Timer? _cooldownTimer;
+
+  @override
+  void dispose() {
+    _cooldownTimer?.cancel();
+    super.dispose();
+  }
+
+  void _startCooldown() {
+    _cooldownTimer?.cancel();
+    setState(() => _cooldown = 60);
+    _cooldownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      if (_cooldown <= 1) {
+        timer.cancel();
+        setState(() => _cooldown = 0);
+      } else {
+        setState(() => _cooldown -= 1);
+      }
+    });
+  }
 
   Future<void> _resend() async {
-    if (_isResending) return;
+    if (_isResending || _cooldown > 0) return;
     setState(() => _isResending = true);
     final l10n = context.l10n;
     try {
       await AuthService.resendSignupConfirmation(email: widget.email);
       if (!mounted) return;
+      _startCooldown();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.authConfirmEmailResent)),
       );
@@ -42,6 +72,25 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     } finally {
       if (mounted) setState(() => _isResending = false);
     }
+  }
+
+  Future<void> _openEmailApp() async {
+    final opened = await launchUrl(
+      Uri.parse('mailto:'),
+      mode: LaunchMode.externalApplication,
+    );
+    if (!opened && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.somethingWentWrong)),
+      );
+    }
+  }
+
+  void _backToLogin() {
+    final route = widget.role == 'seller'
+        ? '/auth/seller/login'
+        : '/auth/client/login';
+    context.go(route);
   }
 
   @override
@@ -95,35 +144,46 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                 ),
               ),
               const SizedBox(height: 24.0),
-              GestureDetector(
-                onTap: _isResending ? null : _resend,
-                child: RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
-                    text: '${l10n.authDidntReceiveEmail} ',
-                    style: kTextStyle.copyWith(color: kSubTitleColor),
-                    children: [
-                      TextSpan(
-                        text: _isResending
-                            ? l10n.sending
-                            : l10n.authResendEmail,
-                        style: kTextStyle.copyWith(
-                          color: kPrimaryColor,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
+              Text(
+                l10n.authDidntReceiveEmail,
+                textAlign: TextAlign.center,
+                style: kTextStyle.copyWith(color: kSubTitleColor),
+              ),
+              TextButton(
+                onPressed: (_isResending || _cooldown > 0) ? null : _resend,
+                child: Text(
+                  _isResending
+                      ? l10n.sending
+                      : _cooldown > 0
+                          ? l10n.authResendIn(_cooldown)
+                          : l10n.authResendEmail,
+                  style: kTextStyle.copyWith(
+                    color: (_isResending || _cooldown > 0)
+                        ? kLightNeutralColor
+                        : kPrimaryColor,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
               const Spacer(),
+              ButtonGlobalWithoutIcon(
+                buttontext: l10n.openEmailApp,
+                buttonDecoration: kButtonDecoration.copyWith(
+                  color: kWhite,
+                  border: Border.all(color: kPrimaryColor),
+                  borderRadius: BorderRadius.circular(30.0),
+                ),
+                onPressed: _openEmailApp,
+                buttonTextColor: kPrimaryColor,
+              ),
+              const SizedBox(height: 12.0),
               ButtonGlobalWithoutIcon(
                 buttontext: l10n.authBackToLogIn,
                 buttonDecoration: kButtonDecoration.copyWith(
                   color: kPrimaryColor,
                   borderRadius: BorderRadius.circular(30.0),
                 ),
-                onPressed: () => const UnifiedLogIn().launch(context),
+                onPressed: _backToLogin,
                 buttonTextColor: kWhite,
               ),
             ],

@@ -26,6 +26,7 @@ class _AttendanceScanScreenState extends State<AttendanceScanScreen> {
     facing: CameraFacing.back,
   );
   bool _isProcessing = false;
+  bool _holdingBadCode = false;
 
   @override
   void initState() {
@@ -53,14 +54,35 @@ class _AttendanceScanScreenState extends State<AttendanceScanScreen> {
     super.dispose();
   }
 
+  Future<void> _rejectUnreadableCode() async {
+    _holdingBadCode = true;
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.notAnAttendanceCode)),
+      );
+    }
+    try {
+      await _controller.stop();
+    } catch (_) {}
+    await Future<void>.delayed(const Duration(milliseconds: 1200));
+    if (!mounted) return;
+    try {
+      await _controller.start();
+    } catch (_) {}
+    _holdingBadCode = false;
+  }
+
   Future<void> _onDetect(BarcodeCapture capture) async {
-    if (_isProcessing) return;
+    if (_isProcessing || _holdingBadCode) return;
     final barcode = capture.barcodes.firstOrNull;
     final raw = barcode?.rawValue;
     if (raw == null || raw.isEmpty) return;
 
     final token = AttendanceService.parseTokenFromPayload(raw);
-    if (token == null) return;
+    if (token == null) {
+      await _rejectUnreadableCode();
+      return;
+    }
 
     setState(() => _isProcessing = true);
     await _controller.stop();

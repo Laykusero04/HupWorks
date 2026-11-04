@@ -41,6 +41,7 @@ class _SellerApplicationsState extends State<SellerApplications> {
   List<Map<String, dynamic>> _applications = [];
   final Set<String> _withdrawBusyIds = {};
   bool _isLoading = true;
+  bool _loadFailed = false;
   String _selectedStatus = 'all';
   String _searchQuery = '';
 
@@ -79,14 +80,21 @@ class _SellerApplicationsState extends State<SellerApplications> {
         setState(() {
           _applications = apps;
           _isLoading = false;
+          _loadFailed = false;
         });
       }
     } catch (e) {
       if (mounted) {
-        setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.errorLoadingApplications('$e'))),
-        );
+        final keepList = _applications.isNotEmpty;
+        setState(() {
+          _isLoading = false;
+          _loadFailed = !keepList;
+        });
+        if (keepList) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(context.l10n.errorLoadingApplications('$e'))),
+          );
+        }
       }
     }
   }
@@ -127,11 +135,20 @@ class _SellerApplicationsState extends State<SellerApplications> {
   String _jobTypeLabel(String? t) => L10nLabels.jobType(context.l10n, t);
 
   ({Color bg, Color fg, String label}) _statusStyle(String? status) {
+    final label = L10nLabels.applicationStatus(context.l10n, status);
+    if ((status ?? 'pending').toLowerCase() == 'pending') {
+      final primary = Theme.of(context).colorScheme.primary;
+      return (
+        bg: primary.withValues(alpha: 0.15),
+        fg: primary,
+        label: label,
+      );
+    }
     final (fg, bg) = StatusColors.application(status);
     return (
       bg: bg,
       fg: fg,
-      label: L10nLabels.applicationStatus(context.l10n, status),
+      label: label,
     );
   }
 
@@ -283,6 +300,14 @@ class _SellerApplicationsState extends State<SellerApplications> {
 
   Widget _buildEmptyState() {
     final l10n = context.l10n;
+    if (_loadFailed && _applications.isEmpty) {
+      return EmptyStateWidget(
+        message: l10n.somethingWentWrong,
+        icon: Icons.outgoing_mail,
+        actionLabel: l10n.retry,
+        onAction: () => _load(),
+      );
+    }
     if (_applications.isEmpty) {
       return EmptyStateWidget(
         message: l10n.noApplicationsYet,
@@ -304,6 +329,7 @@ class _SellerApplicationsState extends State<SellerApplications> {
 
   Widget _buildCard(Map<String, dynamic> app) {
     final l10n = context.l10n;
+    final primary = Theme.of(context).colorScheme.primary;
     final jobPost = app['job_posts'] as Map<String, dynamic>?;
     final statusRaw = (app['status'] as String?)?.toLowerCase() ?? 'pending';
     final status = _statusStyle(statusRaw);
@@ -317,10 +343,11 @@ class _SellerApplicationsState extends State<SellerApplications> {
         borderRadius: BorderRadius.circular(10.0),
         child: InkWell(
           borderRadius: BorderRadius.circular(10.0),
-          onTap: () {
+          onTap: () async {
             final id = jobPost?['id'] as String?;
             if (id == null) return;
-            BuyerRequestDetails(jobPostId: id).launch(context);
+            await BuyerRequestDetails(jobPostId: id).launch(context);
+            if (mounted) _load(showLoader: false);
           },
           child: Container(
             padding: const EdgeInsets.all(12.0),
@@ -362,21 +389,22 @@ class _SellerApplicationsState extends State<SellerApplications> {
                         ),
                       ),
                     ),
-                    IconButton(
-                      visualDensity: VisualDensity.compact,
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(
-                        minWidth: 36,
-                        minHeight: 36,
+                    if (statusRaw == 'pending' || statusRaw == 'accepted')
+                      IconButton(
+                        visualDensity: VisualDensity.compact,
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(
+                          minWidth: 36,
+                          minHeight: 36,
+                        ),
+                        tooltip: l10n.messageClientTooltip,
+                        icon: Icon(
+                          Icons.chat_bubble_outline,
+                          size: 20,
+                          color: primary,
+                        ),
+                        onPressed: () => _openChatWithClient(app),
                       ),
-                      tooltip: l10n.messageClientTooltip,
-                      icon: const Icon(
-                        Icons.chat_bubble_outline,
-                        size: 20,
-                        color: kPrimaryColor,
-                      ),
-                      onPressed: () => _openChatWithClient(app),
-                    ),
                   ],
                 ),
                 const SizedBox(height: 8.0),
@@ -407,7 +435,7 @@ class _SellerApplicationsState extends State<SellerApplications> {
                         app['price_basis'],
                       ),
                       style: kTextStyle.copyWith(
-                        color: kPrimaryColor,
+                        color: primary,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -471,7 +499,7 @@ class _SellerApplicationsState extends State<SellerApplications> {
                       child: Text(
                         l10n.openAttendance,
                         style: kTextStyle.copyWith(
-                          color: kPrimaryColor,
+                          color: primary,
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
                         ),

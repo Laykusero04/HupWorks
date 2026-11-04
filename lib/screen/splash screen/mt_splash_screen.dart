@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
 import 'package:freelancer/services/auth_service.dart';
 import 'package:go_router/go_router.dart';
@@ -17,9 +18,13 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  static const _maxRoleRetries = 8;
+
   bool _navigating = false;
   bool _animationDone = false;
   bool _authReady = false;
+  bool _roleFailed = false;
+  int _roleRetries = 0;
 
   @override
   void initState() {
@@ -64,8 +69,12 @@ class _SplashScreenState extends State<SplashScreen> {
 
     final role = AuthService.cachedRole;
     if (role == null) {
-      // Role still loading — keep splash until it arrives.
       _navigating = false;
+      _roleRetries++;
+      if (_roleRetries >= _maxRoleRetries) {
+        setState(() => _roleFailed = true);
+        return;
+      }
       Future<void>.delayed(const Duration(milliseconds: 350), () {
         if (mounted) _goNext();
       });
@@ -75,8 +84,24 @@ class _SplashScreenState extends State<SplashScreen> {
     context.go(AuthService.homePathForRole(role));
   }
 
+  Future<void> _retryRole() async {
+    setState(() {
+      _roleFailed = false;
+      _roleRetries = 0;
+      _authReady = false;
+    });
+    await _warmAuth();
+  }
+
+  Future<void> _signOut() async {
+    await AuthService.signOut();
+    if (!mounted) return;
+    context.go('/welcome');
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Scaffold(
       backgroundColor: kWhite,
       body: SafeArea(
@@ -103,18 +128,45 @@ class _SplashScreenState extends State<SplashScreen> {
                 ),
               ),
               const SizedBox(height: 8),
-              Text(
-                'Getting things ready…',
-                style: kTextStyle.copyWith(
-                  color: kSubTitleColor,
-                  fontSize: 13,
+              if (_roleFailed) ...[
+                Text(
+                  l10n.somethingWentWrong,
+                  textAlign: TextAlign.center,
+                  style: kTextStyle.copyWith(
+                    color: kNeutralColor,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
+                const SizedBox(height: 16),
+                FilledButton(
+                  onPressed: _retryRole,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: kPrimaryColor,
+                    foregroundColor: kWhite,
+                  ),
+                  child: Text(l10n.retry),
+                ),
+                TextButton(
+                  onPressed: _signOut,
+                  child: Text(
+                    l10n.logOut,
+                    style: kTextStyle.copyWith(color: kSubTitleColor),
+                  ),
+                ),
+              ] else
+                Text(
+                  l10n.splashGettingReady,
+                  style: kTextStyle.copyWith(
+                    color: kSubTitleColor,
+                    fontSize: 13,
+                  ),
+                ),
               const Spacer(flex: 2),
               Column(
                 children: [
                   Text(
-                    'Version',
+                    l10n.splashVersionLabel,
                     style: kTextStyle.copyWith(color: kLightNeutralColor),
                   ),
                   Text(

@@ -75,7 +75,7 @@ class EmptyStateWidget extends StatelessWidget {
               const SizedBox(height: 20),
               FilledButton(
                 style: FilledButton.styleFrom(
-                  backgroundColor: kPrimaryColor,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: Colors.white,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 24, vertical: 12),

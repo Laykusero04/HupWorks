@@ -285,7 +285,7 @@
   "noFreelancersMatch": "Geen overeenkomende freelancers",
   "findYourNextJob": "Vind je volgende shift",
   "findYourNextJobSubtitle": "Bekijk openstaande shifts en meld je aan in minuten.",
-  "myApplications": "Mijn shifts",
+  "myApplications": "Aanmeldingen",
   "browseJobs": "Jobs bekijken",
   "statusAccepted": "Geaccepteerd",
   "statusRejected": "Afgewezen",
@@ -1471,5 +1471,43 @@
   "charityCauseHealthHint": "Zorg en gezondheidsondersteuning.",
   "charityCauseShelter": "Opvang",
   "charityCauseShelterHint": "Huisvesting en een veilige plek.",
-  "accountBlocked": "Dit account is geblokkeerd. Neem contact op met support als je denkt dat dit een vergissing is."
+  "accountBlocked": "Dit account is geblokkeerd. Neem contact op met support als je denkt dat dit een vergissing is.",
+  "siteSetup": "Locatie-instellingen",
+  "editAction": "Bewerken",
+  "openAction": "Openen",
+  "undoAction": "Ongedaan maken",
+  "removeFavourite": "Verwijderen uit opgeslagen",
+  "undoPaymentReceivedBody": "Dit wist alleen de registratie in de app. Er wordt geen geld verplaatst.",
+  "approveCancellationTitle": "Deze annulering goedkeuren?",
+  "approveCancellationBody": "Goedkeuren sluit deze overeenkomst.",
+  "withdrawCancellationTitle": "Annuleringsverzoek intrekken?",
+  "withdrawCancellationConfirmBody": "De overeenkomst blijft actief.",
+  "hoursSentForEmployerReview": "Uren verstuurd ter beoordeling door de werkgever.",
+  "notAnAttendanceCode": "Dit is geen aanwezigheidscode.",
+  "confirmClockOutTitle": "Uitklokken?",
+  "confirmClockOutBody": "Dit registreert je uitklok en stuurt de uren van vandaag ter beoordeling.",
+  "splashGettingReady": "Even geduld…",
+  "splashVersionLabel": "Versie",
+  "jobClosedNoApplications": "Deze job is gesloten en neemt geen sollicitaties meer aan.",
+  "cannotApplyToOwnJob": "Je kunt niet solliciteren op je eigen job.",
+  "alreadySubmittedApplication": "Je hebt al een sollicitatie voor deze job ingediend.",
+  "authResendIn": "Opnieuw versturen over {seconds}s",
+  "@authResendIn": {
+    "placeholders": {
+      "seconds": {"type": "int"}
+    }
+  },
+  "openEmailApp": "Open e-mailapp",
+  "addCategoryNotListed": "Categorie toevoegen (niet in de lijst)",
+  "mapTurnOnLocationServices": "Zet locatievoorzieningen aan om GPS te gebruiken",
+  "mapLocationPermissionNeeded": "Locatietoestemming is nodig om de huidige GPS te gebruiken",
+  "mapLocationPermissionBlocked": "Locatietoestemming is geblokkeerd. Schakel die in via de app-instellingen.",
+  "mapLocationPluginNotLoaded": "De locatieplugin is niet geladen. Stop de app volledig en start een nieuwe build (geen hot restart).",
+  "mapCouldNotGetGps": "GPS ophalen mislukt: {detail}",
+  "@mapCouldNotGetGps": {
+    "placeholders": {
+      "detail": {"type": "String"}
+    }
+  },
+  "mediaPermissionDenied": "Camera- of fototoegang is geblokkeerd. Schakel die in via de app-instellingen."
 }

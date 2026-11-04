@@ -8,7 +8,6 @@ import 'package:freelancer/screen/app_config/app_config.dart';
 import 'package:freelancer/screen/widgets/auth/auth_ui.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
 import 'package:go_router/go_router.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class OnBoard extends StatefulWidget {
   const OnBoard({super.key});
@@ -25,14 +24,15 @@ class _OnBoardState extends State<OnBoard> {
   static const _pageCount = _contentPageCount + 1;
 
   static const _images = [
-    AppInfo.onBoard1,
-    AppInfo.onBoard2,
-    AppInfo.onBoard3,
-    AppInfo.onBoard2,
-    AppInfo.onBoard3,
-    AppInfo.onBoard1,
-    AppInfo.onBoard2,
-    AppInfo.onBoard3,
+    AppInfo.onBoardStep1,
+    AppInfo.onBoardStep2,
+    AppInfo.onBoardStep3,
+    AppInfo.onBoardStep4,
+    AppInfo.onBoardStep5,
+    AppInfo.onBoardStep6,
+    AppInfo.onBoardStep7,
+    AppInfo.onBoardStep8,
+    AppInfo.onBoardStep9,
   ];
 
   @override
@@ -63,7 +63,7 @@ class _OnBoardState extends State<OnBoard> {
     return [
       for (var i = 0; i < steps.length; i++)
         _OnboardPageData(
-          image: _images[i % _images.length],
+          image: _images[i],
           step: i + 1,
           title: steps[i].title,
           body: steps[i].body,
@@ -203,7 +203,7 @@ class _OnBoardState extends State<OnBoard> {
             Align(
               alignment: Alignment.centerRight,
               child: TextButton(
-                onPressed: _finish,
+                onPressed: _index == 0 ? _next : _finish,
                 style: TextButton.styleFrom(
                   foregroundColor: kSubTitleColor,
                   padding: const EdgeInsets.symmetric(
@@ -212,7 +212,7 @@ class _OnBoardState extends State<OnBoard> {
                   ),
                 ),
                 child: Text(
-                  l10n.appOnboardSkip,
+                  _index == 0 ? l10n.continueLabel : l10n.appOnboardSkip,
                   style: kTextStyle.copyWith(
                     fontWeight: FontWeight.w600,
                     fontSize: 15,
@@ -237,16 +237,12 @@ class _OnBoardState extends State<OnBoard> {
               padding: EdgeInsets.fromLTRB(24, 8, 24, 16 + bottom),
               child: Column(
                 children: [
-                  SmoothPageIndicator(
-                    controller: _pageController,
-                    count: _pageCount,
-                    effect: ExpandingDotsEffect(
-                      dotHeight: 6,
-                      dotWidth: 6,
-                      expansionFactor: 3.2,
-                      spacing: 6,
-                      activeDotColor: accent,
-                      dotColor: accent.withValues(alpha: 0.22),
+                  Text(
+                    '${_index + 1} / $_pageCount',
+                    style: kTextStyle.copyWith(
+                      color: accent,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
                     ),
                   ),
                   const SizedBox(height: 24),

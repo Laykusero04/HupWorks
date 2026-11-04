@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/empty_state_widget.dart';
 import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:freelancer/core/utils/localized_category.dart';
 import 'package:freelancer/data/models/seller_job_alert_rule_model.dart';
@@ -53,6 +54,7 @@ class _SellerJobAlertEditorScreenState extends State<SellerJobAlertEditorScreen>
   List<Map<String, dynamic>> _categories = [];
   List<Map<String, dynamic>> _skillCatalog = [];
   bool _loading = true;
+  bool _catalogFailed = false;
   bool _saving = false;
 
   double? _profileLat;
@@ -130,10 +132,16 @@ class _SellerJobAlertEditorScreenState extends State<SellerJobAlertEditorScreen>
             _profileCountry = profile['country'] as String?;
           }
           _loading = false;
+          _catalogFailed = false;
         });
       }
     } catch (_) {
-      if (mounted) setState(() => _loading = false);
+      if (mounted) {
+        setState(() {
+          _loading = false;
+          _catalogFailed = true;
+        });
+      }
     }
   }
 
@@ -303,6 +311,27 @@ class _SellerJobAlertEditorScreenState extends State<SellerJobAlertEditorScreen>
           title: Text(widget.existing == null ? l10n.jobAlertNew : l10n.jobAlertEdit),
         ),
         body: const LoadingWidget(),
+      );
+    }
+
+    if (_catalogFailed) {
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: kSellerPrimary,
+          foregroundColor: kWhite,
+          title: Text(widget.existing == null ? l10n.jobAlertNew : l10n.jobAlertEdit),
+        ),
+        body: EmptyStateWidget(
+          message: l10n.somethingWentWrong,
+          actionLabel: l10n.retry,
+          onAction: () {
+            setState(() {
+              _loading = true;
+              _catalogFailed = false;
+            });
+            _bootstrap();
+          },
+        ),
       );
     }
 

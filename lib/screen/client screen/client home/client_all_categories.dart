@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/empty_state_widget.dart';
 import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:freelancer/core/utils/category_icons.dart';
 import 'package:freelancer/core/utils/localized_category.dart';
 import 'package:freelancer/l10n/l10n.dart';
+import '../search/search.dart';
 import 'package:freelancer/services/client_home_service.dart';
 
 import '../../widgets/constant.dart';
@@ -22,6 +24,7 @@ class _ClientAllCategoriesState extends State<ClientAllCategories> {
   List<Map<String, dynamic>> _categories = [];
   String _query = '';
   bool _loading = true;
+  bool _loadFailed = false;
 
   @override
   void dispose() {
@@ -54,14 +57,15 @@ class _ClientAllCategoriesState extends State<ClientAllCategories> {
         setState(() {
           _categories = cats;
           _loading = false;
+          _loadFailed = false;
         });
       }
-    } catch (e) {
+    } catch (_) {
       if (mounted) {
-        setState(() => _loading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
-        );
+        setState(() {
+          _loading = false;
+          _loadFailed = true;
+        });
       }
     }
   }
@@ -94,7 +98,16 @@ class _ClientAllCategoriesState extends State<ClientAllCategories> {
           ),
           child: _loading
               ? const LoadingWidget()
-              : _categories.isEmpty
+              : _loadFailed
+                  ? EmptyStateWidget(
+                      message: l10n.somethingWentWrong,
+                      actionLabel: l10n.retry,
+                      onAction: () {
+                        setState(() => _loading = true);
+                        _load();
+                      },
+                    )
+                  : _categories.isEmpty
                   ? Center(
                       child: Text(
                         l10n.noCategoriesYet,
@@ -146,7 +159,21 @@ class _ClientAllCategoriesState extends State<ClientAllCategories> {
                         final icon = cat['icon'] as String?;
                         final color = CategoryIcons.tintColor(i);
 
-                        return Container(
+                        return Material(
+                          color: kWhite,
+                          borderRadius: BorderRadius.circular(12),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(12),
+                            onTap: () {
+                              showSearch(
+                                context: context,
+                                query: name,
+                                delegate: CustomSearchDelegate(
+                                  l10nContext: context,
+                                ),
+                              );
+                            },
+                            child: Container(
                           padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
@@ -190,6 +217,8 @@ class _ClientAllCategoriesState extends State<ClientAllCategories> {
                                 ),
                               ),
                             ],
+                          ),
+                            ),
                           ),
                         );
                       },

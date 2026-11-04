@@ -82,14 +82,15 @@ class AttendancePunchCells extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final locale = Localizations.localeOf(context).toString();
+    final primary = Theme.of(context).colorScheme.primary;
     if (isLoading) {
-      return const Padding(
-        padding: EdgeInsets.symmetric(vertical: 12),
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
         child: Center(
           child: SizedBox(
             width: 22,
             height: 22,
-            child: CircularProgressIndicator(strokeWidth: 2, color: kPrimaryColor),
+            child: CircularProgressIndicator(strokeWidth: 2, color: primary),
           ),
         ),
       );
@@ -126,7 +127,7 @@ class AttendancePunchCells extends StatelessWidget {
                     value: summary.timeOut != null
                         ? AttendanceFormat.timeOfDay(summary.timeOut!, locale)
                         : '—',
-                    accent: Colors.orange,
+                    accent: primary,
                   ),
                 ),
               ],
@@ -250,7 +251,9 @@ class _PunchRowCell extends StatelessWidget {
           Icon(
             isIn ? Icons.login_rounded : Icons.logout_rounded,
             size: 20,
-            color: isIn ? const Color(0xFF2E7D32) : Colors.orange,
+            color: isIn
+                ? const Color(0xFF2E7D32)
+                : Theme.of(context).colorScheme.primary,
           ),
           const SizedBox(width: 12),
           Expanded(

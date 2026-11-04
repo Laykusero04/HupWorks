@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/attendance_mode.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/attendance/attendance_qr_display_screen.dart';
 import 'package:freelancer/screen/attendance/ensure_job_site_pin.dart';
 import 'package:freelancer/services/attendance_service.dart';
@@ -44,7 +45,7 @@ class ClientSiteSetupPanel extends StatelessWidget {
     final jobPostId = jobPost!['id'].toString();
     final title = (jobPost?['title'] as String?)?.trim().isNotEmpty == true
         ? (jobPost!['title'] as String).trim()
-        : 'Job site';
+        : context.l10n.jobPostFallback;
     final pinned = await ensureJobSitePinForQr(
       context: context,
       jobPostId: jobPostId,
@@ -66,6 +67,7 @@ class ClientSiteSetupPanel extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
+    final l10n = context.l10n;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -78,7 +80,7 @@ class ClientSiteSetupPanel extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Site setup',
+            l10n.siteSetup,
             style: kTextStyle.copyWith(
               color: kNeutralColor,
               fontWeight: FontWeight.w700,
@@ -89,9 +91,9 @@ class ClientSiteSetupPanel extends StatelessWidget {
             const SizedBox(height: 6),
             _SetupRow(
               icon: Icons.menu_book_outlined,
-              label: 'First-day',
+              label: l10n.firstDayInstructions,
               status: onboardingStatus ?? '—',
-              actionLabel: 'Edit',
+              actionLabel: l10n.editAction,
               onTap: onOnboarding!,
             ),
           ],
@@ -104,9 +106,9 @@ class ClientSiteSetupPanel extends StatelessWidget {
             if (!showInstructions) const SizedBox(height: 6),
             _SetupRow(
               icon: Icons.qr_code_2_outlined,
-              label: 'Attendance QR',
-              status: 'Print at site',
-              actionLabel: 'Open',
+              label: l10n.attendanceQrScreenTitle,
+              status: l10n.attendancePrintAndPostAtSite,
+              actionLabel: l10n.openAction,
               onTap: () => _openQr(context),
             ),
           ],

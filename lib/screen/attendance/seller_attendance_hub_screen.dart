@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/widgets/empty_state_widget.dart';
 import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
 import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:freelancer/l10n/l10n.dart';
@@ -22,6 +23,7 @@ class SellerAttendanceHubScreen extends StatefulWidget {
 class _SellerAttendanceHubScreenState extends State<SellerAttendanceHubScreen> {
   List<OnsiteAttendanceJob> _jobs = [];
   bool _loading = true;
+  bool _loadFailed = false;
 
   @override
   void initState() {
@@ -30,21 +32,25 @@ class _SellerAttendanceHubScreenState extends State<SellerAttendanceHubScreen> {
   }
 
   Future<void> _load() async {
-    setState(() => _loading = true);
+    setState(() {
+      _loading = true;
+      _loadFailed = false;
+    });
     try {
       final jobs = await AttendanceService.getMyOnsiteAttendanceJobs();
       if (mounted) {
         setState(() {
           _jobs = jobs;
           _loading = false;
+          _loadFailed = false;
         });
       }
-    } catch (e) {
+    } catch (_) {
       if (mounted) {
-        setState(() => _loading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
-        );
+        setState(() {
+          _loading = false;
+          _loadFailed = true;
+        });
       }
     }
   }
@@ -52,6 +58,7 @@ class _SellerAttendanceHubScreenState extends State<SellerAttendanceHubScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final primary = Theme.of(context).colorScheme.primary;
     return Scaffold(
       backgroundColor: kDarkWhite,
       appBar: AppBar(
@@ -68,7 +75,7 @@ class _SellerAttendanceHubScreenState extends State<SellerAttendanceHubScreen> {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.qr_code_scanner, color: Color(0xFF2E7D32)),
+            icon: Icon(Icons.qr_code_scanner, color: primary),
             tooltip: l10n.scanAttendanceQr,
             onPressed: () => context.push('/seller/attendance/scan'),
           ),
@@ -76,7 +83,15 @@ class _SellerAttendanceHubScreenState extends State<SellerAttendanceHubScreen> {
       ),
       body: _loading
           ? const LoadingWidget()
-          : RubikRefreshIndicator(
+          : _loadFailed
+              ? EmptyStateWidget(
+                  message: l10n.somethingWentWrong,
+                  actionLabel: l10n.retry,
+                  onAction: () {
+                    _load();
+                  },
+                )
+              : RubikRefreshIndicator(
               onRefresh: _load,
               child: _jobs.isEmpty
                   ? ListView(
@@ -107,7 +122,7 @@ class _SellerAttendanceHubScreenState extends State<SellerAttendanceHubScreen> {
                                   child: Text(
                                     l10n.selectedJob,
                                     style: kTextStyle.copyWith(
-                                      color: kPrimaryColor,
+                                      color: primary,
                                       fontWeight: FontWeight.w600,
                                       fontSize: 12,
                                     ),
@@ -148,7 +163,7 @@ class _SellerAttendanceHubScreenState extends State<SellerAttendanceHubScreen> {
                                 child: Text(
                                   l10n.openContract,
                                   style: kTextStyle.copyWith(
-                                    color: kPrimaryColor,
+                                    color: primary,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -164,6 +179,7 @@ class _SellerAttendanceHubScreenState extends State<SellerAttendanceHubScreen> {
 
   Widget _emptyState() {
     final l10n = context.l10n;
+    final primary = Theme.of(context).colorScheme.primary;
     return Column(
       children: [
         const SizedBox(height: 40),
@@ -191,7 +207,7 @@ class _SellerAttendanceHubScreenState extends State<SellerAttendanceHubScreen> {
         const SizedBox(height: 24),
         ButtonGlobalWithoutIcon(
           buttontext: l10n.findOnsiteJobs,
-          buttonDecoration: kButtonDecoration.copyWith(color: kPrimaryColor),
+          buttonDecoration: kButtonDecoration.copyWith(color: primary),
           onPressed: () => context.go('/seller/find-jobs'),
           buttonTextColor: kWhite,
         ),

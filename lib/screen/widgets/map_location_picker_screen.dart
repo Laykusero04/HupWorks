@@ -80,8 +80,11 @@ class _MapLocationPickerScreenState extends State<MapLocationPickerScreen> {
   }
 
   Future<void> _moveToInitial() async {
+    final serviceOn = await Geolocator.isLocationServiceEnabled();
     // Prefer GPS when opening the picker (request permission if needed).
-    final gps = await _currentGpsLatLng(showErrors: false);
+    final gps = serviceOn
+        ? await _currentGpsLatLng(showErrors: false)
+        : null;
     if (!mounted) return;
     if (gps != null) {
       _goTo(gps, zoom: 16);
@@ -106,8 +109,27 @@ class _MapLocationPickerScreenState extends State<MapLocationPickerScreen> {
         }
       }
     }
-    if (!mounted || target == null) return;
-    _goTo(target, zoom: 14);
+    if (!mounted) return;
+    if (target != null) {
+      _goTo(target, zoom: 14);
+      return;
+    }
+    if (!serviceOn && widget.initialPosition == null) {
+      _showLocationServicesSnack();
+    }
+  }
+
+  void _showLocationServicesSnack() {
+    final l10n = context.l10n;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n.mapTurnOnLocationServices),
+        action: SnackBarAction(
+          label: l10n.settings,
+          onPressed: Geolocator.openLocationSettings,
+        ),
+      ),
+    );
   }
 
   Future<void> _goToMyLocation() async {
@@ -131,17 +153,7 @@ class _MapLocationPickerScreenState extends State<MapLocationPickerScreen> {
     try {
       final serviceOn = await Geolocator.isLocationServiceEnabled();
       if (!serviceOn) {
-        if (showErrors && mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text('Turn on location services to use GPS'),
-              action: SnackBarAction(
-                label: 'Settings',
-                onPressed: () => Geolocator.openLocationSettings(),
-              ),
-            ),
-          );
-        }
+        if (showErrors && mounted) _showLocationServicesSnack();
         return null;
       }
 
@@ -152,23 +164,20 @@ class _MapLocationPickerScreenState extends State<MapLocationPickerScreen> {
       if (permission == LocationPermission.denied) {
         if (showErrors && mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Location permission is needed to use current GPS'),
-            ),
+            SnackBar(content: Text(context.l10n.mapLocationPermissionNeeded)),
           );
         }
         return null;
       }
       if (permission == LocationPermission.deniedForever) {
         if (showErrors && mounted) {
+          final l10n = context.l10n;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text(
-                'Location permission is blocked. Enable it in App settings.',
-              ),
+              content: Text(l10n.mapLocationPermissionBlocked),
               action: SnackBarAction(
-                label: 'Settings',
-                onPressed: () => Geolocator.openAppSettings(),
+                label: l10n.settings,
+                onPressed: Geolocator.openAppSettings,
               ),
             ),
           );
@@ -186,11 +195,9 @@ class _MapLocationPickerScreenState extends State<MapLocationPickerScreen> {
     } on MissingPluginException {
       if (showErrors && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Location plugin not loaded. Fully stop the app and run a fresh rebuild (not hot restart).',
-            ),
-            duration: Duration(seconds: 6),
+          SnackBar(
+            content: Text(context.l10n.mapLocationPluginNotLoaded),
+            duration: const Duration(seconds: 6),
           ),
         );
       }
@@ -198,7 +205,7 @@ class _MapLocationPickerScreenState extends State<MapLocationPickerScreen> {
     } catch (e) {
       if (showErrors && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not get GPS: $e')),
+          SnackBar(content: Text(context.l10n.mapCouldNotGetGps('$e'))),
         );
       }
       return null;

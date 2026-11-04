@@ -49,21 +49,75 @@ class _SellerFavListState extends State<SellerFavList> {
     }
   }
 
-  Future<void> _handleRemoveFavourite(String favId, int index) async {
+  Future<void> _handleRemoveFavourite(String favId) async {
+    final index = _favourites.indexWhere((f) => f['id'] == favId);
+    if (index < 0) return;
+    final removed = Map<String, dynamic>.from(_favourites[index]);
+    final job = removed['job_posts'] as Map<String, dynamic>?;
+    final jobPostId = (removed['job_post_id'] as String?) ??
+        (job?['id'] as String?);
+    setState(() => _favourites.removeWhere((f) => f['id'] == favId));
     try {
       await FavouriteService.removeFavourite(favId);
-      if (mounted) {
-        setState(() => _favourites.removeAt(index));
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.removedFromFavourites)),
-        );
-      }
+      if (!mounted) return;
+      final messenger = ScaffoldMessenger.of(context);
+      final l10n = context.l10n;
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(l10n.removedFromFavourites),
+          action: jobPostId == null || jobPostId.isEmpty
+              ? null
+              : SnackBarAction(
+                  label: l10n.undoAction,
+                  onPressed: () =>
+                      _undoRemoveFavourite(removed, index, jobPostId),
+                ),
+        ),
+      );
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
-        );
+      if (!mounted) return;
+      setState(() {
+        if (!_favourites.any((f) => f['id'] == favId)) {
+          final at = index.clamp(0, _favourites.length);
+          _favourites.insert(at, removed);
+        }
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+      );
+    }
+  }
+
+  Future<void> _undoRemoveFavourite(
+    Map<String, dynamic> removed,
+    int index,
+    String? jobPostId,
+  ) async {
+    if (!mounted || jobPostId == null || jobPostId.isEmpty) return;
+    setState(() {
+      if (!_favourites.any((f) => f['id'] == removed['id'])) {
+        final at = index.clamp(0, _favourites.length);
+        _favourites.insert(at, removed);
       }
+    });
+    try {
+      final saved = await FavouriteService.toggleFavourite(jobPostId);
+      if (!mounted) return;
+      if (!saved) {
+        setState(() {
+          _favourites.removeWhere((f) => f['id'] == removed['id']);
+        });
+        return;
+      }
+      await _loadFavourites();
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _favourites.removeWhere((f) => f['id'] == removed['id']);
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+      );
     }
   }
 
@@ -169,8 +223,12 @@ class _SellerFavListState extends State<SellerFavList> {
                                             ),
                                           ),
                                           IconButton(
-                                            tooltip: l10n.removedFromFavourites,
-                                            onPressed: () => _handleRemoveFavourite(fav['id'] as String, i),
+                                            tooltip: l10n.removeFavourite,
+                                            onPressed: () {
+                                              final favId = fav['id'] as String?;
+                                              if (favId == null) return;
+                                              _handleRemoveFavourite(favId);
+                                            },
                                             icon: Icon(
                                               Icons.bookmark,
                                               color: kPrimaryColor,

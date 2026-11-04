@@ -1786,5 +1786,43 @@
   "charityCauseHealthHint": "চিকিৎসা ও স্বাস্থ্য সহায়তা।",
   "charityCauseShelter": "আশ্রয়",
   "charityCauseShelterHint": "বাসস্থান ও নিরাপদ থাকার জায়গা।",
-  "accountBlocked": "এই অ্যাকাউন্ট ব্লক করা হয়েছে। ভুল মনে হলে সাপোর্টে যোগাযোগ করুন।"
+  "accountBlocked": "এই অ্যাকাউন্ট ব্লক করা হয়েছে। ভুল মনে হলে সাপোর্টে যোগাযোগ করুন।",
+  "siteSetup": "সাইট সেটআপ",
+  "editAction": "সম্পাদনা",
+  "openAction": "খুলুন",
+  "undoAction": "পূর্বাবস্থায় আনুন",
+  "removeFavourite": "সংরক্ষণ থেকে সরান",
+  "undoPaymentReceivedBody": "এটি শুধু অ্যাপের রেকর্ড মুছে। টাকা স্থানান্তর হয় না।",
+  "approveCancellationTitle": "এই বাতিলকরণ অনুমোদন করবেন?",
+  "approveCancellationBody": "অনুমোদন করলে এই চুক্তি বন্ধ হয়ে যাবে।",
+  "withdrawCancellationTitle": "বাতিলের অনুরোধ প্রত্যাহার করবেন?",
+  "withdrawCancellationConfirmBody": "চুক্তি সক্রিয় থাকবে।",
+  "hoursSentForEmployerReview": "ঘণ্টা নিয়োগকর্তার পর্যালোচনার জন্য পাঠানো হয়েছে।",
+  "notAnAttendanceCode": "এটি কোনো উপস্থিতি কোড নয়।",
+  "confirmClockOutTitle": "ক্লক আউট করবেন?",
+  "confirmClockOutBody": "এতে আপনার ক্লক-আউট রেকর্ড হবে এবং আজকের ঘণ্টা নিয়োগকর্তার পর্যালোচনার জন্য যাবে।",
+  "splashGettingReady": "প্রস্তুত করা হচ্ছে…",
+  "splashVersionLabel": "সংস্করণ",
+  "jobClosedNoApplications": "এই কাজ বন্ধ এবং আর আবেদন নিচ্ছে না।",
+  "cannotApplyToOwnJob": "আপনি নিজের কাজে আবেদন করতে পারবেন না।",
+  "alreadySubmittedApplication": "আপনি এই কাজের জন্য ইতিমধ্যে আবেদন করেছেন।",
+  "authResendIn": "{seconds}সেকেন্ডে আবার পাঠান",
+  "@authResendIn": {
+    "placeholders": {
+      "seconds": {"type": "int"}
+    }
+  },
+  "openEmailApp": "ইমেইল অ্যাপ খুলুন",
+  "addCategoryNotListed": "ক্যাটাগরি যোগ করুন (তালিকায় নেই)",
+  "mapTurnOnLocationServices": "GPS ব্যবহার করতে লোকেশন সার্ভিস চালু করুন",
+  "mapLocationPermissionNeeded": "বর্তমান GPS ব্যবহার করতে লোকেশন অনুমতি দরকার",
+  "mapLocationPermissionBlocked": "লোকেশন অনুমতি বন্ধ আছে। অ্যাপ সেটিংস থেকে চালু করুন।",
+  "mapLocationPluginNotLoaded": "লোকেশন প্লাগইন লোড হয়নি। অ্যাপ পুরোপুরি বন্ধ করে নতুন বিল্ড চালান (হট রিস্টার্ট নয়)।",
+  "mapCouldNotGetGps": "GPS পাওয়া যায়নি: {detail}",
+  "@mapCouldNotGetGps": {
+    "placeholders": {
+      "detail": {"type": "String"}
+    }
+  },
+  "mediaPermissionDenied": "ক্যামেরা বা ছবির অনুমতি বন্ধ আছে। অ্যাপ সেটিংস থেকে চালু করুন।"
 }

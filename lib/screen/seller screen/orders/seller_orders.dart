@@ -18,7 +18,9 @@ import '../../widgets/constant.dart';
 import '../../widgets/shell_tab_header.dart';
 
 class SellerOrderList extends StatefulWidget {
-  const SellerOrderList({Key? key}) : super(key: key);
+  final String? initialStatus;
+
+  const SellerOrderList({Key? key, this.initialStatus}) : super(key: key);
 
   @override
   State<SellerOrderList> createState() => _SellerOrderListState();
@@ -27,6 +29,7 @@ class SellerOrderList extends StatefulWidget {
 class _SellerOrderListState extends State<SellerOrderList> {
   List<Map<String, dynamic>> _orders = [];
   bool _isLoading = true;
+  bool _loadFailed = false;
   String _selectedStatus = 'all';
   static const _statusTabs = [
     'all',
@@ -34,11 +37,16 @@ class _SellerOrderListState extends State<SellerOrderList> {
     'pending',
     'completed',
     'delivered',
+    'cancelled',
   ];
 
   @override
   void initState() {
     super.initState();
+    final initial = widget.initialStatus?.toLowerCase();
+    if (initial != null && _statusTabs.contains(initial)) {
+      _selectedStatus = initial;
+    }
     _loadOrders();
   }
 
@@ -49,9 +57,26 @@ class _SellerOrderListState extends State<SellerOrderList> {
       final orders = await SellerOrdersService.getSellerOrders(
         status: _selectedStatus == 'all' ? null : _selectedStatus,
       );
-      if (mounted) setState(() { _orders = orders; _isLoading = false; });
+      if (mounted) {
+        setState(() {
+          _orders = orders;
+          _isLoading = false;
+          _loadFailed = false;
+        });
+      }
     } catch (e) {
-      if (mounted) { setState(() => _isLoading = false); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.errorWithDetail('$e')))); }
+      if (mounted) {
+        final keepList = _orders.isNotEmpty;
+        setState(() {
+          _isLoading = false;
+          _loadFailed = !keepList;
+        });
+        if (keepList) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+          );
+        }
+      }
     }
   }
 
@@ -141,7 +166,9 @@ class _SellerOrderListState extends State<SellerOrderList> {
                                       MediaQuery.sizeOf(context).height * 0.2,
                                 ),
                                 EmptyStateWidget(
-                                  message: _selectedStatus == 'all'
+                                  message: _loadFailed
+                                      ? l10n.somethingWentWrong
+                                      : _selectedStatus == 'all'
                                       ? l10n.noContractsYet
                                       : l10n.noFilteredContracts(
                                           L10nLabels.orderFilterTabLabel(
@@ -149,14 +176,20 @@ class _SellerOrderListState extends State<SellerOrderList> {
                                             _selectedStatus,
                                           ).toLowerCase(),
                                         ),
-                                  hint: _selectedStatus == 'all'
+                                  hint: _loadFailed
+                                      ? null
+                                      : _selectedStatus == 'all'
                                       ? l10n.noContractsYetSellerHint
                                       : l10n.noFilteredContractsHint,
                                   icon: Icons.description_outlined,
-                                  actionLabel: _selectedStatus == 'all'
+                                  actionLabel: _loadFailed
+                                      ? l10n.retry
+                                      : _selectedStatus == 'all'
                                       ? l10n.browseJobs
                                       : l10n.clearFilters,
-                                  onAction: _selectedStatus == 'all'
+                                  onAction: _loadFailed
+                                      ? () => _loadOrders()
+                                      : _selectedStatus == 'all'
                                       ? () => context.go('/seller/find-jobs')
                                       : () {
                                           setState(

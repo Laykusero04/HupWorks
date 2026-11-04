@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/notifications/notification_scope.dart';
+import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/router/route_names.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/constants/colors.dart';
 import '../../router/app_router.dart';
@@ -56,7 +60,48 @@ class ClientShellAppBar extends StatelessWidget implements PreferredSizeWidget {
           fontSize: 18,
         ),
       ),
-      actions: actions,
+      actions: [
+        ...?actions,
+        _UnreadNotificationsButton(persona: persona),
+      ],
+    );
+  }
+}
+
+class _UnreadNotificationsButton extends StatelessWidget {
+  const _UnreadNotificationsButton({required this.persona});
+
+  final ShellPersona persona;
+
+  @override
+  Widget build(BuildContext context) {
+    final notifications = NotificationScope.of(context);
+    final route = persona == ShellPersona.seller
+        ? AppRoutes.sellerNotifications
+        : AppRoutes.clientNotifications;
+    return ListenableBuilder(
+      listenable: notifications,
+      builder: (context, _) {
+        final count = notifications.unreadCount;
+        return IconButton(
+          tooltip: context.l10n.notifications,
+          onPressed: () async {
+            await context.push(route);
+            if (context.mounted) {
+              await notifications.refreshUnreadCount();
+            }
+          },
+          icon: count > 0
+              ? Badge(
+                  label: Text(
+                    count > 9 ? '9+' : '$count',
+                    style: const TextStyle(fontSize: 10),
+                  ),
+                  child: const Icon(Icons.notifications_outlined),
+                )
+              : const Icon(Icons.notifications_outlined),
+        );
+      },
     );
   }
 }

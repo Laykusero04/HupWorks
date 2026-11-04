@@ -979,6 +979,9 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
     final jobId = req['id'] as String?;
     final isSaved = jobId != null && _savedJobIds.contains(jobId);
     final saveBusy = jobId != null && _saveBusyIds.contains(jobId);
+    final description = (req['description'] as String?)?.trim() ?? '';
+    final showDescription =
+        description.isNotEmpty && description.toLowerCase() != 'none';
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
@@ -1044,13 +1047,15 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 5),
-              Text(
-                req['description'] ?? '',
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: kTextStyle.copyWith(color: kSubTitleColor),
-              ),
+              if (showDescription) ...[
+                const SizedBox(height: 5),
+                Text(
+                  description,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: kTextStyle.copyWith(color: kSubTitleColor),
+                ),
+              ],
               if ((req['location'] as String?)?.isNotEmpty ?? false) ...[
                 const SizedBox(height: 6),
                 Row(
@@ -1244,10 +1249,20 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
         title: context.l10n.findJobsTitle,
         persona: ShellPersona.seller,
         actions: [
-          IconButton(
-            tooltip: context.l10n.jobAlertsAppBarTooltip,
-            icon: const Icon(Icons.notifications_active_outlined, color: kWhite),
+          TextButton(
             onPressed: () => const SellerJobAlertsScreen().launch(context),
+            style: TextButton.styleFrom(
+              foregroundColor: kWhite,
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+            ),
+            child: Text(
+              context.l10n.jobAlertsTitle,
+              style: kTextStyle.copyWith(
+                color: kWhite,
+                fontWeight: FontWeight.w600,
+                fontSize: 13,
+              ),
+            ),
           ),
         ],
       ),

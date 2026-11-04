@@ -11,9 +11,11 @@ import 'package:nb_utils/nb_utils.dart';
 
 import '../../app_config/app_config.dart';
 
-/// Single login screen for both clients and freelancers.
+/// Shared login screen. [role] is `client` (employer, orange) or `seller` (freelancer, cyan).
 class UnifiedLogIn extends StatefulWidget {
-  const UnifiedLogIn({super.key});
+  const UnifiedLogIn({super.key, this.role = 'client'});
+
+  final String role;
 
   @override
   State<UnifiedLogIn> createState() => _UnifiedLogInState();
@@ -92,13 +94,17 @@ class _UnifiedLogInState extends State<UnifiedLogIn> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final freelancer = widget.role == 'seller';
+    final accent = freelancer ? kSellerPrimary : kPrimaryColor;
     return AuthScaffold(
       title: l10n.authWelcomeBack,
       subtitle: l10n.authSignInSubtitle,
-      accentColor: kPrimaryColor,
+      roleLabel: freelancer ? l10n.authRoleFreelancer : l10n.authRoleClient,
+      accentColor: accent,
       heroImage: AppInfo.onBoard1,
       onBack: () => Navigator.of(context).maybePop(),
-      child: Column(
+      child: AutofillGroup(
+        child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           AuthTextField(
@@ -107,6 +113,8 @@ class _UnifiedLogInState extends State<UnifiedLogIn> {
             hint: l10n.authEmailHint,
             keyboardType: TextInputType.emailAddress,
             textInputAction: TextInputAction.next,
+            autofillHints: const [AutofillHints.email],
+            focusedBorderColor: accent,
           ),
           const SizedBox(height: 16),
           AuthTextField(
@@ -115,6 +123,9 @@ class _UnifiedLogInState extends State<UnifiedLogIn> {
             hint: l10n.authPasswordHint,
             obscureText: _hidePassword,
             textInputAction: TextInputAction.done,
+            autofillHints: const [AutofillHints.password],
+            focusedBorderColor: accent,
+            onFieldSubmitted: (_) => _handleLogin(),
             suffixIcon: IconButton(
               onPressed: () => setState(() => _hidePassword = !_hidePassword),
               icon: Icon(
@@ -126,57 +137,75 @@ class _UnifiedLogInState extends State<UnifiedLogIn> {
             ),
           ),
           const SizedBox(height: 8),
-          Row(
-            children: [
-              SizedBox(
-                height: 18,
-                width: 18,
-                child: Checkbox(
-                  value: _savePassword,
-                  onChanged: (v) => setState(() => _savePassword = v ?? false),
-                  activeColor: kPrimaryColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(3),
-                  ),
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  visualDensity: VisualDensity.compact,
-                ),
-              ),
-              const SizedBox(width: 6),
-              Expanded(
-                child: GestureDetector(
-                  onTap: () => setState(() => _savePassword = !_savePassword),
-                  child: Text(
-                    l10n.authSavePassword,
-                    style: kTextStyle.copyWith(
-                      color: kSubTitleColor,
-                      fontSize: 11,
+          SizedBox(
+            height: 44,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: InkWell(
+                    onTap: () => setState(() => _savePassword = !_savePassword),
+                    child: Row(
+                      children: [
+                        Checkbox(
+                          value: _savePassword,
+                          onChanged: (v) =>
+                              setState(() => _savePassword = v ?? false),
+                          activeColor: accent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(3),
+                          ),
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                          visualDensity: VisualDensity.compact,
+                        ),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            l10n.authSavePassword,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: kTextStyle.copyWith(
+                              color: kSubTitleColor,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-              ),
-              TextButton(
-                onPressed: () => const ClientForgotPassword().launch(context),
-                style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  minimumSize: Size.zero,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
-                child: Text(
-                  l10n.authForgotPassword,
-                  style: kTextStyle.copyWith(
-                    color: kPrimaryColor,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 11,
+                Flexible(
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () =>
+                          const ClientForgotPassword().launch(context),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        minimumSize: const Size(44, 44),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: Text(
+                        l10n.authForgotPassword,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: kTextStyle.copyWith(
+                          color: accent,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 11,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           const SizedBox(height: 16),
           AuthPrimaryButton(
             label: l10n.authLogIn,
-            accentColor: kPrimaryColor,
+            accentColor: accent,
             isLoading: _isLoading,
             onPressed: _handleLogin,
           ),
@@ -184,10 +213,11 @@ class _UnifiedLogInState extends State<UnifiedLogIn> {
           AuthFooterLink(
             prefix: '${l10n.authDontHaveAccount} ',
             action: l10n.authSignUp,
-            accentColor: kPrimaryColor,
+            accentColor: accent,
             onTap: () => const WelcomeScreen().launch(context),
           ),
         ],
+        ),
       ),
     );
   }

@@ -60,7 +60,7 @@ class _AttendanceConfirmScreenState extends State<AttendanceConfirmScreen> {
         SnackBar(
           content: Text(
             result.hourReportId != null && result.punchType == 'out'
-                ? '${l10n.attendancePunchRecorded(AttendanceFormat.punchLabel(result.punchType, l10n), AttendanceFormat.minutesLabel(result.minutesWorkedToday, l10n))} Hours sent for employer review.'
+                ? '${l10n.attendancePunchRecorded(AttendanceFormat.punchLabel(result.punchType, l10n), AttendanceFormat.minutesLabel(result.minutesWorkedToday, l10n))} ${l10n.hoursSentForEmployerReview}'
                 : l10n.attendancePunchRecorded(
                     AttendanceFormat.punchLabel(result.punchType, l10n),
                     AttendanceFormat.minutesLabel(result.minutesWorkedToday, l10n),

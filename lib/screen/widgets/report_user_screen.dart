@@ -33,6 +33,7 @@ class ReportUserScreen extends StatefulWidget {
 
 class _ReportUserScreenState extends State<ReportUserScreen> {
   final _detailsController = TextEditingController();
+  String? _detailsError;
 
   late String _selectedReason;
   bool _isSubmitting = false;
@@ -88,10 +89,11 @@ class _ReportUserScreenState extends State<ReportUserScreen> {
   Future<void> _handleSend() async {
     final details = _detailsController.text.trim();
     if (details.length < 10) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.reportDetailsTooShort)),
-      );
+      setState(() => _detailsError = context.l10n.reportDetailsTooShort);
       return;
+    }
+    if (_detailsError != null) {
+      setState(() => _detailsError = null);
     }
 
     setState(() => _isSubmitting = true);
@@ -299,6 +301,11 @@ class _ReportUserScreenState extends State<ReportUserScreen> {
                   minLines: 4,
                   cursorColor: kNeutralColor,
                   textInputAction: TextInputAction.done,
+                  onChanged: (value) {
+                    if (_detailsError != null && value.trim().length >= 10) {
+                      setState(() => _detailsError = null);
+                    }
+                  },
                   decoration: kInputDecoration.copyWith(
                     labelText: l10n.reportAdditionalInfo,
                     labelStyle: kTextStyle.copyWith(color: kNeutralColor),
@@ -308,6 +315,7 @@ class _ReportUserScreenState extends State<ReportUserScreen> {
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     border: const OutlineInputBorder(),
                     alignLabelWithHint: true,
+                    errorText: _detailsError,
                   ),
                 ),
                 const SizedBox(height: 10.0),

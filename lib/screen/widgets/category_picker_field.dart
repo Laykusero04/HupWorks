@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:freelancer/core/utils/localized_category.dart';
+import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/services/category_service.dart';
 
 import 'constant.dart';
@@ -59,12 +60,13 @@ class _CategoryPickerFieldState extends State<CategoryPickerField> {
 
     final filtered = _filtered;
     final selectedName = _selectedName;
+    final l10n = context.l10n;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          'Category *',
+          '${l10n.categoryLabel} *',
           style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
         if (selectedName != null) ...[
@@ -99,7 +101,7 @@ class _CategoryPickerFieldState extends State<CategoryPickerField> {
           onChanged: (v) => setState(() => _query = v),
           cursorColor: kNeutralColor,
           decoration: kInputDecoration.copyWith(
-            hintText: 'Search categories',
+            hintText: l10n.searchCategories,
             hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
             prefixIcon: const Icon(Icons.search, color: kLightNeutralColor),
             suffixIcon: _query.isEmpty
@@ -122,17 +124,20 @@ class _CategoryPickerFieldState extends State<CategoryPickerField> {
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: kBorderColorTextField, width: 2),
           ),
-          child: filtered.isEmpty && _query.isNotEmpty
-              ? Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Text(
-                    'No categories match "$_query".',
-                    style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13),
-                  ),
-                )
-              : ListView(
+          child: ListView(
                   shrinkWrap: true,
                   children: [
+                    if (filtered.isEmpty && _query.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Text(
+                          l10n.noCategoriesMatch,
+                          style: kTextStyle.copyWith(
+                            color: kSubTitleColor,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ),
                     ...filtered.map((cat) {
                       final id = cat['id'] as String?;
                       final name = LocalizedCategory.name(
@@ -200,7 +205,7 @@ class _CategoryPickerFieldState extends State<CategoryPickerField> {
                             const SizedBox(width: 10),
                             Expanded(
                               child: Text(
-                                'Add category (not listed)',
+                                l10n.addCategoryNotListed,
                                 style: kTextStyle.copyWith(
                                   color: kNeutralColor,
                                   fontWeight: widget.selectedCategoryId ==

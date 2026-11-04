@@ -24,7 +24,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   }
 
   void _goToLogin() {
-    context.push('/auth/seller/login');
+    context.push(_isFreelancer ? '/auth/seller/login' : '/auth/client/login');
   }
 
   @override

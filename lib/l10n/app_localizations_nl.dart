@@ -3986,4 +3986,105 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get mediaPermissionDenied =>
       'Camera- of fototoegang is geblokkeerd. Schakel die in via de app-instellingen.';
+
+  @override
+  String get guideSkip => 'Overslaan';
+
+  @override
+  String get guideNext => 'Volgende';
+
+  @override
+  String get guideDone => 'Begrepen';
+
+  @override
+  String get guideShellMenuTitle => 'Menu';
+
+  @override
+  String get guideShellMenuDesc =>
+      'Profiel, dashboard, opgeslagen items, instellingen en help vind je hier.';
+
+  @override
+  String get guideShellTabsTitle => 'Je tabbladen';
+
+  @override
+  String get guideShellTabsDesc =>
+      'Schakel tussen de hoofdonderdelen van de app.';
+
+  @override
+  String get guideShellContractsTitle => 'Overeenkomsten';
+
+  @override
+  String get guideShellContractsDesc =>
+      'Volg hier geaccepteerd werk en de status ervan.';
+
+  @override
+  String get guideShellFindJobsTitle => 'Jobs zoeken';
+
+  @override
+  String get guideShellFindJobsDesc => 'Zoek open jobs en solliciteer erop.';
+
+  @override
+  String get guideClientHomeBellTitle => 'Meldingen';
+
+  @override
+  String get guideClientHomeBellDesc =>
+      'Sollicitaties en berichten verschijnen hier.';
+
+  @override
+  String get guideClientHomeSearchTitle => 'Zoeken';
+
+  @override
+  String get guideClientHomeSearchDesc =>
+      'Vind freelancers en jobs met een trefwoord.';
+
+  @override
+  String get guideClientHomeNudgeTitle => 'Maak je profiel af';
+
+  @override
+  String get guideClientHomeNudgeDesc =>
+      'Rond het af, zodat freelancers je kunnen vertrouwen.';
+
+  @override
+  String get guideClientHomePostJobTitle => 'Plaats een job';
+
+  @override
+  String get guideClientHomePostJobDesc =>
+      'Begin hier om iemand aan te nemen. Duurt ongeveer 4 stappen.';
+
+  @override
+  String get guideSellerHomeBellTitle => 'Meldingen';
+
+  @override
+  String get guideSellerHomeBellDesc => 'Updates over jobs verschijnen hier.';
+
+  @override
+  String get guideSellerHomeBannerTitle => 'Jobs zoeken';
+
+  @override
+  String get guideSellerHomeBannerDesc =>
+      'Tik om open jobs bij jou in de buurt te bekijken.';
+
+  @override
+  String get guideSellerHomeShortcutsTitle => 'Snelkoppelingen';
+
+  @override
+  String get guideSellerHomeShortcutsDesc =>
+      'Snel naar sollicitaties en de aanwezigheids-QR.';
+
+  @override
+  String get guideSellerHomeWorkTitle => 'Werktracker';
+
+  @override
+  String get guideSellerHomeWorkDesc =>
+      'Bekijk uren, afgesproken bedrag en nog niet betaald geld.';
+
+  @override
+  String get guideReplayTitle => 'Tips opnieuw bekijken';
+
+  @override
+  String get guideReplaySubtitle => 'Toon de tips per scherm opnieuw';
+
+  @override
+  String get guideReplayDone =>
+      'De tips verschijnen opnieuw wanneer je elk scherm bezoekt';
 }

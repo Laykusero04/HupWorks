@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:freelancer/core/guide/guide_host.dart';
+import 'package:freelancer/core/guide/guide_step.dart';
 import 'package:freelancer/core/utils/client_profile_completeness.dart';
 import 'package:freelancer/core/utils/profile_image.dart';
 import 'package:freelancer/l10n/l10n.dart';
@@ -14,6 +16,7 @@ import 'package:freelancer/services/profile_service.dart';
 import 'package:freelancer/services/verification_service.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nb_utils/nb_utils.dart';
+import 'package:showcaseview/showcaseview.dart';
 
 import '../../../router/route_names.dart';
 import '../../widgets/client_shell_app_bar.dart';
@@ -34,7 +37,8 @@ class ClientHomeScreen extends StatefulWidget {
   State<ClientHomeScreen> createState() => _ClientHomeScreenState();
 }
 
-class _ClientHomeScreenState extends State<ClientHomeScreen> {
+class _ClientHomeScreenState extends State<ClientHomeScreen>
+    with GuideHost<ClientHomeScreen> {
   List<Map<String, dynamic>> _categories = [];
   List<Map<String, dynamic>> _myRecentJobs = [];
   List<Map<String, dynamic>> _topSellers = [];
@@ -44,6 +48,59 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
   final PageController _bannerController =
       PageController(viewportFraction: 0.9);
   int _bannerIndex = 0;
+
+  // Guide targets (owned by this State, stable across rebuilds).
+  final GlobalKey _guideMenuKey = GlobalKey();
+  final GlobalKey _guideBellKey = GlobalKey();
+  final GlobalKey _guideSearchKey = GlobalKey();
+  final GlobalKey _guideNudgeKey = GlobalKey();
+  final GlobalKey _guidePostJobKey = GlobalKey();
+
+  @override
+  String get guideScreenId => 'client_home';
+  @override
+  String get guideRole => 'client';
+  @override
+  int get guideVersion => 1;
+  @override
+  bool get guideLeadsChain => true;
+  @override
+  bool get guideDataReady => !_isLoading;
+  @override
+  String get guideSkipLabel => context.l10n.guideSkip;
+  @override
+  String get guideNextLabel => context.l10n.guideNext;
+  @override
+  String get guideDoneLabel => context.l10n.guideDone;
+
+  // Order follows on-screen position: menu, bell, search, nudge, Post job.
+  @override
+  List<GuideStep> buildGuideSteps(BuildContext context) {
+    final l10n = context.l10n;
+    return [
+      GuideStep(
+          key: _guideMenuKey,
+          title: l10n.guideShellMenuTitle,
+          description: l10n.guideShellMenuDesc),
+      GuideStep(
+          key: _guideBellKey,
+          title: l10n.guideClientHomeBellTitle,
+          description: l10n.guideClientHomeBellDesc),
+      GuideStep(
+          key: _guideSearchKey,
+          title: l10n.guideClientHomeSearchTitle,
+          description: l10n.guideClientHomeSearchDesc),
+      // Only rendered while the profile nudge is shown (dropped otherwise).
+      GuideStep(
+          key: _guideNudgeKey,
+          title: l10n.guideClientHomeNudgeTitle,
+          description: l10n.guideClientHomeNudgeDesc),
+      GuideStep(
+          key: _guidePostJobKey,
+          title: l10n.guideClientHomePostJobTitle,
+          description: l10n.guideClientHomePostJobDesc),
+    ];
+  }
 
   @override
   void initState() {
@@ -87,6 +144,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
           _showProfileNudge = incomplete && !dismissed;
           _isLoading = false;
         });
+        scheduleGuide();
       }
     } catch (e) {
       if (mounted) {
@@ -94,11 +152,13 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
+        scheduleGuide();
       }
     }
   }
 
   Future<void> _dismissProfileNudge() async {
+    cancelGuide(); // the nudge target is about to disappear
     await ClientProfileCompleteness.dismissNudge();
     if (mounted) setState(() => _showProfileNudge = false);
   }
@@ -158,6 +218,13 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
       backgroundColor: kDarkWhite,
       appBar: ClientShellAppBar(
         title: l10n.home,
+        menuShowcaseKey: _guideMenuKey,
+        menuShowcaseScope: guideScope,
+        menuShowcaseTitle: l10n.guideShellMenuTitle,
+        menuShowcaseDescription: l10n.guideShellMenuDesc,
+        bellShowcaseKey: _guideBellKey,
+        bellShowcaseTitle: l10n.guideClientHomeBellTitle,
+        bellShowcaseDescription: l10n.guideClientHomeBellDesc,
       ),
       body: _isLoading
           ? const _ClientHomeLoading()
@@ -215,7 +282,13 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
     final l10n = context.l10n;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Material(
+      child: Showcase(
+        key: _guideNudgeKey,
+        scope: guideScope,
+        title: l10n.guideClientHomeNudgeTitle,
+        description: l10n.guideClientHomeNudgeDesc,
+        targetBorderRadius: BorderRadius.circular(16),
+        child: Material(
         color: kWhite,
         borderRadius: BorderRadius.circular(16),
         child: InkWell(
@@ -282,6 +355,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
             ),
           ),
         ),
+        ),
       ),
     );
   }
@@ -289,7 +363,13 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
   Widget _buildSearchBar() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-      child: GestureDetector(
+      child: Showcase(
+        key: _guideSearchKey,
+        scope: guideScope,
+        title: context.l10n.guideClientHomeSearchTitle,
+        description: context.l10n.guideClientHomeSearchDesc,
+        targetBorderRadius: BorderRadius.circular(12),
+        child: GestureDetector(
         onTap: () {
           showSearch(
             context: context,
@@ -316,7 +396,21 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
             ],
           ),
         ),
+        ),
       ),
+    );
+  }
+
+  /// Wraps [child] as a guide target when [key] is set, else returns it as is.
+  Widget _guideWrap(GlobalKey? key, String title, String description, Widget child) {
+    if (key == null) return child;
+    return Showcase(
+      key: key,
+      scope: guideScope,
+      title: title,
+      description: description,
+      targetBorderRadius: BorderRadius.circular(14),
+      child: child,
     );
   }
 
@@ -328,6 +422,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
         label: l10n.postJob,
         icon: Icons.add_business_rounded,
         color: kPrimaryColor,
+        showcaseKey: _guidePostJobKey,
         onTap: () async {
           await const CreateNewJobPost().launch(context);
           if (mounted) _loadData();
@@ -373,7 +468,11 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
           children: actions
               .map(
                 (a) => Expanded(
-                  child: InkWell(
+                  child: _guideWrap(
+                    a.showcaseKey,
+                    l10n.guideClientHomePostJobTitle,
+                    l10n.guideClientHomePostJobDesc,
+                    InkWell(
                     borderRadius: BorderRadius.circular(14),
                     onTap: a.onTap,
                     child: Padding(
@@ -404,6 +503,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen> {
                         ],
                       ),
                     ),
+                  ),
                   ),
                 ),
               )
@@ -1132,11 +1232,15 @@ class _QuickAction {
   final Color color;
   final VoidCallback onTap;
 
+  /// Guide target key; set on the first action only (one key, one widget).
+  final GlobalKey? showcaseKey;
+
   const _QuickAction({
     required this.label,
     required this.icon,
     required this.color,
     required this.onTap,
+    this.showcaseKey,
   });
 }
 

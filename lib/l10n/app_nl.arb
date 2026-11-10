@@ -1494,7 +1494,9 @@
   "authResendIn": "Opnieuw versturen over {seconds}s",
   "@authResendIn": {
     "placeholders": {
-      "seconds": {"type": "int"}
+      "seconds": {
+        "type": "int"
+      }
     }
   },
   "openEmailApp": "Open e-mailapp",
@@ -1506,8 +1508,40 @@
   "mapCouldNotGetGps": "GPS ophalen mislukt: {detail}",
   "@mapCouldNotGetGps": {
     "placeholders": {
-      "detail": {"type": "String"}
+      "detail": {
+        "type": "String"
+      }
     }
   },
-  "mediaPermissionDenied": "Camera- of fototoegang is geblokkeerd. Schakel die in via de app-instellingen."
+  "mediaPermissionDenied": "Camera- of fototoegang is geblokkeerd. Schakel die in via de app-instellingen.",
+  "guideSkip": "Overslaan",
+  "guideNext": "Volgende",
+  "guideDone": "Begrepen",
+  "guideShellMenuTitle": "Menu",
+  "guideShellMenuDesc": "Profiel, dashboard, opgeslagen items, instellingen en help vind je hier.",
+  "guideShellTabsTitle": "Je tabbladen",
+  "guideShellTabsDesc": "Schakel tussen de hoofdonderdelen van de app.",
+  "guideShellContractsTitle": "Overeenkomsten",
+  "guideShellContractsDesc": "Volg hier geaccepteerd werk en de status ervan.",
+  "guideShellFindJobsTitle": "Jobs zoeken",
+  "guideShellFindJobsDesc": "Zoek open jobs en solliciteer erop.",
+  "guideClientHomeBellTitle": "Meldingen",
+  "guideClientHomeBellDesc": "Sollicitaties en berichten verschijnen hier.",
+  "guideClientHomeSearchTitle": "Zoeken",
+  "guideClientHomeSearchDesc": "Vind freelancers en jobs met een trefwoord.",
+  "guideClientHomeNudgeTitle": "Maak je profiel af",
+  "guideClientHomeNudgeDesc": "Rond het af, zodat freelancers je kunnen vertrouwen.",
+  "guideClientHomePostJobTitle": "Plaats een job",
+  "guideClientHomePostJobDesc": "Begin hier om iemand aan te nemen. Duurt ongeveer 4 stappen.",
+  "guideSellerHomeBellTitle": "Meldingen",
+  "guideSellerHomeBellDesc": "Updates over jobs verschijnen hier.",
+  "guideSellerHomeBannerTitle": "Jobs zoeken",
+  "guideSellerHomeBannerDesc": "Tik om open jobs bij jou in de buurt te bekijken.",
+  "guideSellerHomeShortcutsTitle": "Snelkoppelingen",
+  "guideSellerHomeShortcutsDesc": "Snel naar sollicitaties en de aanwezigheids-QR.",
+  "guideSellerHomeWorkTitle": "Werktracker",
+  "guideSellerHomeWorkDesc": "Bekijk uren, afgesproken bedrag en nog niet betaald geld.",
+  "guideReplayTitle": "Tips opnieuw bekijken",
+  "guideReplaySubtitle": "Toon de tips per scherm opnieuw",
+  "guideReplayDone": "De tips verschijnen opnieuw wanneer je elk scherm bezoekt"
 }

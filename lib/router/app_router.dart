@@ -4,11 +4,15 @@ import 'dart:ui' show SemanticsRole;
 import 'package:flutter/material.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
+import 'package:showcaseview/showcaseview.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../core/auth/role_cache.dart';
 import '../core/chat/chat_unread_scope.dart';
 import '../core/constants/colors.dart';
+import '../core/guide/guide_host.dart';
+import '../core/guide/guide_session.dart';
+import '../core/guide/guide_step.dart';
 import '../core/onboarding/onboarding_prefs.dart';
 import '../core/utils/app_logger.dart';
 import '../services/auth_service.dart';
@@ -502,7 +506,7 @@ GoRouter createRouter() {
 }
 
 /// Shared bottom nav for client and seller shells.
-class _ScaffoldWithNavBar extends StatelessWidget {
+class _ScaffoldWithNavBar extends StatefulWidget {
   final ShellPersona persona;
   final StatefulNavigationShell navigationShell;
   final Widget? drawer;
@@ -515,8 +519,78 @@ class _ScaffoldWithNavBar extends StatelessWidget {
     this.scaffoldKey,
   });
 
+  @override
+  State<_ScaffoldWithNavBar> createState() => _ScaffoldWithNavBarState();
+}
+
+/// Hosts the 'shell' navigation guide (bar + role tile). The keys live in
+/// this State: the widget tree below is rebuilt by a ListenableBuilder on every
+/// chat-unread change, so keys created in build would be recreated.
+class _ScaffoldWithNavBarState extends State<_ScaffoldWithNavBar>
+    with GuideHost<_ScaffoldWithNavBar> {
+  final GlobalKey _guideBarKey = GlobalKey();
+  final GlobalKey _guideTileKey = GlobalKey();
+
+  ShellPersona get persona => widget.persona;
+  StatefulNavigationShell get navigationShell => widget.navigationShell;
+  Widget? get drawer => widget.drawer;
+  GlobalKey<ScaffoldState>? get scaffoldKey => widget.scaffoldKey;
+
   Color get _accentColor =>
       persona == ShellPersona.client ? kPrimaryColor : kSellerPrimary;
+
+  // Tile highlighted in step 2: Contracts (client, index 4) or Find Jobs
+  // (seller, index 2).
+  int get _guideTileIndex => persona == ShellPersona.client ? 4 : 2;
+
+  @override
+  String get guideScreenId => 'shell';
+  @override
+  String get guideRole => persona == ShellPersona.client ? 'client' : 'seller';
+  @override
+  int get guideVersion => 1;
+
+  /// Runs after the Home guide is done for this session (seen, finished,
+  /// skipped or given up), never together with it (GuideSession).
+  @override
+  bool get guideDataReady => GuideSession.instance.homeSettled;
+  @override
+  String get guideSkipLabel => context.l10n.guideSkip;
+  @override
+  String get guideNextLabel => context.l10n.guideNext;
+  @override
+  String get guideDoneLabel => context.l10n.guideDone;
+
+  @override
+  void dispose() {
+    // Sign-out happens from the drawer, so the shell usually goes away with
+    // the drawer open and onDrawerChanged(false) never fires. Clear the flag
+    // so the next shell (e.g. another account) is not blocked from guides.
+    GuideSession.drawerOpen.value = false;
+    super.dispose();
+  }
+
+  @override
+  List<GuideStep> buildGuideSteps(BuildContext context) {
+    final l10n = context.l10n;
+    final client = persona == ShellPersona.client;
+    return [
+      GuideStep(
+          key: _guideBarKey,
+          targetNearBottom: true,
+          title: l10n.guideShellTabsTitle,
+          description: l10n.guideShellTabsDesc),
+      GuideStep(
+          key: _guideTileKey,
+          targetNearBottom: true,
+          title: client
+              ? l10n.guideShellContractsTitle
+              : l10n.guideShellFindJobsTitle,
+          description: client
+              ? l10n.guideShellContractsDesc
+              : l10n.guideShellFindJobsDesc),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -535,8 +609,21 @@ class _ScaffoldWithNavBar extends StatelessWidget {
           backgroundColor: kWhite,
           extendBody: false,
           drawer: drawer,
+          onDrawerChanged: (open) => GuideSession.drawerOpen.value = open,
           body: navigationShell,
           bottomNavigationBar: _ShellBottomNav(
+            guideScope: guideScope,
+            guideBarKey: _guideBarKey,
+            guideTileKey: _guideTileKey,
+            guideTileIndex: _guideTileIndex,
+            guideBarTitle: context.l10n.guideShellTabsTitle,
+            guideBarDescription: context.l10n.guideShellTabsDesc,
+            guideTileTitle: persona == ShellPersona.client
+                ? context.l10n.guideShellContractsTitle
+                : context.l10n.guideShellFindJobsTitle,
+            guideTileDescription: persona == ShellPersona.client
+                ? context.l10n.guideShellContractsDesc
+                : context.l10n.guideShellFindJobsDesc,
             accent: _accentColor,
             currentIndex: navigationShell.currentIndex,
             items: items,
@@ -655,11 +742,30 @@ Widget debugShellBottomNav({
 /// Compact shell bottom nav — clear selected state, tight safe-area padding.
 class _ShellBottomNav extends StatelessWidget {
   const _ShellBottomNav({
+    this.guideScope,
+    this.guideBarKey,
+    this.guideTileKey,
+    this.guideTileIndex = -1,
+    this.guideBarTitle,
+    this.guideBarDescription,
+    this.guideTileTitle,
+    this.guideTileDescription,
     required this.accent,
     required this.currentIndex,
     required this.items,
     required this.onTap,
   });
+
+  // Guide wiring: long-lived keys owned by [_ScaffoldWithNavBarState].
+  // All null in tests (debugShellBottomNav): the bar then renders plainly.
+  final String? guideScope;
+  final GlobalKey? guideBarKey;
+  final GlobalKey? guideTileKey;
+  final int guideTileIndex;
+  final String? guideBarTitle;
+  final String? guideBarDescription;
+  final String? guideTileTitle;
+  final String? guideTileDescription;
 
   final Color accent;
   final int currentIndex;
@@ -669,7 +775,21 @@ class _ShellBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.paddingOf(context).bottom;
+    final barKey = guideBarKey;
+    if (barKey == null) return _bar(bottomInset);
 
+    return Showcase(
+      key: barKey,
+      scope: guideScope,
+      title: guideBarTitle,
+      description: guideBarDescription,
+      targetBorderRadius: BorderRadius.zero,
+      targetShapeBorder: const RoundedRectangleBorder(),
+      child: _bar(bottomInset),
+    );
+  }
+
+  Widget _bar(double bottomInset) {
     return Material(
       color: kWhite,
       elevation: 0,
@@ -697,11 +817,14 @@ class _ShellBottomNav extends StatelessWidget {
               children: [
                 for (var i = 0; i < items.length; i++)
                   Expanded(
-                    child: _ShellBottomNavTile(
-                      item: items[i],
-                      selected: i == currentIndex,
-                      accent: accent,
-                      onTap: () => onTap(i),
+                    child: _wrapTile(
+                      i,
+                      _ShellBottomNavTile(
+                        item: items[i],
+                        selected: i == currentIndex,
+                        accent: accent,
+                        onTap: () => onTap(i),
+                      ),
                     ),
                   ),
               ],
@@ -709,6 +832,19 @@ class _ShellBottomNav extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _wrapTile(int index, Widget tile) {
+    final tileKey = guideTileKey;
+    if (index != guideTileIndex || tileKey == null) return tile;
+    return Showcase(
+      key: tileKey,
+      scope: guideScope,
+      title: guideTileTitle,
+      description: guideTileDescription,
+      targetBorderRadius: BorderRadius.circular(14),
+      child: tile,
     );
   }
 }

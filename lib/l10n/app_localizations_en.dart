@@ -3951,4 +3951,103 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get mediaPermissionDenied =>
       'Camera or photo access is blocked. Enable it in App settings.';
+
+  @override
+  String get guideSkip => 'Skip';
+
+  @override
+  String get guideNext => 'Next';
+
+  @override
+  String get guideDone => 'Got it';
+
+  @override
+  String get guideShellMenuTitle => 'Menu';
+
+  @override
+  String get guideShellMenuDesc =>
+      'Profile, dashboard, saved items, settings and help are here.';
+
+  @override
+  String get guideShellTabsTitle => 'Your tabs';
+
+  @override
+  String get guideShellTabsDesc => 'Switch between the main areas of the app.';
+
+  @override
+  String get guideShellContractsTitle => 'Contracts';
+
+  @override
+  String get guideShellContractsDesc =>
+      'Track accepted work and its status here.';
+
+  @override
+  String get guideShellFindJobsTitle => 'Find Jobs';
+
+  @override
+  String get guideShellFindJobsDesc => 'Search and apply to open jobs.';
+
+  @override
+  String get guideClientHomeBellTitle => 'Notifications';
+
+  @override
+  String get guideClientHomeBellDesc =>
+      'Applications and messages show up here.';
+
+  @override
+  String get guideClientHomeSearchTitle => 'Search';
+
+  @override
+  String get guideClientHomeSearchDesc =>
+      'Find freelancers and jobs by keyword.';
+
+  @override
+  String get guideClientHomeNudgeTitle => 'Complete your profile';
+
+  @override
+  String get guideClientHomeNudgeDesc =>
+      'Finish it so freelancers can trust you.';
+
+  @override
+  String get guideClientHomePostJobTitle => 'Post a job';
+
+  @override
+  String get guideClientHomePostJobDesc =>
+      'Start here to hire. Takes about 4 steps.';
+
+  @override
+  String get guideSellerHomeBellTitle => 'Notifications';
+
+  @override
+  String get guideSellerHomeBellDesc => 'Job updates appear here.';
+
+  @override
+  String get guideSellerHomeBannerTitle => 'Find jobs';
+
+  @override
+  String get guideSellerHomeBannerDesc => 'Tap to browse open jobs near you.';
+
+  @override
+  String get guideSellerHomeShortcutsTitle => 'Shortcuts';
+
+  @override
+  String get guideSellerHomeShortcutsDesc =>
+      'Quick access to applications and attendance QR.';
+
+  @override
+  String get guideSellerHomeWorkTitle => 'Work tracker';
+
+  @override
+  String get guideSellerHomeWorkDesc =>
+      'See hours, agreed amount and unpaid money.';
+
+  @override
+  String get guideReplayTitle => 'Replay guides';
+
+  @override
+  String get guideReplaySubtitle => 'Show the screen tips again';
+
+  @override
+  String get guideReplayDone =>
+      'Guides will show again as you visit each screen';
 }

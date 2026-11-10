@@ -7204,6 +7204,186 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Camera or photo access is blocked. Enable it in App settings.'**
   String get mediaPermissionDenied;
+
+  /// No description provided for @guideSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get guideSkip;
+
+  /// No description provided for @guideNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get guideNext;
+
+  /// No description provided for @guideDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get guideDone;
+
+  /// No description provided for @guideShellMenuTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Menu'**
+  String get guideShellMenuTitle;
+
+  /// No description provided for @guideShellMenuDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile, dashboard, saved items, settings and help are here.'**
+  String get guideShellMenuDesc;
+
+  /// No description provided for @guideShellTabsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your tabs'**
+  String get guideShellTabsTitle;
+
+  /// No description provided for @guideShellTabsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch between the main areas of the app.'**
+  String get guideShellTabsDesc;
+
+  /// No description provided for @guideShellContractsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Contracts'**
+  String get guideShellContractsTitle;
+
+  /// No description provided for @guideShellContractsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Track accepted work and its status here.'**
+  String get guideShellContractsDesc;
+
+  /// No description provided for @guideShellFindJobsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Find Jobs'**
+  String get guideShellFindJobsTitle;
+
+  /// No description provided for @guideShellFindJobsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Search and apply to open jobs.'**
+  String get guideShellFindJobsDesc;
+
+  /// No description provided for @guideClientHomeBellTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get guideClientHomeBellTitle;
+
+  /// No description provided for @guideClientHomeBellDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Applications and messages show up here.'**
+  String get guideClientHomeBellDesc;
+
+  /// No description provided for @guideClientHomeSearchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get guideClientHomeSearchTitle;
+
+  /// No description provided for @guideClientHomeSearchDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Find freelancers and jobs by keyword.'**
+  String get guideClientHomeSearchDesc;
+
+  /// No description provided for @guideClientHomeNudgeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete your profile'**
+  String get guideClientHomeNudgeTitle;
+
+  /// No description provided for @guideClientHomeNudgeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish it so freelancers can trust you.'**
+  String get guideClientHomeNudgeDesc;
+
+  /// No description provided for @guideClientHomePostJobTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Post a job'**
+  String get guideClientHomePostJobTitle;
+
+  /// No description provided for @guideClientHomePostJobDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Start here to hire. Takes about 4 steps.'**
+  String get guideClientHomePostJobDesc;
+
+  /// No description provided for @guideSellerHomeBellTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get guideSellerHomeBellTitle;
+
+  /// No description provided for @guideSellerHomeBellDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Job updates appear here.'**
+  String get guideSellerHomeBellDesc;
+
+  /// No description provided for @guideSellerHomeBannerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Find jobs'**
+  String get guideSellerHomeBannerTitle;
+
+  /// No description provided for @guideSellerHomeBannerDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to browse open jobs near you.'**
+  String get guideSellerHomeBannerDesc;
+
+  /// No description provided for @guideSellerHomeShortcutsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shortcuts'**
+  String get guideSellerHomeShortcutsTitle;
+
+  /// No description provided for @guideSellerHomeShortcutsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick access to applications and attendance QR.'**
+  String get guideSellerHomeShortcutsDesc;
+
+  /// No description provided for @guideSellerHomeWorkTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Work tracker'**
+  String get guideSellerHomeWorkTitle;
+
+  /// No description provided for @guideSellerHomeWorkDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'See hours, agreed amount and unpaid money.'**
+  String get guideSellerHomeWorkDesc;
+
+  /// No description provided for @guideReplayTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Replay guides'**
+  String get guideReplayTitle;
+
+  /// No description provided for @guideReplaySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show the screen tips again'**
+  String get guideReplaySubtitle;
+
+  /// No description provided for @guideReplayDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Guides will show again as you visit each screen'**
+  String get guideReplayDone;
 }
 
 class _AppLocalizationsDelegate

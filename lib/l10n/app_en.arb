@@ -1833,7 +1833,9 @@
   "authResendIn": "Resend in {seconds}s",
   "@authResendIn": {
     "placeholders": {
-      "seconds": {"type": "int"}
+      "seconds": {
+        "type": "int"
+      }
     }
   },
   "openEmailApp": "Open email app",
@@ -1845,8 +1847,40 @@
   "mapCouldNotGetGps": "Could not get GPS: {detail}",
   "@mapCouldNotGetGps": {
     "placeholders": {
-      "detail": {"type": "String"}
+      "detail": {
+        "type": "String"
+      }
     }
   },
-  "mediaPermissionDenied": "Camera or photo access is blocked. Enable it in App settings."
+  "mediaPermissionDenied": "Camera or photo access is blocked. Enable it in App settings.",
+  "guideSkip": "Skip",
+  "guideNext": "Next",
+  "guideDone": "Got it",
+  "guideShellMenuTitle": "Menu",
+  "guideShellMenuDesc": "Profile, dashboard, saved items, settings and help are here.",
+  "guideShellTabsTitle": "Your tabs",
+  "guideShellTabsDesc": "Switch between the main areas of the app.",
+  "guideShellContractsTitle": "Contracts",
+  "guideShellContractsDesc": "Track accepted work and its status here.",
+  "guideShellFindJobsTitle": "Find Jobs",
+  "guideShellFindJobsDesc": "Search and apply to open jobs.",
+  "guideClientHomeBellTitle": "Notifications",
+  "guideClientHomeBellDesc": "Applications and messages show up here.",
+  "guideClientHomeSearchTitle": "Search",
+  "guideClientHomeSearchDesc": "Find freelancers and jobs by keyword.",
+  "guideClientHomeNudgeTitle": "Complete your profile",
+  "guideClientHomeNudgeDesc": "Finish it so freelancers can trust you.",
+  "guideClientHomePostJobTitle": "Post a job",
+  "guideClientHomePostJobDesc": "Start here to hire. Takes about 4 steps.",
+  "guideSellerHomeBellTitle": "Notifications",
+  "guideSellerHomeBellDesc": "Job updates appear here.",
+  "guideSellerHomeBannerTitle": "Find jobs",
+  "guideSellerHomeBannerDesc": "Tap to browse open jobs near you.",
+  "guideSellerHomeShortcutsTitle": "Shortcuts",
+  "guideSellerHomeShortcutsDesc": "Quick access to applications and attendance QR.",
+  "guideSellerHomeWorkTitle": "Work tracker",
+  "guideSellerHomeWorkDesc": "See hours, agreed amount and unpaid money.",
+  "guideReplayTitle": "Replay guides",
+  "guideReplaySubtitle": "Show the screen tips again",
+  "guideReplayDone": "Guides will show again as you visit each screen"
 }

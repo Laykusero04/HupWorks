@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:freelancer/core/chat/chat_contact_policy.dart';
 import 'package:freelancer/core/constants/support_contact.dart';
+import 'package:freelancer/core/guide/guide_service.dart';
+import 'package:freelancer/core/guide/guide_session.dart';
 import 'package:freelancer/core/locale/locale_controller.dart';
 import 'package:freelancer/core/locale/locale_scope.dart';
 import 'package:freelancer/core/notifications/push_notification_prefs.dart';
@@ -279,6 +281,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() => _uploadingPhoto = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+      );
+    }
+  }
+
+  /// Clears the show-once flags of the current user for their role, so each
+  /// guide shows again the next time its screen opens. Does not navigate.
+  Future<void> _replayGuides() async {
+    final uid = AuthService.currentUser?.id;
+    if (uid == null) return;
+    // Same role source as the rest of this screen. If it is still unknown,
+    // clear both roles of this user (flags are per uid, so nothing else is
+    // touched).
+    final role = _role ?? AuthService.cachedRole;
+    final roles = role == 'seller'
+        ? const ['seller']
+        : role == 'client'
+            ? const ['client']
+            : const ['client', 'seller'];
+    try {
+      for (final r in roles) {
+        await GuideService.resetAll(uid: uid, role: r);
+      }
+      GuideSession.requestReplay();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.guideReplayDone)),
+      );
+    } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
       );
@@ -570,6 +603,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                     style: kTextStyle.copyWith(color: kSubTitleColor),
+                  ),
+                ),
+                ListTile(
+                  onTap: _replayGuides,
+                  visualDensity: const VisualDensity(vertical: -3),
+                  horizontalTitleGap: 10,
+                  contentPadding: const EdgeInsets.only(bottom: 15),
+                  leading: Container(
+                    padding: const EdgeInsets.all(10.0),
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Color(0xFFE3F6EC),
+                    ),
+                    child: const Icon(
+                      Icons.school_outlined,
+                      color: Color(0xFF1F9D63),
+                    ),
+                  ),
+                  title: Text(
+                    l10n.guideReplayTitle,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style: kTextStyle.copyWith(color: kNeutralColor),
+                  ),
+                  subtitle: Text(
+                    l10n.guideReplaySubtitle,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12),
                   ),
                 ),
                 ListTile(

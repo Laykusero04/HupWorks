@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/widgets/empty_state_widget.dart';
 import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
+import 'package:freelancer/core/guide/guide_host.dart';
+import 'package:freelancer/core/guide/guide_step.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/core/utils/job_offer_delivery.dart';
@@ -11,6 +13,7 @@ import 'package:freelancer/services/seller_orders_service.dart';
 import 'package:freelancer/router/route_names.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nb_utils/nb_utils.dart';
+import 'package:showcaseview/showcaseview.dart';
 
 import '../../widgets/client_shell_app_bar.dart';
 import '../../widgets/shell_tab_header.dart';
@@ -24,12 +27,65 @@ class SellerHomeScreen extends StatefulWidget {
   State<SellerHomeScreen> createState() => _SellerHomeScreenState();
 }
 
-class _SellerHomeScreenState extends State<SellerHomeScreen> {
+class _SellerHomeScreenState extends State<SellerHomeScreen>
+    with GuideHost<SellerHomeScreen> {
   Map<String, dynamic> _overview = {};
   List<Map<String, dynamic>> _myApplications = [];
   bool _isLoading = true;
   bool _loadFailed = false;
   bool _workOverviewOpen = false;
+
+  // Guide targets (owned by this State, stable across rebuilds).
+  final GlobalKey _guideMenuKey = GlobalKey();
+  final GlobalKey _guideBellKey = GlobalKey();
+  final GlobalKey _guideBannerKey = GlobalKey();
+  final GlobalKey _guideShortcutsKey = GlobalKey();
+  final GlobalKey _guideWorkKey = GlobalKey();
+
+  @override
+  String get guideScreenId => 'seller_home';
+  @override
+  String get guideRole => 'seller';
+  @override
+  int get guideVersion => 1;
+  @override
+  bool get guideLeadsChain => true;
+  @override
+  bool get guideDataReady => !_isLoading;
+  @override
+  String get guideSkipLabel => context.l10n.guideSkip;
+  @override
+  String get guideNextLabel => context.l10n.guideNext;
+  @override
+  String get guideDoneLabel => context.l10n.guideDone;
+
+  // Order follows on-screen position: menu, bell, banner, shortcuts, work.
+  @override
+  List<GuideStep> buildGuideSteps(BuildContext context) {
+    final l10n = context.l10n;
+    return [
+      GuideStep(
+          key: _guideMenuKey,
+          title: l10n.guideShellMenuTitle,
+          description: l10n.guideShellMenuDesc),
+      GuideStep(
+          key: _guideBellKey,
+          title: l10n.guideSellerHomeBellTitle,
+          description: l10n.guideSellerHomeBellDesc),
+      GuideStep(
+          key: _guideBannerKey,
+          title: l10n.guideSellerHomeBannerTitle,
+          description: l10n.guideSellerHomeBannerDesc),
+      GuideStep(
+          key: _guideShortcutsKey,
+          title: l10n.guideSellerHomeShortcutsTitle,
+          description: l10n.guideSellerHomeShortcutsDesc),
+      GuideStep(
+          key: _guideWorkKey,
+          title: l10n.guideSellerHomeWorkTitle,
+          description: l10n.guideSellerHomeWorkDesc),
+    ];
+  }
 
   @override
   void initState() {
@@ -55,6 +111,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
           _isLoading = false;
           _loadFailed = false;
         });
+        scheduleGuide();
       }
     } catch (e) {
       if (mounted) {
@@ -68,6 +125,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
             SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
           );
         }
+        scheduleGuide();
       }
     }
   }
@@ -101,6 +159,13 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
       appBar: ClientShellAppBar(
         title: l10n.home,
         persona: ShellPersona.seller,
+        menuShowcaseKey: _guideMenuKey,
+        menuShowcaseScope: guideScope,
+        menuShowcaseTitle: l10n.guideShellMenuTitle,
+        menuShowcaseDescription: l10n.guideShellMenuDesc,
+        bellShowcaseKey: _guideBellKey,
+        bellShowcaseTitle: l10n.guideSellerHomeBellTitle,
+        bellShowcaseDescription: l10n.guideSellerHomeBellDesc,
       ),
       body: _isLoading
           ? const _SellerHomeLoading()
@@ -126,7 +191,13 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        GestureDetector(
+                        Showcase(
+                          key: _guideBannerKey,
+                          scope: guideScope,
+                          title: l10n.guideSellerHomeBannerTitle,
+                          description: l10n.guideSellerHomeBannerDesc,
+                          targetBorderRadius: BorderRadius.circular(18),
+                          child: GestureDetector(
                           onTap: () => context.go(AppRoutes.sellerFindJobs),
                           child: Container(
                             width: double.infinity,
@@ -185,6 +256,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
                               ],
                             ),
                           ),
+                        ),
                         ),
                         const SizedBox(height: 16.0),
 
@@ -348,6 +420,10 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
     final l10n = context.l10n;
 
     return _buildCard(
+      guideKey: _guideWorkKey,
+      guideTitle: l10n.guideSellerHomeWorkTitle,
+      guideDescription: l10n.guideSellerHomeWorkDesc,
+      guideAutoScroll: true, // card is usually below the fold
       title: l10n.yourWork,
       dropdown: Row(
         mainAxisSize: MainAxisSize.min,
@@ -559,6 +635,9 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
     ];
 
     return _buildCard(
+      guideKey: _guideShortcutsKey,
+      guideTitle: l10n.guideSellerHomeShortcutsTitle,
+      guideDescription: l10n.guideSellerHomeShortcutsDesc,
       title: l10n.shortcuts,
       dropdown: const SizedBox.shrink(),
       child: IntrinsicHeight(
@@ -584,6 +663,36 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
   }
 
   Widget _buildCard({
+    required String title,
+    required Widget dropdown,
+    required Widget child,
+    VoidCallback? onHeaderTap,
+    bool showChild = true,
+    GlobalKey? guideKey,
+    String? guideTitle,
+    String? guideDescription,
+    bool guideAutoScroll = false,
+  }) {
+    final card = _buildCardBody(
+      title: title,
+      dropdown: dropdown,
+      child: child,
+      onHeaderTap: onHeaderTap,
+      showChild: showChild,
+    );
+    if (guideKey == null) return card;
+    return Showcase(
+      key: guideKey,
+      scope: guideScope,
+      title: guideTitle,
+      description: guideDescription,
+      enableAutoScroll: guideAutoScroll,
+      targetBorderRadius: BorderRadius.circular(16),
+      child: card,
+    );
+  }
+
+  Widget _buildCardBody({
     required String title,
     required Widget dropdown,
     required Widget child,

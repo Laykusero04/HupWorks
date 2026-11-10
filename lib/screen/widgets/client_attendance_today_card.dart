@@ -2,15 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:freelancer/screen/attendance/attendance_punch_log_section.dart';
 
 import 'constant.dart';
+import 'package:freelancer/core/guide/guide_anchor.dart';
 
 /// Client-facing today attendance log (time in / out cells).
 class ClientAttendanceTodayCard extends StatelessWidget {
   final String jobPostId;
 
-  const ClientAttendanceTodayCard({super.key, required this.jobPostId});
+  const ClientAttendanceTodayCard({super.key, required this.jobPostId, this.guideAnchor,
+  });
+
+  /// Optional guide target around this widget; see [GuideAnchor].
+  final GuideAnchor? guideAnchor;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      GuideAnchor.wrap(guideAnchor, _buildContent(context));
+
+  Widget _buildContent(BuildContext context) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),

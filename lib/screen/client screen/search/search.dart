@@ -300,9 +300,9 @@ class _MarketplaceSearchBodyState extends State<_MarketplaceSearchBody> {
     if (profiles is Map) {
       return (profiles['name'] as String?)?.trim().isNotEmpty == true
           ? profiles['name'] as String
-          : 'Seller';
+          : 'Freelancer';
     }
-    return 'Seller';
+    return 'Freelancer';
   }
 
   String? _sellerImage(Map<String, dynamic> service) {

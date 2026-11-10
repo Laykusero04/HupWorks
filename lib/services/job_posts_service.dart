@@ -163,7 +163,7 @@ class JobPostsService {
   static String workersNeededCardLine(Object? raw) {
     final n = parseWorkersNeeded(raw);
     if (n >= workersNeededNoLimitSentinel) return 'Open hiring — no set limit';
-    return '$n workers needed';
+    return '$n freelancers needed';
   }
 
   static bool workersNeededShowOnCard(Object? raw) {

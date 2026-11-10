@@ -183,7 +183,7 @@ class _SellerProfileState extends State<SellerProfile> {
                 ),
                 ProfileMenuListTile(
                   icon: Icons.bookmark_border,
-                  title: l10n.favourites,
+                  title: l10n.favouriteList,
                   onTap: () => const SellerFavList().launch(context),
                 ),
                 ProfileMenuListTile(

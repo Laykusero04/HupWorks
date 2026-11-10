@@ -146,7 +146,7 @@ class AppLocalizationsNl extends AppLocalizations {
       'Je moet opnieuw inloggen om je account te gebruiken.';
 
   @override
-  String get sellerReport => 'Verkoper melden';
+  String get sellerReport => 'Freelancer melden';
 
   @override
   String get favorite => 'Opslaan';
@@ -360,15 +360,15 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get attendanceClientHintQrInOut =>
-      'Plaats een QR op locatie voor alle ingehuurde werknemers. Iedereen klokt een keer in en uit per dienst (op locatie).';
+      'Plaats een QR op locatie voor alle ingehuurde freelancers. Iedereen klokt een keer in en uit per dienst (op locatie).';
 
   @override
   String get attendanceClientHintQrOnce =>
-      'Plaats een QR op locatie voor alle ingehuurde werknemers. Iedereen scant een keer per dienst om in te checken (op locatie).';
+      'Plaats een QR op locatie voor alle ingehuurde freelancers. Iedereen scant een keer per dienst om in te checken (op locatie).';
 
   @override
   String get attendanceClientHintSelfReport =>
-      'Werknemers klokken in en uit in de app â€” geen QR nodig.';
+      'Freelancers klokken in en uit in de app — geen QR nodig.';
 
   @override
   String get attendanceClientHintDisabled =>
@@ -411,7 +411,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get attendanceTrackingHint =>
-      'Hoe werknemers tijd op locatie registreren.';
+      'Hoe freelancers tijd op locatie registreren.';
 
   @override
   String get genderMale => 'Man';
@@ -807,7 +807,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get hireTopRated => 'Huurtop freelancers in';
 
   @override
-  String get postAJobBanner => 'Plaats een job en ontvang offertes';
+  String get postAJobBanner => 'Plaats een job en ontvang aanmeldingen';
 
   @override
   String get postNow => 'Nu plaatsen';
@@ -892,7 +892,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get budgetSuffixTotal => 'totaal';
 
   @override
-  String get yourWork => 'Werktracker';
+  String get yourWork => 'Jouw werk';
 
   @override
   String get hoursWorked => 'Gewerkte uren';
@@ -980,7 +980,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get attendance => 'Aanwezigheid';
 
   @override
-  String get shortcutFindJobs => 'Jobs';
+  String get shortcutFindJobs => 'Jobs zoeken';
 
   @override
   String get shortcutFindJobsSub => 'Bekijk openstaande rollen';
@@ -1229,10 +1229,10 @@ class AppLocalizationsNl extends AppLocalizations {
   String get reportWhyQuestion => 'Waarom rapporteer je?';
 
   @override
-  String get reportSellerProfileUrl => 'Verkopersprofiel-URL';
+  String get reportSellerProfileUrl => 'Freelancerprofiel-URL';
 
   @override
-  String get reportEnterSellerProfileUrl => 'Voer verkopersprofiel-url in';
+  String get reportEnterSellerProfileUrl => 'Voer freelancerprofiel-URL in';
 
   @override
   String get reportOriginalContentUrl => 'URL van originele inhoud';
@@ -1252,7 +1252,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get promoProposalsSubtitle =>
-      'Ontvang binnen enkele minuten voorstellen';
+      'Ontvang binnen enkele minuten aanmeldingen';
 
   @override
   String get promoNicheServicesSubtitle => 'Vind diensten in elke niche';
@@ -1327,7 +1327,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get noApplicationsYetHint =>
-      'Blader door open jobs en stuur een duidelijk voorstel.';
+      'Blader door open jobs en stuur een duidelijke aanmelding.';
 
   @override
   String get noClientApplicationsYetHint =>
@@ -1459,7 +1459,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get attendancePrintQrAtSite =>
-      'Print deze QR en hang hem op waar werknemers inchecken.';
+      'Print deze QR en hang hem op waar freelancers inchecken.';
 
   @override
   String get attendancePrintAndPostAtSite => 'Print & hang op op locatie';
@@ -1494,7 +1494,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get attendanceHowItWorksBody =>
-      '1. Print en plak deze QR op de werkplek (een code voor alle ingehuurde werknemers).\n2. Ingehuurde freelancers openen HupWorks en scannen op locatie.\n3. Iedereen bevestigt in- of uitklokken op de telefoon — een keer per dienst.\n4. Bekijk de aanwezigheid van vandaag op het jobdetailscherm.\n\nAnti-fraude: punches vereisen GPS binnen 200 m van je kaartpin. Delen stuurt alleen een posterafbeelding (geen kopieerbare deep link).';
+      '1. Print en plak deze QR op de werkplek (een code voor alle ingehuurde freelancers).\n2. Ingehuurde freelancers openen HupWorks en scannen op locatie.\n3. Iedereen bevestigt in- of uitklokken op de telefoon — een keer per dienst.\n4. Bekijk de aanwezigheid van vandaag op het jobdetailscherm.\n\nAnti-fraude: punches vereisen GPS binnen 200 m van je kaartpin. Delen stuurt alleen een posterafbeelding (geen kopieerbare deep link).';
 
   @override
   String get noOnsiteJobsYet => 'Nog geen jobs op locatie';
@@ -1863,7 +1863,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get orderPlacedSuccess => 'Bestelling geplaatst!';
 
   @override
-  String get missingOrderDetails => 'Dienst- of freelancergegevens ontbreken';
+  String get missingOrderDetails => 'Contract- of freelancergegevens ontbreken';
 
   @override
   String errorPlacingOrder(String message) {
@@ -1887,7 +1887,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get rateOverallExperience =>
-      'Hoe beoordeel je je algehele ervaring met deze verkoper?';
+      'Hoe beoordeel je je algehele ervaring met deze freelancer?';
 
   @override
   String get freelancerForContract => 'Freelancer voor dit overeenkomst';
@@ -2147,15 +2147,15 @@ class AppLocalizationsNl extends AppLocalizations {
   String get amountCaps => 'BEDRAG';
 
   @override
-  String get orderDetailsTitle => 'Orderdetails';
+  String get orderDetailsTitle => 'Contractdetails';
 
   @override
   String orderIdHash(String id) {
-    return 'Order-ID #$id';
+    return 'Contract-ID #$id';
   }
 
   @override
-  String get sellerColon => 'Verkoper:';
+  String get sellerColon => 'Freelancer:';
 
   @override
   String get clientColon => 'Werkgever:';
@@ -2164,7 +2164,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get labelTitle => 'Titel';
 
   @override
-  String get labelServiceInfo => 'Service-info';
+  String get labelServiceInfo => 'Details';
 
   @override
   String get labelDuration => 'Duur';
@@ -2176,7 +2176,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get labelRevisions => 'Revisies';
 
   @override
-  String get orderSummary => 'Ordersamenvatting';
+  String get orderSummary => 'Contractoverzicht';
 
   @override
   String get subtotal => 'Subtotaal';
@@ -2247,21 +2247,21 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get couldNotOpenReviewMissingSeller =>
-      'Review kon niet worden geopend (verkoper ontbreekt).';
+      'Review kon niet worden geopend (freelancer ontbreekt).';
 
   @override
-  String get sellerSubmittedDelivery => 'Verkoper heeft levering ingediend';
+  String get sellerSubmittedDelivery => 'Freelancer heeft werk opgeleverd';
 
   @override
   String get yourDelivery => 'Jouw levering';
 
   @override
   String get deliveredCalloutBody =>
-      'Bekijk wat ze hebben gestuurd. Als je tevreden bent, tik hieronder op Job voltooien om de order te sluiten. Chat met de verkoper via het ⋮-menu bovenaan.';
+      'Bekijk wat ze hebben gestuurd. Als je tevreden bent, tik hieronder op Job voltooien om het contract te sluiten. Chat met de freelancer via het ⋮-menu bovenaan.';
 
   @override
   String get openContractCalloutBody =>
-      'Je freelancer moet de levering indienen voordat je dit overeenkomst kunt voltooien. Bericht de verkoper via het ⋮-menu bovenaan.';
+      'Je freelancer moet de levering indienen voordat je dit overeenkomst kunt voltooien. Bericht de freelancer via het ⋮-menu bovenaan.';
 
   @override
   String cancellationRequestBannerBody(String seller) {
@@ -2295,10 +2295,10 @@ class AppLocalizationsNl extends AppLocalizations {
   String get onboardingAwaitingAck => 'Wacht op bevestiging';
 
   @override
-  String get theSeller => 'de verkoper';
+  String get theSeller => 'de freelancer';
 
   @override
-  String get roleSeller => 'Verkoper';
+  String get roleSeller => 'Freelancer';
 
   @override
   String get roleClient => 'Werkgever';
@@ -2479,7 +2479,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get describeJobHint => 'Scope, planning, vaardigheden';
 
   @override
-  String get workersNeeded => 'Benodigde werkers';
+  String get workersNeeded => 'Benodigde freelancers';
 
   @override
   String get limitHiresToCount => 'Beperk hires tot dit aantal';
@@ -2566,7 +2566,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get shiftScheduleHint =>
-      'Optionele werkdag en tijden (bijv. 06:00–15:00). Bepaalt het aanwezigheidsvenster (±1 uur marge). Leeg = UTC-kalenderdag.';
+      'Optionele werktijden (bijv. 06:00–15:00). Aanwezigheid kan worden vastgelegd van 1 uur ervoor tot 1 uur erna. Leeg = de hele kalenderdag (UTC).';
 
   @override
   String get workDateLabel => 'Werkdatum';
@@ -2602,7 +2602,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get shiftLabel => 'Dienst';
 
   @override
-  String get workersLabel => 'Werkers';
+  String get workersLabel => 'Freelancers';
 
   @override
   String get noLimitLabel => 'Geen limiet';
@@ -2618,18 +2618,18 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String hireConfirmUnlimited(String name, String price) {
-    return 'Aanbod van $name ($price) accepteren? De job blijft open zodat je meer freelancers kunt inhuren tot je hem sluit.';
+    return 'Aanmelding van $name ($price) accepteren? De job blijft open zodat je meer freelancers kunt inhuren tot je hem sluit.';
   }
 
   @override
   String hireConfirmFillsAll(String name, String price, int filled, int cap) {
-    return 'Aanbod van $name ($price) accepteren? Dit vult je laatste plek ($filled van $cap). De job sluit voor nieuwe aanmelders. Andere aanmeldingen blijven open — wijs ze alleen af als je ze niet wilt.';
+    return 'Aanmelding van $name ($price) accepteren? Dit vult je laatste plek ($filled van $cap). De job sluit voor nieuwe aanmelders. Andere aanmeldingen blijven open — wijs ze alleen af als je ze niet wilt.';
   }
 
   @override
   String hireConfirmRemaining(
       String name, String price, int remaining, int filled, int cap) {
-    return 'Aanbod van $name ($price) accepteren? Na deze hire heb je nog $remaining open plekken ($filled van $cap gevuld). Andere openstaande aanmeldingen blijven open.';
+    return 'Aanmelding van $name ($price) accepteren? Na deze hire heb je nog $remaining open plekken ($filled van $cap gevuld). Andere openstaande aanmeldingen blijven open.';
   }
 
   @override
@@ -2660,7 +2660,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get messageFreelancerTooltip => 'Bericht freelancer';
 
   @override
-  String get attendanceQrShort => 'QR';
+  String get attendanceQrShort => 'Aanwezigheids-QR';
 
   @override
   String get attendanceLocationRequired =>
@@ -2804,7 +2804,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get customBidIntroWithBudget =>
-      'Voer je eigen bedrag in als je anders wilt bieden dan het budget van de werkgever.';
+      'Voer je eigen prijs in als je een ander bedrag wilt vragen dan het budget van de werkgever.';
 
   @override
   String get customBidIntroNoBudget =>
@@ -2819,7 +2819,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get yourOfferAmount => 'Jouw aanmeldingsbedrag';
 
   @override
-  String get enterYourBid => 'Voer je bod in';
+  String get enterYourBid => 'Voer je prijs in';
 
   @override
   String get quoteAsLabel => 'Offreren als';
@@ -2905,7 +2905,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get clearFilters => 'Filters wissen';
 
   @override
-  String get deliverOrderTitle => 'Bestelling afleveren';
+  String get deliverOrderTitle => 'Werk opleveren';
 
   @override
   String get pleaseDescribeDelivery => 'Beschrijf uw levering';
@@ -2937,7 +2937,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get paymentBkash => 'Bkash';
 
   @override
-  String get bidOfferLabel => 'Bod aanbieding';
+  String get bidOfferLabel => 'Prijs van aanmelding';
 
   @override
   String get counterOfferLabel => 'Tegenbod';
@@ -3002,7 +3002,7 @@ class AppLocalizationsNl extends AppLocalizations {
       'Probeer een ander filter of start een chat vanaf een profiel';
 
   @override
-  String get proposalCaps => 'VOORSTEL';
+  String get proposalCaps => 'AANMELDING';
 
   @override
   String get labelColon => ':';
@@ -3221,7 +3221,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get identityVerificationSetupHint =>
-      'Upload een selfie met je officiële ID naast je gezicht. Een beheerder beoordeelt gezicht+ID apart van je profielfoto — je ziet “in behandeling” tot elk is goedgekeurd.';
+      'Upload een selfie met je officiële ID naast je gezicht. Een beheerder beoordeelt je selfie met ID apart van je profielfoto — je ziet “in behandeling” tot elk is goedgekeurd.';
 
   @override
   String get idDoLabel => 'Wel: gezicht + ID duidelijk';
@@ -3258,11 +3258,11 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get faceIdPendingHint =>
-      'Gezicht+ID is ingediend maar nog niet goedgekeurd (+50 pts na acceptatie). Profielfoto wordt apart beoordeeld.';
+      'Selfie met ID is ingediend maar nog niet goedgekeurd (+50 punten na acceptatie). Profielfoto wordt apart beoordeeld.';
 
   @override
   String get faceIdVerifiedHint =>
-      'Gezicht+ID geaccepteerd. Een nieuwe selfie reset alleen de gezicht+ID-beoordeling.';
+      'Selfie met ID geaccepteerd. Een nieuwe selfie reset alleen de beoordeling van de selfie met ID.';
 
   @override
   String get selfieWithId => 'Selfie met ID';
@@ -3297,13 +3297,13 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get verificationScoreHint =>
-      'Profielfoto en gezicht+ID worden apart beoordeeld (elk 50 pts).';
+      'Profielfoto en selfie met ID worden apart beoordeeld (elk 50 punten).';
 
   @override
   String get profilePhotoLabel => 'Profielfoto';
 
   @override
-  String get faceIdSelfieLabel => 'Gezicht + ID-selfie';
+  String get faceIdSelfieLabel => 'Selfie met ID';
 
   @override
   String get acceptedByAdmin => 'Geaccepteerd door beheerder';
@@ -3424,7 +3424,7 @@ class AppLocalizationsNl extends AppLocalizations {
       'Probeer een andere status of wis je zoekopdracht.';
 
   @override
-  String get trustScoreLabel => 'Vertrouwen';
+  String get trustScoreLabel => 'Betrouwbaarheidsscore';
 
   @override
   String get genderLabel => 'Geslacht';
@@ -3656,7 +3656,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get faqMessageSellerA =>
-      'Open een order of jobaanbod en kies Bericht, of ga naar het tabblad Berichten voor al je gesprekken met freelancers.';
+      'Open een contract of aanmelding en kies Bericht, of ga naar het tabblad Berichten voor al je gesprekken met freelancers.';
 
   @override
   String get faqReportSellerQ => 'Hoe meld ik een freelancer?';
@@ -3698,7 +3698,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get faqAttendanceA =>
-      'Profielmenu → Aanwezigheid. Op locatie scan je de QR van de werkgever (gedeeld door alle ingehuurde werknemers). Iedereen mag een keer in- en uitklokken per dienst. Je moet binnen 200 m van de job-pin zijn. De QR-poster is alleen een afbeelding zodat de deep link niet te kopiëren is.';
+      'Profielmenu → Aanwezigheid. Op locatie scan je de QR van de werkgever (gedeeld door alle ingehuurde freelancers). Iedereen mag een keer in- en uitklokken per dienst. Je moet binnen 200 m van de job-pin zijn. De QR-poster is alleen een afbeelding zodat de deep link niet te kopiëren is.';
 
   @override
   String get pleasePinJobSite =>
@@ -3709,7 +3709,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get attendancePinSiteToUseQr =>
-      'Zet eerst een pin op de kaart. Werknemers kunnen alleen inklokken binnen 200 meter van die pin.';
+      'Zet eerst een pin op de kaart. Freelancers kunnen alleen inklokken binnen 200 meter van die pin.';
 
   @override
   String get attendanceLocationCheckHint =>
@@ -3739,7 +3739,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String attendanceShareQrMessage(String job) {
-    return 'Print deze QR en hang hem op bij \"$job\". Ingehuurde werknemers scannen hem in HupWorks terwijl ze op locatie zijn.';
+    return 'Print deze QR en hang hem op bij \"$job\". Ingehuurde freelancers scannen hem in HupWorks terwijl ze op locatie zijn.';
   }
 
   @override
@@ -3997,6 +3997,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get guideDone => 'Begrepen';
 
   @override
+  String get guideReplayThisScreen => 'Toon tips voor dit scherm';
+
+  @override
   String get guideShellMenuTitle => 'Menu';
 
   @override
@@ -4035,7 +4038,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get guideClientHomeSearchDesc =>
-      'Vind freelancers en jobs met een trefwoord.';
+      'Vind freelancers op naam of vaardigheid.';
 
   @override
   String get guideClientHomeNudgeTitle => 'Maak je profiel af';
@@ -4072,7 +4075,7 @@ class AppLocalizationsNl extends AppLocalizations {
       'Snel naar sollicitaties en de aanwezigheids-QR.';
 
   @override
-  String get guideSellerHomeWorkTitle => 'Werktracker';
+  String get guideSellerHomeWorkTitle => 'Jouw werk';
 
   @override
   String get guideSellerHomeWorkDesc =>
@@ -4087,4 +4090,747 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get guideReplayDone =>
       'De tips verschijnen opnieuw wanneer je elk scherm bezoekt';
+
+  @override
+  String get menuTooltip => 'Menu';
+
+  @override
+  String get clearSearch => 'Zoekopdracht wissen';
+
+  @override
+  String get jobAlertDeleteTooltip => 'Melding verwijderen';
+
+  @override
+  String get removeSavedTalent => 'Verwijderen uit opgeslagen talent';
+
+  @override
+  String get skillPickerChoose => 'Kies een vaardigheid';
+
+  @override
+  String get skillPickerCustomNote =>
+      'Deze vaardigheid wordt alleen op je profiel opgeslagen — niet aan de algemene lijst toegevoegd.';
+
+  @override
+  String get skillPickerSearchHint =>
+      'Zoek bijv. loodgieter, fabrieksmedewerker';
+
+  @override
+  String get skillPickerNoneLoaded => 'Geen vaste vaardigheden geladen';
+
+  @override
+  String skillPickerNoMatch(String query) {
+    return 'Geen resultaat voor \"$query\"';
+  }
+
+  @override
+  String skillPickerAddToProfile(String query) {
+    return '\"$query\" aan je profiel toevoegen';
+  }
+
+  @override
+  String get skillPickerCustomSubtitle =>
+      'Eigen vaardigheid — niet aan de algemene lijst toegevoegd';
+
+  @override
+  String get skillPickerTapToChoose => 'Tik om een vaardigheid te kiezen';
+
+  @override
+  String get skillCustomBadge => 'Eigen vaardigheid';
+
+  @override
+  String get skillAdd => 'Vaardigheid toevoegen';
+
+  @override
+  String get skillChange => 'Vaardigheid wijzigen';
+
+  @override
+  String get skillAddBest =>
+      'Voeg een vaardigheid toe waar je het beste in bent';
+
+  @override
+  String get skillAddGood => 'Voeg een vaardigheid toe waar je goed in bent';
+
+  @override
+  String get skillAddLearning =>
+      'Voeg een vaardigheid toe die je aan het leren bent';
+
+  @override
+  String get skillCatalogUnavailable =>
+      'De vaste vaardighedenlijst is niet beschikbaar — je kunt nog steeds eigen vaardigheden toevoegen.';
+
+  @override
+  String get skillTierBestTitle => 'Het beste in';
+
+  @override
+  String get skillTierBestSubtitle =>
+      'Optioneel — kies uit de lijst of voeg je eigen toe';
+
+  @override
+  String get skillTierGoodTitle => 'Ook goed in';
+
+  @override
+  String get skillTierGoodSubtitle => 'Optioneel — nog maximaal 2 vaardigheden';
+
+  @override
+  String get skillTierLearningTitle => 'Nog aan het leren';
+
+  @override
+  String get skillTierLearningSubtitle =>
+      'Optioneel — maximaal 3 vaardigheden, geef 1–3 sterren';
+
+  @override
+  String get skillErrNameRequired =>
+      'Alle vaardigheden moeten een naam hebben.';
+
+  @override
+  String skillErrDuplicate(String name) {
+    return 'Dubbele vaardigheid: $name';
+  }
+
+  @override
+  String get skillErrStarsRange =>
+      'Elke vaardigheid moet 1 tot 5 sterren hebben.';
+
+  @override
+  String skillErrMaxFive(int max) {
+    return 'Maximaal $max vaardigheden met 5 sterren.';
+  }
+
+  @override
+  String skillErrMaxFour(int max) {
+    return 'Maximaal $max vaardigheden met 4 sterren.';
+  }
+
+  @override
+  String skillErrMaxLow(int max) {
+    return 'Maximaal $max vaardigheden met 1–3 sterren.';
+  }
+
+  @override
+  String get acceptAction => 'Accepteren';
+
+  @override
+  String get declineAction => 'Afwijzen';
+
+  @override
+  String get hourReportsTitle => 'Urenrapporten';
+
+  @override
+  String get hourReportsEmployerHint =>
+      'Accepteer of wijs uren af nadat de freelancer is uitgeklokt. Betaal buiten de app.';
+
+  @override
+  String get hourReportsFreelancerHint =>
+      'Wordt automatisch verstuurd wanneer je uitklokt.';
+
+  @override
+  String get hoursAcceptedSnack =>
+      'Uren geaccepteerd. Betaal de freelancer buiten de app.';
+
+  @override
+  String hoursAcceptFailed(String error) {
+    return 'Accepteren mislukt: $error';
+  }
+
+  @override
+  String get hoursDeclineTitle => 'Uren afwijzen';
+
+  @override
+  String get hoursDeclineReasonHint => 'Optionele reden voor de freelancer';
+
+  @override
+  String get hoursDeclinedSnack => 'Uren afgewezen.';
+
+  @override
+  String hoursDeclineFailed(String error) {
+    return 'Afwijzen mislukt: $error';
+  }
+
+  @override
+  String get guideChooserTitle => 'Tips voor dit scherm';
+
+  @override
+  String get guideChooserMainTips => 'Belangrijkste tips';
+
+  @override
+  String get guideInfoHint =>
+      'Tik op de (i) om deze tips altijd opnieuw te bekijken';
+
+  @override
+  String get guideShellMyJobsTitle => 'Mijn jobs';
+
+  @override
+  String get guideShellMyJobsDesc =>
+      'Je jobplaatsingen en de sollicitanten daarvan vind je hier.';
+
+  @override
+  String get guideShellMessagesTitle => 'Berichten';
+
+  @override
+  String get guideShellMessagesDesc =>
+      'Chat met opdrachtgevers over jobs en overeenkomsten.';
+
+  @override
+  String get guideShellSellerContractsDesc =>
+      'Volg geaccepteerd werk, oplevering en betaalmarkeringen.';
+
+  @override
+  String get guideClientHomeSectionExplore => 'Verkennen';
+
+  @override
+  String get guideClientHomeShortcutsTitle => 'Snelkoppelingen';
+
+  @override
+  String get guideClientHomeShortcutsDesc =>
+      'Ga snel naar plaatsen, talent, sollicitaties of overeenkomsten.';
+
+  @override
+  String get guideClientHomeHighlightsTitle => 'Uitgelicht';
+
+  @override
+  String get guideClientHomeHighlightsDesc =>
+      'Veeg door de banners voor snelle manieren om aan te nemen of te plaatsen.';
+
+  @override
+  String get guideClientHomeCategoriesTitle => 'Categorieën';
+
+  @override
+  String get guideClientHomeCategoriesDesc =>
+      'Tik op een categorie om te zien wat erin zit.';
+
+  @override
+  String get guideClientHomeRecentJobsTitle => 'Je recente jobs';
+
+  @override
+  String get guideClientHomeRecentJobsDesc =>
+      'Je laatste plaatsingen en hun status. Tik op een job om sollicitanten te bekijken.';
+
+  @override
+  String get guideClientHomeTopFreelancersTitle => 'Top freelancers';
+
+  @override
+  String get guideClientHomeTopFreelancersDesc =>
+      'Veeg om te bladeren. Tik op een kaart voor een profiel.';
+
+  @override
+  String get guideSellerHomeSectionWork => 'Je werkcijfers';
+
+  @override
+  String get guideSellerHomeSectionAttention =>
+      'Aandacht nodig en sollicitaties';
+
+  @override
+  String get guideSellerHomePaidOutsideTitle => 'Buiten de app betaald';
+
+  @override
+  String get guideSellerHomePaidOutsideDesc =>
+      'HupWorks houdt alleen werk en bedragen bij. Betalen gebeurt buiten de app, dus markeer hier als betaald als eigen administratie.';
+
+  @override
+  String get guideSellerHomeHoursAmountTitle => 'Uren en afgesproken bedrag';
+
+  @override
+  String get guideSellerHomeHoursAmountDesc =>
+      'Tik op uren voor Aanwezigheid, of op het bedrag voor Overeenkomsten.';
+
+  @override
+  String get guideSellerHomePaidUnpaidTitle => 'Betaald en onbetaald';
+
+  @override
+  String get guideSellerHomePaidUnpaidDesc =>
+      'Als betaald gemarkeerd is wat jij hebt vastgelegd. Nog onbetaald is afgesproken werk dat nog niet als betaald is gemarkeerd.';
+
+  @override
+  String get guideSellerHomeJobsDoneTitle => 'Klare en lopende jobs';
+
+  @override
+  String get guideSellerHomeJobsDoneDesc =>
+      'Hoeveel jobs je hebt afgerond en hoeveel er nu lopen.';
+
+  @override
+  String get guideSellerHomeAttentionTitle => 'Aandacht nodig';
+
+  @override
+  String get guideSellerHomeAttentionDesc =>
+      'Opgeleverd werk dat op goedkeuring wacht en jobs op locatie om in te klokken. Tik op een rij om erheen te gaan.';
+
+  @override
+  String get guideSellerHomeApplicationsTitle => 'Je sollicitaties';
+
+  @override
+  String get guideSellerHomeApplicationsDesc =>
+      'Zie elke job waarop je hebt gesolliciteerd. Alles bekijken opent de volledige lijst.';
+
+  @override
+  String get guideSellerHomeLatestAppTitle => 'Laatste sollicitatie';
+
+  @override
+  String get guideSellerHomeLatestAppDesc =>
+      'De status toont in behandeling, geaccepteerd of afgewezen. Tik om de lijst te openen.';
+
+  @override
+  String get guideSellerHomeBrowseJobsTitle => 'Jobs bekijken';
+
+  @override
+  String get guideSellerHomeBrowseJobsDesc =>
+      'Nog geen sollicitaties. Tik hier om een job te vinden.';
+
+  @override
+  String get guideCreateJobStepsTitle => 'Vier korte stappen';
+
+  @override
+  String get guideCreateJobStepsDesc =>
+      'Basis, Details, Locatie, Budget. Je controleert alles voor het plaatsen.';
+
+  @override
+  String get guideCreateJobCategoryTitle => 'Kies een categorie';
+
+  @override
+  String get guideCreateJobCategoryDesc =>
+      'Kies de beste match, of Overig om zelf een naam te geven.';
+
+  @override
+  String get guideCreateJobSkillsTitle => 'Vaardigheden toevoegen';
+
+  @override
+  String get guideCreateJobSkillsDesc =>
+      'Optioneel. Tag vaardigheden zodat de juiste freelancers je klus vinden.';
+
+  @override
+  String get guideCreateJobContinueTitle => 'Doorgaan';
+
+  @override
+  String get guideCreateJobContinueDesc =>
+      'Gaat naar de volgende stap. Bij de laatste stap plaatst het je klus.';
+
+  @override
+  String get guideCreateJobSectionDetails => 'Details';
+
+  @override
+  String get guideCreateJobSectionLocation => 'Locatie';
+
+  @override
+  String get guideCreateJobSectionBudget => 'Budget en controle';
+
+  @override
+  String get guideCreateJobDescTitle => 'Beschrijf het werk';
+
+  @override
+  String get guideCreateJobDescDesc => 'Leg de taken en eventuele eisen uit.';
+
+  @override
+  String get guideCreateJobShiftTitle => 'Diensttijden';
+
+  @override
+  String get guideCreateJobShiftDesc =>
+      'Optionele dag en tijden. Aanwezigheid wordt gecontroleerd binnen dit venster, met een uur speling.';
+
+  @override
+  String get guideCreateJobWorkersTitle => 'Aantal werknemers';
+
+  @override
+  String get guideCreateJobWorkersDesc =>
+      'Stel in hoeveel mensen je aanneemt. Zet uit voor geen limiet; dan sluit je de klus zelf.';
+
+  @override
+  String get guideCreateJobWhereTitle => 'Waar het gebeurt';
+
+  @override
+  String get guideCreateJobWhereDesc =>
+      'Kies Op locatie of Op afstand en voeg het adres toe.';
+
+  @override
+  String get guideCreateJobPinTitle => 'Pin de locatie';
+
+  @override
+  String get guideCreateJobPinDesc =>
+      'Klussen op locatie hebben een kaartpin nodig voor QR-aanwezigheid. Werknemers moeten binnen 200 meter zijn.';
+
+  @override
+  String get guideCreateJobAttendanceTitle => 'Aanwezigheid bijhouden';
+
+  @override
+  String get guideCreateJobAttendanceDesc =>
+      'Kies hoe werknemers hun tijd op locatie vastleggen. QR-opties hebben de kaartpin nodig.';
+
+  @override
+  String get guideCreateJobPayTitle => 'Betaalbereik';
+
+  @override
+  String get guideCreateJobPayDesc =>
+      'Optioneel. Freelancers zien dit voordat ze reageren.';
+
+  @override
+  String get guideCreateJobRateTitle => 'Tariefsoort';
+
+  @override
+  String get guideCreateJobRateDesc =>
+      'Kies vast, per uur, per dag of per maand voor dit bereik.';
+
+  @override
+  String get guideCreateJobReviewTitle => 'Controleren en plaatsen';
+
+  @override
+  String get guideCreateJobReviewDesc =>
+      'Controleer het overzicht en tik op Klus plaatsen om te publiceren.';
+
+  @override
+  String get guideJobGateMissingTitle => 'Wat ontbreekt';
+
+  @override
+  String get guideJobGateMissingDesc =>
+      'Vul deze gegevens aan zodat freelancers je klus kunnen vertrouwen.';
+
+  @override
+  String get guideJobGateEditTitle => 'Profiel bewerken';
+
+  @override
+  String get guideJobGateEditDesc =>
+      'Vul de ontbrekende gegevens in en kom terug. De controle loopt automatisch opnieuw.';
+
+  @override
+  String get guideJobDetailsCardTitle => 'Je klus';
+
+  @override
+  String get guideJobDetailsCardDesc =>
+      'Dit zien freelancers voordat ze reageren.';
+
+  @override
+  String get guideJobDetailsApplicationsTitle => 'Reacties';
+
+  @override
+  String get guideJobDetailsApplicationsDesc =>
+      'Freelancers die reageerden verschijnen hier. Trek omlaag om te vernieuwen.';
+
+  @override
+  String get guideJobDetailsHireTitle => 'Aannemen of afwijzen';
+
+  @override
+  String get guideJobDetailsHireDesc =>
+      'Aannemen start een contract en informeert de freelancer. Daarna kun je instructies voor de eerste dag toevoegen.';
+
+  @override
+  String get guideJobDetailsSectionApplicants => 'Sollicitanten';
+
+  @override
+  String get guideJobDetailsSectionAttendance => 'Aanwezigheid';
+
+  @override
+  String get guideJobDetailsApplicantTitle => 'Sollicitant';
+
+  @override
+  String get guideJobDetailsApplicantDesc =>
+      'Tik op de naam of foto om het profiel te bekijken.';
+
+  @override
+  String get guideJobDetailsMessageTitle => 'Bericht';
+
+  @override
+  String get guideJobDetailsMessageDesc =>
+      'Chat met deze freelancer voordat je beslist.';
+
+  @override
+  String get guideJobDetailsInstructionsTitle => 'Instructies eerste dag';
+
+  @override
+  String get guideJobDetailsInstructionsDesc =>
+      'Deel locatiegegevens met je aangenomen persoon. Je kunt altijd bewerken en opnieuw publiceren; die wordt op de hoogte gebracht.';
+
+  @override
+  String get guideJobDetailsAttendanceTitle => 'Aanwezigheid';
+
+  @override
+  String get guideJobDetailsAttendanceDesc =>
+      'Bij klussen op locatie zie je wanneer werknemers aankomen en vertrekken. Kies hieronder de methode.';
+
+  @override
+  String get guideJobDetailsMethodTitle => 'Inchecken';
+
+  @override
+  String get guideJobDetailsMethodDesc =>
+      'QR, zelf melden of uit. QR vraagt een kaartpin zodat werknemers alleen in de buurt kunnen inchecken.';
+
+  @override
+  String get guideJobDetailsQrTitle => 'Aanwezigheids-QR';
+
+  @override
+  String get guideJobDetailsQrDesc =>
+      'Open de QR-code om uit te printen en op locatie op te hangen.';
+
+  @override
+  String get guideJobDetailsPinTitle => 'Locatiepin instellen';
+
+  @override
+  String get guideJobDetailsPinDesc =>
+      'Nodig voor QR. Werknemers kunnen alleen binnen 200 meter inchecken.';
+
+  @override
+  String get guideJobDetailsTodayTitle => 'Aanwezigheid vandaag';
+
+  @override
+  String get guideJobDetailsTodayDesc =>
+      'Bekijk wie vandaag in- of uitgeklokt heeft.';
+
+  @override
+  String get guideFindJobsAlertsTitle => 'Jobmeldingen';
+
+  @override
+  String get guideFindJobsAlertsDesc =>
+      'Bewaar een zoekopdracht en hoor van nieuwe passende jobs. Beheer je meldingen hier.';
+
+  @override
+  String get guideFindJobsSearchTitle => 'Jobs zoeken';
+
+  @override
+  String get guideFindJobsSearchDesc =>
+      'Typ een jobtitel om de lijst te verkleinen.';
+
+  @override
+  String get guideFindJobsFilterTitle => 'Filters';
+
+  @override
+  String get guideFindJobsFilterDesc =>
+      'Verfijn op afstand, vaardigheden en categorieën. Een stip toont dat filters aan staan. Bewaar daar een zoekopdracht als melding.';
+
+  @override
+  String get guideFindJobsCardTitle => 'Open een job';
+
+  @override
+  String get guideFindJobsCardDesc =>
+      'Tik op een kaart om de details te lezen en te solliciteren.';
+
+  @override
+  String get guideFindJobsSectionCard => 'Een jobkaart lezen';
+
+  @override
+  String get guideFindJobsSaveTitle => 'Bewaar voor later';
+
+  @override
+  String get guideFindJobsSaveDesc =>
+      'Tik op het bladwijzertje om een job te bewaren en later terug te vinden.';
+
+  @override
+  String get guideFindJobsTagsTitle => 'Jobtags';
+
+  @override
+  String get guideFindJobsTagsDesc =>
+      'De categorie en het soort job, bijvoorbeeld klus of deeltijd.';
+
+  @override
+  String get guideFindJobsBudgetTitle => 'Budget';
+
+  @override
+  String get guideFindJobsBudgetDesc =>
+      'Wat de klant wil betalen. Je kunt nog steeds je eigen prijs noemen.';
+
+  @override
+  String get guideFindJobsSectionFilters => 'Filters en meldingen';
+
+  @override
+  String get guideFindJobsChipsTitle => 'Actieve filters';
+
+  @override
+  String get guideFindJobsChipsDesc =>
+      'Tik op een chip om hem te verwijderen, of op Alles wissen.';
+
+  @override
+  String get guideFindJobsCountTitle => 'Resultaten';
+
+  @override
+  String get guideFindJobsCountDesc => 'Hoeveel jobs er nu in de lijst staan.';
+
+  @override
+  String get guideSellerJobClientTitle => 'De klant';
+
+  @override
+  String get guideSellerJobClientDesc =>
+      'Zie wie de job plaatste. Tik om het profiel te bekijken.';
+
+  @override
+  String get guideSellerJobSaveTitle => 'Bewaar voor later';
+
+  @override
+  String get guideSellerJobSaveDesc =>
+      'Tik op het bladwijzertje om deze job te bewaren en later terug te vinden.';
+
+  @override
+  String get guideSellerJobReadTitle => 'Lees de job';
+
+  @override
+  String get guideSellerJobReadDesc =>
+      'Titel en beschrijving zeggen wat het werk is. Bekijk hieronder de feiten voor je solliciteert.';
+
+  @override
+  String get guideSellerJobApplyTitle => 'Solliciteren';
+
+  @override
+  String get guideSellerJobApplyDesc =>
+      'Tik om je sollicitatie te versturen. Je kiest je prijs en kunt een kort bericht toevoegen.';
+
+  @override
+  String get guideSellerJobSectionFit => 'Is deze job iets voor mij?';
+
+  @override
+  String get guideSellerJobWhereTitle => 'Op locatie of op afstand';
+
+  @override
+  String get guideSellerJobWhereDesc =>
+      'Bij jobs op locatie moet je ter plaatse zijn. Jobs op afstand doe je van thuis.';
+
+  @override
+  String get guideSellerJobBudgetTitle => 'Budget';
+
+  @override
+  String get guideSellerJobBudgetDesc =>
+      'Het bereik van de klant en hoe er betaald wordt: totaal, per uur of per dag.';
+
+  @override
+  String get guideSellerJobShiftTitle => 'Dienst';
+
+  @override
+  String get guideSellerJobShiftDesc => 'Wanneer het werk plaatsvindt.';
+
+  @override
+  String get guideSellerJobAppsTitle => 'Sollicitaties tot nu toe';
+
+  @override
+  String get guideSellerJobAppsDesc =>
+      'Hoeveel mensen al gesolliciteerd hebben.';
+
+  @override
+  String get guideApplyRateTitle => 'Kies je tarief';
+
+  @override
+  String get guideApplyRateDesc =>
+      'Solliciteer tegen het tarief van de klant, of stel je eigen prijs in.';
+
+  @override
+  String get guideApplyPostedTitle => 'Tarief van de klant';
+
+  @override
+  String get guideApplyPostedDesc =>
+      'Dit stelde de klant in. Je solliciteert tegen dit tarief en kunt nog een bericht toevoegen.';
+
+  @override
+  String get guideApplyPriceTitle => 'Jouw prijs';
+
+  @override
+  String get guideApplyPriceDesc =>
+      'Vul je prijs in en hoe je die noemt, zoals totaal of per uur.';
+
+  @override
+  String get guideApplyMessageTitle => 'Bericht (optioneel)';
+
+  @override
+  String guideApplyMessageDesc(int count) {
+    return 'Vertel waarom je past. Optioneel, maar schrijf je er een, gebruik dan minstens $count tekens.';
+  }
+
+  @override
+  String get guideApplySendTitle => 'Sollicitatie versturen';
+
+  @override
+  String get guideApplySendDesc =>
+      'Stuurt je sollicitatie naar de klant. Je kunt hem later intrekken bij Sollicitaties.';
+
+  @override
+  String get guideSetupReqTitle => 'Verplichte gegevens';
+
+  @override
+  String get guideSetupReqDesc =>
+      'Vul je jobtitel en geboortedatum in. Je leeftijd is zichtbaar; je geboortedatum blijft privé.';
+
+  @override
+  String get guideSetupContinueTitle => 'Doorgaan';
+
+  @override
+  String get guideSetupContinueDesc =>
+      'Controleert deze pagina en gaat naar de volgende.';
+
+  @override
+  String get guideSetupLogoutTitle => 'Uitloggen';
+
+  @override
+  String get guideSetupLogoutDesc =>
+      'Hiermee log je uit. Log later opnieuw in om verder te gaan.';
+
+  @override
+  String get guideSetupWhereTitle => 'Waar je werkt';
+
+  @override
+  String get guideSetupWhereDesc =>
+      'Vul je stad in om jobs in de buurt te vinden. Een kaartpin laat afstandsfilters werken.';
+
+  @override
+  String get guideSetupSkillsTitle => 'Je vaardigheden';
+
+  @override
+  String get guideSetupSkillsDesc =>
+      'Kies waar je het beste in bent. Klanten en jobmeldingen zoeken hierop. Optioneel.';
+
+  @override
+  String get guideSetupAboutTitle => 'Over jou';
+
+  @override
+  String get guideSetupAboutDesc =>
+      'Een korte intro helpt klanten je te kiezen.';
+
+  @override
+  String get guideSetupSectionSkills => 'Je vaardigheden';
+
+  @override
+  String get guideSetupBestTitle => 'Beste in';
+
+  @override
+  String get guideSetupBestDesc =>
+      'Je topvaardigheden, maximaal drie. Klanten zien deze eerst.';
+
+  @override
+  String get guideSetupLearningTitle => 'Nog aan het leren';
+
+  @override
+  String get guideSetupLearningDesc =>
+      'Maximaal drie vaardigheden die je opbouwt. Geef elk 1 tot 3 sterren.';
+
+  @override
+  String get guideSetupAddTitle => 'Vaardigheid toevoegen';
+
+  @override
+  String get guideSetupAddDesc =>
+      'Kies uit de lijst of typ je eigen vaardigheid.';
+
+  @override
+  String get guideSetupPhotoTitle => 'Je foto';
+
+  @override
+  String get guideSetupPhotoDesc =>
+      'Tik op de camera voor een duidelijke foto van voren. Een effen achtergrond is het best.';
+
+  @override
+  String get guideSetupPickTitle => 'Kies een foto';
+
+  @override
+  String get guideSetupPickDesc =>
+      'Kies er een uit je galerij of maak een nieuwe.';
+
+  @override
+  String get guideSetupWhyTitle => 'Waarom we dit vragen';
+
+  @override
+  String get guideSetupWhyDesc =>
+      'Klanten vertrouwen geverifieerde freelancers. Een beheerder bekijkt je selfie voor je geverifieerd bent.';
+
+  @override
+  String get guideSetupSelfieTitle => 'Selfie met ID';
+
+  @override
+  String get guideSetupSelfieDesc =>
+      'Houd je ID naast je gezicht en maak één foto.';
+
+  @override
+  String get guideSetupSaveTitle => 'Profiel opslaan';
+
+  @override
+  String get guideSetupSaveDesc =>
+      'Rondt de set-up af en opent de app. Eerst heb je de selfie nodig.';
 }

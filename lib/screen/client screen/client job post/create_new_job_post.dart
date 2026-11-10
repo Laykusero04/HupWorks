@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/guide/guide_anchor.dart';
+import 'package:freelancer/core/guide/guide_host.dart';
+import 'package:freelancer/core/guide/guide_info_button.dart';
+import 'package:freelancer/core/guide/guide_session.dart';
+import 'package:freelancer/core/guide/guide_step.dart';
 import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:freelancer/l10n/l10n.dart';
@@ -32,7 +37,8 @@ class CreateNewJobPost extends StatefulWidget {
   State<CreateNewJobPost> createState() => _CreateNewJobPostState();
 }
 
-class _CreateNewJobPostState extends State<CreateNewJobPost> {
+class _CreateNewJobPostState extends State<CreateNewJobPost>
+    with GuideHost<CreateNewJobPost> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _budgetMinController = TextEditingController();
@@ -62,6 +68,187 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
   TimeOfDay? _shiftStart;
   TimeOfDay? _shiftEnd;
 
+  // Guide targets (long-lived; unique per step because AnimatedSwitcher keeps
+  // the old step mounted for a moment).
+  final GlobalKey _guideHeaderKey = GlobalKey();
+  final GlobalKey _guideCategoryKey = GlobalKey();
+  final GlobalKey _guideSkillsKey = GlobalKey();
+  final GlobalKey _guideContinueKey = GlobalKey();
+  final GlobalKey _guideDescKey = GlobalKey();
+  final GlobalKey _guideShiftKey = GlobalKey();
+  final GlobalKey _guideWorkersKey = GlobalKey();
+  final GlobalKey _guideWhereKey = GlobalKey();
+  final GlobalKey _guidePinKey = GlobalKey();
+  final GlobalKey _guideAttendanceKey = GlobalKey();
+  final GlobalKey _guidePayKey = GlobalKey();
+  final GlobalKey _guideRateKey = GlobalKey();
+  final GlobalKey _guideReviewKey = GlobalKey();
+
+  static const _sectionDetails = 'details';
+  static const _sectionLocation = 'location';
+  static const _sectionBudget = 'budget';
+
+  @override
+  String get guideScreenId => 'create_job';
+
+  @override
+  String get guideRole => 'client';
+
+  @override
+  int get guideVersion => 1;
+
+  // Only the form (not the loading or "cannot post" pages) has targets.
+  @override
+  bool get guideDataReady => !_checkingGate && _canPost;
+
+  @override
+  String get guideSkipLabel => context.l10n.guideSkip;
+
+  @override
+  String get guideNextLabel => context.l10n.guideNext;
+
+  @override
+  String get guideDoneLabel => context.l10n.guideDone;
+
+  Widget _guide(
+    GlobalKey key,
+    String title,
+    String description,
+    Widget child, {
+    double radius = 8,
+  }) =>
+      GuideAnchor.wrap(
+        GuideAnchor(
+          key: key,
+          scope: guideScope,
+          title: title,
+          description: description,
+          borderRadius: BorderRadius.circular(radius),
+        ),
+        child,
+      );
+
+  /// Core guide = step 0 (Basics). It only runs while step 0 is showing; on
+  /// other steps no steps are returned so it can never start or mark seen.
+  @override
+  List<GuideStep> buildGuideSteps(BuildContext context) {
+    if (_step != 0) return const [];
+    final l10n = context.l10n;
+    return [
+      GuideStep(
+        key: _guideHeaderKey,
+        title: l10n.guideCreateJobStepsTitle,
+        description: l10n.guideCreateJobStepsDesc,
+      ),
+      GuideStep(
+        key: _guideCategoryKey,
+        title: l10n.guideCreateJobCategoryTitle,
+        description: l10n.guideCreateJobCategoryDesc,
+      ),
+      GuideStep(
+        key: _guideSkillsKey,
+        title: l10n.guideCreateJobSkillsTitle,
+        description: l10n.guideCreateJobSkillsDesc,
+        enableAutoScroll: true,
+      ),
+      GuideStep(
+        key: _guideContinueKey,
+        title: l10n.guideCreateJobContinueTitle,
+        description: l10n.guideCreateJobContinueDesc,
+        targetNearBottom: true,
+      ),
+    ];
+  }
+
+  /// Steps 1 to 3 each have one on-demand section (never auto-run).
+  @override
+  List<GuideSection> buildGuideExtraSections(BuildContext context) {
+    final l10n = context.l10n;
+    return [
+      GuideSection(
+        id: _sectionDetails,
+        title: l10n.guideCreateJobSectionDetails,
+        steps: [
+          GuideStep(
+            key: _guideDescKey,
+            title: l10n.guideCreateJobDescTitle,
+            description: l10n.guideCreateJobDescDesc,
+          ),
+          GuideStep(
+            key: _guideShiftKey,
+            title: l10n.guideCreateJobShiftTitle,
+            description: l10n.guideCreateJobShiftDesc,
+            enableAutoScroll: true,
+          ),
+          GuideStep(
+            key: _guideWorkersKey,
+            title: l10n.guideCreateJobWorkersTitle,
+            description: l10n.guideCreateJobWorkersDesc,
+            enableAutoScroll: true,
+          ),
+        ],
+      ),
+      GuideSection(
+        id: _sectionLocation,
+        title: l10n.guideCreateJobSectionLocation,
+        steps: [
+          GuideStep(
+            key: _guideWhereKey,
+            title: l10n.guideCreateJobWhereTitle,
+            description: l10n.guideCreateJobWhereDesc,
+          ),
+          GuideStep(
+            key: _guidePinKey,
+            title: l10n.guideCreateJobPinTitle,
+            description: l10n.guideCreateJobPinDesc,
+          ),
+          GuideStep(
+            key: _guideAttendanceKey,
+            title: l10n.guideCreateJobAttendanceTitle,
+            description: l10n.guideCreateJobAttendanceDesc,
+            enableAutoScroll: true,
+          ),
+        ],
+      ),
+      GuideSection(
+        id: _sectionBudget,
+        title: l10n.guideCreateJobSectionBudget,
+        steps: [
+          GuideStep(
+            key: _guidePayKey,
+            title: l10n.guideCreateJobPayTitle,
+            description: l10n.guideCreateJobPayDesc,
+          ),
+          GuideStep(
+            key: _guideRateKey,
+            title: l10n.guideCreateJobRateTitle,
+            description: l10n.guideCreateJobRateDesc,
+          ),
+          GuideStep(
+            key: _guideReviewKey,
+            title: l10n.guideCreateJobReviewTitle,
+            description: l10n.guideCreateJobReviewDesc,
+            enableAutoScroll: true,
+          ),
+        ],
+      ),
+    ];
+  }
+
+  /// The (i) on the form replays the CURRENT step's guide.
+  void _replayCurrentStepGuide() {
+    switch (_step) {
+      case 0:
+        replayGuide();
+      case 1:
+        replayGuide(sectionId: _sectionDetails);
+      case 2:
+        replayGuide(sectionId: _sectionLocation);
+      default:
+        replayGuide(sectionId: _sectionBudget);
+    }
+  }
+
   static const _stepCount = 4;
   static const _jobTypeValues = <String>['gig', 'full_time', 'part_time'];
 
@@ -86,10 +273,10 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
       if (!mounted) return;
       setState(() {
         _canPost = ClientProfileCompleteness.canPostJobs(profile);
-        _missingFields =
-            ClientProfileCompleteness.missingForJobPost(profile);
+        _missingFields = ClientProfileCompleteness.missingForJobPost(profile);
         _checkingGate = false;
       });
+      scheduleGuide();
     } catch (_) {
       if (!mounted) return;
       setState(() {
@@ -293,13 +480,16 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
   void _goBack() {
     FocusScope.of(context).unfocus();
     if (_step > 0) setState(() => _step--);
+    // Back on Basics: the first-time guide may still be waiting (never seen).
+    if (_step == 0) scheduleGuide();
   }
 
   Future<void> _handlePost() async {
     for (var s = 0; s < _stepCount; s++) {
       final err = _validateStep(s);
       if (err != null) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(err)));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(err)));
         setState(() => _step = s);
         return;
       }
@@ -386,102 +576,39 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
     }
 
     if (!_canPost) {
-      return Scaffold(
-        backgroundColor: kDarkWhite,
-        appBar: AppBar(
-          backgroundColor: kDarkWhite,
-          elevation: 0,
-          iconTheme: const IconThemeData(color: kNeutralColor),
-          title: Text(
-            l10n.postAJob,
-            style: kTextStyle.copyWith(
-              color: kNeutralColor,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          centerTitle: true,
-        ),
-        body: Padding(
-          padding: const EdgeInsets.only(top: 15),
-          child: Container(
-            width: context.width(),
-            padding: const EdgeInsets.all(24),
-            decoration: const BoxDecoration(
-              color: kWhite,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(Icons.badge_outlined, size: 48, color: kPrimaryColor),
-                const SizedBox(height: 16),
-                Text(
-                  l10n.completeProfileToPostJob,
-                  style: kTextStyle.copyWith(
-                    color: kNeutralColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  l10n.completeProfileToPostJobHint,
-                  style: kTextStyle.copyWith(color: kSubTitleColor),
-                ),
-                const SizedBox(height: 20),
-                ..._missingFields.map(
-                  (key) => Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.circle, size: 8, color: kPrimaryColor),
-                        const SizedBox(width: 10),
-                        Text(
-                          _missingLabel(l10n, key),
-                          style: kTextStyle.copyWith(color: kNeutralColor),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const Spacer(),
-                ButtonGlobalWithoutIcon(
-                  buttontext: l10n.editProfile,
-                  buttonDecoration: kButtonDecoration.copyWith(
-                    color: kPrimaryColor,
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  onPressed: () async {
-                    await context.push(AppRoutes.clientProfileEdit);
-                    await _checkPostGate();
-                  },
-                  buttonTextColor: kWhite,
-                ),
-                const SizedBox(height: 10),
-                Center(
-                  child: TextButton(
-                    onPressed: () async {
-                      await context.push(AppRoutes.clientProfileVerify);
-                      await _checkPostGate();
-                    },
-                    child: Text(l10n.employerVerification),
-                  ),
-                ),
-                const SizedBox(height: 12),
-              ],
-            ),
-          ),
-        ),
+      return _CreateJobGate(
+        missingLabels: [
+          for (final key in _missingFields) _missingLabel(l10n, key),
+        ],
+        onEditProfile: () async {
+          await context.push(AppRoutes.clientProfileEdit);
+          await _checkPostGate();
+        },
+        onVerify: () async {
+          await context.push(AppRoutes.clientProfileVerify);
+          await _checkPostGate();
+        },
       );
     }
 
     final isLastStep = _step == _stepCount - 1;
 
-    return PopScope(
-      canPop: _step == 0,
-      onPopInvokedWithResult: (didPop, _) {
-        if (!didPop && _step > 0) _goBack();
-      },
+    // While a guide runs, Back closes it (counts as Skip) instead of leaving
+    // the step or the screen.
+    return ValueListenableBuilder<bool>(
+      valueListenable: GuideSession.anyRunning,
+      builder: (context, guideOpen, child) => PopScope(
+        canPop: _step == 0 && !guideOpen,
+        onPopInvokedWithResult: (didPop, _) {
+          if (didPop) return;
+          if (guideOpen) {
+            GuideSession.dismissRunning();
+          } else if (_step > 0) {
+            _goBack();
+          }
+        },
+        child: child!,
+      ),
       child: Scaffold(
         backgroundColor: kDarkWhite,
         appBar: AppBar(
@@ -490,9 +617,13 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
           iconTheme: const IconThemeData(color: kNeutralColor),
           title: Text(
             context.l10n.postAJob,
-            style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+            style: kTextStyle.copyWith(
+                color: kNeutralColor, fontWeight: FontWeight.bold),
           ),
           centerTitle: true,
+          actions: [
+            if (!_isLoading) _WizardGuideButton(host: this),
+          ],
         ),
         body: Padding(
           padding: const EdgeInsets.only(top: 15.0),
@@ -510,7 +641,12 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: 20),
-                _buildStepHeader(),
+                _guide(
+                  _guideHeaderKey,
+                  l10n.guideCreateJobStepsTitle,
+                  l10n.guideCreateJobStepsDesc,
+                  _buildStepHeader(),
+                ),
                 const SizedBox(height: 20),
                 Expanded(
                   child: SingleChildScrollView(
@@ -548,7 +684,8 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          context.l10n.stepProgressWithLabel(_step + 1, labels.length, labels[_step]),
+          context.l10n
+              .stepProgressWithLabel(_step + 1, labels.length, labels[_step]),
           style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13),
         ),
         const SizedBox(height: 10),
@@ -576,7 +713,8 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
                 foregroundColor: kNeutralColor,
                 side: const BorderSide(color: kBorderColorTextField),
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30)),
               ),
               child: Text(context.l10n.back),
             ),
@@ -585,6 +723,13 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
         Expanded(
           flex: _step > 0 ? 2 : 1,
           child: ButtonGlobalWithoutIcon(
+            guideAnchor: GuideAnchor(
+              key: _guideContinueKey,
+              scope: guideScope,
+              title: context.l10n.guideCreateJobContinueTitle,
+              description: context.l10n.guideCreateJobContinueDesc,
+              borderRadius: BorderRadius.circular(30),
+            ),
             buttontext: _isLoading
                 ? context.l10n.postingEllipsis
                 : isLastStep
@@ -611,7 +756,8 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
         const SizedBox(height: 8),
         Text(
           l10n.createJobBasicsSubtitle,
-          style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12, height: 1.35),
+          style: kTextStyle.copyWith(
+              color: kSubTitleColor, fontSize: 12, height: 1.35),
         ),
         const SizedBox(height: 14),
         TextFormField(
@@ -629,14 +775,19 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
           ),
         ),
         const SizedBox(height: 16),
-        CategoryPickerField(
-          categories: _categories,
-          selectedCategoryId: _selectedCategoryId,
-          isLoading: _isCategoriesLoading,
-          onSelected: (value) => setState(() {
-            _selectedCategoryId = value;
-            _updateCustomCategoryPreview();
-          }),
+        _guide(
+          _guideCategoryKey,
+          l10n.guideCreateJobCategoryTitle,
+          l10n.guideCreateJobCategoryDesc,
+          CategoryPickerField(
+            categories: _categories,
+            selectedCategoryId: _selectedCategoryId,
+            isLoading: _isCategoriesLoading,
+            onSelected: (value) => setState(() {
+              _selectedCategoryId = value;
+              _updateCustomCategoryPreview();
+            }),
+          ),
         ),
         if (_selectedCategoryId == CategoryService.otherCategoryOptionId) ...[
           const SizedBox(height: 14),
@@ -658,7 +809,10 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
             const SizedBox(height: 6),
             Text(
               l10n.savedAsCategory(_customCategoryPreview!),
-              style: kTextStyle.copyWith(color: kPrimaryColor, fontSize: 12, fontWeight: FontWeight.w600),
+              style: kTextStyle.copyWith(
+                  color: kPrimaryColor,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600),
             ),
           ],
         ],
@@ -670,22 +824,27 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
           style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12),
         ),
         const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            ..._skillNames.map(
-              (s) => Chip(
-                label: Text(s),
-                onDeleted: () => setState(() => _skillNames.remove(s)),
+        _guide(
+          _guideSkillsKey,
+          l10n.guideCreateJobSkillsTitle,
+          l10n.guideCreateJobSkillsDesc,
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              ..._skillNames.map(
+                (s) => Chip(
+                  label: Text(s),
+                  onDeleted: () => setState(() => _skillNames.remove(s)),
+                ),
               ),
-            ),
-            ActionChip(
-              avatar: const Icon(Icons.add, size: 18),
-              label: Text(l10n.jobAlertAddSkill),
-              onPressed: _addSkill,
-            ),
-          ],
+              ActionChip(
+                avatar: const Icon(Icons.add, size: 18),
+                label: Text(l10n.jobAlertAddSkill),
+                onPressed: _addSkill,
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 18),
         _label(l10n.jobAlertJobTypeSection),
@@ -700,10 +859,12 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
               onSelected: (_) => setState(() => _selectedJobType = value),
               selectedColor: kPrimaryColor,
               backgroundColor: kDarkWhite,
-              labelStyle: kTextStyle.copyWith(color: selected ? kWhite : kNeutralColor),
+              labelStyle:
+                  kTextStyle.copyWith(color: selected ? kWhite : kNeutralColor),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
-                side: BorderSide(color: selected ? kPrimaryColor : kBorderColorTextField),
+                side: BorderSide(
+                    color: selected ? kPrimaryColor : kBorderColorTextField),
               ),
             );
           }).toList(),
@@ -722,143 +883,172 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
         const SizedBox(height: 8),
         Text(
           l10n.createJobDetailsSubtitle,
-          style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12, height: 1.35),
+          style: kTextStyle.copyWith(
+              color: kSubTitleColor, fontSize: 12, height: 1.35),
         ),
         const SizedBox(height: 14),
-        TextFormField(
-          controller: _descriptionController,
-          keyboardType: TextInputType.multiline,
-          cursorColor: kNeutralColor,
-          textInputAction: TextInputAction.newline,
-          maxLines: 6,
-          minLines: 4,
-          decoration: kInputDecoration.copyWith(
-            labelText: l10n.describeJobLabel,
-            labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-            hintText: l10n.describeJobHint,
-            hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
-            floatingLabelBehavior: FloatingLabelBehavior.always,
-            alignLabelWithHint: true,
-            border: const OutlineInputBorder(),
+        _guide(
+          _guideDescKey,
+          l10n.guideCreateJobDescTitle,
+          l10n.guideCreateJobDescDesc,
+          TextFormField(
+            controller: _descriptionController,
+            keyboardType: TextInputType.multiline,
+            cursorColor: kNeutralColor,
+            textInputAction: TextInputAction.newline,
+            maxLines: 6,
+            minLines: 4,
+            decoration: kInputDecoration.copyWith(
+              labelText: l10n.describeJobLabel,
+              labelStyle: kTextStyle.copyWith(color: kNeutralColor),
+              hintText: l10n.describeJobHint,
+              hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
+              floatingLabelBehavior: FloatingLabelBehavior.always,
+              alignLabelWithHint: true,
+              border: const OutlineInputBorder(),
+            ),
           ),
         ),
         const SizedBox(height: 20),
-        _sectionHeader(Icons.schedule, l10n.shiftSchedule),
-        const SizedBox(height: 8),
-        Text(
-          l10n.shiftScheduleHint,
-          style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12, height: 1.35),
-        ),
-        const SizedBox(height: 12),
-        _shiftPickerTile(
-          label: l10n.workDateLabel,
-          value: _workDate == null
-              ? l10n.optionalLabel
-              : AppDateFormat.dMmmY(
-                  _workDate!,
-                  AppDateFormat.localeOf(context),
-                ),
-          onTap: _pickWorkDate,
-          onClear: _workDate == null ? null : () => setState(() => _workDate = null),
-        ),
-        const SizedBox(height: 10),
-        Row(
-          children: [
-            Expanded(
-              child: _shiftPickerTile(
-                label: l10n.shiftStartLabel,
-                value: _shiftStart == null
-                    ? l10n.optionalLabel
-                    : ShiftSchedule.formatTimeOfDay(_shiftStart!),
-                onTap: () => _pickShiftTime(isStart: true),
-                onClear: _shiftStart == null
-                    ? null
-                    : () => setState(() => _shiftStart = null),
+        _guide(
+          _guideShiftKey,
+          l10n.guideCreateJobShiftTitle,
+          l10n.guideCreateJobShiftDesc,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _sectionHeader(Icons.schedule, l10n.shiftSchedule),
+              const SizedBox(height: 8),
+              Text(
+                l10n.shiftScheduleHint,
+                style: kTextStyle.copyWith(
+                    color: kSubTitleColor, fontSize: 12, height: 1.35),
               ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _shiftPickerTile(
-                label: l10n.shiftEndLabel,
-                value: _shiftEnd == null
+              const SizedBox(height: 12),
+              _shiftPickerTile(
+                label: l10n.workDateLabel,
+                value: _workDate == null
                     ? l10n.optionalLabel
-                    : ShiftSchedule.formatTimeOfDay(_shiftEnd!),
-                onTap: () => _pickShiftTime(isStart: false),
-                onClear: _shiftEnd == null
+                    : AppDateFormat.dMmmY(
+                        _workDate!,
+                        AppDateFormat.localeOf(context),
+                      ),
+                onTap: _pickWorkDate,
+                onClear: _workDate == null
                     ? null
-                    : () => setState(() => _shiftEnd = null),
+                    : () => setState(() => _workDate = null),
               ),
-            ),
-          ],
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: _shiftPickerTile(
+                      label: l10n.shiftStartLabel,
+                      value: _shiftStart == null
+                          ? l10n.optionalLabel
+                          : ShiftSchedule.formatTimeOfDay(_shiftStart!),
+                      onTap: () => _pickShiftTime(isStart: true),
+                      onClear: _shiftStart == null
+                          ? null
+                          : () => setState(() => _shiftStart = null),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: _shiftPickerTile(
+                      label: l10n.shiftEndLabel,
+                      value: _shiftEnd == null
+                          ? l10n.optionalLabel
+                          : ShiftSchedule.formatTimeOfDay(_shiftEnd!),
+                      onTap: () => _pickShiftTime(isStart: false),
+                      onClear: _shiftEnd == null
+                          ? null
+                          : () => setState(() => _shiftEnd = null),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 20),
         _sectionHeader(IconlyBold.user2, l10n.hiringSection),
         const SizedBox(height: 12),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: kBorderColorTextField, width: 2),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          l10n.workersNeeded,
-                          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          _limitHireCount ? l10n.numberToHire : l10n.noCapUntilCloseJob,
-                          style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Switch(
-                    value: _limitHireCount,
-                    onChanged: (v) => setState(() => _limitHireCount = v),
-                  ),
-                ],
-              ),
-              if (_limitHireCount) ...[
-                const SizedBox(height: 10),
+        _guide(
+          _guideWorkersKey,
+          l10n.guideCreateJobWorkersTitle,
+          l10n.guideCreateJobWorkersDesc,
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: kBorderColorTextField, width: 2),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Spacer(),
-                    _stepperButton(
-                      icon: Icons.remove,
-                      enabled: _workersNeeded > 1,
-                      onTap: () => setState(() => _workersNeeded--),
-                    ),
-                    Container(
-                      width: 36,
-                      alignment: Alignment.center,
-                      child: Text(
-                        '$_workersNeeded',
-                        style: kTextStyle.copyWith(
-                          color: kNeutralColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.workersNeeded,
+                            style: kTextStyle.copyWith(
+                                color: kNeutralColor,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            _limitHireCount
+                                ? l10n.numberToHire
+                                : l10n.noCapUntilCloseJob,
+                            style: kTextStyle.copyWith(
+                                color: kLightNeutralColor, fontSize: 12),
+                          ),
+                        ],
                       ),
                     ),
-                    _stepperButton(
-                      icon: Icons.add,
-                      enabled: _workersNeeded < 99,
-                      onTap: () => setState(() => _workersNeeded++),
+                    Switch(
+                      value: _limitHireCount,
+                      onChanged: (v) => setState(() => _limitHireCount = v),
                     ),
                   ],
                 ),
+                if (_limitHireCount) ...[
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      const Spacer(),
+                      _stepperButton(
+                        icon: Icons.remove,
+                        enabled: _workersNeeded > 1,
+                        onTap: () => setState(() => _workersNeeded--),
+                      ),
+                      Container(
+                        width: 36,
+                        alignment: Alignment.center,
+                        child: Text(
+                          '$_workersNeeded',
+                          style: kTextStyle.copyWith(
+                            color: kNeutralColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                      _stepperButton(
+                        icon: Icons.add,
+                        enabled: _workersNeeded < 99,
+                        onTap: () => setState(() => _workersNeeded++),
+                      ),
+                    ],
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
         const SizedBox(height: 8),
@@ -875,10 +1065,25 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
         const SizedBox(height: 8),
         Text(
           l10n.createJobLocationSubtitle,
-          style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12, height: 1.35),
+          style: kTextStyle.copyWith(
+              color: kSubTitleColor, fontSize: 12, height: 1.35),
         ),
         const SizedBox(height: 14),
         JobLocationFields(
+          guideAnchor: GuideAnchor(
+            key: _guideWhereKey,
+            scope: guideScope,
+            title: l10n.guideCreateJobWhereTitle,
+            description: l10n.guideCreateJobWhereDesc,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          pinAnchor: GuideAnchor(
+            key: _guidePinKey,
+            scope: guideScope,
+            title: l10n.guideCreateJobPinTitle,
+            description: l10n.guideCreateJobPinDesc,
+            borderRadius: BorderRadius.circular(20),
+          ),
           locationController: _locationController,
           pin: _locationPin,
           onPinChanged: (p) => setState(() => _locationPin = p),
@@ -896,9 +1101,14 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
         ),
         if (_locationType == JobLocationType.onsite) ...[
           const SizedBox(height: 20),
-          AttendanceModePicker(
-            value: _attendanceMode,
-            onChanged: (m) => setState(() => _attendanceMode = m),
+          _guide(
+            _guideAttendanceKey,
+            l10n.guideCreateJobAttendanceTitle,
+            l10n.guideCreateJobAttendanceDesc,
+            AttendanceModePicker(
+              value: _attendanceMode,
+              onChanged: (m) => setState(() => _attendanceMode = m),
+            ),
           ),
         ],
         const SizedBox(height: 8),
@@ -921,92 +1131,110 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
         const SizedBox(height: 8),
         Text(
           l10n.createJobBudgetSubtitle,
-          style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12, height: 1.35),
+          style: kTextStyle.copyWith(
+              color: kSubTitleColor, fontSize: 12, height: 1.35),
         ),
         const SizedBox(height: 14),
-        Row(
-          children: [
-            Expanded(
-              child: TextFormField(
-                controller: _budgetMinController,
-                keyboardType: TextInputType.number,
-                cursorColor: kNeutralColor,
-                decoration: kInputDecoration.copyWith(
-                  labelText: l10n.budgetMinLabel,
-                  labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                  hintText: l10n.budgetMinHint,
-                  hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
-                  floatingLabelBehavior: FloatingLabelBehavior.always,
-                  prefixText: '$currencySign ',
-                  border: const OutlineInputBorder(),
+        _guide(
+          _guidePayKey,
+          l10n.guideCreateJobPayTitle,
+          l10n.guideCreateJobPayDesc,
+          Row(
+            children: [
+              Expanded(
+                child: TextFormField(
+                  controller: _budgetMinController,
+                  keyboardType: TextInputType.number,
+                  cursorColor: kNeutralColor,
+                  decoration: kInputDecoration.copyWith(
+                    labelText: l10n.budgetMinLabel,
+                    labelStyle: kTextStyle.copyWith(color: kNeutralColor),
+                    hintText: l10n.budgetMinHint,
+                    hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    prefixText: '$currencySign ',
+                    border: const OutlineInputBorder(),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: TextFormField(
-                controller: _budgetMaxController,
-                keyboardType: TextInputType.number,
-                cursorColor: kNeutralColor,
-                decoration: kInputDecoration.copyWith(
-                  labelText: l10n.budgetMaxLabel,
-                  labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                  hintText: l10n.budgetMaxHint,
-                  hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
-                  floatingLabelBehavior: FloatingLabelBehavior.always,
-                  prefixText: '$currencySign ',
-                  border: const OutlineInputBorder(),
+              const SizedBox(width: 12),
+              Expanded(
+                child: TextFormField(
+                  controller: _budgetMaxController,
+                  keyboardType: TextInputType.number,
+                  cursorColor: kNeutralColor,
+                  decoration: kInputDecoration.copyWith(
+                    labelText: l10n.budgetMaxLabel,
+                    labelStyle: kTextStyle.copyWith(color: kNeutralColor),
+                    hintText: l10n.budgetMaxHint,
+                    hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    prefixText: '$currencySign ',
+                    border: const OutlineInputBorder(),
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         const SizedBox(height: 16),
         _label(l10n.budgetAppliesAs),
         const SizedBox(height: 8),
-        InputDecorator(
-          decoration: kInputDecoration.copyWith(
-            enabledBorder: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(8)),
-              borderSide: BorderSide(color: kBorderColorTextField, width: 2),
+        _guide(
+          _guideRateKey,
+          l10n.guideCreateJobRateTitle,
+          l10n.guideCreateJobRateDesc,
+          InputDecorator(
+            decoration: kInputDecoration.copyWith(
+              enabledBorder: const OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(8)),
+                borderSide: BorderSide(color: kBorderColorTextField, width: 2),
+              ),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              floatingLabelBehavior: FloatingLabelBehavior.always,
+              labelText: l10n.rateTypeLabel,
+              labelStyle: kTextStyle.copyWith(color: kNeutralColor),
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            floatingLabelBehavior: FloatingLabelBehavior.always,
-            labelText: l10n.rateTypeLabel,
-            labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-          ),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              isExpanded: true,
-              value: _budgetBasis,
-              style: kTextStyle.copyWith(color: kNeutralColor),
-              items: [
-                DropdownMenuItem(
-                  value: JobPostsService.budgetBasisFixed,
-                  child: Text(l10n.budgetBasisFixed, style: kTextStyle.copyWith(color: kNeutralColor)),
-                ),
-                DropdownMenuItem(
-                  value: JobPostsService.budgetBasisPerHour,
-                  child: Text(l10n.budgetBasisPerHour, style: kTextStyle.copyWith(color: kNeutralColor)),
-                ),
-                DropdownMenuItem(
-                  value: JobPostsService.budgetBasisPerDay,
-                  child: Text(l10n.budgetBasisPerDay, style: kTextStyle.copyWith(color: kNeutralColor)),
-                ),
-                DropdownMenuItem(
-                  value: JobPostsService.budgetBasisPerMonth,
-                  child: Text(l10n.budgetBasisPerMonth, style: kTextStyle.copyWith(color: kNeutralColor)),
-                ),
-              ],
-              onChanged: (v) {
-                if (v != null) setState(() => _budgetBasis = v);
-              },
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                isExpanded: true,
+                value: _budgetBasis,
+                style: kTextStyle.copyWith(color: kNeutralColor),
+                items: [
+                  DropdownMenuItem(
+                    value: JobPostsService.budgetBasisFixed,
+                    child: Text(l10n.budgetBasisFixed,
+                        style: kTextStyle.copyWith(color: kNeutralColor)),
+                  ),
+                  DropdownMenuItem(
+                    value: JobPostsService.budgetBasisPerHour,
+                    child: Text(l10n.budgetBasisPerHour,
+                        style: kTextStyle.copyWith(color: kNeutralColor)),
+                  ),
+                  DropdownMenuItem(
+                    value: JobPostsService.budgetBasisPerDay,
+                    child: Text(l10n.budgetBasisPerDay,
+                        style: kTextStyle.copyWith(color: kNeutralColor)),
+                  ),
+                  DropdownMenuItem(
+                    value: JobPostsService.budgetBasisPerMonth,
+                    child: Text(l10n.budgetBasisPerMonth,
+                        style: kTextStyle.copyWith(color: kNeutralColor)),
+                  ),
+                ],
+                onChanged: (v) {
+                  if (v != null) setState(() => _budgetBasis = v);
+                },
+              ),
             ),
           ),
         ),
         const SizedBox(height: 20),
         _buildReviewCard(
-          title: _titleController.text.trim().isEmpty ? '—' : _titleController.text.trim(),
+          title: _titleController.text.trim().isEmpty
+              ? '—'
+              : _titleController.text.trim(),
           category: cat ?? '—',
           skills: _skillNames.isEmpty ? '—' : _skillNames.join(', '),
           jobType: _jobTypeLabel() ?? '—',
@@ -1045,6 +1273,37 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
     required String budget,
   }) {
     final l10n = context.l10n;
+    return _guide(
+      _guideReviewKey,
+      l10n.guideCreateJobReviewTitle,
+      l10n.guideCreateJobReviewDesc,
+      radius: 12,
+      _buildReviewCardContent(
+        title: title,
+        category: category,
+        skills: skills,
+        jobType: jobType,
+        location: location,
+        locationType: locationType,
+        workers: workers,
+        shift: shift,
+        budget: budget,
+      ),
+    );
+  }
+
+  Widget _buildReviewCardContent({
+    required String title,
+    required String category,
+    required String skills,
+    required String jobType,
+    required String location,
+    required String locationType,
+    required String workers,
+    required String shift,
+    required String budget,
+  }) {
+    final l10n = context.l10n;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(14),
@@ -1058,7 +1317,10 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
         children: [
           Text(
             l10n.reviewSection,
-            style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold, fontSize: 13),
+            style: kTextStyle.copyWith(
+                color: kPrimaryColor,
+                fontWeight: FontWeight.bold,
+                fontSize: 13),
           ),
           const SizedBox(height: 10),
           _reviewLine(l10n.labelTitle, title),
@@ -1082,12 +1344,17 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
         children: [
           SizedBox(
             width: 72,
-            child: Text(label, style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12)),
+            child: Text(label,
+                style:
+                    kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12)),
           ),
           Expanded(
             child: Text(
               value,
-              style: kTextStyle.copyWith(color: kNeutralColor, fontSize: 12, fontWeight: FontWeight.w600),
+              style: kTextStyle.copyWith(
+                  color: kNeutralColor,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600),
             ),
           ),
         ],
@@ -1105,7 +1372,8 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
       lastDate: today.add(const Duration(days: 365 * 2)),
     );
     if (picked != null && mounted) {
-      setState(() => _workDate = DateTime(picked.year, picked.month, picked.day));
+      setState(
+          () => _workDate = DateTime(picked.year, picked.month, picked.day));
     }
   }
 
@@ -1180,9 +1448,11 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
                 IconButton(
                   visualDensity: VisualDensity.compact,
                   padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                  constraints:
+                      const BoxConstraints(minWidth: 32, minHeight: 32),
                   onPressed: onClear,
-                  icon: const Icon(Icons.close, size: 18, color: kSubTitleColor),
+                  icon:
+                      const Icon(Icons.close, size: 18, color: kSubTitleColor),
                 )
               else
                 const Icon(Icons.expand_more, color: kSubTitleColor),
@@ -1207,7 +1477,8 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
         const SizedBox(width: 10),
         Text(
           title,
-          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 16),
+          style: kTextStyle.copyWith(
+              color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 16),
         ),
       ],
     );
@@ -1217,7 +1488,10 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
     return Text(text, style: kTextStyle.copyWith(color: kNeutralColor));
   }
 
-  Widget _stepperButton({required IconData icon, required bool enabled, required VoidCallback onTap}) {
+  Widget _stepperButton(
+      {required IconData icon,
+      required bool enabled,
+      required VoidCallback onTap}) {
     return InkWell(
       onTap: enabled ? onTap : null,
       borderRadius: BorderRadius.circular(20),
@@ -1232,6 +1506,223 @@ class _CreateNewJobPostState extends State<CreateNewJobPost> {
           icon,
           color: enabled ? kPrimaryColor : kLightNeutralColor,
           size: 20,
+        ),
+      ),
+    );
+  }
+}
+
+/// The (i) of the create-job form: replays the guide of the step on screen
+/// (Basics = main tips, other steps = their own section). A plain button, not
+/// [GuideInfoButton], because the shared chooser would list "Main tips" and
+/// sections of whatever happens to be mounted instead of the current step.
+class _WizardGuideButton extends StatefulWidget {
+  const _WizardGuideButton({required this.host});
+
+  final _CreateNewJobPostState host;
+
+  @override
+  State<_WizardGuideButton> createState() => _WizardGuideButtonState();
+}
+
+class _WizardGuideButtonState extends State<_WizardGuideButton> {
+  @override
+  void initState() {
+    super.initState();
+    widget.host.attachInfoButton();
+  }
+
+  @override
+  void dispose() {
+    widget.host.detachInfoButton();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final host = widget.host;
+    if (!host.guideEnabled) return const SizedBox.shrink();
+    return ValueListenableBuilder<bool>(
+      valueListenable: host.guideRunning,
+      builder: (context, running, _) => IconButton(
+        icon: const Icon(Icons.info_outline),
+        tooltip: context.l10n.guideReplayThisScreen,
+        onPressed: (running || !host.guideDataReady)
+            ? null
+            : host._replayCurrentStepGuide,
+      ),
+    );
+  }
+}
+
+/// "Complete your profile to post" page. Its own screen id so its seen flag
+/// is independent from the form guide. Disposed as soon as the check passes.
+class _CreateJobGate extends StatefulWidget {
+  const _CreateJobGate({
+    required this.missingLabels,
+    required this.onEditProfile,
+    required this.onVerify,
+  });
+
+  final List<String> missingLabels;
+  final Future<void> Function() onEditProfile;
+  final Future<void> Function() onVerify;
+
+  @override
+  State<_CreateJobGate> createState() => _CreateJobGateState();
+}
+
+class _CreateJobGateState extends State<_CreateJobGate>
+    with GuideHost<_CreateJobGate> {
+  final GlobalKey _missingKey = GlobalKey();
+  final GlobalKey _editKey = GlobalKey();
+
+  @override
+  String get guideScreenId => 'create_job_gate';
+
+  @override
+  String get guideRole => 'client';
+
+  @override
+  int get guideVersion => 1;
+
+  @override
+  bool get guideDataReady => true;
+
+  @override
+  String get guideSkipLabel => context.l10n.guideSkip;
+
+  @override
+  String get guideNextLabel => context.l10n.guideNext;
+
+  @override
+  String get guideDoneLabel => context.l10n.guideDone;
+
+  @override
+  List<GuideStep> buildGuideSteps(BuildContext context) {
+    final l10n = context.l10n;
+    return [
+      GuideStep(
+        key: _missingKey,
+        title: l10n.guideJobGateMissingTitle,
+        description: l10n.guideJobGateMissingDesc,
+      ),
+      GuideStep(
+        key: _editKey,
+        title: l10n.guideJobGateEditTitle,
+        description: l10n.guideJobGateEditDesc,
+        targetNearBottom: true,
+      ),
+    ];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return guideBackScope(
+      Scaffold(
+        backgroundColor: kDarkWhite,
+        appBar: AppBar(
+          backgroundColor: kDarkWhite,
+          elevation: 0,
+          iconTheme: const IconThemeData(color: kNeutralColor),
+          title: Text(
+            l10n.postAJob,
+            style: kTextStyle.copyWith(
+              color: kNeutralColor,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          centerTitle: true,
+          actions: [GuideInfoButton(host: this)],
+        ),
+        body: Padding(
+          padding: const EdgeInsets.only(top: 15),
+          child: Container(
+            width: context.width(),
+            padding: const EdgeInsets.all(24),
+            decoration: const BoxDecoration(
+              color: kWhite,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.badge_outlined, size: 48, color: kPrimaryColor),
+                const SizedBox(height: 16),
+                Text(
+                  l10n.completeProfileToPostJob,
+                  style: kTextStyle.copyWith(
+                    color: kNeutralColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  l10n.completeProfileToPostJobHint,
+                  style: kTextStyle.copyWith(color: kSubTitleColor),
+                ),
+                const SizedBox(height: 20),
+                if (widget.missingLabels.isNotEmpty)
+                  GuideAnchor.wrap(
+                    GuideAnchor(
+                      key: _missingKey,
+                      scope: guideScope,
+                      title: l10n.guideJobGateMissingTitle,
+                      description: l10n.guideJobGateMissingDesc,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        for (final label in widget.missingLabels)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.circle,
+                                    size: 8, color: kPrimaryColor),
+                                const SizedBox(width: 10),
+                                Text(
+                                  label,
+                                  style:
+                                      kTextStyle.copyWith(color: kNeutralColor),
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                const Spacer(),
+                ButtonGlobalWithoutIcon(
+                  guideAnchor: GuideAnchor(
+                    key: _editKey,
+                    scope: guideScope,
+                    title: l10n.guideJobGateEditTitle,
+                    description: l10n.guideJobGateEditDesc,
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  buttontext: l10n.editProfile,
+                  buttonDecoration: kButtonDecoration.copyWith(
+                    color: kPrimaryColor,
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  onPressed: widget.onEditProfile,
+                  buttonTextColor: kWhite,
+                ),
+                const SizedBox(height: 10),
+                Center(
+                  child: TextButton(
+                    onPressed: widget.onVerify,
+                    child: Text(l10n.employerVerification),
+                  ),
+                ),
+                const SizedBox(height: 12),
+              ],
+            ),
+          ),
         ),
       ),
     );

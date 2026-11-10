@@ -3,6 +3,10 @@ import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
 import 'package:freelancer/core/widgets/loading_widget.dart';
 
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/guide/guide_anchor.dart';
+import 'package:freelancer/core/guide/guide_host.dart';
+import 'package:freelancer/core/guide/guide_info_button.dart';
+import 'package:freelancer/core/guide/guide_step.dart';
 import 'package:freelancer/core/utils/app_date_format.dart';
 import 'package:freelancer/core/utils/app_logger.dart';
 import 'package:freelancer/core/utils/localized_category.dart';
@@ -35,7 +39,138 @@ class SellerBuyerRequest extends StatefulWidget {
   State<SellerBuyerRequest> createState() => _SellerBuyerRequestState();
 }
 
-class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
+class _SellerBuyerRequestState extends State<SellerBuyerRequest>
+    with GuideHost<SellerBuyerRequest> {
+  // Guide targets (long-lived, one widget each). The filters header and the
+  // first card are kept alive (see _KeepAlive) so they stay targetable after
+  // scrolling away.
+  final GlobalKey _guideAlertsKey = GlobalKey();
+  final GlobalKey _guideSearchKey = GlobalKey();
+  final GlobalKey _guideFilterKey = GlobalKey();
+  final GlobalKey _guideCardKey = GlobalKey();
+  final GlobalKey _guideSaveKey = GlobalKey();
+  final GlobalKey _guideTagsKey = GlobalKey();
+  final GlobalKey _guideBudgetKey = GlobalKey();
+  final GlobalKey _guideChipsKey = GlobalKey();
+  final GlobalKey _guideCountKey = GlobalKey();
+
+  @override
+  String get guideScreenId => 'seller_find_jobs';
+  @override
+  String get guideRole => 'seller';
+  @override
+  int get guideVersion => 1;
+
+  /// False for the whole spinner reload (the body is replaced and every
+  /// target vanishes), so a running guide is cancelled and restarted.
+  @override
+  bool get guideDataReady => !_isLoading;
+  @override
+  String get guideSkipLabel => context.l10n.guideSkip;
+  @override
+  String get guideNextLabel => context.l10n.guideNext;
+  @override
+  String get guideDoneLabel => context.l10n.guideDone;
+
+  // Order follows on-screen position: bell (app bar), search, filter, card.
+  @override
+  List<GuideStep> buildGuideSteps(BuildContext context) {
+    final l10n = context.l10n;
+    // Called right before the core guide starts: go to the top so kept-alive
+    // off-screen targets have fresh positions (autoscroll moves from there).
+    if (_scrollController.hasClients && _scrollController.offset != 0) {
+      _scrollController.jumpTo(0);
+    }
+    return [
+      GuideStep(
+          key: _guideAlertsKey,
+          title: l10n.guideFindJobsAlertsTitle,
+          description: l10n.guideFindJobsAlertsDesc),
+      GuideStep(
+          key: _guideSearchKey,
+          title: l10n.guideFindJobsSearchTitle,
+          description: l10n.guideFindJobsSearchDesc,
+          enableAutoScroll: true),
+      GuideStep(
+          key: _guideFilterKey,
+          title: l10n.guideFindJobsFilterTitle,
+          description: l10n.guideFindJobsFilterDesc,
+          enableAutoScroll: true),
+      GuideStep(
+          key: _guideCardKey,
+          title: l10n.guideFindJobsCardTitle,
+          description: l10n.guideFindJobsCardDesc,
+          enableAutoScroll: true),
+    ];
+  }
+
+  @override
+  List<GuideSection> buildGuideExtraSections(BuildContext context) {
+    final l10n = context.l10n;
+    return [
+      GuideSection(
+        id: 'card',
+        title: l10n.guideFindJobsSectionCard,
+        steps: [
+          GuideStep(
+              key: _guideSaveKey,
+              title: l10n.guideFindJobsSaveTitle,
+              description: l10n.guideFindJobsSaveDesc,
+              enableAutoScroll: true),
+          GuideStep(
+              key: _guideTagsKey,
+              title: l10n.guideFindJobsTagsTitle,
+              description: l10n.guideFindJobsTagsDesc,
+              enableAutoScroll: true),
+          GuideStep(
+              key: _guideBudgetKey,
+              title: l10n.guideFindJobsBudgetTitle,
+              description: l10n.guideFindJobsBudgetDesc,
+              enableAutoScroll: true),
+        ],
+      ),
+      GuideSection(
+        id: 'filters',
+        title: l10n.guideFindJobsSectionFilters,
+        steps: [
+          GuideStep(
+              key: _guideFilterKey,
+              title: l10n.guideFindJobsFilterTitle,
+              description: l10n.guideFindJobsFilterDesc,
+              enableAutoScroll: true),
+          GuideStep(
+              key: _guideChipsKey,
+              title: l10n.guideFindJobsChipsTitle,
+              description: l10n.guideFindJobsChipsDesc,
+              enableAutoScroll: true),
+          GuideStep(
+              key: _guideCountKey,
+              title: l10n.guideFindJobsCountTitle,
+              description: l10n.guideFindJobsCountDesc,
+              enableAutoScroll: true),
+          GuideStep(
+              key: _guideAlertsKey,
+              title: l10n.guideFindJobsAlertsTitle,
+              description: l10n.guideFindJobsAlertsDesc),
+        ],
+      ),
+    ];
+  }
+
+  Widget _guide(GlobalKey key, String title, String desc, Widget child,
+      {BorderRadius? radius}) {
+    return GuideAnchor.wrap(
+      GuideAnchor(
+        key: key,
+        scope: guideScope,
+        title: title,
+        description: desc,
+        borderRadius: radius,
+      ),
+      child,
+    );
+  }
+
   final _searchController = TextEditingController();
   final _scrollController = ScrollController();
   Timer? _titleDebounce;
@@ -62,7 +197,12 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
   String? _sellerCity;
   String? _sellerCountry;
 
-  static const _employmentTypeValues = <String?>[null, 'gig', 'full_time', 'part_time'];
+  static const _employmentTypeValues = <String?>[
+    null,
+    'gig',
+    'full_time',
+    'part_time'
+  ];
 
   @override
   void initState() {
@@ -202,6 +342,7 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
         if (_scrollController.hasClients) {
           _scrollController.jumpTo(0);
         }
+        scheduleGuide();
       }
     } catch (e) {
       if (mounted) {
@@ -210,6 +351,7 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
           _isRefreshing = false;
           _isLoadingMore = false;
         });
+        scheduleGuide();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
@@ -265,7 +407,9 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            saved ? context.l10n.addedToFavourites : context.l10n.removedFromFavourites,
+            saved
+                ? context.l10n.addedToFavourites
+                : context.l10n.removedFromFavourites,
           ),
         ),
       );
@@ -295,7 +439,8 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
     return n;
   }
 
-  bool get _hasActiveFilters => _titleQuery.trim().isNotEmpty || _hasSecondaryFilters;
+  bool get _hasActiveFilters =>
+      _titleQuery.trim().isNotEmpty || _hasSecondaryFilters;
 
   String _jobTypeLabel(String? type) {
     if (type == null) return context.l10n.filterAll;
@@ -348,7 +493,8 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
                     );
                     return CheckboxListTile(
                       value: draft.contains(id),
-                      title: Text(name, style: kTextStyle.copyWith(fontSize: 14)),
+                      title:
+                          Text(name, style: kTextStyle.copyWith(fontSize: 14)),
                       onChanged: (v) {
                         setDialogState(() {
                           if (v == true) {
@@ -471,7 +617,8 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
                                     setSheetState: setSheetState,
                                   ),
                                   style: OutlinedButton.styleFrom(
-                                    minimumSize: const Size(double.infinity, 46),
+                                    minimumSize:
+                                        const Size(double.infinity, 46),
                                     alignment: Alignment.centerLeft,
                                     foregroundColor: kNeutralColor,
                                     side: BorderSide(
@@ -488,7 +635,6 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
                                           ),
                                   ),
                                 ),
-
                                 const SizedBox(height: 20),
                                 Text(
                                   l10n.jobAlertSkillsSection,
@@ -566,7 +712,8 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
                                   children: _employmentTypeValues.map((value) {
                                     final selected = tempJobType == value;
                                     return ChoiceChip(
-                                      label: Text(_employmentTypeChipLabel(value)),
+                                      label:
+                                          Text(_employmentTypeChipLabel(value)),
                                       selected: selected,
                                       onSelected: (_) {
                                         setSheetState(
@@ -576,7 +723,8 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
                                       selectedColor: primary,
                                       backgroundColor: kDarkWhite,
                                       labelStyle: kTextStyle.copyWith(
-                                        color: selected ? kWhite : kNeutralColor,
+                                        color:
+                                            selected ? kWhite : kNeutralColor,
                                       ),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(20),
@@ -782,91 +930,107 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
     return Row(
       children: [
         Expanded(
-          child: TextField(
-            controller: _searchController,
-            onChanged: _onTitleQueryChanged,
-            style: kTextStyle.copyWith(color: kNeutralColor, fontSize: 14),
-            decoration: InputDecoration(
-              hintText: l10n.searchJobTitleHint,
-              hintStyle:
-                  kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 14),
-              prefixIcon: const Icon(Icons.search, color: kLightNeutralColor),
-              suffixIcon: _titleQuery.isNotEmpty
-                  ? IconButton(
-                      icon: const Icon(
-                        Icons.close,
-                        color: kLightNeutralColor,
-                        size: 20,
-                      ),
-                      onPressed: () {
-                        _searchController.clear();
-                        _titleDebounce?.cancel();
-                        setState(() => _titleQuery = '');
-                        _loadRequests();
-                      },
-                    )
-                  : null,
-              filled: true,
-              fillColor: kWhite,
-              contentPadding: const EdgeInsets.symmetric(vertical: 12),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: kBorderColorTextField),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: kBorderColorTextField),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: primary),
+          child: _guide(
+            _guideSearchKey,
+            l10n.guideFindJobsSearchTitle,
+            l10n.guideFindJobsSearchDesc,
+            radius: BorderRadius.circular(12),
+            TextField(
+              controller: _searchController,
+              onChanged: _onTitleQueryChanged,
+              style: kTextStyle.copyWith(color: kNeutralColor, fontSize: 14),
+              decoration: InputDecoration(
+                hintText: l10n.searchJobTitleHint,
+                hintStyle: kTextStyle.copyWith(
+                    color: kLightNeutralColor, fontSize: 14),
+                prefixIcon: const Icon(Icons.search, color: kLightNeutralColor),
+                suffixIcon: _titleQuery.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(
+                          Icons.close,
+                          color: kLightNeutralColor,
+                          size: 20,
+                        ),
+                        onPressed: () {
+                          _searchController.clear();
+                          _titleDebounce?.cancel();
+                          setState(() => _titleQuery = '');
+                          _loadRequests();
+                        },
+                      )
+                    : null,
+                filled: true,
+                fillColor: kWhite,
+                contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: kBorderColorTextField),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: kBorderColorTextField),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: primary),
+                ),
               ),
             ),
           ),
         ),
         const SizedBox(width: 10),
-        Material(
-          color: _hasSecondaryFilters
-              ? primary.withValues(alpha: 0.1)
-              : kDarkWhite,
-          borderRadius: BorderRadius.circular(12),
-          child: InkWell(
-            onTap: _openFilterSheet,
-            borderRadius: BorderRadius.circular(12),
-            child: Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
+        Tooltip(
+          message: context.l10n.filterJobs,
+          child: _guide(
+            _guideFilterKey,
+            l10n.guideFindJobsFilterTitle,
+            l10n.guideFindJobsFilterDesc,
+            radius: BorderRadius.circular(12),
+            Material(
+              color: _hasSecondaryFilters
+                  ? primary.withValues(alpha: 0.1)
+                  : kDarkWhite,
+              borderRadius: BorderRadius.circular(12),
+              child: InkWell(
+                onTap: _openFilterSheet,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: _hasSecondaryFilters
-                      ? primary.withValues(alpha: 0.45)
-                      : kBorderColorTextField,
-                ),
-              ),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Icon(
-                    Icons.tune_rounded,
-                    color: _hasSecondaryFilters ? primary : kLightNeutralColor,
-                    size: 22,
-                  ),
-                  if (_secondaryFilterCount > 0)
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: Container(
-                        width: 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          color: primary,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: kWhite, width: 1.5),
-                        ),
-                      ),
+                child: Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: _hasSecondaryFilters
+                          ? primary.withValues(alpha: 0.45)
+                          : kBorderColorTextField,
                     ),
-                ],
+                  ),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Icon(
+                        Icons.tune_rounded,
+                        color:
+                            _hasSecondaryFilters ? primary : kLightNeutralColor,
+                        size: 22,
+                      ),
+                      if (_secondaryFilterCount > 0)
+                        Positioned(
+                          top: 8,
+                          right: 8,
+                          child: Container(
+                            width: 8,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              color: primary,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: kWhite, width: 1.5),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
@@ -896,60 +1060,65 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
 
     return Padding(
       padding: const EdgeInsets.only(top: 10),
-      child: Wrap(
-        spacing: 8,
-        runSpacing: 8,
-        children: [
-          if (_categoryIds.isNotEmpty)
-            chip(
-              l10n.jobAlertCategoriesCount(_categoryIds.length),
-              () {
-                setState(() => _categoryIds.clear());
+      child: _guide(
+        _guideChipsKey,
+        l10n.guideFindJobsChipsTitle,
+        l10n.guideFindJobsChipsDesc,
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            if (_categoryIds.isNotEmpty)
+              chip(
+                l10n.jobAlertCategoriesCount(_categoryIds.length),
+                () {
+                  setState(() => _categoryIds.clear());
+                  _loadRequests();
+                },
+              ),
+            ..._skillNames.map(
+              (s) => chip(s, () {
+                setState(() => _skillNames.remove(s));
                 _loadRequests();
-              },
+              }),
             ),
-          ..._skillNames.map(
-            (s) => chip(s, () {
-              setState(() => _skillNames.remove(s));
-              _loadRequests();
-            }),
-          ),
-          if (_jobTypeFilter != null)
-            chip(
-              _jobTypeLabel(_jobTypeFilter),
-              () {
-                setState(() => _jobTypeFilter = null);
-                _loadRequests();
-              },
-            ),
-          if (_useDistance)
-            chip(
-              l10n.jobAlertWithinKm(_distanceKm.round()),
-              () {
-                setState(() => _useDistance = false);
-                _loadRequests();
-              },
-            ),
-          if (!_includeRemote)
-            chip(
-              l10n.onSiteOnly,
-              () {
-                setState(() => _includeRemote = true);
-                _loadRequests();
-              },
-            ),
-          GestureDetector(
-            onTap: _clearSecondaryFilters,
-            child: Text(
-              l10n.clearAll,
-              style: kTextStyle.copyWith(
-                color: primary,
-                fontWeight: FontWeight.w600,
-                fontSize: 12,
+            if (_jobTypeFilter != null)
+              chip(
+                _jobTypeLabel(_jobTypeFilter),
+                () {
+                  setState(() => _jobTypeFilter = null);
+                  _loadRequests();
+                },
+              ),
+            if (_useDistance)
+              chip(
+                l10n.jobAlertWithinKm(_distanceKm.round()),
+                () {
+                  setState(() => _useDistance = false);
+                  _loadRequests();
+                },
+              ),
+            if (!_includeRemote)
+              chip(
+                l10n.onSiteOnly,
+                () {
+                  setState(() => _includeRemote = true);
+                  _loadRequests();
+                },
+              ),
+            GestureDetector(
+              onTap: _clearSecondaryFilters,
+              child: Text(
+                l10n.clearAll,
+                style: kTextStyle.copyWith(
+                  color: primary,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -961,18 +1130,25 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
         _buildSearchRow(primary),
         _buildActiveFilterChips(primary),
         const SizedBox(height: 12),
-        Text(
-          context.l10n.jobsCount(_requests.length),
-          style: kTextStyle.copyWith(
-            color: kNeutralColor,
-            fontWeight: FontWeight.bold,
+        _guide(
+          _guideCountKey,
+          context.l10n.guideFindJobsCountTitle,
+          context.l10n.guideFindJobsCountDesc,
+          Text(
+            context.l10n.jobsCount(_requests.length),
+            style: kTextStyle.copyWith(
+              color: kNeutralColor,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildJobCard(Map<String, dynamic> req, Color primary) {
+  Widget _buildJobCard(Map<String, dynamic> req, Color primary,
+      {bool first = false}) {
+    final l10n = context.l10n;
     final buyer = req['profiles'] as Map<String, dynamic>?;
     final category = req['categories'] as Map<String, dynamic>?;
     final skillTags = JobPostsService.skillNamesFromJob(req);
@@ -983,7 +1159,10 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
     final showDescription =
         description.isNotEmpty && description.toLowerCase() != 'none';
 
-    return Padding(
+    Widget guide(GlobalKey key, String t, String d, Widget child) =>
+        first ? _guide(key, t, d, child) : child;
+
+    final card = Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: GestureDetector(
         onTap: () async {
@@ -1028,20 +1207,28 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
                     ),
                   ),
                   if (jobId != null)
-                    IconButton(
-                      tooltip: isSaved ? context.l10n.favourites : context.l10n.favorite,
-                      onPressed: saveBusy ? null : () => _toggleSaveJob(jobId),
-                      visualDensity: VisualDensity.compact,
-                      icon: Icon(
-                        isSaved ? Icons.bookmark : Icons.bookmark_border,
-                        color: isSaved ? primary : kNeutralColor,
+                    guide(
+                      _guideSaveKey,
+                      l10n.guideFindJobsSaveTitle,
+                      l10n.guideFindJobsSaveDesc,
+                      IconButton(
+                        tooltip: isSaved
+                            ? context.l10n.removeFavourite
+                            : context.l10n.favorite,
+                        onPressed:
+                            saveBusy ? null : () => _toggleSaveJob(jobId),
+                        visualDensity: VisualDensity.compact,
+                        icon: Icon(
+                          isSaved ? Icons.bookmark : Icons.bookmark_border,
+                          color: isSaved ? primary : kNeutralColor,
+                        ),
                       ),
                     ),
                 ],
               ),
               const SizedBox(height: 10),
               Text(
-                req['title'] ?? 'Job Post',
+                req['title'] ?? context.l10n.jobPostFallback,
                 style: kTextStyle.copyWith(
                   color: kNeutralColor,
                   fontWeight: FontWeight.bold,
@@ -1077,7 +1264,8 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
                   ],
                 ),
               ],
-              if (JobPostsService.workersNeededShowOnCard(req['workers_needed'])) ...[
+              if (JobPostsService.workersNeededShowOnCard(
+                  req['workers_needed'])) ...[
                 const SizedBox(height: 6),
                 Row(
                   children: [
@@ -1088,7 +1276,8 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      JobPostsService.workersNeededCardLine(req['workers_needed']),
+                      JobPostsService.workersNeededCardLine(
+                          req['workers_needed']),
                       style: kTextStyle.copyWith(color: kSubTitleColor),
                     ),
                   ],
@@ -1129,67 +1318,78 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                    child: Wrap(
-                      spacing: 6,
-                      runSpacing: 6,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: kDarkWhite,
-                          ),
-                          child: Text(
-                            LocalizedCategory.name(
-                              category,
-                              LocalizedCategory.languageCodeOf(context),
-                              fallback: 'General',
+                    child: guide(
+                      _guideTagsKey,
+                      l10n.guideFindJobsTagsTitle,
+                      l10n.guideFindJobsTagsDesc,
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
                             ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: kTextStyle.copyWith(color: kNeutralColor),
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: primary.withValues(alpha: 0.08),
-                          ),
-                          child: Text(
-                            _jobTypeLabel(req['job_type'] as String?),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: kTextStyle.copyWith(
-                              color: primary,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 12,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: kDarkWhite,
+                            ),
+                            child: Text(
+                              LocalizedCategory.name(
+                                category,
+                                LocalizedCategory.languageCodeOf(context),
+                                fallback: 'General',
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: kTextStyle.copyWith(color: kNeutralColor),
                             ),
                           ),
-                        ),
-                      ],
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: primary.withValues(alpha: 0.08),
+                            ),
+                            child: Text(
+                              _jobTypeLabel(req['job_type'] as String?),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: kTextStyle.copyWith(
+                                color: primary,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  if (req['budget_min'] != null || req['budget_max'] != null) ...[
+                  if (req['budget_min'] != null ||
+                      req['budget_max'] != null) ...[
                     const SizedBox(width: 8),
-                    Text(
-                      L10nLabels.budgetRangeShort(
-                        context.l10n,
-                        req['budget_min'],
-                        req['budget_max'],
-                        req['budget_basis'],
-                      ),
-                      softWrap: false,
-                      style: kTextStyle.copyWith(
-                        color: primary,
-                        fontWeight: FontWeight.bold,
+                    guide(
+                      _guideBudgetKey,
+                      l10n.guideFindJobsBudgetTitle,
+                      l10n.guideFindJobsBudgetDesc,
+                      Text(
+                        L10nLabels.budgetRangeShort(
+                          context.l10n,
+                          req['budget_min'],
+                          req['budget_max'],
+                          req['budget_basis'],
+                        ),
+                        softWrap: false,
+                        style: kTextStyle.copyWith(
+                          color: primary,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ],
@@ -1198,6 +1398,15 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
             ],
           ),
         ),
+      ),
+    );
+    if (!first) return card;
+    return _KeepAlive(
+      child: _guide(
+        _guideCardKey,
+        l10n.guideFindJobsCardTitle,
+        l10n.guideFindJobsCardDesc,
+        card,
       ),
     );
   }
@@ -1243,24 +1452,31 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
     final primary = Theme.of(context).colorScheme.primary;
     final visible = _requests;
 
-    return Scaffold(
+    return guideBackScope(Scaffold(
       backgroundColor: kWhite,
       appBar: ClientShellAppBar(
         title: context.l10n.findJobsTitle,
         persona: ShellPersona.seller,
         actions: [
-          TextButton(
-            onPressed: () => const SellerJobAlertsScreen().launch(context),
-            style: TextButton.styleFrom(
-              foregroundColor: kWhite,
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-            ),
-            child: Text(
-              context.l10n.jobAlertsTitle,
-              style: kTextStyle.copyWith(
-                color: kWhite,
-                fontWeight: FontWeight.w600,
-                fontSize: 13,
+          GuideInfoButton(host: this),
+          _guide(
+            _guideAlertsKey,
+            context.l10n.guideFindJobsAlertsTitle,
+            context.l10n.guideFindJobsAlertsDesc,
+            radius: BorderRadius.circular(8),
+            TextButton(
+              onPressed: () => const SellerJobAlertsScreen().launch(context),
+              style: TextButton.styleFrom(
+                foregroundColor: kWhite,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+              ),
+              child: Text(
+                context.l10n.jobAlertsTitle,
+                style: kTextStyle.copyWith(
+                  color: kWhite,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
               ),
             ),
           ),
@@ -1304,7 +1520,8 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
                               if (i == 0) {
                                 return Padding(
                                   padding: const EdgeInsets.only(bottom: 12),
-                                  child: _buildFilters(primary),
+                                  child:
+                                      _KeepAlive(child: _buildFilters(primary)),
                                 );
                               }
                               final jobIndex = i - 1;
@@ -1323,13 +1540,36 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest> {
                                   ),
                                 );
                               }
-                              return _buildJobCard(visible[jobIndex], primary);
+                              return _buildJobCard(visible[jobIndex], primary,
+                                  first: jobIndex == 0);
                             },
                           ),
                   ),
                 ),
               ],
             ),
-    );
+    ));
+  }
+}
+
+/// Keeps a list item mounted while scrolled off-screen so its guide targets
+/// stay available (the filters header and the first job card).
+class _KeepAlive extends StatefulWidget {
+  const _KeepAlive({required this.child});
+  final Widget child;
+
+  @override
+  State<_KeepAlive> createState() => _KeepAliveState();
+}
+
+class _KeepAliveState extends State<_KeepAlive>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return widget.child;
   }
 }

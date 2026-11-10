@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/guide/guide_anchor.dart';
+import 'package:freelancer/core/guide/guide_host.dart';
+import 'package:freelancer/core/guide/guide_info_button.dart';
+import 'package:freelancer/core/guide/guide_step.dart';
 import 'package:freelancer/core/widgets/empty_state_widget.dart';
 import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
@@ -32,15 +36,159 @@ class BuyerRequestDetails extends StatefulWidget {
   State<BuyerRequestDetails> createState() => _BuyerRequestDetailsState();
 }
 
-class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
+class _BuyerRequestDetailsState extends State<BuyerRequestDetails>
+    with GuideHost<BuyerRequestDetails> {
   Map<String, dynamic>? _jobPost;
   bool _isLoading = true;
   bool _isFavourited = false;
   bool _favBusy = false;
 
+  final GlobalKey _guideClientKey = GlobalKey();
+  final GlobalKey _guideSaveKey = GlobalKey();
+  final GlobalKey _guideReadKey = GlobalKey();
+  final GlobalKey _guideApplyKey = GlobalKey();
+  final GlobalKey _guideWhereKey = GlobalKey();
+  final GlobalKey _guideBudgetKey = GlobalKey();
+  final GlobalKey _guideShiftKey = GlobalKey();
+  final GlobalKey _guideAppsKey = GlobalKey();
+
+  @override
+  String get guideScreenId => 'seller_job_details';
+  @override
+  String get guideRole => 'seller';
+  @override
+  int get guideVersion => 1;
+
+  /// Only once the job is loaded (the loading and error scaffolds have no
+  /// targets). A retry sets `_isLoading` again, which cancels a running guide.
+  @override
+  bool get guideDataReady => !_isLoading && _jobPost != null && _routeSettled;
+  @override
+  String get guideSkipLabel => context.l10n.guideSkip;
+  @override
+  String get guideNextLabel => context.l10n.guideNext;
+  @override
+  String get guideDoneLabel => context.l10n.guideDone;
+
+  /// Why applying is blocked, or null when the seller can apply.
+  String? _applyBlockedReason(AppLocalizations l10n) {
+    final jobStatus = (_jobPost?['status'] as String?) ?? 'open';
+    final myUid = Supabase.instance.client.auth.currentUser?.id;
+    final clientId = _jobPost?['client_id'] as String?;
+    final myOffer = _jobPost?['my_offer'] as Map<String, dynamic>?;
+    if (jobStatus.toLowerCase() != 'open') {
+      return l10n.jobClosedNoApplications;
+    }
+    if (myUid != null && clientId != null && myUid == clientId) {
+      return l10n.cannotApplyToOwnJob;
+    }
+    if (myOffer != null) {
+      final st = (myOffer['status'] as String?)?.toLowerCase();
+      if (st == 'pending' || st == 'accepted') {
+        return l10n.alreadySubmittedApplication;
+      }
+    }
+    return null;
+  }
+
+  // Order follows on-screen position: bookmark (app bar), client, job text,
+  // apply button. Apply is skipped when applying is blocked (the grey button
+  // stays, but it is not worth a tip).
+  @override
+  List<GuideStep> buildGuideSteps(BuildContext context) {
+    final l10n = context.l10n;
+    return [
+      GuideStep(
+          key: _guideSaveKey,
+          title: l10n.guideSellerJobSaveTitle,
+          description: l10n.guideSellerJobSaveDesc),
+      GuideStep(
+          key: _guideClientKey,
+          title: l10n.guideSellerJobClientTitle,
+          description: l10n.guideSellerJobClientDesc),
+      GuideStep(
+          key: _guideReadKey,
+          title: l10n.guideSellerJobReadTitle,
+          description: l10n.guideSellerJobReadDesc),
+      if (_applyBlockedReason(l10n) == null)
+        GuideStep(
+            key: _guideApplyKey,
+            title: l10n.guideSellerJobApplyTitle,
+            description: l10n.guideSellerJobApplyDesc,
+            targetNearBottom: true),
+    ];
+  }
+
+  @override
+  List<GuideSection> buildGuideExtraSections(BuildContext context) {
+    final l10n = context.l10n;
+    return [
+      GuideSection(
+        id: 'fit',
+        title: l10n.guideSellerJobSectionFit,
+        steps: [
+          GuideStep(
+              key: _guideWhereKey,
+              title: l10n.guideSellerJobWhereTitle,
+              description: l10n.guideSellerJobWhereDesc,
+              enableAutoScroll: true),
+          GuideStep(
+              key: _guideBudgetKey,
+              title: l10n.guideSellerJobBudgetTitle,
+              description: l10n.guideSellerJobBudgetDesc,
+              enableAutoScroll: true),
+          GuideStep(
+              key: _guideShiftKey,
+              title: l10n.guideSellerJobShiftTitle,
+              description: l10n.guideSellerJobShiftDesc,
+              enableAutoScroll: true),
+          GuideStep(
+              key: _guideAppsKey,
+              title: l10n.guideSellerJobAppsTitle,
+              description: l10n.guideSellerJobAppsDesc,
+              enableAutoScroll: true),
+        ],
+      ),
+    ];
+  }
+
+  /// True once the push animation finished: targets are at their final place.
+  bool _routeSettled = false;
+
+  void _awaitRouteSettled() {
+    if (!mounted) return;
+    final anim = ModalRoute.of(context)?.animation;
+    if (anim == null || anim.isCompleted) {
+      _settleRoute();
+      return;
+    }
+    void listener(AnimationStatus st) {
+      if (st == AnimationStatus.completed) {
+        anim.removeStatusListener(listener);
+        _settleRoute();
+      }
+    }
+
+    anim.addStatusListener(listener);
+  }
+
+  void _settleRoute() {
+    if (!mounted) return;
+    setState(() => _routeSettled = true);
+    scheduleGuide();
+  }
+
+  GuideAnchor _anchor(GlobalKey key, String title, String desc) => GuideAnchor(
+        key: key,
+        scope: guideScope,
+        title: title,
+        description: desc,
+      );
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _awaitRouteSettled());
     _loadDetails();
   }
 
@@ -56,11 +204,13 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
           _isFavourited = results[1] as bool;
           _isLoading = false;
         });
+        scheduleGuide();
       }
     } catch (e) {
       if (mounted) {
         final keepJob = _jobPost != null;
         setState(() => _isLoading = false);
+        scheduleGuide();
         if (keepJob) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
@@ -140,44 +290,31 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
     final budgetMin = _jobPost?['budget_min'];
     final budgetMax = _jobPost?['budget_max'];
     final offerCount = _jobPost?['offer_count'] ?? 0;
-    final jobStatus = (_jobPost?['status'] as String?) ?? 'open';
     final myUid = Supabase.instance.client.auth.currentUser?.id;
     final clientId = _jobPost?['client_id'] as String?;
-    final myOffer = _jobPost?['my_offer'] as Map<String, dynamic>?;
 
-    String? applyBlockedReason() {
-      if (jobStatus.toLowerCase() != 'open') {
-        return l10n.jobClosedNoApplications;
-      }
-      if (myUid != null && clientId != null && myUid == clientId) {
-        return l10n.cannotApplyToOwnJob;
-      }
-      if (myOffer != null) {
-        final st = (myOffer['status'] as String?)?.toLowerCase();
-        if (st == 'pending' || st == 'accepted') {
-          return l10n.alreadySubmittedApplication;
-        }
-      }
-      return null;
-    }
-
-    final applyBlock = applyBlockedReason();
+    final applyBlock = _applyBlockedReason(l10n);
     final canApply = applyBlock == null;
 
     final bottomLift = MediaQuery.paddingOf(context).bottom + BuyerRequestDetails._shellFloatingNavLift;
 
-    return Scaffold(
+    return guideBackScope(Scaffold(
       backgroundColor: kDarkWhite,
       appBar: AppBar(
         backgroundColor: kDarkWhite, elevation: 0, iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(l10n.buyerRequestDetailsTitle, style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)), centerTitle: true,
         actions: [
-          IconButton(
-            tooltip: _isFavourited ? l10n.favourites : l10n.favorite,
-            onPressed: _favBusy ? null : _toggleFavourite,
-            icon: Icon(
-              _isFavourited ? Icons.bookmark : Icons.bookmark_border,
-              color: _isFavourited ? kPrimaryColor : kNeutralColor,
+          GuideInfoButton(host: this),
+          GuideAnchor.wrap(
+            _anchor(_guideSaveKey, l10n.guideSellerJobSaveTitle,
+                l10n.guideSellerJobSaveDesc),
+            IconButton(
+              tooltip: _isFavourited ? l10n.removeFavourite : l10n.favorite,
+              onPressed: _favBusy ? null : _toggleFavourite,
+              icon: Icon(
+                _isFavourited ? Icons.bookmark : Icons.bookmark_border,
+                color: _isFavourited ? kPrimaryColor : kNeutralColor,
+              ),
             ),
           ),
           if (clientId != null && myUid != clientId)
@@ -215,6 +352,10 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
                   ),
                 ),
               ButtonGlobalWithoutIcon(
+                guideAnchor: canApply
+                    ? _anchor(_guideApplyKey, l10n.guideSellerJobApplyTitle,
+                        l10n.guideSellerJobApplyDesc)
+                    : null,
                 buttontext: canApply
                     ? l10n.submitOfferAction
                     : l10n.cannotSubmitApplication,
@@ -258,19 +399,31 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 15.0),
-                JobClientInfoCard.fromJobPost(_jobPost),
+                JobClientInfoCard.fromJobPost(
+                  _jobPost,
+                  guideAnchor: _anchor(_guideClientKey,
+                      l10n.guideSellerJobClientTitle,
+                      l10n.guideSellerJobClientDesc),
+                ),
                 const SizedBox(height: 15.0),
 
-                // Title
-                Text(title, style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 16)),
-                const SizedBox(height: 10.0),
-
-                // Description
-                ReadMoreText(
-                  description,
-                  style: kTextStyle.copyWith(color: kSubTitleColor),
-                  trimLines: 3, colorClickableText: kPrimaryColor, trimMode: TrimMode.Line,
-                  trimCollapsedText: l10n.readMoreSuffix, trimExpandedText: l10n.readLessSuffix,
+                // Title + description
+                GuideAnchor.wrap(
+                  _anchor(_guideReadKey, l10n.guideSellerJobReadTitle,
+                      l10n.guideSellerJobReadDesc),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(title, style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 16)),
+                      const SizedBox(height: 10.0),
+                      ReadMoreText(
+                        description,
+                        style: kTextStyle.copyWith(color: kSubTitleColor),
+                        trimLines: 3, colorClickableText: kPrimaryColor, trimMode: TrimMode.Line,
+                        trimCollapsedText: l10n.readMoreSuffix, trimExpandedText: l10n.readLessSuffix,
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 15.0),
 
@@ -285,17 +438,20 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
                   const SizedBox(height: 8.0),
                 ],
                 if (budgetMin != null || budgetMax != null) ...[
-                  _row(l10n.budgetLabel, JobPostsService.formatBudgetRange(budgetMin, budgetMax, _jobPost?['budget_basis'])),
+                  _row(l10n.budgetLabel, JobPostsService.formatBudgetRange(budgetMin, budgetMax, _jobPost?['budget_basis']),
+                      anchor: _anchor(_guideBudgetKey, l10n.guideSellerJobBudgetTitle, l10n.guideSellerJobBudgetDesc)),
                   const SizedBox(height: 8.0),
                 ],
                 _buildLocationSection(_jobPost),
                 _row(l10n.workersNeeded, JobPostsService.workersNeededDetailLabel(_jobPost?['workers_needed'])),
                 const SizedBox(height: 8.0),
                 if (ShiftSchedule.fromMap(_jobPost).displayLabel != null) ...[
-                  _row(l10n.shiftLabel, ShiftSchedule.fromMap(_jobPost).displayLabel!),
+                  _row(l10n.shiftLabel, ShiftSchedule.fromMap(_jobPost).displayLabel!,
+                      anchor: _anchor(_guideShiftKey, l10n.guideSellerJobShiftTitle, l10n.guideSellerJobShiftDesc)),
                   const SizedBox(height: 8.0),
                 ],
-                _row(l10n.applicationsReceived, '$offerCount'),
+                _row(l10n.applicationsReceived, '$offerCount',
+                    anchor: _anchor(_guideAppsKey, l10n.guideSellerJobAppsTitle, l10n.guideSellerJobAppsDesc)),
                 const SizedBox(height: 8.0),
                 _row(l10n.dateLabel, _formatDate(_jobPost?['created_at'])),
                 SizedBox(height: bottomLift + 24),
@@ -305,10 +461,12 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
           ),
         ),
       ),
-    );
+    ));
   }
 
-  Widget _row(String l, String v) => Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+  Widget _row(String l, String v, {GuideAnchor? anchor}) => GuideAnchor.wrap(anchor, _rowContent(l, v));
+
+  Widget _rowContent(String l, String v) => Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
     Expanded(flex: 2, child: Text(l, style: kTextStyle.copyWith(color: kSubTitleColor))),
     Expanded(flex: 4, child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(context.l10n.labelColon, style: kTextStyle.copyWith(color: kSubTitleColor)), const SizedBox(width: 10.0),
@@ -329,20 +487,24 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
       children: [
         if (locationType != null && locationType.isNotEmpty) ...[
           const SizedBox(height: 8),
-          Row(children: [
-            Text(l10n.locationLabel, style: kTextStyle.copyWith(color: kSubTitleColor)),
-            const SizedBox(width: 8),
-            Text(l10n.labelColon, style: kTextStyle.copyWith(color: kSubTitleColor)),
-            const SizedBox(width: 10),
-            _locationTypeBadge(locationType),
-          ]),
+          GuideAnchor.wrap(
+            _anchor(_guideWhereKey, l10n.guideSellerJobWhereTitle,
+                l10n.guideSellerJobWhereDesc),
+            Row(children: [
+              Text(l10n.locationLabel, style: kTextStyle.copyWith(color: kSubTitleColor)),
+              const SizedBox(width: 8),
+              Text(l10n.labelColon, style: kTextStyle.copyWith(color: kSubTitleColor)),
+              const SizedBox(width: 10),
+              _locationTypeBadge(locationType),
+            ]),
+          ),
           const SizedBox(height: 8),
         ],
         if (coords != null) ...[
           JobLocationSection(job: job),
           const SizedBox(height: 8),
         ] else if (location != null && location.isNotEmpty) ...[
-          _row('Area', location),
+          _row(l10n.areaLabel, location),
           const SizedBox(height: 8),
         ],
       ],
@@ -360,7 +522,14 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails> {
       child: Row(mainAxisSize: MainAxisSize.min, children: [
         Icon(icon, size: 14, color: fg),
         const SizedBox(width: 4),
-        Text(type, style: kTextStyle.copyWith(color: fg, fontSize: 12, fontWeight: FontWeight.bold)),
+        Text(
+          switch (type) {
+            'On-site' => context.l10n.locationOnSite,
+            'Remote' => context.l10n.locationRemote,
+            _ => type,
+          },
+          style: kTextStyle.copyWith(color: fg, fontSize: 12, fontWeight: FontWeight.bold),
+        ),
       ]),
     );
   }

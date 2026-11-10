@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
 import 'package:freelancer/services/verification_service.dart';
+import 'package:freelancer/core/guide/guide_anchor.dart';
 
 /// Profile verification score: 50 profile photo + 50 face+ID = 100
 /// (each awarded only after its own admin accept).
@@ -12,7 +13,11 @@ class VerificationScoreCard extends StatelessWidget {
     this.onTap,
     this.accent,
     this.compact = false,
+    this.guideAnchor,
   });
+
+  /// Optional guide target around this widget; see [GuideAnchor].
+  final GuideAnchor? guideAnchor;
 
   final VerificationScore score;
   final VoidCallback? onTap;
@@ -20,7 +25,10 @@ class VerificationScoreCard extends StatelessWidget {
   final bool compact;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      GuideAnchor.wrap(guideAnchor, _buildContent(context));
+
+  Widget _buildContent(BuildContext context) {
     final l10n = context.l10n;
     final brand = accent ?? kPrimaryColor;
     final awaitingAdmin = (score.hasProfilePhoto && !score.profilePhotoAccepted) ||

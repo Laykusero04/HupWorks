@@ -5,6 +5,7 @@ import 'package:freelancer/l10n/l10n.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'constant.dart';
+import 'package:freelancer/core/guide/guide_anchor.dart';
 
 /// Message + file from [order_deliveries], shown on client and seller order details.
 class OrderDeliveryPanel extends StatelessWidget {
@@ -17,13 +18,20 @@ class OrderDeliveryPanel extends StatelessWidget {
     required this.deliveries,
     required this.title,
     this.instruction,
+    this.guideAnchor,
   });
+
+  /// Optional guide target around this widget; see [GuideAnchor].
+  final GuideAnchor? guideAnchor;
 
   static String formatSubmittedAt(DateTime date, [String? locale]) =>
       AppDateFormat.dMmmY(date, locale);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      GuideAnchor.wrap(guideAnchor, _buildContent(context));
+
+  Widget _buildContent(BuildContext context) {
     final l10n = context.l10n;
     return Container(
       width: double.infinity,

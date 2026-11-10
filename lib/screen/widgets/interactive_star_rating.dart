@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'constant.dart';
+import 'package:freelancer/core/guide/guide_anchor.dart';
 
 /// Simple 1–5 star row with reliable hit targets (replaces flaky gesture stacks).
 class InteractiveStarRating extends StatelessWidget {
@@ -9,7 +10,11 @@ class InteractiveStarRating extends StatelessWidget {
     required this.value,
     required this.onChanged,
     this.starSize = 44,
+    this.guideAnchor,
   });
+
+  /// Optional guide target around this widget; see [GuideAnchor].
+  final GuideAnchor? guideAnchor;
 
   /// 0 = none selected, otherwise 1–5.
   final int value;
@@ -17,7 +22,10 @@ class InteractiveStarRating extends StatelessWidget {
   final double starSize;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      GuideAnchor.wrap(guideAnchor, _buildContent(context));
+
+  Widget _buildContent(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,

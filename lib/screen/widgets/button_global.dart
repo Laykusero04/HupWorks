@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'constant.dart';
+import 'package:freelancer/core/guide/guide_anchor.dart';
 
 // ignore: must_be_immutable
 class ButtonGlobal extends StatelessWidget {
@@ -43,10 +44,17 @@ class ButtonGlobalWithoutIcon extends StatelessWidget {
   final Color buttonTextColor;
 
   // ignore: use_key_in_widget_constructors
-  ButtonGlobalWithoutIcon({required this.buttontext, required this.buttonDecoration, required this.onPressed, required this.buttonTextColor});
+  ButtonGlobalWithoutIcon({required this.buttontext, required this.buttonDecoration, required this.onPressed, required this.buttonTextColor, this.guideAnchor,
+  });
+
+  /// Optional guide target around this widget; see [GuideAnchor].
+  final GuideAnchor? guideAnchor;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      GuideAnchor.wrap(guideAnchor, _buildContent(context));
+
+  Widget _buildContent(BuildContext context) {
     return TextButton(
       onPressed: onPressed,
       child: Container(

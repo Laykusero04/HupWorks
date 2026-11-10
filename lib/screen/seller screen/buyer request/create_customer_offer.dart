@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:freelancer/core/guide/guide_anchor.dart';
+import 'package:freelancer/core/guide/guide_host.dart';
+import 'package:freelancer/core/guide/guide_info_button.dart';
+import 'package:freelancer/core/guide/guide_step.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/services/job_posts_service.dart';
@@ -32,8 +36,97 @@ class CreateCustomerOffer extends StatefulWidget {
   State<CreateCustomerOffer> createState() => _CreateCustomerOfferState();
 }
 
-class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
+class _CreateCustomerOfferState extends State<CreateCustomerOffer>
+    with GuideHost<CreateCustomerOffer> {
   static const _coverLetterMinChars = 40;
+
+  final GlobalKey _guideRateKey = GlobalKey();
+  final GlobalKey _guidePostedKey = GlobalKey();
+  final GlobalKey _guidePriceKey = GlobalKey();
+  final GlobalKey _guideMessageKey = GlobalKey();
+  final GlobalKey _guideSendKey = GlobalKey();
+
+  @override
+  String get guideScreenId => 'seller_apply_form';
+  @override
+  String get guideRole => 'seller';
+  @override
+  int get guideVersion => 1;
+
+  /// Static form: ready once the push animation is over.
+  @override
+  bool get guideDataReady => _routeSettled;
+  @override
+  String get guideSkipLabel => context.l10n.guideSkip;
+  @override
+  String get guideNextLabel => context.l10n.guideNext;
+  @override
+  String get guideDoneLabel => context.l10n.guideDone;
+
+  /// True once the push animation finished: targets are at their final place.
+  bool _routeSettled = false;
+
+  void _awaitRouteSettled() {
+    if (!mounted) return;
+    final anim = ModalRoute.of(context)?.animation;
+    if (anim == null || anim.isCompleted) {
+      _settleRoute();
+      return;
+    }
+    void listener(AnimationStatus st) {
+      if (st == AnimationStatus.completed) {
+        anim.removeStatusListener(listener);
+        _settleRoute();
+      }
+    }
+
+    anim.addStatusListener(listener);
+  }
+
+  void _settleRoute() {
+    if (!mounted) return;
+    setState(() => _routeSettled = true);
+    scheduleGuide();
+  }
+
+  GuideAnchor _anchor(GlobalKey key, String title, String desc) => GuideAnchor(
+        key: key,
+        scope: guideScope,
+        title: title,
+        description: desc,
+      );
+
+  // Rate choice only exists with a posted budget. The client-rate box (agree
+  // mode) and the price fields (custom bid) are mutually exclusive; targets
+  // that are not on screen are dropped by the runner.
+  @override
+  List<GuideStep> buildGuideSteps(BuildContext context) {
+    final l10n = context.l10n;
+    return [
+      GuideStep(
+          key: _guideRateKey,
+          title: l10n.guideApplyRateTitle,
+          description: l10n.guideApplyRateDesc),
+      GuideStep(
+          key: _guidePostedKey,
+          title: l10n.guideApplyPostedTitle,
+          description: l10n.guideApplyPostedDesc),
+      GuideStep(
+          key: _guidePriceKey,
+          title: l10n.guideApplyPriceTitle,
+          description: l10n.guideApplyPriceDesc),
+      GuideStep(
+          key: _guideMessageKey,
+          title: l10n.guideApplyMessageTitle,
+          description: l10n.guideApplyMessageDesc(_coverLetterMinChars),
+          enableAutoScroll: true),
+      GuideStep(
+          key: _guideSendKey,
+          title: l10n.guideApplySendTitle,
+          description: l10n.guideApplySendDesc,
+          targetNearBottom: true),
+    ];
+  }
 
   final _amountController = TextEditingController();
   final _coverLetterController = TextEditingController();
@@ -52,6 +145,7 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _awaitRouteSettled());
     _hasPostedBudget = JobPostsService.hasPostedBudget(_jobPostBudgetMap);
     _mode = _hasPostedBudget ? _OfferSubmitMode.agreePosted : _OfferSubmitMode.customBid;
     final agreed = JobPostsService.agreedOfferFromJobPost(_jobPostBudgetMap);
@@ -249,7 +343,7 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
     final agreed = JobPostsService.agreedOfferFromJobPost(_jobPostBudgetMap);
     final isAgree = _mode == _OfferSubmitMode.agreePosted;
 
-    return Scaffold(
+    return guideBackScope(Scaffold(
       backgroundColor: kDarkWhite,
       appBar: AppBar(
         backgroundColor: kDarkWhite,
@@ -260,6 +354,7 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
           style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
+        actions: [GuideInfoButton(host: this)],
       ),
       bottomNavigationBar: Material(
         color: kWhite,
@@ -268,6 +363,8 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
         child: Padding(
           padding: EdgeInsets.fromLTRB(20, 8, 20, bottomLift),
           child: ButtonGlobalWithoutIcon(
+            guideAnchor: _anchor(_guideSendKey, l10n.guideApplySendTitle,
+                l10n.guideApplySendDesc),
             buttontext: _isSubmitting
                 ? l10n.sending
                 : isAgree
@@ -326,7 +423,10 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
                 ),
                 const SizedBox(height: 20.0),
                 if (_hasPostedBudget) ...[
-                  Row(
+                  GuideAnchor.wrap(
+                    _anchor(_guideRateKey, l10n.guideApplyRateTitle,
+                        l10n.guideApplyRateDesc),
+                    Row(
                     children: [
                       _modeChip(
                         label: l10n.agreeToClientRate,
@@ -341,6 +441,7 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
                       ),
                     ],
                   ),
+                  ),
                   const SizedBox(height: 16),
                 ],
                 if (isAgree && postedLabel.isNotEmpty) ...[
@@ -353,7 +454,10 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  Container(
+                  GuideAnchor.wrap(
+                    _anchor(_guidePostedKey, l10n.guideApplyPostedTitle,
+                        l10n.guideApplyPostedDesc),
+                    Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
@@ -399,6 +503,7 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
                       ],
                     ),
                   ),
+                  ),
                 ] else ...[
                   Text(
                     _hasPostedBudget
@@ -421,7 +526,10 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
                     ),
                   ],
                   const SizedBox(height: 16),
-                  Row(
+                  GuideAnchor.wrap(
+                    _anchor(_guidePriceKey, l10n.guideApplyPriceTitle,
+                        l10n.guideApplyPriceDesc),
+                    Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
@@ -506,9 +614,15 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
                       ),
                     ],
                   ),
+                  ),
                 ],
                 const SizedBox(height: 20.0),
-                TextFormField(
+                GuideAnchor.wrap(
+                  _anchor(
+                      _guideMessageKey,
+                      l10n.guideApplyMessageTitle,
+                      l10n.guideApplyMessageDesc(_coverLetterMinChars)),
+                  TextFormField(
                   controller: _coverLetterController,
                   keyboardType: TextInputType.multiline,
                   cursorColor: kNeutralColor,
@@ -524,6 +638,7 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     border: const OutlineInputBorder(),
                   ),
+                ),
                 ),
                 const SizedBox(height: 6),
                 Align(
@@ -549,6 +664,6 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer> {
           ),
         ),
       ),
-    );
+    ));
   }
 }

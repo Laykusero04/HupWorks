@@ -224,14 +224,14 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
         elevation: 0,
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
-          'HupWorks',
+          name,
           style: kTextStyle.copyWith(color: brand, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         actions: [
           IconButton(
             tooltip: _isSaved
-                ? l10n.removedFromSavedTalent
+                ? l10n.removeSavedTalent
                 : l10n.favorite,
             onPressed: _saveBusy ? null : _toggleSaved,
             icon: Icon(

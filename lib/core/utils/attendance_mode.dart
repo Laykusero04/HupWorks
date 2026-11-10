@@ -53,17 +53,17 @@ class AttendanceMode {
     switch (normalize(mode)) {
       case qrOnce:
         return l10n?.attendanceClientHintQrOnce ??
-            'Post one QR at the pinned site for all hired workers. Each worker scans once per shift to check in within 200 meters of that pin.';
+            'Post one QR at the pinned site for all hired freelancers. Each freelancer scans once per shift to check in within 200 meters of that pin.';
       case selfReport:
         return l10n?.attendanceClientHintSelfReport ??
-            'Workers clock in and out in the app — no QR needed.';
+            'Freelancers clock in and out in the app — no QR needed.';
       case disabled:
         return l10n?.attendanceClientHintDisabled ??
             'Attendance tracking is turned off for this job.';
       case qrInOut:
       default:
         return l10n?.attendanceClientHintQrInOut ??
-            'Post one QR at the pinned site for all hired workers. Each worker clocks in once and out once per shift within 200 meters of that pin.';
+            'Post one QR at the pinned site for all hired freelancers. Each freelancer clocks in once and out once per shift within 200 meters of that pin.';
     }
   }
 

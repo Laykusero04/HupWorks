@@ -31,6 +31,38 @@ class GuideSession extends ChangeNotifier {
   /// `Scaffold.onDrawerChanged`. Guides never run while it is true.
   static final ValueNotifier<bool> drawerOpen = ValueNotifier<bool>(false);
 
+  /// True while ANY guide is on screen. Root-level Back blockers (PopScope)
+  /// depend on this, not on one host: with Android predictive back the
+  /// framework only keeps Back when the root navigator's route says
+  /// canPop=false, so a nested (shell branch) guide must be visible there too.
+  static final ValueNotifier<bool> anyRunning = ValueNotifier<bool>(false);
+
+  static Object? _runningOwner;
+  static VoidCallback? _dismissRunning;
+
+  /// A host's guide became visible. [dismiss] closes it as a Skip.
+  static void beginRunning(Object owner, VoidCallback dismiss) {
+    _runningOwner = owner;
+    _dismissRunning = dismiss;
+    anyRunning.value = true;
+  }
+
+  /// No-op unless [owner] is the running guide's host.
+  static void endRunning(Object owner) {
+    if (!identical(_runningOwner, owner)) return;
+    _runningOwner = null;
+    _dismissRunning = null;
+    anyRunning.value = false;
+  }
+
+  /// System Back: closes the running guide (as Skip). Returns whether one ran.
+  static bool dismissRunning() {
+    final d = _dismissRunning;
+    if (d == null) return false;
+    d();
+    return true;
+  }
+
   Object? _holder;
   bool _homeSettled = false;
 
@@ -67,6 +99,9 @@ class GuideSession extends ChangeNotifier {
   @visibleForTesting
   void resetForTest() {
     drawerOpen.value = false;
+    _runningOwner = null;
+    _dismissRunning = null;
+    anyRunning.value = false;
     _holder = null;
     _homeSettled = false;
   }

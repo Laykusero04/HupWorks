@@ -243,7 +243,7 @@ class _ChatScreenState extends State<ChatScreen> {
           suffixIcon: _searchQuery.isEmpty
               ? null
               : IconButton(
-                  tooltip: MaterialLocalizations.of(context).deleteButtonTooltip,
+                  tooltip: context.l10n.clearSearch,
                   onPressed: () {
                     _searchController.clear();
                     setState(() => _searchQuery = '');

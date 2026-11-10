@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:freelancer/core/guide/guide_host.dart';
+import 'package:freelancer/core/guide/guide_info_button.dart';
 import 'package:freelancer/core/guide/guide_step.dart';
 import 'package:freelancer/core/utils/client_profile_completeness.dart';
 import 'package:freelancer/core/utils/profile_image.dart';
@@ -43,6 +45,10 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
   List<Map<String, dynamic>> _myRecentJobs = [];
   List<Map<String, dynamic>> _topSellers = [];
   bool _isLoading = true;
+  // True while a pull-to-refresh / reload runs with the content still on
+  // screen: the guide is torn down (and re-armed) instead of pointing at
+  // widgets that are about to be rebuilt.
+  bool _refreshing = false;
   bool _showProfileNudge = false;
 
   final PageController _bannerController =
@@ -55,6 +61,12 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
   final GlobalKey _guideSearchKey = GlobalKey();
   final GlobalKey _guideNudgeKey = GlobalKey();
   final GlobalKey _guidePostJobKey = GlobalKey();
+  // "Explore" section targets.
+  final GlobalKey _guideShortcutsKey = GlobalKey();
+  final GlobalKey _guideHighlightsKey = GlobalKey();
+  final GlobalKey _guideCategoriesKey = GlobalKey();
+  final GlobalKey _guideRecentJobsKey = GlobalKey();
+  final GlobalKey _guideTopFreelancersKey = GlobalKey();
 
   @override
   String get guideScreenId => 'client_home';
@@ -65,7 +77,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
   @override
   bool get guideLeadsChain => true;
   @override
-  bool get guideDataReady => !_isLoading;
+  bool get guideDataReady => !_isLoading && !_refreshing;
   @override
   String get guideSkipLabel => context.l10n.guideSkip;
   @override
@@ -102,9 +114,101 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
     ];
   }
 
+  // On demand from the (i): everything below the fold, so every step scrolls.
+  @override
+  List<GuideSection> buildGuideExtraSections(BuildContext context) {
+    final l10n = context.l10n;
+    return [
+      GuideSection(
+        id: 'explore',
+        title: l10n.guideClientHomeSectionExplore,
+        steps: [
+          GuideStep(
+              key: _guideShortcutsKey,
+              enableAutoScroll: true,
+              title: l10n.guideClientHomeShortcutsTitle,
+              description: l10n.guideClientHomeShortcutsDesc),
+          GuideStep(
+              key: _guideHighlightsKey,
+              enableAutoScroll: true,
+              title: l10n.guideClientHomeHighlightsTitle,
+              description: l10n.guideClientHomeHighlightsDesc),
+          GuideStep(
+              key: _guideCategoriesKey,
+              enableAutoScroll: true,
+              title: l10n.guideClientHomeCategoriesTitle,
+              description: l10n.guideClientHomeCategoriesDesc),
+          GuideStep(
+              key: _guideRecentJobsKey,
+              enableAutoScroll: true,
+              title: l10n.guideClientHomeRecentJobsTitle,
+              description: l10n.guideClientHomeRecentJobsDesc),
+          GuideStep(
+              key: _guideTopFreelancersKey,
+              enableAutoScroll: true,
+              title: l10n.guideClientHomeTopFreelancersTitle,
+              description: l10n.guideClientHomeTopFreelancersDesc),
+        ],
+      ),
+    ];
+  }
+
+  /// Wraps [child] as a target of the "Explore" section.
+  Widget _exploreTarget(
+      GlobalKey key, String title, String description, Widget child,
+      {double radius = 16}) {
+    return Showcase(
+      key: key,
+      scope: guideScope,
+      title: title,
+      description: description,
+      targetBorderRadius: BorderRadius.circular(radius),
+      child: child,
+    );
+  }
+
+  // The large cache extent builds the whole page so every "Explore" target
+  // exists. Only enabled while that section is being started / run.
+  bool _exploreCache = false;
+  bool _exploreStarted = false;
+
+  void _onExploreRunningChanged() {
+    if (guideRunning.value) {
+      if (_exploreCache) _exploreStarted = true;
+    } else if (_exploreStarted) {
+      _endExploreCache();
+    }
+  }
+
+  void _endExploreCache() {
+    _exploreStarted = false;
+    if (_exploreCache && mounted) setState(() => _exploreCache = false);
+  }
+
+  @override
+  bool replayGuide({String? sectionId}) {
+    if (sectionId != 'explore' || !mounted || _exploreCache) {
+      return super.replayGuide(sectionId: sectionId);
+    }
+    setState(() => _exploreCache = true);
+    // Start after the larger cache extent has built the targets.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (!super.replayGuide(sectionId: sectionId)) _endExploreCache();
+    });
+    // Safety net: never keep the large extent if the guide did not start.
+    Future.delayed(const Duration(seconds: 5), () {
+      if (mounted && !_exploreStarted && !guideRunning.value) {
+        _endExploreCache();
+      }
+    });
+    return true;
+  }
+
   @override
   void initState() {
     super.initState();
+    guideRunning.addListener(_onExploreRunningChanged);
     // Defer Supabase work until after the first frame so the loading
     // skeleton paints immediately instead of blocking the initial render.
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -115,11 +219,15 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
 
   @override
   void dispose() {
+    guideRunning.removeListener(_onExploreRunningChanged);
     _bannerController.dispose();
     super.dispose();
   }
 
   Future<void> _loadData() async {
+    if (mounted && !_isLoading && !_refreshing) {
+      setState(() => _refreshing = true); // guideDataReady false: tear down
+    }
     try {
       final results = await Future.wait([
         ClientHomeService.getCategories(),
@@ -143,12 +251,16 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
           _topSellers = results[2] as List<Map<String, dynamic>>;
           _showProfileNudge = incomplete && !dismissed;
           _isLoading = false;
+          _refreshing = false;
         });
         scheduleGuide();
       }
     } catch (e) {
       if (mounted) {
-        setState(() => _isLoading = false);
+        setState(() {
+          _isLoading = false;
+          _refreshing = false;
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
@@ -213,10 +325,11 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return Scaffold(
+    return guideBackScope(Scaffold(
       backgroundColor: kDarkWhite,
       appBar: ClientShellAppBar(
         title: l10n.home,
+        actions: [GuideInfoButton(host: this)],
         menuShowcaseKey: _guideMenuKey,
         menuShowcaseScope: guideScope,
         menuShowcaseTitle: l10n.guideShellMenuTitle,
@@ -232,6 +345,11 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
               child: CustomScrollView(
                 physics: const AlwaysScrollableScrollPhysics(
                     parent: BouncingScrollPhysics()),
+                // Build the whole (short) page so below-the-fold guide
+                // targets exist and can be scrolled to.
+                scrollCacheExtent: _exploreCache
+                    ? const ScrollCacheExtent.pixels(4000)
+                    : null,
                 slivers: [
                   SliverToBoxAdapter(child: _buildSearchBar()),
                   if (_showProfileNudge) ...[
@@ -241,7 +359,12 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
                   const SliverToBoxAdapter(child: SizedBox(height: 16)),
                   SliverToBoxAdapter(child: _buildQuickActions()),
                   const SliverToBoxAdapter(child: SizedBox(height: 22)),
-                  SliverToBoxAdapter(child: _buildPromoCarousel()),
+                  SliverToBoxAdapter(
+                      child: _exploreTarget(
+                          _guideHighlightsKey,
+                          l10n.guideClientHomeHighlightsTitle,
+                          l10n.guideClientHomeHighlightsDesc,
+                          _buildPromoCarousel())),
                   const SliverToBoxAdapter(child: SizedBox(height: 24)),
                   SliverToBoxAdapter(
                     child: _buildSectionHeader(
@@ -250,7 +373,12 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
                           const ClientAllCategories().launch(context),
                     ),
                   ),
-                  SliverToBoxAdapter(child: _buildCategoriesGrid()),
+                  SliverToBoxAdapter(
+                      child: _exploreTarget(
+                          _guideCategoriesKey,
+                          l10n.guideClientHomeCategoriesTitle,
+                          l10n.guideClientHomeCategoriesDesc,
+                          _buildCategoriesGrid())),
                   const SliverToBoxAdapter(child: SizedBox(height: 18)),
                   SliverToBoxAdapter(
                     child: _buildSectionHeader(
@@ -261,7 +389,12 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
                       },
                     ),
                   ),
-                  SliverToBoxAdapter(child: _buildRecentJobs()),
+                  SliverToBoxAdapter(
+                      child: _exploreTarget(
+                          _guideRecentJobsKey,
+                          l10n.guideClientHomeRecentJobsTitle,
+                          l10n.guideClientHomeRecentJobsDesc,
+                          _buildRecentJobs())),
                   const SliverToBoxAdapter(child: SizedBox(height: 18)),
                   SliverToBoxAdapter(
                     child: _buildSectionHeader(
@@ -269,12 +402,17 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
                       onViewAll: () => context.go(AppRoutes.clientTalent),
                     ),
                   ),
-                  SliverToBoxAdapter(child: _buildTopFreelancers()),
+                  SliverToBoxAdapter(
+                      child: _exploreTarget(
+                          _guideTopFreelancersKey,
+                          l10n.guideClientHomeTopFreelancersTitle,
+                          l10n.guideClientHomeTopFreelancersDesc,
+                          _buildTopFreelancers())),
                   const SliverToBoxAdapter(child: SizedBox(height: 28)),
                 ],
               ),
             ),
-    );
+    ));
   }
 
   Widget _buildProfileNudge() {
@@ -453,64 +591,70 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 14),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(22),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 18,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: actions
-              .map(
-                (a) => Expanded(
-                  child: _guideWrap(
-                    a.showcaseKey,
-                    l10n.guideClientHomePostJobTitle,
-                    l10n.guideClientHomePostJobDesc,
-                    InkWell(
-                      borderRadius: BorderRadius.circular(14),
-                      onTap: a.onTap,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: Column(
-                          children: [
-                            Container(
-                              height: 46,
-                              width: 46,
-                              decoration: BoxDecoration(
-                                color: a.color.withOpacity(0.12),
-                                borderRadius: BorderRadius.circular(14),
+      child: _exploreTarget(
+        _guideShortcutsKey,
+        l10n.guideClientHomeShortcutsTitle,
+        l10n.guideClientHomeShortcutsDesc,
+        radius: 22,
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 14),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(22),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 18,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: actions
+                .map(
+                  (a) => Expanded(
+                    child: _guideWrap(
+                      a.showcaseKey,
+                      l10n.guideClientHomePostJobTitle,
+                      l10n.guideClientHomePostJobDesc,
+                      InkWell(
+                        borderRadius: BorderRadius.circular(14),
+                        onTap: a.onTap,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: Column(
+                            children: [
+                              Container(
+                                height: 46,
+                                width: 46,
+                                decoration: BoxDecoration(
+                                  color: a.color.withOpacity(0.12),
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                                child: Icon(a.icon, color: a.color, size: 22),
                               ),
-                              child: Icon(a.icon, color: a.color, size: 22),
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              a.label,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              textAlign: TextAlign.center,
-                              style: kTextStyle.copyWith(
-                                fontSize: 11.5,
-                                fontWeight: FontWeight.w600,
-                                color: kNeutralColor,
+                              const SizedBox(height: 6),
+                              Text(
+                                a.label,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.center,
+                                style: kTextStyle.copyWith(
+                                  fontSize: 11.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: kNeutralColor,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              )
-              .toList(),
+                )
+                .toList(),
+          ),
         ),
       ),
     );

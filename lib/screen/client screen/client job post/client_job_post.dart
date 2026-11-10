@@ -89,6 +89,7 @@ class _JobPostState extends State<JobPost> {
       backgroundColor: kWhite,
       appBar: ClientShellAppBar(title: l10n.myJobs),
       floatingActionButton: FloatingActionButton(
+        tooltip: l10n.postAJob,
         onPressed: () async {
           await Navigator.of(context).push(
             MaterialPageRoute(builder: (context) => const CreateNewJobPost()),

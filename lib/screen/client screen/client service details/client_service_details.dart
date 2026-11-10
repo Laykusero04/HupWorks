@@ -205,7 +205,7 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
     final rating = _service?['rating'] ?? _averageRating;
     final reviewCount = _service?['review_count'] ?? _reviews.length;
     final images = (_service?['images'] as List<dynamic>?) ?? [];
-    final sellerName = _seller?['name'] ?? 'Seller';
+    final sellerName = _seller?['name'] ?? 'Freelancer';
     final sellerImage = _seller?['profile_image_url'];
 
     return SafeArea(

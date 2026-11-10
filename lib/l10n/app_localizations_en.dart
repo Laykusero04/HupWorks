@@ -145,7 +145,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'You\'ll need to sign in again to use your account.';
 
   @override
-  String get sellerReport => 'Seller Report';
+  String get sellerReport => 'Freelancer report';
 
   @override
   String get favorite => 'Save';
@@ -358,15 +358,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get attendanceClientHintQrInOut =>
-      'Post one QR at the pinned site for all hired workers. Each worker clocks in once and out once per shift within 200 meters of that pin.';
+      'Post one QR at the pinned site for all hired freelancers. Each freelancer clocks in once and out once per shift within 200 meters of that pin.';
 
   @override
   String get attendanceClientHintQrOnce =>
-      'Post one QR at the pinned site for all hired workers. Each worker scans once per shift to check in within 200 meters of that pin.';
+      'Post one QR at the pinned site for all hired freelancers. Each freelancer scans once per shift to check in within 200 meters of that pin.';
 
   @override
   String get attendanceClientHintSelfReport =>
-      'Workers clock in and out in the app — no QR needed.';
+      'Freelancers clock in and out in the app — no QR needed.';
 
   @override
   String get attendanceClientHintDisabled =>
@@ -408,7 +408,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get attendanceTracking => 'Attendance tracking';
 
   @override
-  String get attendanceTrackingHint => 'How workers record time on site.';
+  String get attendanceTrackingHint => 'How freelancers record time on site.';
 
   @override
   String get genderMale => 'Male';
@@ -788,7 +788,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get yourRecentJobs => 'Your Recent Jobs';
 
   @override
-  String get postJob => 'Post Job';
+  String get postJob => 'Post job';
 
   @override
   String get findTalent => 'Find Talent';
@@ -800,7 +800,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hireTopRated => 'Hire top-rated freelancers';
 
   @override
-  String get postAJobBanner => 'Post a job and get offers';
+  String get postAJobBanner => 'Post a job and get applications';
 
   @override
   String get postNow => 'Post Now';
@@ -885,7 +885,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get budgetSuffixTotal => 'total';
 
   @override
-  String get yourWork => 'Work tracker';
+  String get yourWork => 'Your work';
 
   @override
   String get hoursWorked => 'Hours worked';
@@ -973,7 +973,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get attendance => 'Attendance';
 
   @override
-  String get shortcutFindJobs => 'Find jobs';
+  String get shortcutFindJobs => 'Find Jobs';
 
   @override
   String get shortcutFindJobsSub => 'Browse open roles';
@@ -1222,10 +1222,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reportWhyQuestion => 'Why are you reporting?';
 
   @override
-  String get reportSellerProfileUrl => 'Seller Profile URL';
+  String get reportSellerProfileUrl => 'Freelancer profile URL';
 
   @override
-  String get reportEnterSellerProfileUrl => 'Enter seller profile url';
+  String get reportEnterSellerProfileUrl => 'Enter freelancer profile URL';
 
   @override
   String get reportOriginalContentUrl => 'URL of original content';
@@ -1243,7 +1243,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get promoVerifiedTalentSubtitle => 'Verified talent for every project';
 
   @override
-  String get promoProposalsSubtitle => 'Get proposals within minutes';
+  String get promoProposalsSubtitle => 'Get applications within minutes';
 
   @override
   String get promoNicheServicesSubtitle => 'Find services across every niche';
@@ -1252,7 +1252,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get jobTypeGig => 'Shift';
 
   @override
-  String get recentJobsEmptyHint => 'Tap \"Post Job\" to get started';
+  String get recentJobsEmptyHint => 'Tap \"Post a job\" to get started';
 
   @override
   String get postJobShort => 'Post';
@@ -1318,7 +1318,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noApplicationsYetHint =>
-      'Browse open jobs and send a clear offer to stand out.';
+      'Browse open jobs and send a clear application to stand out.';
 
   @override
   String get noClientApplicationsYetHint =>
@@ -1449,7 +1449,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get attendancePrintQrAtSite =>
-      'Print this QR and post it where workers check in.';
+      'Print this QR and post it where freelancers check in.';
 
   @override
   String get attendancePrintAndPostAtSite => 'Print & post at site';
@@ -1484,7 +1484,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get attendanceHowItWorksBody =>
-      '1. Pin the workplace on the map, then print and tape this QR there (one code for all hired workers).\n2. Hired freelancers open HupWorks and scan it while they are at the site.\n3. Each worker confirms clock in or clock out on their phone — once per shift. The punch is accepted only within 200 meters of the pin.\n4. You can view today\'s attendance on the job details screen.\n\nAnti-fraud: sharing sends a poster image only (no copyable deep link).';
+      '1. Pin the workplace on the map, then print and tape this QR there (one code for all hired freelancers).\n2. Hired freelancers open HupWorks and scan it while they are at the site.\n3. Each freelancer confirms clock in or clock out on their phone — once per shift. The punch is accepted only within 200 meters of the pin.\n4. You can view today\'s attendance on the job details screen.\n\nAnti-fraud: sharing sends a poster image only (no copyable deep link).';
 
   @override
   String get noOnsiteJobsYet => 'No on-site jobs yet';
@@ -1850,7 +1850,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get orderPlacedSuccess => 'Order placed successfully!';
 
   @override
-  String get missingOrderDetails => 'Service or seller details are missing';
+  String get missingOrderDetails =>
+      'Contract or freelancer details are missing';
 
   @override
   String errorPlacingOrder(String message) {
@@ -1874,7 +1875,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get rateOverallExperience =>
-      'How would you rate your overall experience with this seller?';
+      'How would you rate your overall experience with this freelancer?';
 
   @override
   String get freelancerForContract => 'Freelancer for this contract';
@@ -2131,15 +2132,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get amountCaps => 'AMOUNT';
 
   @override
-  String get orderDetailsTitle => 'Order Details';
+  String get orderDetailsTitle => 'Contract details';
 
   @override
   String orderIdHash(String id) {
-    return 'Order ID #$id';
+    return 'Contract ID #$id';
   }
 
   @override
-  String get sellerColon => 'Seller:';
+  String get sellerColon => 'Freelancer:';
 
   @override
   String get clientColon => 'Client:';
@@ -2148,7 +2149,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get labelTitle => 'Title';
 
   @override
-  String get labelServiceInfo => 'Service Info';
+  String get labelServiceInfo => 'Details';
 
   @override
   String get labelDuration => 'Duration';
@@ -2160,7 +2161,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get labelRevisions => 'Revisions';
 
   @override
-  String get orderSummary => 'Order Summary';
+  String get orderSummary => 'Contract summary';
 
   @override
   String get subtotal => 'Subtotal';
@@ -2231,21 +2232,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get couldNotOpenReviewMissingSeller =>
-      'Could not open review (missing seller).';
+      'Could not open review (missing freelancer).';
 
   @override
-  String get sellerSubmittedDelivery => 'Seller submitted delivery';
+  String get sellerSubmittedDelivery => 'Freelancer submitted delivery';
 
   @override
   String get yourDelivery => 'Your delivery';
 
   @override
   String get deliveredCalloutBody =>
-      'Review what they sent. When you are happy with the result, tap Mark job complete below to close the order. To chat with the seller, use the ⋮ menu at the top.';
+      'Review what they sent. When you are happy with the result, tap Mark job complete below to close the contract. To chat with the freelancer, use the ⋮ menu at the top.';
 
   @override
   String get openContractCalloutBody =>
-      'Your freelancer must submit delivery before you can complete this contract. You can message the seller from the ⋮ menu at the top.';
+      'Your freelancer must submit delivery before you can complete this contract. You can message the freelancer from the ⋮ menu at the top.';
 
   @override
   String cancellationRequestBannerBody(String seller) {
@@ -2276,13 +2277,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingAcknowledgedShort => 'Acknowledged';
 
   @override
-  String get onboardingAwaitingAck => 'Awaiting ack';
+  String get onboardingAwaitingAck => 'Waiting for confirmation';
 
   @override
-  String get theSeller => 'the seller';
+  String get theSeller => 'the freelancer';
 
   @override
-  String get roleSeller => 'Seller';
+  String get roleSeller => 'Freelancer';
 
   @override
   String get roleClient => 'Employer';
@@ -2405,7 +2406,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'This job will close to new applicants. Existing applications stay on your list.';
 
   @override
-  String get closeJob => 'Close Job';
+  String get closeJob => 'Close job';
 
   @override
   String get attendanceSettingsUpdated => 'Attendance settings updated';
@@ -2459,7 +2460,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get describeJobHint => 'Scope, timeline, skills needed';
 
   @override
-  String get workersNeeded => 'Workers needed';
+  String get workersNeeded => 'Freelancers needed';
 
   @override
   String get limitHiresToCount => 'Limit hires to this count';
@@ -2545,7 +2546,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get shiftScheduleHint =>
-      'Optional work day and clock times (e.g. 06:00–15:00). Defines the attendance shift window (±1 hour grace). If empty, the UTC calendar day is used.';
+      'Optional work hours (for example 06:00–15:00). Attendance can be recorded from 1 hour before to 1 hour after. If left empty, the full calendar day (UTC) is used.';
 
   @override
   String get workDateLabel => 'Work date';
@@ -2581,7 +2582,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shiftLabel => 'Shift';
 
   @override
-  String get workersLabel => 'Workers';
+  String get workersLabel => 'Freelancers';
 
   @override
   String get noLimitLabel => 'No limit';
@@ -2597,18 +2598,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String hireConfirmUnlimited(String name, String price) {
-    return 'Accept $name\'s offer ($price)? The job stays open so you can hire more freelancers until you close it.';
+    return 'Accept $name\'s application ($price)? The job stays open so you can hire more freelancers until you close it.';
   }
 
   @override
   String hireConfirmFillsAll(String name, String price, int filled, int cap) {
-    return 'Accept $name\'s offer ($price)? This fills your last hire spot ($filled of $cap). The job will close to new applicants. Other applications stay on your list as pending — reject them only if you do not want them.';
+    return 'Accept $name\'s application ($price)? This fills your last hire spot ($filled of $cap). The job will close to new applicants. Other applications stay on your list as pending — reject them only if you do not want them.';
   }
 
   @override
   String hireConfirmRemaining(
       String name, String price, int remaining, int filled, int cap) {
-    return 'Accept $name\'s offer ($price)? After this hire you will have $remaining more open spots ($filled of $cap filled). Other pending applications stay open.';
+    return 'Accept $name\'s application ($price)? After this hire you will have $remaining more open spots ($filled of $cap filled). Other pending applications stay open.';
   }
 
   @override
@@ -2639,7 +2640,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get messageFreelancerTooltip => 'Message freelancer';
 
   @override
-  String get attendanceQrShort => 'QR';
+  String get attendanceQrShort => 'Attendance QR';
 
   @override
   String get attendanceLocationRequired =>
@@ -2782,7 +2783,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get customBidIntroWithBudget =>
-      'Enter your own amount if you want to bid differently from the client\'s budget.';
+      'Enter your own price if you want to ask for a different amount than the client\'s budget.';
 
   @override
   String get customBidIntroNoBudget =>
@@ -2797,7 +2798,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get yourOfferAmount => 'Your application amount';
 
   @override
-  String get enterYourBid => 'Enter your bid';
+  String get enterYourBid => 'Enter your price';
 
   @override
   String get quoteAsLabel => 'Quote as';
@@ -2883,7 +2884,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get clearFilters => 'Clear filters';
 
   @override
-  String get deliverOrderTitle => 'Deliver Order';
+  String get deliverOrderTitle => 'Deliver work';
 
   @override
   String get pleaseDescribeDelivery => 'Please describe your delivery';
@@ -2915,7 +2916,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get paymentBkash => 'Bkash';
 
   @override
-  String get bidOfferLabel => 'Bid Offer';
+  String get bidOfferLabel => 'Application price';
 
   @override
   String get counterOfferLabel => 'Counter offer';
@@ -2980,7 +2981,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Try another filter or start a conversation from a profile';
 
   @override
-  String get proposalCaps => 'PROPOSAL';
+  String get proposalCaps => 'APPLICATION';
 
   @override
   String get labelColon => ':';
@@ -3197,7 +3198,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get identityVerificationSetupHint =>
-      'Upload a selfie holding your government ID next to your face. An admin will review face+ID separately from your profile photo — you will see “pending” until each is accepted.';
+      'Upload a selfie holding your government ID next to your face. An admin will review your selfie with ID separately from your profile photo — you will see “pending” until each is accepted.';
 
   @override
   String get idDoLabel => 'Do: face + ID clear';
@@ -3233,11 +3234,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get faceIdPendingHint =>
-      'Face+ID is submitted but not accepted yet (+50 pts after accept). Profile photo is reviewed separately.';
+      'Selfie with ID is submitted but not accepted yet (+50 points after accept). Profile photo is reviewed separately.';
 
   @override
   String get faceIdVerifiedHint =>
-      'Face+ID accepted. Replacing this selfie resets only the face+ID review.';
+      'Selfie with ID accepted. Replacing this selfie resets only the selfie with ID review.';
 
   @override
   String get selfieWithId => 'Selfie with ID';
@@ -3272,13 +3273,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get verificationScoreHint =>
-      'Profile photo and face+ID are reviewed separately (50 pts each).';
+      'Profile photo and selfie with ID are reviewed separately (50 points each).';
 
   @override
   String get profilePhotoLabel => 'Profile photo';
 
   @override
-  String get faceIdSelfieLabel => 'Face + ID selfie';
+  String get faceIdSelfieLabel => 'Selfie with ID';
 
   @override
   String get acceptedByAdmin => 'Accepted by admin';
@@ -3386,7 +3387,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get withdrawApplicationConfirmBody =>
-      'The employer will no longer see this as a pending offer. You can apply again later.';
+      'The employer will no longer see this as a pending application. You can apply again later.';
 
   @override
   String get applicationWithdrawn => 'Application withdrawn';
@@ -3399,7 +3400,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Try another status or clear your search.';
 
   @override
-  String get trustScoreLabel => 'Trust';
+  String get trustScoreLabel => 'Trust score';
 
   @override
   String get genderLabel => 'Gender';
@@ -3626,7 +3627,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get faqMessageSellerA =>
-      'Open an order or job offer and use Message, or go to the Messages tab to see all conversations with freelancers.';
+      'Open a contract or application and use Message, or go to the Messages tab to see all conversations with freelancers.';
 
   @override
   String get faqReportSellerQ => 'How do I report a freelancer?';
@@ -3654,7 +3655,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get faqApplyJobA =>
-      'Go to Find Jobs, open a listing, and submit your offer with price and delivery details. The employer can accept and start an order from there.';
+      'Go to Find Jobs, open a listing, and submit your application with price and delivery details. The employer can accept and start an order from there.';
 
   @override
   String get faqGetPaidQ => 'How do I get paid?';
@@ -3668,7 +3669,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get faqAttendanceA =>
-      'Profile menu → Attendance. At the job site, scan the employer\'s QR (shared by all hired workers). Each person may clock in once and out once per shift. You must be within 200 m of the job pin. The QR poster share is image-only so the deep link cannot be copied.';
+      'Profile menu → Attendance. At the job site, scan the employer\'s QR (shared by all hired freelancers). Each person may clock in once and out once per shift. You must be within 200 m of the job pin. The QR poster share is image-only so the deep link cannot be copied.';
 
   @override
   String get pleasePinJobSite =>
@@ -3679,7 +3680,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get attendancePinSiteToUseQr =>
-      'Set a map pin before using QR attendance. Workers can only clock in within 200 meters of that pin.';
+      'Set a map pin before using QR attendance. Freelancers can only clock in within 200 meters of that pin.';
 
   @override
   String get attendanceLocationCheckHint =>
@@ -3709,7 +3710,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String attendanceShareQrMessage(String job) {
-    return 'Print this QR and post it at \"$job\". Hired workers scan it in HupWorks while they are at the site.';
+    return 'Print this QR and post it at \"$job\". Hired freelancers scan it in HupWorks while they are at the site.';
   }
 
   @override
@@ -3962,6 +3963,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get guideDone => 'Got it';
 
   @override
+  String get guideReplayThisScreen => 'Show tips for this screen';
+
+  @override
   String get guideShellMenuTitle => 'Menu';
 
   @override
@@ -3998,8 +4002,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get guideClientHomeSearchTitle => 'Search';
 
   @override
-  String get guideClientHomeSearchDesc =>
-      'Find freelancers and jobs by keyword.';
+  String get guideClientHomeSearchDesc => 'Find freelancers by name or skill.';
 
   @override
   String get guideClientHomeNudgeTitle => 'Complete your profile';
@@ -4022,7 +4025,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get guideSellerHomeBellDesc => 'Job updates appear here.';
 
   @override
-  String get guideSellerHomeBannerTitle => 'Find jobs';
+  String get guideSellerHomeBannerTitle => 'Find Jobs';
 
   @override
   String get guideSellerHomeBannerDesc => 'Tap to browse open jobs near you.';
@@ -4035,7 +4038,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Quick access to applications and attendance QR.';
 
   @override
-  String get guideSellerHomeWorkTitle => 'Work tracker';
+  String get guideSellerHomeWorkTitle => 'Your work';
 
   @override
   String get guideSellerHomeWorkDesc =>
@@ -4050,4 +4053,738 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get guideReplayDone =>
       'Guides will show again as you visit each screen';
+
+  @override
+  String get menuTooltip => 'Menu';
+
+  @override
+  String get clearSearch => 'Clear search';
+
+  @override
+  String get jobAlertDeleteTooltip => 'Delete alert';
+
+  @override
+  String get removeSavedTalent => 'Remove from saved talent';
+
+  @override
+  String get skillPickerChoose => 'Choose a skill';
+
+  @override
+  String get skillPickerCustomNote =>
+      'This skill is saved on your profile only — not added to the global list.';
+
+  @override
+  String get skillPickerSearchHint => 'Search e.g. plumber, factory worker';
+
+  @override
+  String get skillPickerNoneLoaded => 'No preset skills loaded';
+
+  @override
+  String skillPickerNoMatch(String query) {
+    return 'No match for \"$query\"';
+  }
+
+  @override
+  String skillPickerAddToProfile(String query) {
+    return 'Add \"$query\" to your profile';
+  }
+
+  @override
+  String get skillPickerCustomSubtitle =>
+      'Custom skill — not added to the global list';
+
+  @override
+  String get skillPickerTapToChoose => 'Tap to choose a skill';
+
+  @override
+  String get skillCustomBadge => 'Custom skill';
+
+  @override
+  String get skillAdd => 'Add skill';
+
+  @override
+  String get skillChange => 'Change skill';
+
+  @override
+  String get skillAddBest => 'Add a skill you\'re best at';
+
+  @override
+  String get skillAddGood => 'Add a skill you\'re good at';
+
+  @override
+  String get skillAddLearning => 'Add a skill you\'re learning';
+
+  @override
+  String get skillCatalogUnavailable =>
+      'Preset skill list unavailable — you can still add custom skills.';
+
+  @override
+  String get skillTierBestTitle => 'Best at';
+
+  @override
+  String get skillTierBestSubtitle =>
+      'Optional — pick from the list or add your own';
+
+  @override
+  String get skillTierGoodTitle => 'Also good at';
+
+  @override
+  String get skillTierGoodSubtitle => 'Optional — up to 2 more skills';
+
+  @override
+  String get skillTierLearningTitle => 'Still learning';
+
+  @override
+  String get skillTierLearningSubtitle =>
+      'Optional — up to 3 skills, rate 1–3 stars';
+
+  @override
+  String get skillErrNameRequired => 'All skills must have a name.';
+
+  @override
+  String skillErrDuplicate(String name) {
+    return 'Duplicate skill: $name';
+  }
+
+  @override
+  String get skillErrStarsRange =>
+      'Each skill must be rated between 1 and 5 stars.';
+
+  @override
+  String skillErrMaxFive(int max) {
+    return 'At most $max skills at 5 stars.';
+  }
+
+  @override
+  String skillErrMaxFour(int max) {
+    return 'At most $max skills at 4 stars.';
+  }
+
+  @override
+  String skillErrMaxLow(int max) {
+    return 'At most $max skills at 1–3 stars.';
+  }
+
+  @override
+  String get acceptAction => 'Accept';
+
+  @override
+  String get declineAction => 'Decline';
+
+  @override
+  String get hourReportsTitle => 'Hour reports';
+
+  @override
+  String get hourReportsEmployerHint =>
+      'Accept or decline hours after the freelancer clocks out. Pay outside the app.';
+
+  @override
+  String get hourReportsFreelancerHint =>
+      'Submitted automatically when you clock out.';
+
+  @override
+  String get hoursAcceptedSnack =>
+      'Hours accepted. Pay the freelancer outside the app.';
+
+  @override
+  String hoursAcceptFailed(String error) {
+    return 'Could not accept: $error';
+  }
+
+  @override
+  String get hoursDeclineTitle => 'Decline hours';
+
+  @override
+  String get hoursDeclineReasonHint => 'Optional reason for the freelancer';
+
+  @override
+  String get hoursDeclinedSnack => 'Hours declined.';
+
+  @override
+  String hoursDeclineFailed(String error) {
+    return 'Could not decline: $error';
+  }
+
+  @override
+  String get guideChooserTitle => 'Tips for this screen';
+
+  @override
+  String get guideChooserMainTips => 'Main tips';
+
+  @override
+  String get guideInfoHint => 'Tap the (i) anytime to see these tips again';
+
+  @override
+  String get guideShellMyJobsTitle => 'My Jobs';
+
+  @override
+  String get guideShellMyJobsDesc =>
+      'Your job posts and their applicants live here.';
+
+  @override
+  String get guideShellMessagesTitle => 'Messages';
+
+  @override
+  String get guideShellMessagesDesc =>
+      'Chat with clients about jobs and contracts.';
+
+  @override
+  String get guideShellSellerContractsDesc =>
+      'Track accepted work, delivery and payment marks.';
+
+  @override
+  String get guideClientHomeSectionExplore => 'Explore';
+
+  @override
+  String get guideClientHomeShortcutsTitle => 'Shortcuts';
+
+  @override
+  String get guideClientHomeShortcutsDesc =>
+      'Jump to posting, talent, applications or contracts.';
+
+  @override
+  String get guideClientHomeHighlightsTitle => 'Highlights';
+
+  @override
+  String get guideClientHomeHighlightsDesc =>
+      'Swipe the banners for quick ways to hire or post.';
+
+  @override
+  String get guideClientHomeCategoriesTitle => 'Categories';
+
+  @override
+  String get guideClientHomeCategoriesDesc =>
+      'Tap a category to see what it covers.';
+
+  @override
+  String get guideClientHomeRecentJobsTitle => 'Your recent jobs';
+
+  @override
+  String get guideClientHomeRecentJobsDesc =>
+      'Your latest posts and their status. Tap one to review applicants.';
+
+  @override
+  String get guideClientHomeTopFreelancersTitle => 'Top freelancers';
+
+  @override
+  String get guideClientHomeTopFreelancersDesc =>
+      'Swipe to browse. Tap a card to view a profile.';
+
+  @override
+  String get guideSellerHomeSectionWork => 'Your work numbers';
+
+  @override
+  String get guideSellerHomeSectionAttention =>
+      'Needs attention and Applications';
+
+  @override
+  String get guideSellerHomePaidOutsideTitle => 'Paid outside the app';
+
+  @override
+  String get guideSellerHomePaidOutsideDesc =>
+      'HupWorks tracks work and amounts only. Payment happens outside the app, so mark paid here as your own record.';
+
+  @override
+  String get guideSellerHomeHoursAmountTitle => 'Hours and agreed amount';
+
+  @override
+  String get guideSellerHomeHoursAmountDesc =>
+      'Tap hours to open Attendance, or the amount to open Contracts.';
+
+  @override
+  String get guideSellerHomePaidUnpaidTitle => 'Paid and unpaid';
+
+  @override
+  String get guideSellerHomePaidUnpaidDesc =>
+      'Marked paid is what you recorded. Still unpaid is agreed work not yet marked paid.';
+
+  @override
+  String get guideSellerHomeJobsDoneTitle => 'Jobs done and active';
+
+  @override
+  String get guideSellerHomeJobsDoneDesc =>
+      'How many jobs you finished and how many are running now.';
+
+  @override
+  String get guideSellerHomeAttentionTitle => 'Needs attention';
+
+  @override
+  String get guideSellerHomeAttentionDesc =>
+      'Delivered work waiting for approval and on-site jobs to clock in. Tap a row to go there.';
+
+  @override
+  String get guideSellerHomeApplicationsTitle => 'Your applications';
+
+  @override
+  String get guideSellerHomeApplicationsDesc =>
+      'See every job you applied to. View all opens the full list.';
+
+  @override
+  String get guideSellerHomeLatestAppTitle => 'Latest application';
+
+  @override
+  String get guideSellerHomeLatestAppDesc =>
+      'Status shows pending, accepted or rejected. Tap to open the list.';
+
+  @override
+  String get guideSellerHomeBrowseJobsTitle => 'Browse jobs';
+
+  @override
+  String get guideSellerHomeBrowseJobsDesc =>
+      'No applications yet. Tap here to find a job to apply to.';
+
+  @override
+  String get guideCreateJobStepsTitle => 'Four short steps';
+
+  @override
+  String get guideCreateJobStepsDesc =>
+      'Basics, Details, Location, Budget. You review before posting.';
+
+  @override
+  String get guideCreateJobCategoryTitle => 'Pick a category';
+
+  @override
+  String get guideCreateJobCategoryDesc =>
+      'Choose the closest fit, or Other to name your own.';
+
+  @override
+  String get guideCreateJobSkillsTitle => 'Add skills';
+
+  @override
+  String get guideCreateJobSkillsDesc =>
+      'Optional. Tag skills so the right freelancers find your job.';
+
+  @override
+  String get guideCreateJobContinueTitle => 'Continue';
+
+  @override
+  String get guideCreateJobContinueDesc =>
+      'Moves to the next step. On the last step it posts your job.';
+
+  @override
+  String get guideCreateJobSectionDetails => 'Details';
+
+  @override
+  String get guideCreateJobSectionLocation => 'Location';
+
+  @override
+  String get guideCreateJobSectionBudget => 'Budget and review';
+
+  @override
+  String get guideCreateJobDescTitle => 'Describe the work';
+
+  @override
+  String get guideCreateJobDescDesc =>
+      'Explain the tasks and any requirements.';
+
+  @override
+  String get guideCreateJobShiftTitle => 'Shift schedule';
+
+  @override
+  String get guideCreateJobShiftDesc =>
+      'Optional day and clock times. Attendance is checked against this window, with one hour of grace.';
+
+  @override
+  String get guideCreateJobWorkersTitle => 'Workers needed';
+
+  @override
+  String get guideCreateJobWorkersDesc =>
+      'Set how many to hire. Switch off for no cap, and you close the job yourself.';
+
+  @override
+  String get guideCreateJobWhereTitle => 'Where it happens';
+
+  @override
+  String get guideCreateJobWhereDesc =>
+      'Choose On-site or Remote and add the address.';
+
+  @override
+  String get guideCreateJobPinTitle => 'Pin the site';
+
+  @override
+  String get guideCreateJobPinDesc =>
+      'On-site jobs need a map pin for QR attendance. Workers must be within 200 meters.';
+
+  @override
+  String get guideCreateJobAttendanceTitle => 'Attendance tracking';
+
+  @override
+  String get guideCreateJobAttendanceDesc =>
+      'Choose how workers record time on site. QR options need the map pin.';
+
+  @override
+  String get guideCreateJobPayTitle => 'Pay range';
+
+  @override
+  String get guideCreateJobPayDesc =>
+      'Optional. Freelancers see it before they apply.';
+
+  @override
+  String get guideCreateJobRateTitle => 'Rate type';
+
+  @override
+  String get guideCreateJobRateDesc =>
+      'Choose fixed, hourly, daily or monthly pay for this range.';
+
+  @override
+  String get guideCreateJobReviewTitle => 'Review and post';
+
+  @override
+  String get guideCreateJobReviewDesc =>
+      'Check the summary, then tap Post job to publish.';
+
+  @override
+  String get guideJobGateMissingTitle => 'What is missing';
+
+  @override
+  String get guideJobGateMissingDesc =>
+      'Add these details so freelancers can trust your job.';
+
+  @override
+  String get guideJobGateEditTitle => 'Edit profile';
+
+  @override
+  String get guideJobGateEditDesc =>
+      'Fill in the missing items, then come back. The check runs again automatically.';
+
+  @override
+  String get guideJobDetailsCardTitle => 'Your job post';
+
+  @override
+  String get guideJobDetailsCardDesc =>
+      'This is what freelancers see before applying.';
+
+  @override
+  String get guideJobDetailsApplicationsTitle => 'Applications';
+
+  @override
+  String get guideJobDetailsApplicationsDesc =>
+      'Freelancers who applied appear here. Pull down to refresh.';
+
+  @override
+  String get guideJobDetailsHireTitle => 'Hire or reject';
+
+  @override
+  String get guideJobDetailsHireDesc =>
+      'Hire starts a contract and notifies the freelancer. You can then add first-day instructions.';
+
+  @override
+  String get guideJobDetailsSectionApplicants => 'Applicants';
+
+  @override
+  String get guideJobDetailsSectionAttendance => 'Attendance';
+
+  @override
+  String get guideJobDetailsApplicantTitle => 'Applicant';
+
+  @override
+  String get guideJobDetailsApplicantDesc =>
+      'Tap the name or photo to view their profile.';
+
+  @override
+  String get guideJobDetailsMessageTitle => 'Message';
+
+  @override
+  String get guideJobDetailsMessageDesc =>
+      'Chat with this freelancer before you decide.';
+
+  @override
+  String get guideJobDetailsInstructionsTitle => 'First-day instructions';
+
+  @override
+  String get guideJobDetailsInstructionsDesc =>
+      'Share site details with your hire. Edit and publish again any time; they are notified.';
+
+  @override
+  String get guideJobDetailsAttendanceTitle => 'Attendance';
+
+  @override
+  String get guideJobDetailsAttendanceDesc =>
+      'On-site jobs track when workers arrive and leave. Choose the method below.';
+
+  @override
+  String get guideJobDetailsMethodTitle => 'Check-in method';
+
+  @override
+  String get guideJobDetailsMethodDesc =>
+      'QR, self-report or off. QR needs a map pin so workers can only clock in nearby.';
+
+  @override
+  String get guideJobDetailsQrTitle => 'Attendance QR';
+
+  @override
+  String get guideJobDetailsQrDesc =>
+      'Open the QR code to print and post at the site.';
+
+  @override
+  String get guideJobDetailsPinTitle => 'Set the site pin';
+
+  @override
+  String get guideJobDetailsPinDesc =>
+      'Required for QR. Workers can only clock in within 200 meters.';
+
+  @override
+  String get guideJobDetailsTodayTitle => 'Today\'s attendance';
+
+  @override
+  String get guideJobDetailsTodayDesc => 'See who clocked in or out today.';
+
+  @override
+  String get guideFindJobsAlertsTitle => 'Job alerts';
+
+  @override
+  String get guideFindJobsAlertsDesc =>
+      'Save a search to hear about new matching jobs. Manage your alerts here.';
+
+  @override
+  String get guideFindJobsSearchTitle => 'Search jobs';
+
+  @override
+  String get guideFindJobsSearchDesc => 'Type a job title to narrow the list.';
+
+  @override
+  String get guideFindJobsFilterTitle => 'Filters';
+
+  @override
+  String get guideFindJobsFilterDesc =>
+      'Narrow by distance, skills and categories. A dot shows when filters are on. Save a search as an alert inside.';
+
+  @override
+  String get guideFindJobsCardTitle => 'Open a job';
+
+  @override
+  String get guideFindJobsCardDesc =>
+      'Tap a card to read the details and apply.';
+
+  @override
+  String get guideFindJobsSectionCard => 'Reading a job card';
+
+  @override
+  String get guideFindJobsSaveTitle => 'Save for later';
+
+  @override
+  String get guideFindJobsSaveDesc =>
+      'Tap the bookmark to keep a job and find it again later.';
+
+  @override
+  String get guideFindJobsTagsTitle => 'Job tags';
+
+  @override
+  String get guideFindJobsTagsDesc =>
+      'The category and the job type, for example gig or part-time.';
+
+  @override
+  String get guideFindJobsBudgetTitle => 'Budget';
+
+  @override
+  String get guideFindJobsBudgetDesc =>
+      'What the client plans to pay. You can still quote your own price.';
+
+  @override
+  String get guideFindJobsSectionFilters => 'Filters and alerts';
+
+  @override
+  String get guideFindJobsChipsTitle => 'Active filters';
+
+  @override
+  String get guideFindJobsChipsDesc =>
+      'Tap a chip to remove it, or tap Clear all.';
+
+  @override
+  String get guideFindJobsCountTitle => 'Results';
+
+  @override
+  String get guideFindJobsCountDesc => 'How many jobs are listed right now.';
+
+  @override
+  String get guideSellerJobClientTitle => 'The client';
+
+  @override
+  String get guideSellerJobClientDesc =>
+      'See who posted the job. Tap to view their profile.';
+
+  @override
+  String get guideSellerJobSaveTitle => 'Save for later';
+
+  @override
+  String get guideSellerJobSaveDesc =>
+      'Tap the bookmark to keep this job and find it again later.';
+
+  @override
+  String get guideSellerJobReadTitle => 'Read the job';
+
+  @override
+  String get guideSellerJobReadDesc =>
+      'The title and description say what the work is. Check the facts below before you apply.';
+
+  @override
+  String get guideSellerJobApplyTitle => 'Apply';
+
+  @override
+  String get guideSellerJobApplyDesc =>
+      'Tap to send your application. You set your price and can add a short message.';
+
+  @override
+  String get guideSellerJobSectionFit => 'Is this job for me?';
+
+  @override
+  String get guideSellerJobWhereTitle => 'On-site or remote';
+
+  @override
+  String get guideSellerJobWhereDesc =>
+      'On-site jobs need you at the place. Remote jobs can be done from home.';
+
+  @override
+  String get guideSellerJobBudgetTitle => 'Budget';
+
+  @override
+  String get guideSellerJobBudgetDesc =>
+      'The range the client set and how it is paid: total, per hour or per day.';
+
+  @override
+  String get guideSellerJobShiftTitle => 'Shift';
+
+  @override
+  String get guideSellerJobShiftDesc => 'When the work happens.';
+
+  @override
+  String get guideSellerJobAppsTitle => 'Applications so far';
+
+  @override
+  String get guideSellerJobAppsDesc => 'How many people already applied.';
+
+  @override
+  String get guideApplyRateTitle => 'Choose your rate';
+
+  @override
+  String get guideApplyRateDesc =>
+      'Apply at the client\'s rate, or set your own price.';
+
+  @override
+  String get guideApplyPostedTitle => 'Client\'s rate';
+
+  @override
+  String get guideApplyPostedDesc =>
+      'This is what the client set. You apply at this rate and can still add a message.';
+
+  @override
+  String get guideApplyPriceTitle => 'Your price';
+
+  @override
+  String get guideApplyPriceDesc =>
+      'Enter your price and how you quote it, such as total or per hour.';
+
+  @override
+  String get guideApplyMessageTitle => 'Message (optional)';
+
+  @override
+  String guideApplyMessageDesc(int count) {
+    return 'Say why you fit. Optional, but if you write one, use at least $count characters.';
+  }
+
+  @override
+  String get guideApplySendTitle => 'Send application';
+
+  @override
+  String get guideApplySendDesc =>
+      'Sends your application to the client. You can withdraw it later in Applications.';
+
+  @override
+  String get guideSetupReqTitle => 'Required details';
+
+  @override
+  String get guideSetupReqDesc =>
+      'Add your job title and birth date. Your age is shown; your birth date stays private.';
+
+  @override
+  String get guideSetupContinueTitle => 'Continue';
+
+  @override
+  String get guideSetupContinueDesc =>
+      'Checks this page, then goes to the next one.';
+
+  @override
+  String get guideSetupLogoutTitle => 'Log out';
+
+  @override
+  String get guideSetupLogoutDesc =>
+      'This signs you out. Log in again anytime to continue.';
+
+  @override
+  String get guideSetupWhereTitle => 'Where you work';
+
+  @override
+  String get guideSetupWhereDesc =>
+      'Add your city so you can find nearby jobs. A map pin makes distance filters work.';
+
+  @override
+  String get guideSetupSkillsTitle => 'Your skills';
+
+  @override
+  String get guideSetupSkillsDesc =>
+      'Pick what you are best at. Clients and job alerts match on these skills. Optional.';
+
+  @override
+  String get guideSetupAboutTitle => 'About you';
+
+  @override
+  String get guideSetupAboutDesc => 'A short intro helps clients choose you.';
+
+  @override
+  String get guideSetupSectionSkills => 'Your skills';
+
+  @override
+  String get guideSetupBestTitle => 'Best at';
+
+  @override
+  String get guideSetupBestDesc =>
+      'Your top skills, up to three. Clients see these first.';
+
+  @override
+  String get guideSetupLearningTitle => 'Still learning';
+
+  @override
+  String get guideSetupLearningDesc =>
+      'Up to three skills you are building. Rate each from 1 to 3 stars.';
+
+  @override
+  String get guideSetupAddTitle => 'Add a skill';
+
+  @override
+  String get guideSetupAddDesc => 'Pick from the list or type your own.';
+
+  @override
+  String get guideSetupPhotoTitle => 'Your photo';
+
+  @override
+  String get guideSetupPhotoDesc =>
+      'Tap the camera to add a clear front-facing photo. A plain background is best.';
+
+  @override
+  String get guideSetupPickTitle => 'Pick a photo';
+
+  @override
+  String get guideSetupPickDesc =>
+      'Choose one from your gallery or take a new one.';
+
+  @override
+  String get guideSetupWhyTitle => 'Why we ask';
+
+  @override
+  String get guideSetupWhyDesc =>
+      'Clients trust verified freelancers. An admin reviews your selfie before you are verified.';
+
+  @override
+  String get guideSetupSelfieTitle => 'Selfie with ID';
+
+  @override
+  String get guideSetupSelfieDesc =>
+      'Hold your ID next to your face and take one photo.';
+
+  @override
+  String get guideSetupSaveTitle => 'Save profile';
+
+  @override
+  String get guideSetupSaveDesc =>
+      'Finishes setup and opens the app. You need the selfie first.';
 }

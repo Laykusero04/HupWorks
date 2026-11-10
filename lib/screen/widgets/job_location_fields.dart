@@ -5,6 +5,7 @@ import 'package:latlong2/latlong.dart';
 
 import 'constant.dart';
 import 'map_location_picker_screen.dart';
+import 'package:freelancer/core/guide/guide_anchor.dart';
 
 enum JobLocationType { onsite, remote }
 
@@ -35,7 +36,15 @@ class JobLocationFields extends StatefulWidget {
     required this.onLocationTypeChanged,
     this.accentColor,
     this.pinRequired = false,
+    this.guideAnchor,
+    this.pinAnchor,
   });
+
+  /// Optional guide target around this widget; see [GuideAnchor].
+  final GuideAnchor? guideAnchor;
+
+  /// Optional guide target on the "Pin on map" button (on-site only).
+  final GuideAnchor? pinAnchor;
 
   final TextEditingController locationController;
   final LatLng? pin;
@@ -71,7 +80,10 @@ class _JobLocationFieldsState extends State<JobLocationFields> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      GuideAnchor.wrap(widget.guideAnchor, _buildContent(context));
+
+  Widget _buildContent(BuildContext context) {
     final l10n = context.l10n;
     final accent = widget.accentColor ?? kPrimaryColor;
     final isOnsite = widget.locationType == JobLocationType.onsite;
@@ -111,8 +123,8 @@ class _JobLocationFieldsState extends State<JobLocationFields> {
                 onTap: () => widget.onLocationTypeChanged(type),
                 borderRadius: BorderRadius.circular(10),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 14, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                   decoration: BoxDecoration(
                     color: selected
                         ? accent.withValues(alpha: 0.07)
@@ -132,11 +144,9 @@ class _JobLocationFieldsState extends State<JobLocationFields> {
                         child: Text(
                           type.label,
                           style: kTextStyle.copyWith(
-                            color:
-                                selected ? accent : kNeutralColor,
-                            fontWeight: selected
-                                ? FontWeight.bold
-                                : FontWeight.normal,
+                            color: selected ? accent : kNeutralColor,
+                            fontWeight:
+                                selected ? FontWeight.bold : FontWeight.normal,
                           ),
                         ),
                       ),
@@ -158,52 +168,54 @@ class _JobLocationFieldsState extends State<JobLocationFields> {
         // ── On-site: map pin button ──────────────────────────────────────
         if (isOnsite) ...[
           const SizedBox(height: 14),
-          OutlinedButton.icon(
-            onPressed: _openMap,
-            icon: Icon(FeatherIcons.mapPin, size: 18, color: accent),
-            label: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  widget.pin != null ? l10n.changeMapPin : l10n.pinOnMap,
-                  style: kTextStyle.copyWith(
-                      color: accent, fontWeight: FontWeight.w600),
-                ),
-                if (widget.pinRequired && widget.pin == null) ...[
-                  const SizedBox(width: 4),
+          GuideAnchor.wrap(
+            widget.pinAnchor,
+            OutlinedButton.icon(
+              onPressed: _openMap,
+              icon: Icon(FeatherIcons.mapPin, size: 18, color: accent),
+              label: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
                   Text(
-                    l10n.requiredFieldMark,
+                    widget.pin != null ? l10n.changeMapPin : l10n.pinOnMap,
                     style: kTextStyle.copyWith(
-                        color: Colors.red, fontWeight: FontWeight.bold),
+                        color: accent, fontWeight: FontWeight.w600),
                   ),
+                  if (widget.pinRequired && widget.pin == null) ...[
+                    const SizedBox(width: 4),
+                    Text(
+                      l10n.requiredFieldMark,
+                      style: kTextStyle.copyWith(
+                          color: Colors.red, fontWeight: FontWeight.bold),
+                    ),
+                  ],
                 ],
-              ],
-            ),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: accent,
-              side: BorderSide(
-                color: widget.pinRequired && widget.pin == null
-                    ? Colors.red.withValues(alpha: 0.55)
-                    : accent.withValues(alpha: 0.45),
               ),
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: accent,
+                side: BorderSide(
+                  color: widget.pinRequired && widget.pin == null
+                      ? Colors.red.withValues(alpha: 0.55)
+                      : accent.withValues(alpha: 0.45),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
+              ),
             ),
           ),
           if (widget.pin != null) ...[
             const SizedBox(height: 4),
             Text(
               '📍 ${widget.pin!.latitude.toStringAsFixed(4)}, ${widget.pin!.longitude.toStringAsFixed(4)}',
-              style: kTextStyle.copyWith(
-                  color: kLightNeutralColor, fontSize: 12),
+              style:
+                  kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
             ),
           ] else if (widget.pinRequired) ...[
             const SizedBox(height: 4),
             Text(
               l10n.jobSitePinRequiredForQr,
-              style: kTextStyle.copyWith(
-                  color: kSubTitleColor, fontSize: 12),
+              style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12),
             ),
           ],
         ],

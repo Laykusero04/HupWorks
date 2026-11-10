@@ -4,6 +4,7 @@ import '../../core/constants/colors.dart';
 import '../../core/utils/profile_image.dart';
 import 'constant.dart';
 import 'shell_tab_header.dart';
+import 'package:freelancer/core/guide/guide_anchor.dart';
 
 /// Simple drawer header — green for client, blue for seller.
 class ShellDrawerHeader extends StatelessWidget {
@@ -17,7 +18,15 @@ class ShellDrawerHeader extends StatelessWidget {
     this.reviewCount,
     this.verificationBadge,
     this.fallbackAsset = ProfileImage.fallbackAsset,
+    this.guideAnchor,
+    this.badgeAnchor,
   });
+
+  /// Optional guide target around this widget; see [GuideAnchor].
+  final GuideAnchor? guideAnchor;
+
+  /// Optional guide target on the verification badge only.
+  final GuideAnchor? badgeAnchor;
 
   final ShellPersona persona;
   final String name;
@@ -32,7 +41,10 @@ class ShellDrawerHeader extends StatelessWidget {
       persona == ShellPersona.client ? kPrimaryColor : kSellerPrimary;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      GuideAnchor.wrap(guideAnchor, _buildContent(context));
+
+  Widget _buildContent(BuildContext context) {
     final top = MediaQuery.paddingOf(context).top;
 
     return ColoredBox(
@@ -84,7 +96,8 @@ class ShellDrawerHeader extends StatelessWidget {
                       ),
                     ),
                   ],
-                  if (verificationBadge != null) verificationBadge!,
+                  if (verificationBadge != null)
+                    GuideAnchor.wrap(badgeAnchor, verificationBadge!),
                 ],
               ),
             ),

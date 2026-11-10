@@ -5,6 +5,7 @@ import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/services/hour_reports_service.dart';
 
 import 'constant.dart';
+import 'package:freelancer/core/guide/guide_anchor.dart';
 
 /// Lists hour reports for an order. Employer can accept/decline pending ones.
 class HourReportsSection extends StatefulWidget {
@@ -17,7 +18,11 @@ class HourReportsSection extends StatefulWidget {
     required this.orderId,
     required this.isEmployer,
     this.onChanged,
+    this.guideAnchor,
   });
+
+  /// Optional guide target around this widget; see [GuideAnchor].
+  final GuideAnchor? guideAnchor;
 
   @override
   State<HourReportsSection> createState() => _HourReportsSectionState();
@@ -70,14 +75,14 @@ class _HourReportsSectionState extends State<HourReportsSection> {
       await HourReportsService.accept(report.id);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Hours accepted. Pay the worker outside the app.')),
+        SnackBar(content: Text(context.l10n.hoursAcceptedSnack)),
       );
       await _load();
       widget.onChanged?.call();
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not accept: $e')),
+        SnackBar(content: Text(context.l10n.hoursAcceptFailed('$e'))),
       );
     } finally {
       if (mounted) setState(() => _busyId = null);
@@ -90,24 +95,24 @@ class _HourReportsSectionState extends State<HourReportsSection> {
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          title: const Text('Decline hours'),
+          title: Text(ctx.l10n.hoursDeclineTitle),
           content: TextField(
             controller: reasonController,
             maxLines: 3,
             maxLength: 500,
-            decoration: const InputDecoration(
-              hintText: 'Optional reason for the worker',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              hintText: ctx.l10n.hoursDeclineReasonHint,
+              border: const OutlineInputBorder(),
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancel'),
+              child: Text(ctx.l10n.cancel),
             ),
             TextButton(
               onPressed: () => Navigator.pop(ctx, reasonController.text.trim()),
-              child: const Text('Decline'),
+              child: Text(ctx.l10n.declineAction),
             ),
           ],
         );
@@ -124,14 +129,14 @@ class _HourReportsSectionState extends State<HourReportsSection> {
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Hours declined.')),
+        SnackBar(content: Text(context.l10n.hoursDeclinedSnack)),
       );
       await _load();
       widget.onChanged?.call();
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not decline: $e')),
+        SnackBar(content: Text(context.l10n.hoursDeclineFailed('$e'))),
       );
     } finally {
       if (mounted) setState(() => _busyId = null);
@@ -150,7 +155,10 @@ class _HourReportsSectionState extends State<HourReportsSection> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      GuideAnchor.wrap(widget.guideAnchor, _buildContent(context));
+
+  Widget _buildContent(BuildContext context) {
     if (_loading && _reports.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -176,7 +184,7 @@ class _HourReportsSectionState extends State<HourReportsSection> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Hour reports',
+            context.l10n.hourReportsTitle,
             style: kTextStyle.copyWith(
               color: kNeutralColor,
               fontWeight: FontWeight.w700,
@@ -186,8 +194,8 @@ class _HourReportsSectionState extends State<HourReportsSection> {
           const SizedBox(height: 4),
           Text(
             widget.isEmployer
-                ? 'Accept or decline hours after the worker clocks out. Pay outside the app.'
-                : 'Submitted automatically when you clock out.',
+                ? context.l10n.hourReportsEmployerHint
+                : context.l10n.hourReportsFreelancerHint,
             style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 11, height: 1.3),
           ),
           const SizedBox(height: 10),
@@ -275,7 +283,7 @@ class _HourReportsSectionState extends State<HourReportsSection> {
                               width: 16,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
-                          : const Text('Decline'),
+                          : Text(context.l10n.declineAction),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -295,7 +303,7 @@ class _HourReportsSectionState extends State<HourReportsSection> {
                                 color: Colors.white,
                               ),
                             )
-                          : const Text('Accept'),
+                          : Text(context.l10n.acceptAction),
                     ),
                   ),
                 ],

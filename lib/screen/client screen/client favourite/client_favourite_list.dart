@@ -234,7 +234,7 @@ class _ClientFavListState extends State<ClientFavList> {
                                       ),
                                       if (savedId != null)
                                         IconButton(
-                                          tooltip: l10n.removedFromSavedTalent,
+                                          tooltip: l10n.removeSavedTalent,
                                           onPressed: () => _handleRemove(savedId, i),
                                           icon: const Icon(
                                             Icons.bookmark,

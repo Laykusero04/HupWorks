@@ -46,4 +46,23 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
     expect(prefs.getString('other_key'), 'x');
   });
+
+  test('reset clears only that screen (all versions), uid and role', () async {
+    for (final sc in ['a', 'b']) {
+      await GuideService.markSeen(
+          uid: 'u1', role: 'client', screenId: sc, version: 1);
+    }
+    await GuideService.markSeen(
+        uid: 'u1', role: 'client', screenId: 'a', version: 2);
+    await GuideService.markSeen(
+        uid: 'u2', role: 'client', screenId: 'a', version: 1);
+    await GuideService.markSeen(
+        uid: 'u1', role: 'seller', screenId: 'a', version: 1);
+    await GuideService.reset(uid: 'u1', role: 'client', screenId: 'a');
+    expect(await seen('u1', 'client', 'a'), false);
+    expect(await seen('u1', 'client', 'a', 2), false);
+    expect(await seen('u1', 'client', 'b'), true);
+    expect(await seen('u2', 'client', 'a'), true);
+    expect(await seen('u1', 'seller', 'a'), true);
+  });
 }

@@ -54,10 +54,10 @@ class ClientShellAppBar extends StatelessWidget implements PreferredSizeWidget {
     }
   }
 
-  Widget _leading() {
+  Widget _leading(BuildContext context) {
     final button = IconButton(
       icon: const Icon(Icons.menu),
-      tooltip: 'Menu',
+      tooltip: context.l10n.menuTooltip,
       onPressed: _openDrawer,
     );
     final key = menuShowcaseKey;
@@ -98,7 +98,7 @@ class ClientShellAppBar extends StatelessWidget implements PreferredSizeWidget {
       iconTheme: const IconThemeData(color: kWhite),
       actionsIconTheme: const IconThemeData(color: kWhite),
       centerTitle: false,
-      leading: _leading(),
+      leading: _leading(context),
       title: Text(
         title,
         style: kTextStyle.copyWith(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/profile_image.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
+import 'package:freelancer/core/guide/guide_anchor.dart';
 
 /// Circular profile avatar with optional camera badge + tap-to-change.
 class EditableProfileAvatar extends StatelessWidget {
@@ -13,7 +14,11 @@ class EditableProfileAvatar extends StatelessWidget {
     this.onView,
     this.uploading = false,
     this.showCameraBadge = true,
+    this.guideAnchor,
   });
+
+  /// Optional guide target around this widget; see [GuideAnchor].
+  final GuideAnchor? guideAnchor;
 
   final String? imageUrl;
   final double size;
@@ -28,7 +33,10 @@ class EditableProfileAvatar extends StatelessWidget {
   final bool showCameraBadge;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      GuideAnchor.wrap(guideAnchor, _buildContent(context));
+
+  Widget _buildContent(BuildContext context) {
     final badgeSize = size * 0.28;
     final photoTap = uploading ? null : (onView ?? onTap);
     return SizedBox(

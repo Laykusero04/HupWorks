@@ -234,6 +234,7 @@ class _SellerJobAlertsScreenState extends State<SellerJobAlertsScreen> {
                                     alignment: Alignment.centerRight,
                                     child: IconButton(
                                       icon: const Icon(Icons.delete_outline, color: Colors.red),
+                                      tooltip: l10n.jobAlertDeleteTooltip,
                                       onPressed: () => _delete(rule),
                                     ),
                                   ),

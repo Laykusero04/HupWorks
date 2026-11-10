@@ -32,6 +32,38 @@ class GuideService {
     await prefs.setBool(_key(uid, role, screenId, version), true);
   }
 
+  static String _hintKey(String uid, String role) => 'guide_hint_${uid}_$role';
+
+  /// One-time "tap the (i)" snackbar: shown flag, global per user and role.
+  static Future<bool> hasShownInfoHint({
+    required String uid,
+    required String role,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_hintKey(uid, role)) ?? false;
+  }
+
+  static Future<void> markInfoHintShown({
+    required String uid,
+    required String role,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_hintKey(uid, role), true);
+  }
+
+  /// Clears the seen flag of ONE screen (all versions) for this user and role.
+  static Future<void> reset({
+    required String uid,
+    required String role,
+    required String screenId,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    final prefix = '$_prefix${uid}_${role}_${screenId}_v';
+    for (final k in prefs.getKeys().where((k) => k.startsWith(prefix))) {
+      await prefs.remove(k);
+    }
+  }
+
   /// Removes every guide flag for this user and role (replay / debug reset).
   static Future<void> resetAll({
     required String uid,

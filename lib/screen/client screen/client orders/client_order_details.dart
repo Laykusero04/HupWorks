@@ -942,7 +942,7 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
                           null) ...[
                         const SizedBox(height: 8.0),
                         _buildRow(
-                          'Shift',
+                          l10n.shiftLabel,
                           ShiftSchedule.fromOrderMap(_order).displayLabel!,
                         ),
                       ],

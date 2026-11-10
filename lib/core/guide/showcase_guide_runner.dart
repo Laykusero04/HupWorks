@@ -31,12 +31,39 @@ class ShowcaseGuideRunner {
       disableBarrierInteraction: GuideConfig.disableBarrierInteraction,
       onFinish: () => _end(true),
       onDismiss: (_) => _end(false),
+      onStart: (index, key) => _prepareNextAutoScroll(key),
     );
+  }
+
+  List<GlobalKey> _order = const [];
+  Map<GlobalKey, bool> _autoScroll = const {};
+
+  /// The package decides per step (from the Showcase config, else the view's
+  /// `enableAutoScroll`) whether to scroll the target into view. Our Showcases
+  /// set no config, so the view flag decides. [start] sets it for the first
+  /// step; this sets it for the step AFTER the one that just started (the guide
+  /// is forward-only: Next / Skip). The package reads the flag after calling
+  /// onStart, so the flag must already hold the CURRENT step's value then,
+  /// which the previous step's call (or [start]) set.
+  void _prepareNextAutoScroll(GlobalKey started) {
+    final v = _view;
+    if (v == null) return;
+    final i = _order.indexOf(started);
+    if (i < 0 || i + 1 >= _order.length) return;
+    v.enableAutoScroll = _autoScroll[_order[i + 1]] ?? false;
+  }
+
+  /// How many of [steps] have a rendered target right now.
+  int renderedCount(List<GuideStep> steps) {
+    final v = _view;
+    if (v == null) return 0;
+    return steps.where((s) => v.isTargetRendered(s.key)).length;
   }
 
   void _end(bool finished) {
     if (_ended) return;
     _ended = true;
+    _view?.enableAutoScroll = false;
     final cb = _onEnd;
     _onEnd = null;
     cb?.call(finished);
@@ -63,6 +90,9 @@ class ShowcaseGuideRunner {
     try {
       _ended = false;
       _onEnd = onEnd;
+      _order = live.map((s) => s.key).toList();
+      _autoScroll = {for (final s in live) s.key: s.enableAutoScroll};
+      view.enableAutoScroll = live.first.enableAutoScroll;
       final lastKey = live.last.key;
       final others = live.take(live.length - 1).map((s) => s.key).toList();
       view.globalTooltipActions = [
@@ -87,8 +117,21 @@ class ShowcaseGuideRunner {
         // resolve the key from it rather than from the (timing-dependent)
         // active key.
         final w = ctx.widget;
-        final topPlacement =
+        final flagged =
             (w is Showcase ? nearBottom[w.showcaseKey] : null) ?? false;
+        // Automatic check: the target's centre is in the bottom half of the
+        // screen. ctx is the target's Showcase element, so its render box is
+        // the target. Falls back to the flag when not laid out yet.
+        var topPlacement = flagged;
+        try {
+          final ro = ctx.findRenderObject();
+          if (ro is RenderBox && ro.attached && ro.hasSize) {
+            final view0 = View.of(ctx);
+            final screenH = view0.physicalSize.height / view0.devicePixelRatio;
+            final cy = ro.localToGlobal(ro.size.center(Offset.zero)).dy;
+            if (cy > screenH / 2) topPlacement = true;
+          }
+        } catch (_) {}
         // Overlay context reports 0 padding; use the view's real insets so
         // the pill clears the status bar / home indicator (taps there are
         // swallowed on iOS).
@@ -137,6 +180,18 @@ class ShowcaseGuideRunner {
         view.dismiss();
       } catch (_) {}
       return false;
+    }
+  }
+
+  /// Closes a running guide as a dismiss (fires [onEnd] with finished=false,
+  /// i.e. counts as Skip). Used by system Back.
+  void dismiss() {
+    final v = _view;
+    if (v == null || !v.isShowcaseRunning) return;
+    try {
+      v.dismiss();
+    } catch (e) {
+      debugPrint('Guide dismiss failed ($scope): $e');
     }
   }
 

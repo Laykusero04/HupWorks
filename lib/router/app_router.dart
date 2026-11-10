@@ -221,11 +221,20 @@ GoRouter createRouter() {
 
       // Auth routes
       GoRoute(path: '/onboard', builder: (context, state) => const OnBoard()),
-      GoRoute(path: '/welcome', builder: (context, state) => const WelcomeScreen()),
-      GoRoute(path: '/auth/client/login', builder: (context, state) => const ClientLogIn()),
-      GoRoute(path: '/auth/client/signup', builder: (context, state) => const ClientSignUp()),
-      GoRoute(path: '/auth/seller/login', builder: (context, state) => const SellerLogIn()),
-      GoRoute(path: '/auth/seller/signup', builder: (context, state) => const SellerSignUp()),
+      GoRoute(
+          path: '/welcome', builder: (context, state) => const WelcomeScreen()),
+      GoRoute(
+          path: '/auth/client/login',
+          builder: (context, state) => const ClientLogIn()),
+      GoRoute(
+          path: '/auth/client/signup',
+          builder: (context, state) => const ClientSignUp()),
+      GoRoute(
+          path: '/auth/seller/login',
+          builder: (context, state) => const SellerLogIn()),
+      GoRoute(
+          path: '/auth/seller/signup',
+          builder: (context, state) => const SellerSignUp()),
       GoRoute(
         path: AppRoutes.sellerSetupProfile,
         builder: (context, state) => const SetupSellerProfile(),
@@ -529,7 +538,10 @@ class _ScaffoldWithNavBar extends StatefulWidget {
 class _ScaffoldWithNavBarState extends State<_ScaffoldWithNavBar>
     with GuideHost<_ScaffoldWithNavBar> {
   final GlobalKey _guideBarKey = GlobalKey();
-  final GlobalKey _guideTileKey = GlobalKey();
+  // One long-lived key per guided tile index (created once, never in build).
+  final Map<int, GlobalKey> _guideTileKeys = {
+    for (var i = 1; i <= 4; i++) i: GlobalKey(),
+  };
 
   ShellPersona get persona => widget.persona;
   StatefulNavigationShell get navigationShell => widget.navigationShell;
@@ -539,16 +551,42 @@ class _ScaffoldWithNavBarState extends State<_ScaffoldWithNavBar>
   Color get _accentColor =>
       persona == ShellPersona.client ? kPrimaryColor : kSellerPrimary;
 
-  // Tile highlighted in step 2: Contracts (client, index 4) or Find Jobs
-  // (seller, index 2).
-  int get _guideTileIndex => persona == ShellPersona.client ? 4 : 2;
+  // Guided tiles in step order. Client: My Jobs (3), Contracts (4).
+  // Seller: Messages (1), Find Jobs (2), Contracts (3).
+  List<int> get _guideTileOrder =>
+      persona == ShellPersona.client ? const [3, 4] : const [1, 2, 3];
+
+  Map<int, _GuideTileSpec> _guideTileSpecs(AppLocalizations l10n) {
+    final client = persona == ShellPersona.client;
+    final contracts = _GuideTileSpec(
+      _guideTileKeys[client ? 4 : 3]!,
+      l10n.guideShellContractsTitle,
+      client
+          ? l10n.guideShellContractsDesc
+          : l10n.guideShellSellerContractsDesc,
+    );
+    if (client) {
+      return {
+        3: _GuideTileSpec(_guideTileKeys[3]!, l10n.guideShellMyJobsTitle,
+            l10n.guideShellMyJobsDesc),
+        4: contracts,
+      };
+    }
+    return {
+      1: _GuideTileSpec(_guideTileKeys[1]!, l10n.guideShellMessagesTitle,
+          l10n.guideShellMessagesDesc),
+      2: _GuideTileSpec(_guideTileKeys[2]!, l10n.guideShellFindJobsTitle,
+          l10n.guideShellFindJobsDesc),
+      3: contracts,
+    };
+  }
 
   @override
   String get guideScreenId => 'shell';
   @override
   String get guideRole => persona == ShellPersona.client ? 'client' : 'seller';
   @override
-  int get guideVersion => 1;
+  int get guideVersion => 2;
 
   /// Runs after the Home guide is done for this session (seen, finished,
   /// skipped or given up), never together with it (GuideSession).
@@ -573,22 +611,19 @@ class _ScaffoldWithNavBarState extends State<_ScaffoldWithNavBar>
   @override
   List<GuideStep> buildGuideSteps(BuildContext context) {
     final l10n = context.l10n;
-    final client = persona == ShellPersona.client;
+    final specs = _guideTileSpecs(l10n);
     return [
       GuideStep(
           key: _guideBarKey,
           targetNearBottom: true,
           title: l10n.guideShellTabsTitle,
           description: l10n.guideShellTabsDesc),
-      GuideStep(
-          key: _guideTileKey,
-          targetNearBottom: true,
-          title: client
-              ? l10n.guideShellContractsTitle
-              : l10n.guideShellFindJobsTitle,
-          description: client
-              ? l10n.guideShellContractsDesc
-              : l10n.guideShellFindJobsDesc),
+      for (final i in _guideTileOrder)
+        GuideStep(
+            key: specs[i]!.key,
+            targetNearBottom: true,
+            title: specs[i]!.title,
+            description: specs[i]!.description),
     ];
   }
 
@@ -604,7 +639,7 @@ class _ScaffoldWithNavBarState extends State<_ScaffoldWithNavBar>
             ? _clientNavItems(context, unread)
             : _sellerNavItems(context, unread);
 
-        return Scaffold(
+        return guideBackScope(Scaffold(
           key: scaffoldKey,
           backgroundColor: kWhite,
           extendBody: false,
@@ -614,16 +649,9 @@ class _ScaffoldWithNavBarState extends State<_ScaffoldWithNavBar>
           bottomNavigationBar: _ShellBottomNav(
             guideScope: guideScope,
             guideBarKey: _guideBarKey,
-            guideTileKey: _guideTileKey,
-            guideTileIndex: _guideTileIndex,
+            guideTiles: _guideTileSpecs(context.l10n),
             guideBarTitle: context.l10n.guideShellTabsTitle,
             guideBarDescription: context.l10n.guideShellTabsDesc,
-            guideTileTitle: persona == ShellPersona.client
-                ? context.l10n.guideShellContractsTitle
-                : context.l10n.guideShellFindJobsTitle,
-            guideTileDescription: persona == ShellPersona.client
-                ? context.l10n.guideShellContractsDesc
-                : context.l10n.guideShellFindJobsDesc,
             accent: _accentColor,
             currentIndex: navigationShell.currentIndex,
             items: items,
@@ -632,7 +660,7 @@ class _ScaffoldWithNavBarState extends State<_ScaffoldWithNavBar>
               initialLocation: i == navigationShell.currentIndex,
             ),
           ),
-        );
+        ));
       },
     );
   }
@@ -739,17 +767,22 @@ Widget debugShellBottomNav({
   );
 }
 
+/// Key and copy of one guided bottom-nav tile.
+class _GuideTileSpec {
+  const _GuideTileSpec(this.key, this.title, this.description);
+  final GlobalKey key;
+  final String title;
+  final String description;
+}
+
 /// Compact shell bottom nav — clear selected state, tight safe-area padding.
 class _ShellBottomNav extends StatelessWidget {
   const _ShellBottomNav({
     this.guideScope,
     this.guideBarKey,
-    this.guideTileKey,
-    this.guideTileIndex = -1,
+    this.guideTiles = const {},
     this.guideBarTitle,
     this.guideBarDescription,
-    this.guideTileTitle,
-    this.guideTileDescription,
     required this.accent,
     required this.currentIndex,
     required this.items,
@@ -760,12 +793,9 @@ class _ShellBottomNav extends StatelessWidget {
   // All null in tests (debugShellBottomNav): the bar then renders plainly.
   final String? guideScope;
   final GlobalKey? guideBarKey;
-  final GlobalKey? guideTileKey;
-  final int guideTileIndex;
+  final Map<int, _GuideTileSpec> guideTiles;
   final String? guideBarTitle;
   final String? guideBarDescription;
-  final String? guideTileTitle;
-  final String? guideTileDescription;
 
   final Color accent;
   final int currentIndex;
@@ -812,7 +842,8 @@ class _ShellBottomNav extends StatelessWidget {
           explicitChildNodes: true,
           container: true,
           child: Padding(
-            padding: EdgeInsets.fromLTRB(6, 6, 6, bottomInset > 0 ? bottomInset : 8),
+            padding:
+                EdgeInsets.fromLTRB(6, 6, 6, bottomInset > 0 ? bottomInset : 8),
             child: Row(
               children: [
                 for (var i = 0; i < items.length; i++)
@@ -836,13 +867,13 @@ class _ShellBottomNav extends StatelessWidget {
   }
 
   Widget _wrapTile(int index, Widget tile) {
-    final tileKey = guideTileKey;
-    if (index != guideTileIndex || tileKey == null) return tile;
+    final spec = guideTiles[index];
+    if (spec == null) return tile;
     return Showcase(
-      key: tileKey,
+      key: spec.key,
       scope: guideScope,
-      title: guideTileTitle,
-      description: guideTileDescription,
+      title: spec.title,
+      description: spec.description,
       targetBorderRadius: BorderRadius.circular(14),
       child: tile,
     );
@@ -887,7 +918,8 @@ class _ShellBottomNavTile extends StatelessWidget {
           curve: Curves.easeOut,
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           decoration: BoxDecoration(
-            color: selected ? accent.withValues(alpha: 0.12) : Colors.transparent,
+            color:
+                selected ? accent.withValues(alpha: 0.12) : Colors.transparent,
             borderRadius: BorderRadius.circular(12),
           ),
           child: IconTheme(
@@ -926,7 +958,8 @@ class _ShellBottomNavTile extends StatelessWidget {
           label: item.label,
           onTap: onTap,
           child: ExcludeSemantics(
-            child: labelClips ? Tooltip(message: item.label, child: tile) : tile,
+            child:
+                labelClips ? Tooltip(message: item.label, child: tile) : tile,
           ),
         );
       },

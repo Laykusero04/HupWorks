@@ -10,6 +10,7 @@ import 'package:nb_utils/nb_utils.dart';
 
 import 'constant.dart';
 import 'profile_rating_summary.dart';
+import 'package:freelancer/core/guide/guide_anchor.dart';
 
 /// Client summary on seller "find jobs" job details (rating, jobs posted, member since).
 class JobClientInfoCard extends StatelessWidget {
@@ -28,9 +29,16 @@ class JobClientInfoCard extends StatelessWidget {
     this.reviewCount,
     this.jobPostsCount,
     this.memberSince,
+    this.guideAnchor,
   });
 
-  factory JobClientInfoCard.fromJobPost(Map<String, dynamic>? jobPost) {
+  /// Optional guide target around this widget; see [GuideAnchor].
+  final GuideAnchor? guideAnchor;
+
+  factory JobClientInfoCard.fromJobPost(
+    Map<String, dynamic>? jobPost, {
+    GuideAnchor? guideAnchor,
+  }) {
     final client = jobPost?['profiles'];
     final Map<String, dynamic>? profile =
         client is Map<String, dynamic> ? client : null;
@@ -56,6 +64,7 @@ class JobClientInfoCard extends StatelessWidget {
       jobPostsCount: (jobPost?['client_job_posts_count'] as num?)?.toInt() ??
           (profile?['job_posts_count'] as num?)?.toInt(),
       memberSince: since,
+      guideAnchor: guideAnchor,
     );
   }
 
@@ -69,7 +78,10 @@ class JobClientInfoCard extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      GuideAnchor.wrap(guideAnchor, _buildContent(context));
+
+  Widget _buildContent(BuildContext context) {
     final name = clientProfile?['name'] as String? ?? context.l10n.roleClient;
     final imageUrl =
         ProfileImage.normalize(clientProfile?['profile_image_url'] as String?);

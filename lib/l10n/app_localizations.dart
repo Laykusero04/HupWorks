@@ -367,7 +367,7 @@ abstract class AppLocalizations {
   /// No description provided for @sellerReport.
   ///
   /// In en, this message translates to:
-  /// **'Seller Report'**
+  /// **'Freelancer report'**
   String get sellerReport;
 
   /// No description provided for @favorite.
@@ -757,19 +757,19 @@ abstract class AppLocalizations {
   /// No description provided for @attendanceClientHintQrInOut.
   ///
   /// In en, this message translates to:
-  /// **'Post one QR at the pinned site for all hired workers. Each worker clocks in once and out once per shift within 200 meters of that pin.'**
+  /// **'Post one QR at the pinned site for all hired freelancers. Each freelancer clocks in once and out once per shift within 200 meters of that pin.'**
   String get attendanceClientHintQrInOut;
 
   /// No description provided for @attendanceClientHintQrOnce.
   ///
   /// In en, this message translates to:
-  /// **'Post one QR at the pinned site for all hired workers. Each worker scans once per shift to check in within 200 meters of that pin.'**
+  /// **'Post one QR at the pinned site for all hired freelancers. Each freelancer scans once per shift to check in within 200 meters of that pin.'**
   String get attendanceClientHintQrOnce;
 
   /// No description provided for @attendanceClientHintSelfReport.
   ///
   /// In en, this message translates to:
-  /// **'Workers clock in and out in the app — no QR needed.'**
+  /// **'Freelancers clock in and out in the app — no QR needed.'**
   String get attendanceClientHintSelfReport;
 
   /// No description provided for @attendanceClientHintDisabled.
@@ -835,7 +835,7 @@ abstract class AppLocalizations {
   /// No description provided for @attendanceTrackingHint.
   ///
   /// In en, this message translates to:
-  /// **'How workers record time on site.'**
+  /// **'How freelancers record time on site.'**
   String get attendanceTrackingHint;
 
   /// No description provided for @genderMale.
@@ -1549,7 +1549,7 @@ abstract class AppLocalizations {
   /// No description provided for @postJob.
   ///
   /// In en, this message translates to:
-  /// **'Post Job'**
+  /// **'Post job'**
   String get postJob;
 
   /// No description provided for @findTalent.
@@ -1573,7 +1573,7 @@ abstract class AppLocalizations {
   /// No description provided for @postAJobBanner.
   ///
   /// In en, this message translates to:
-  /// **'Post a job and get offers'**
+  /// **'Post a job and get applications'**
   String get postAJobBanner;
 
   /// No description provided for @postNow.
@@ -1741,7 +1741,7 @@ abstract class AppLocalizations {
   /// No description provided for @yourWork.
   ///
   /// In en, this message translates to:
-  /// **'Work tracker'**
+  /// **'Your work'**
   String get yourWork;
 
   /// No description provided for @hoursWorked.
@@ -1897,7 +1897,7 @@ abstract class AppLocalizations {
   /// No description provided for @shortcutFindJobs.
   ///
   /// In en, this message translates to:
-  /// **'Find jobs'**
+  /// **'Find Jobs'**
   String get shortcutFindJobs;
 
   /// No description provided for @shortcutFindJobsSub.
@@ -2359,13 +2359,13 @@ abstract class AppLocalizations {
   /// No description provided for @reportSellerProfileUrl.
   ///
   /// In en, this message translates to:
-  /// **'Seller Profile URL'**
+  /// **'Freelancer profile URL'**
   String get reportSellerProfileUrl;
 
   /// No description provided for @reportEnterSellerProfileUrl.
   ///
   /// In en, this message translates to:
-  /// **'Enter seller profile url'**
+  /// **'Enter freelancer profile URL'**
   String get reportEnterSellerProfileUrl;
 
   /// No description provided for @reportOriginalContentUrl.
@@ -2401,7 +2401,7 @@ abstract class AppLocalizations {
   /// No description provided for @promoProposalsSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Get proposals within minutes'**
+  /// **'Get applications within minutes'**
   String get promoProposalsSubtitle;
 
   /// No description provided for @promoNicheServicesSubtitle.
@@ -2419,7 +2419,7 @@ abstract class AppLocalizations {
   /// No description provided for @recentJobsEmptyHint.
   ///
   /// In en, this message translates to:
-  /// **'Tap \"Post Job\" to get started'**
+  /// **'Tap \"Post a job\" to get started'**
   String get recentJobsEmptyHint;
 
   /// No description provided for @postJobShort.
@@ -2545,7 +2545,7 @@ abstract class AppLocalizations {
   /// No description provided for @noApplicationsYetHint.
   ///
   /// In en, this message translates to:
-  /// **'Browse open jobs and send a clear offer to stand out.'**
+  /// **'Browse open jobs and send a clear application to stand out.'**
   String get noApplicationsYetHint;
 
   /// No description provided for @noClientApplicationsYetHint.
@@ -2761,7 +2761,7 @@ abstract class AppLocalizations {
   /// No description provided for @attendancePrintQrAtSite.
   ///
   /// In en, this message translates to:
-  /// **'Print this QR and post it where workers check in.'**
+  /// **'Print this QR and post it where freelancers check in.'**
   String get attendancePrintQrAtSite;
 
   /// No description provided for @attendancePrintAndPostAtSite.
@@ -2827,7 +2827,7 @@ abstract class AppLocalizations {
   /// No description provided for @attendanceHowItWorksBody.
   ///
   /// In en, this message translates to:
-  /// **'1. Pin the workplace on the map, then print and tape this QR there (one code for all hired workers).\n2. Hired freelancers open HupWorks and scan it while they are at the site.\n3. Each worker confirms clock in or clock out on their phone — once per shift. The punch is accepted only within 200 meters of the pin.\n4. You can view today\'s attendance on the job details screen.\n\nAnti-fraud: sharing sends a poster image only (no copyable deep link).'**
+  /// **'1. Pin the workplace on the map, then print and tape this QR there (one code for all hired freelancers).\n2. Hired freelancers open HupWorks and scan it while they are at the site.\n3. Each freelancer confirms clock in or clock out on their phone — once per shift. The punch is accepted only within 200 meters of the pin.\n4. You can view today\'s attendance on the job details screen.\n\nAnti-fraud: sharing sends a poster image only (no copyable deep link).'**
   String get attendanceHowItWorksBody;
 
   /// No description provided for @noOnsiteJobsYet.
@@ -3487,7 +3487,7 @@ abstract class AppLocalizations {
   /// No description provided for @missingOrderDetails.
   ///
   /// In en, this message translates to:
-  /// **'Service or seller details are missing'**
+  /// **'Contract or freelancer details are missing'**
   String get missingOrderDetails;
 
   /// No description provided for @errorPlacingOrder.
@@ -3529,7 +3529,7 @@ abstract class AppLocalizations {
   /// No description provided for @rateOverallExperience.
   ///
   /// In en, this message translates to:
-  /// **'How would you rate your overall experience with this seller?'**
+  /// **'How would you rate your overall experience with this freelancer?'**
   String get rateOverallExperience;
 
   /// No description provided for @freelancerForContract.
@@ -3991,19 +3991,19 @@ abstract class AppLocalizations {
   /// No description provided for @orderDetailsTitle.
   ///
   /// In en, this message translates to:
-  /// **'Order Details'**
+  /// **'Contract details'**
   String get orderDetailsTitle;
 
   /// No description provided for @orderIdHash.
   ///
   /// In en, this message translates to:
-  /// **'Order ID #{id}'**
+  /// **'Contract ID #{id}'**
   String orderIdHash(String id);
 
   /// No description provided for @sellerColon.
   ///
   /// In en, this message translates to:
-  /// **'Seller:'**
+  /// **'Freelancer:'**
   String get sellerColon;
 
   /// No description provided for @clientColon.
@@ -4021,7 +4021,7 @@ abstract class AppLocalizations {
   /// No description provided for @labelServiceInfo.
   ///
   /// In en, this message translates to:
-  /// **'Service Info'**
+  /// **'Details'**
   String get labelServiceInfo;
 
   /// No description provided for @labelDuration.
@@ -4045,7 +4045,7 @@ abstract class AppLocalizations {
   /// No description provided for @orderSummary.
   ///
   /// In en, this message translates to:
-  /// **'Order Summary'**
+  /// **'Contract summary'**
   String get orderSummary;
 
   /// No description provided for @subtotal.
@@ -4171,13 +4171,13 @@ abstract class AppLocalizations {
   /// No description provided for @couldNotOpenReviewMissingSeller.
   ///
   /// In en, this message translates to:
-  /// **'Could not open review (missing seller).'**
+  /// **'Could not open review (missing freelancer).'**
   String get couldNotOpenReviewMissingSeller;
 
   /// No description provided for @sellerSubmittedDelivery.
   ///
   /// In en, this message translates to:
-  /// **'Seller submitted delivery'**
+  /// **'Freelancer submitted delivery'**
   String get sellerSubmittedDelivery;
 
   /// No description provided for @yourDelivery.
@@ -4189,13 +4189,13 @@ abstract class AppLocalizations {
   /// No description provided for @deliveredCalloutBody.
   ///
   /// In en, this message translates to:
-  /// **'Review what they sent. When you are happy with the result, tap Mark job complete below to close the order. To chat with the seller, use the ⋮ menu at the top.'**
+  /// **'Review what they sent. When you are happy with the result, tap Mark job complete below to close the contract. To chat with the freelancer, use the ⋮ menu at the top.'**
   String get deliveredCalloutBody;
 
   /// No description provided for @openContractCalloutBody.
   ///
   /// In en, this message translates to:
-  /// **'Your freelancer must submit delivery before you can complete this contract. You can message the seller from the ⋮ menu at the top.'**
+  /// **'Your freelancer must submit delivery before you can complete this contract. You can message the freelancer from the ⋮ menu at the top.'**
   String get openContractCalloutBody;
 
   /// No description provided for @cancellationRequestBannerBody.
@@ -4243,19 +4243,19 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingAwaitingAck.
   ///
   /// In en, this message translates to:
-  /// **'Awaiting ack'**
+  /// **'Waiting for confirmation'**
   String get onboardingAwaitingAck;
 
   /// No description provided for @theSeller.
   ///
   /// In en, this message translates to:
-  /// **'the seller'**
+  /// **'the freelancer'**
   String get theSeller;
 
   /// No description provided for @roleSeller.
   ///
   /// In en, this message translates to:
-  /// **'Seller'**
+  /// **'Freelancer'**
   String get roleSeller;
 
   /// No description provided for @roleClient.
@@ -4477,7 +4477,7 @@ abstract class AppLocalizations {
   /// No description provided for @closeJob.
   ///
   /// In en, this message translates to:
-  /// **'Close Job'**
+  /// **'Close job'**
   String get closeJob;
 
   /// No description provided for @attendanceSettingsUpdated.
@@ -4585,7 +4585,7 @@ abstract class AppLocalizations {
   /// No description provided for @workersNeeded.
   ///
   /// In en, this message translates to:
-  /// **'Workers needed'**
+  /// **'Freelancers needed'**
   String get workersNeeded;
 
   /// No description provided for @limitHiresToCount.
@@ -4735,7 +4735,7 @@ abstract class AppLocalizations {
   /// No description provided for @shiftScheduleHint.
   ///
   /// In en, this message translates to:
-  /// **'Optional work day and clock times (e.g. 06:00–15:00). Defines the attendance shift window (±1 hour grace). If empty, the UTC calendar day is used.'**
+  /// **'Optional work hours (for example 06:00–15:00). Attendance can be recorded from 1 hour before to 1 hour after. If left empty, the full calendar day (UTC) is used.'**
   String get shiftScheduleHint;
 
   /// No description provided for @workDateLabel.
@@ -4807,7 +4807,7 @@ abstract class AppLocalizations {
   /// No description provided for @workersLabel.
   ///
   /// In en, this message translates to:
-  /// **'Workers'**
+  /// **'Freelancers'**
   String get workersLabel;
 
   /// No description provided for @noLimitLabel.
@@ -4837,19 +4837,19 @@ abstract class AppLocalizations {
   /// No description provided for @hireConfirmUnlimited.
   ///
   /// In en, this message translates to:
-  /// **'Accept {name}\'s offer ({price})? The job stays open so you can hire more freelancers until you close it.'**
+  /// **'Accept {name}\'s application ({price})? The job stays open so you can hire more freelancers until you close it.'**
   String hireConfirmUnlimited(String name, String price);
 
   /// No description provided for @hireConfirmFillsAll.
   ///
   /// In en, this message translates to:
-  /// **'Accept {name}\'s offer ({price})? This fills your last hire spot ({filled} of {cap}). The job will close to new applicants. Other applications stay on your list as pending — reject them only if you do not want them.'**
+  /// **'Accept {name}\'s application ({price})? This fills your last hire spot ({filled} of {cap}). The job will close to new applicants. Other applications stay on your list as pending — reject them only if you do not want them.'**
   String hireConfirmFillsAll(String name, String price, int filled, int cap);
 
   /// No description provided for @hireConfirmRemaining.
   ///
   /// In en, this message translates to:
-  /// **'Accept {name}\'s offer ({price})? After this hire you will have {remaining} more open spots ({filled} of {cap} filled). Other pending applications stay open.'**
+  /// **'Accept {name}\'s application ({price})? After this hire you will have {remaining} more open spots ({filled} of {cap} filled). Other pending applications stay open.'**
   String hireConfirmRemaining(
       String name, String price, int remaining, int filled, int cap);
 
@@ -4904,7 +4904,7 @@ abstract class AppLocalizations {
   /// No description provided for @attendanceQrShort.
   ///
   /// In en, this message translates to:
-  /// **'QR'**
+  /// **'Attendance QR'**
   String get attendanceQrShort;
 
   /// No description provided for @attendanceLocationRequired.
@@ -5150,7 +5150,7 @@ abstract class AppLocalizations {
   /// No description provided for @customBidIntroWithBudget.
   ///
   /// In en, this message translates to:
-  /// **'Enter your own amount if you want to bid differently from the client\'s budget.'**
+  /// **'Enter your own price if you want to ask for a different amount than the client\'s budget.'**
   String get customBidIntroWithBudget;
 
   /// No description provided for @customBidIntroNoBudget.
@@ -5174,7 +5174,7 @@ abstract class AppLocalizations {
   /// No description provided for @enterYourBid.
   ///
   /// In en, this message translates to:
-  /// **'Enter your bid'**
+  /// **'Enter your price'**
   String get enterYourBid;
 
   /// No description provided for @quoteAsLabel.
@@ -5324,7 +5324,7 @@ abstract class AppLocalizations {
   /// No description provided for @deliverOrderTitle.
   ///
   /// In en, this message translates to:
-  /// **'Deliver Order'**
+  /// **'Deliver work'**
   String get deliverOrderTitle;
 
   /// No description provided for @pleaseDescribeDelivery.
@@ -5384,7 +5384,7 @@ abstract class AppLocalizations {
   /// No description provided for @bidOfferLabel.
   ///
   /// In en, this message translates to:
-  /// **'Bid Offer'**
+  /// **'Application price'**
   String get bidOfferLabel;
 
   /// No description provided for @counterOfferLabel.
@@ -5504,7 +5504,7 @@ abstract class AppLocalizations {
   /// No description provided for @proposalCaps.
   ///
   /// In en, this message translates to:
-  /// **'PROPOSAL'**
+  /// **'APPLICATION'**
   String get proposalCaps;
 
   /// No description provided for @labelColon.
@@ -5894,7 +5894,7 @@ abstract class AppLocalizations {
   /// No description provided for @identityVerificationSetupHint.
   ///
   /// In en, this message translates to:
-  /// **'Upload a selfie holding your government ID next to your face. An admin will review face+ID separately from your profile photo — you will see “pending” until each is accepted.'**
+  /// **'Upload a selfie holding your government ID next to your face. An admin will review your selfie with ID separately from your profile photo — you will see “pending” until each is accepted.'**
   String get identityVerificationSetupHint;
 
   /// No description provided for @idDoLabel.
@@ -5960,13 +5960,13 @@ abstract class AppLocalizations {
   /// No description provided for @faceIdPendingHint.
   ///
   /// In en, this message translates to:
-  /// **'Face+ID is submitted but not accepted yet (+50 pts after accept). Profile photo is reviewed separately.'**
+  /// **'Selfie with ID is submitted but not accepted yet (+50 points after accept). Profile photo is reviewed separately.'**
   String get faceIdPendingHint;
 
   /// No description provided for @faceIdVerifiedHint.
   ///
   /// In en, this message translates to:
-  /// **'Face+ID accepted. Replacing this selfie resets only the face+ID review.'**
+  /// **'Selfie with ID accepted. Replacing this selfie resets only the selfie with ID review.'**
   String get faceIdVerifiedHint;
 
   /// No description provided for @selfieWithId.
@@ -6026,7 +6026,7 @@ abstract class AppLocalizations {
   /// No description provided for @verificationScoreHint.
   ///
   /// In en, this message translates to:
-  /// **'Profile photo and face+ID are reviewed separately (50 pts each).'**
+  /// **'Profile photo and selfie with ID are reviewed separately (50 points each).'**
   String get verificationScoreHint;
 
   /// No description provided for @profilePhotoLabel.
@@ -6038,7 +6038,7 @@ abstract class AppLocalizations {
   /// No description provided for @faceIdSelfieLabel.
   ///
   /// In en, this message translates to:
-  /// **'Face + ID selfie'**
+  /// **'Selfie with ID'**
   String get faceIdSelfieLabel;
 
   /// No description provided for @acceptedByAdmin.
@@ -6230,7 +6230,7 @@ abstract class AppLocalizations {
   /// No description provided for @withdrawApplicationConfirmBody.
   ///
   /// In en, this message translates to:
-  /// **'The employer will no longer see this as a pending offer. You can apply again later.'**
+  /// **'The employer will no longer see this as a pending application. You can apply again later.'**
   String get withdrawApplicationConfirmBody;
 
   /// No description provided for @applicationWithdrawn.
@@ -6254,7 +6254,7 @@ abstract class AppLocalizations {
   /// No description provided for @trustScoreLabel.
   ///
   /// In en, this message translates to:
-  /// **'Trust'**
+  /// **'Trust score'**
   String get trustScoreLabel;
 
   /// No description provided for @genderLabel.
@@ -6644,7 +6644,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqMessageSellerA.
   ///
   /// In en, this message translates to:
-  /// **'Open an order or job offer and use Message, or go to the Messages tab to see all conversations with freelancers.'**
+  /// **'Open a contract or application and use Message, or go to the Messages tab to see all conversations with freelancers.'**
   String get faqMessageSellerA;
 
   /// No description provided for @faqReportSellerQ.
@@ -6692,7 +6692,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqApplyJobA.
   ///
   /// In en, this message translates to:
-  /// **'Go to Find Jobs, open a listing, and submit your offer with price and delivery details. The employer can accept and start an order from there.'**
+  /// **'Go to Find Jobs, open a listing, and submit your application with price and delivery details. The employer can accept and start an order from there.'**
   String get faqApplyJobA;
 
   /// No description provided for @faqGetPaidQ.
@@ -6716,7 +6716,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqAttendanceA.
   ///
   /// In en, this message translates to:
-  /// **'Profile menu → Attendance. At the job site, scan the employer\'s QR (shared by all hired workers). Each person may clock in once and out once per shift. You must be within 200 m of the job pin. The QR poster share is image-only so the deep link cannot be copied.'**
+  /// **'Profile menu → Attendance. At the job site, scan the employer\'s QR (shared by all hired freelancers). Each person may clock in once and out once per shift. You must be within 200 m of the job pin. The QR poster share is image-only so the deep link cannot be copied.'**
   String get faqAttendanceA;
 
   /// No description provided for @pleasePinJobSite.
@@ -6734,7 +6734,7 @@ abstract class AppLocalizations {
   /// No description provided for @attendancePinSiteToUseQr.
   ///
   /// In en, this message translates to:
-  /// **'Set a map pin before using QR attendance. Workers can only clock in within 200 meters of that pin.'**
+  /// **'Set a map pin before using QR attendance. Freelancers can only clock in within 200 meters of that pin.'**
   String get attendancePinSiteToUseQr;
 
   /// No description provided for @attendanceLocationCheckHint.
@@ -6782,7 +6782,7 @@ abstract class AppLocalizations {
   /// No description provided for @attendanceShareQrMessage.
   ///
   /// In en, this message translates to:
-  /// **'Print this QR and post it at \"{job}\". Hired workers scan it in HupWorks while they are at the site.'**
+  /// **'Print this QR and post it at \"{job}\". Hired freelancers scan it in HupWorks while they are at the site.'**
   String attendanceShareQrMessage(String job);
 
   /// No description provided for @chatPrivacyTitle.
@@ -7223,6 +7223,12 @@ abstract class AppLocalizations {
   /// **'Got it'**
   String get guideDone;
 
+  /// No description provided for @guideReplayThisScreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Show tips for this screen'**
+  String get guideReplayThisScreen;
+
   /// No description provided for @guideShellMenuTitle.
   ///
   /// In en, this message translates to:
@@ -7292,7 +7298,7 @@ abstract class AppLocalizations {
   /// No description provided for @guideClientHomeSearchDesc.
   ///
   /// In en, this message translates to:
-  /// **'Find freelancers and jobs by keyword.'**
+  /// **'Find freelancers by name or skill.'**
   String get guideClientHomeSearchDesc;
 
   /// No description provided for @guideClientHomeNudgeTitle.
@@ -7334,7 +7340,7 @@ abstract class AppLocalizations {
   /// No description provided for @guideSellerHomeBannerTitle.
   ///
   /// In en, this message translates to:
-  /// **'Find jobs'**
+  /// **'Find Jobs'**
   String get guideSellerHomeBannerTitle;
 
   /// No description provided for @guideSellerHomeBannerDesc.
@@ -7358,7 +7364,7 @@ abstract class AppLocalizations {
   /// No description provided for @guideSellerHomeWorkTitle.
   ///
   /// In en, this message translates to:
-  /// **'Work tracker'**
+  /// **'Your work'**
   String get guideSellerHomeWorkTitle;
 
   /// No description provided for @guideSellerHomeWorkDesc.
@@ -7384,6 +7390,1278 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Guides will show again as you visit each screen'**
   String get guideReplayDone;
+
+  /// No description provided for @menuTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Menu'**
+  String get menuTooltip;
+
+  /// No description provided for @clearSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear search'**
+  String get clearSearch;
+
+  /// No description provided for @jobAlertDeleteTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete alert'**
+  String get jobAlertDeleteTooltip;
+
+  /// No description provided for @removeSavedTalent.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from saved talent'**
+  String get removeSavedTalent;
+
+  /// No description provided for @skillPickerChoose.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a skill'**
+  String get skillPickerChoose;
+
+  /// No description provided for @skillPickerCustomNote.
+  ///
+  /// In en, this message translates to:
+  /// **'This skill is saved on your profile only — not added to the global list.'**
+  String get skillPickerCustomNote;
+
+  /// No description provided for @skillPickerSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search e.g. plumber, factory worker'**
+  String get skillPickerSearchHint;
+
+  /// No description provided for @skillPickerNoneLoaded.
+  ///
+  /// In en, this message translates to:
+  /// **'No preset skills loaded'**
+  String get skillPickerNoneLoaded;
+
+  /// No description provided for @skillPickerNoMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'No match for \"{query}\"'**
+  String skillPickerNoMatch(String query);
+
+  /// No description provided for @skillPickerAddToProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Add \"{query}\" to your profile'**
+  String skillPickerAddToProfile(String query);
+
+  /// No description provided for @skillPickerCustomSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom skill — not added to the global list'**
+  String get skillPickerCustomSubtitle;
+
+  /// No description provided for @skillPickerTapToChoose.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to choose a skill'**
+  String get skillPickerTapToChoose;
+
+  /// No description provided for @skillCustomBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom skill'**
+  String get skillCustomBadge;
+
+  /// No description provided for @skillAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add skill'**
+  String get skillAdd;
+
+  /// No description provided for @skillChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Change skill'**
+  String get skillChange;
+
+  /// No description provided for @skillAddBest.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a skill you\'re best at'**
+  String get skillAddBest;
+
+  /// No description provided for @skillAddGood.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a skill you\'re good at'**
+  String get skillAddGood;
+
+  /// No description provided for @skillAddLearning.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a skill you\'re learning'**
+  String get skillAddLearning;
+
+  /// No description provided for @skillCatalogUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Preset skill list unavailable — you can still add custom skills.'**
+  String get skillCatalogUnavailable;
+
+  /// No description provided for @skillTierBestTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Best at'**
+  String get skillTierBestTitle;
+
+  /// No description provided for @skillTierBestSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional — pick from the list or add your own'**
+  String get skillTierBestSubtitle;
+
+  /// No description provided for @skillTierGoodTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Also good at'**
+  String get skillTierGoodTitle;
+
+  /// No description provided for @skillTierGoodSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional — up to 2 more skills'**
+  String get skillTierGoodSubtitle;
+
+  /// No description provided for @skillTierLearningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Still learning'**
+  String get skillTierLearningTitle;
+
+  /// No description provided for @skillTierLearningSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional — up to 3 skills, rate 1–3 stars'**
+  String get skillTierLearningSubtitle;
+
+  /// No description provided for @skillErrNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'All skills must have a name.'**
+  String get skillErrNameRequired;
+
+  /// No description provided for @skillErrDuplicate.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate skill: {name}'**
+  String skillErrDuplicate(String name);
+
+  /// No description provided for @skillErrStarsRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Each skill must be rated between 1 and 5 stars.'**
+  String get skillErrStarsRange;
+
+  /// No description provided for @skillErrMaxFive.
+  ///
+  /// In en, this message translates to:
+  /// **'At most {max} skills at 5 stars.'**
+  String skillErrMaxFive(int max);
+
+  /// No description provided for @skillErrMaxFour.
+  ///
+  /// In en, this message translates to:
+  /// **'At most {max} skills at 4 stars.'**
+  String skillErrMaxFour(int max);
+
+  /// No description provided for @skillErrMaxLow.
+  ///
+  /// In en, this message translates to:
+  /// **'At most {max} skills at 1–3 stars.'**
+  String skillErrMaxLow(int max);
+
+  /// No description provided for @acceptAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get acceptAction;
+
+  /// No description provided for @declineAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline'**
+  String get declineAction;
+
+  /// No description provided for @hourReportsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hour reports'**
+  String get hourReportsTitle;
+
+  /// No description provided for @hourReportsEmployerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept or decline hours after the freelancer clocks out. Pay outside the app.'**
+  String get hourReportsEmployerHint;
+
+  /// No description provided for @hourReportsFreelancerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted automatically when you clock out.'**
+  String get hourReportsFreelancerHint;
+
+  /// No description provided for @hoursAcceptedSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'Hours accepted. Pay the freelancer outside the app.'**
+  String get hoursAcceptedSnack;
+
+  /// No description provided for @hoursAcceptFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not accept: {error}'**
+  String hoursAcceptFailed(String error);
+
+  /// No description provided for @hoursDeclineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline hours'**
+  String get hoursDeclineTitle;
+
+  /// No description provided for @hoursDeclineReasonHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional reason for the freelancer'**
+  String get hoursDeclineReasonHint;
+
+  /// No description provided for @hoursDeclinedSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'Hours declined.'**
+  String get hoursDeclinedSnack;
+
+  /// No description provided for @hoursDeclineFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not decline: {error}'**
+  String hoursDeclineFailed(String error);
+
+  /// No description provided for @guideChooserTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tips for this screen'**
+  String get guideChooserTitle;
+
+  /// No description provided for @guideChooserMainTips.
+  ///
+  /// In en, this message translates to:
+  /// **'Main tips'**
+  String get guideChooserMainTips;
+
+  /// No description provided for @guideInfoHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the (i) anytime to see these tips again'**
+  String get guideInfoHint;
+
+  /// No description provided for @guideShellMyJobsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My Jobs'**
+  String get guideShellMyJobsTitle;
+
+  /// No description provided for @guideShellMyJobsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Your job posts and their applicants live here.'**
+  String get guideShellMyJobsDesc;
+
+  /// No description provided for @guideShellMessagesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get guideShellMessagesTitle;
+
+  /// No description provided for @guideShellMessagesDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat with clients about jobs and contracts.'**
+  String get guideShellMessagesDesc;
+
+  /// No description provided for @guideShellSellerContractsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Track accepted work, delivery and payment marks.'**
+  String get guideShellSellerContractsDesc;
+
+  /// No description provided for @guideClientHomeSectionExplore.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore'**
+  String get guideClientHomeSectionExplore;
+
+  /// No description provided for @guideClientHomeShortcutsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shortcuts'**
+  String get guideClientHomeShortcutsTitle;
+
+  /// No description provided for @guideClientHomeShortcutsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Jump to posting, talent, applications or contracts.'**
+  String get guideClientHomeShortcutsDesc;
+
+  /// No description provided for @guideClientHomeHighlightsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Highlights'**
+  String get guideClientHomeHighlightsTitle;
+
+  /// No description provided for @guideClientHomeHighlightsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe the banners for quick ways to hire or post.'**
+  String get guideClientHomeHighlightsDesc;
+
+  /// No description provided for @guideClientHomeCategoriesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Categories'**
+  String get guideClientHomeCategoriesTitle;
+
+  /// No description provided for @guideClientHomeCategoriesDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a category to see what it covers.'**
+  String get guideClientHomeCategoriesDesc;
+
+  /// No description provided for @guideClientHomeRecentJobsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your recent jobs'**
+  String get guideClientHomeRecentJobsTitle;
+
+  /// No description provided for @guideClientHomeRecentJobsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Your latest posts and their status. Tap one to review applicants.'**
+  String get guideClientHomeRecentJobsDesc;
+
+  /// No description provided for @guideClientHomeTopFreelancersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Top freelancers'**
+  String get guideClientHomeTopFreelancersTitle;
+
+  /// No description provided for @guideClientHomeTopFreelancersDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe to browse. Tap a card to view a profile.'**
+  String get guideClientHomeTopFreelancersDesc;
+
+  /// No description provided for @guideSellerHomeSectionWork.
+  ///
+  /// In en, this message translates to:
+  /// **'Your work numbers'**
+  String get guideSellerHomeSectionWork;
+
+  /// No description provided for @guideSellerHomeSectionAttention.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs attention and Applications'**
+  String get guideSellerHomeSectionAttention;
+
+  /// No description provided for @guideSellerHomePaidOutsideTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid outside the app'**
+  String get guideSellerHomePaidOutsideTitle;
+
+  /// No description provided for @guideSellerHomePaidOutsideDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'HupWorks tracks work and amounts only. Payment happens outside the app, so mark paid here as your own record.'**
+  String get guideSellerHomePaidOutsideDesc;
+
+  /// No description provided for @guideSellerHomeHoursAmountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hours and agreed amount'**
+  String get guideSellerHomeHoursAmountTitle;
+
+  /// No description provided for @guideSellerHomeHoursAmountDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap hours to open Attendance, or the amount to open Contracts.'**
+  String get guideSellerHomeHoursAmountDesc;
+
+  /// No description provided for @guideSellerHomePaidUnpaidTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid and unpaid'**
+  String get guideSellerHomePaidUnpaidTitle;
+
+  /// No description provided for @guideSellerHomePaidUnpaidDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Marked paid is what you recorded. Still unpaid is agreed work not yet marked paid.'**
+  String get guideSellerHomePaidUnpaidDesc;
+
+  /// No description provided for @guideSellerHomeJobsDoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Jobs done and active'**
+  String get guideSellerHomeJobsDoneTitle;
+
+  /// No description provided for @guideSellerHomeJobsDoneDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'How many jobs you finished and how many are running now.'**
+  String get guideSellerHomeJobsDoneDesc;
+
+  /// No description provided for @guideSellerHomeAttentionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs attention'**
+  String get guideSellerHomeAttentionTitle;
+
+  /// No description provided for @guideSellerHomeAttentionDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered work waiting for approval and on-site jobs to clock in. Tap a row to go there.'**
+  String get guideSellerHomeAttentionDesc;
+
+  /// No description provided for @guideSellerHomeApplicationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your applications'**
+  String get guideSellerHomeApplicationsTitle;
+
+  /// No description provided for @guideSellerHomeApplicationsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'See every job you applied to. View all opens the full list.'**
+  String get guideSellerHomeApplicationsDesc;
+
+  /// No description provided for @guideSellerHomeLatestAppTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest application'**
+  String get guideSellerHomeLatestAppTitle;
+
+  /// No description provided for @guideSellerHomeLatestAppDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Status shows pending, accepted or rejected. Tap to open the list.'**
+  String get guideSellerHomeLatestAppDesc;
+
+  /// No description provided for @guideSellerHomeBrowseJobsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse jobs'**
+  String get guideSellerHomeBrowseJobsTitle;
+
+  /// No description provided for @guideSellerHomeBrowseJobsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'No applications yet. Tap here to find a job to apply to.'**
+  String get guideSellerHomeBrowseJobsDesc;
+
+  /// No description provided for @guideCreateJobStepsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Four short steps'**
+  String get guideCreateJobStepsTitle;
+
+  /// No description provided for @guideCreateJobStepsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Basics, Details, Location, Budget. You review before posting.'**
+  String get guideCreateJobStepsDesc;
+
+  /// No description provided for @guideCreateJobCategoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a category'**
+  String get guideCreateJobCategoryTitle;
+
+  /// No description provided for @guideCreateJobCategoryDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the closest fit, or Other to name your own.'**
+  String get guideCreateJobCategoryDesc;
+
+  /// No description provided for @guideCreateJobSkillsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add skills'**
+  String get guideCreateJobSkillsTitle;
+
+  /// No description provided for @guideCreateJobSkillsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional. Tag skills so the right freelancers find your job.'**
+  String get guideCreateJobSkillsDesc;
+
+  /// No description provided for @guideCreateJobContinueTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get guideCreateJobContinueTitle;
+
+  /// No description provided for @guideCreateJobContinueDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Moves to the next step. On the last step it posts your job.'**
+  String get guideCreateJobContinueDesc;
+
+  /// No description provided for @guideCreateJobSectionDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get guideCreateJobSectionDetails;
+
+  /// No description provided for @guideCreateJobSectionLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get guideCreateJobSectionLocation;
+
+  /// No description provided for @guideCreateJobSectionBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget and review'**
+  String get guideCreateJobSectionBudget;
+
+  /// No description provided for @guideCreateJobDescTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe the work'**
+  String get guideCreateJobDescTitle;
+
+  /// No description provided for @guideCreateJobDescDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Explain the tasks and any requirements.'**
+  String get guideCreateJobDescDesc;
+
+  /// No description provided for @guideCreateJobShiftTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shift schedule'**
+  String get guideCreateJobShiftTitle;
+
+  /// No description provided for @guideCreateJobShiftDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional day and clock times. Attendance is checked against this window, with one hour of grace.'**
+  String get guideCreateJobShiftDesc;
+
+  /// No description provided for @guideCreateJobWorkersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Workers needed'**
+  String get guideCreateJobWorkersTitle;
+
+  /// No description provided for @guideCreateJobWorkersDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Set how many to hire. Switch off for no cap, and you close the job yourself.'**
+  String get guideCreateJobWorkersDesc;
+
+  /// No description provided for @guideCreateJobWhereTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Where it happens'**
+  String get guideCreateJobWhereTitle;
+
+  /// No description provided for @guideCreateJobWhereDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose On-site or Remote and add the address.'**
+  String get guideCreateJobWhereDesc;
+
+  /// No description provided for @guideCreateJobPinTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pin the site'**
+  String get guideCreateJobPinTitle;
+
+  /// No description provided for @guideCreateJobPinDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'On-site jobs need a map pin for QR attendance. Workers must be within 200 meters.'**
+  String get guideCreateJobPinDesc;
+
+  /// No description provided for @guideCreateJobAttendanceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendance tracking'**
+  String get guideCreateJobAttendanceTitle;
+
+  /// No description provided for @guideCreateJobAttendanceDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how workers record time on site. QR options need the map pin.'**
+  String get guideCreateJobAttendanceDesc;
+
+  /// No description provided for @guideCreateJobPayTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay range'**
+  String get guideCreateJobPayTitle;
+
+  /// No description provided for @guideCreateJobPayDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional. Freelancers see it before they apply.'**
+  String get guideCreateJobPayDesc;
+
+  /// No description provided for @guideCreateJobRateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate type'**
+  String get guideCreateJobRateTitle;
+
+  /// No description provided for @guideCreateJobRateDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose fixed, hourly, daily or monthly pay for this range.'**
+  String get guideCreateJobRateDesc;
+
+  /// No description provided for @guideCreateJobReviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Review and post'**
+  String get guideCreateJobReviewTitle;
+
+  /// No description provided for @guideCreateJobReviewDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Check the summary, then tap Post job to publish.'**
+  String get guideCreateJobReviewDesc;
+
+  /// No description provided for @guideJobGateMissingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What is missing'**
+  String get guideJobGateMissingTitle;
+
+  /// No description provided for @guideJobGateMissingDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Add these details so freelancers can trust your job.'**
+  String get guideJobGateMissingDesc;
+
+  /// No description provided for @guideJobGateEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit profile'**
+  String get guideJobGateEditTitle;
+
+  /// No description provided for @guideJobGateEditDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Fill in the missing items, then come back. The check runs again automatically.'**
+  String get guideJobGateEditDesc;
+
+  /// No description provided for @guideJobDetailsCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your job post'**
+  String get guideJobDetailsCardTitle;
+
+  /// No description provided for @guideJobDetailsCardDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'This is what freelancers see before applying.'**
+  String get guideJobDetailsCardDesc;
+
+  /// No description provided for @guideJobDetailsApplicationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Applications'**
+  String get guideJobDetailsApplicationsTitle;
+
+  /// No description provided for @guideJobDetailsApplicationsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Freelancers who applied appear here. Pull down to refresh.'**
+  String get guideJobDetailsApplicationsDesc;
+
+  /// No description provided for @guideJobDetailsHireTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hire or reject'**
+  String get guideJobDetailsHireTitle;
+
+  /// No description provided for @guideJobDetailsHireDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Hire starts a contract and notifies the freelancer. You can then add first-day instructions.'**
+  String get guideJobDetailsHireDesc;
+
+  /// No description provided for @guideJobDetailsSectionApplicants.
+  ///
+  /// In en, this message translates to:
+  /// **'Applicants'**
+  String get guideJobDetailsSectionApplicants;
+
+  /// No description provided for @guideJobDetailsSectionAttendance.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendance'**
+  String get guideJobDetailsSectionAttendance;
+
+  /// No description provided for @guideJobDetailsApplicantTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Applicant'**
+  String get guideJobDetailsApplicantTitle;
+
+  /// No description provided for @guideJobDetailsApplicantDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the name or photo to view their profile.'**
+  String get guideJobDetailsApplicantDesc;
+
+  /// No description provided for @guideJobDetailsMessageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get guideJobDetailsMessageTitle;
+
+  /// No description provided for @guideJobDetailsMessageDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat with this freelancer before you decide.'**
+  String get guideJobDetailsMessageDesc;
+
+  /// No description provided for @guideJobDetailsInstructionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'First-day instructions'**
+  String get guideJobDetailsInstructionsTitle;
+
+  /// No description provided for @guideJobDetailsInstructionsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Share site details with your hire. Edit and publish again any time; they are notified.'**
+  String get guideJobDetailsInstructionsDesc;
+
+  /// No description provided for @guideJobDetailsAttendanceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendance'**
+  String get guideJobDetailsAttendanceTitle;
+
+  /// No description provided for @guideJobDetailsAttendanceDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'On-site jobs track when workers arrive and leave. Choose the method below.'**
+  String get guideJobDetailsAttendanceDesc;
+
+  /// No description provided for @guideJobDetailsMethodTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Check-in method'**
+  String get guideJobDetailsMethodTitle;
+
+  /// No description provided for @guideJobDetailsMethodDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'QR, self-report or off. QR needs a map pin so workers can only clock in nearby.'**
+  String get guideJobDetailsMethodDesc;
+
+  /// No description provided for @guideJobDetailsQrTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendance QR'**
+  String get guideJobDetailsQrTitle;
+
+  /// No description provided for @guideJobDetailsQrDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the QR code to print and post at the site.'**
+  String get guideJobDetailsQrDesc;
+
+  /// No description provided for @guideJobDetailsPinTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set the site pin'**
+  String get guideJobDetailsPinTitle;
+
+  /// No description provided for @guideJobDetailsPinDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Required for QR. Workers can only clock in within 200 meters.'**
+  String get guideJobDetailsPinDesc;
+
+  /// No description provided for @guideJobDetailsTodayTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s attendance'**
+  String get guideJobDetailsTodayTitle;
+
+  /// No description provided for @guideJobDetailsTodayDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'See who clocked in or out today.'**
+  String get guideJobDetailsTodayDesc;
+
+  /// No description provided for @guideFindJobsAlertsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Job alerts'**
+  String get guideFindJobsAlertsTitle;
+
+  /// No description provided for @guideFindJobsAlertsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Save a search to hear about new matching jobs. Manage your alerts here.'**
+  String get guideFindJobsAlertsDesc;
+
+  /// No description provided for @guideFindJobsSearchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Search jobs'**
+  String get guideFindJobsSearchTitle;
+
+  /// No description provided for @guideFindJobsSearchDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Type a job title to narrow the list.'**
+  String get guideFindJobsSearchDesc;
+
+  /// No description provided for @guideFindJobsFilterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get guideFindJobsFilterTitle;
+
+  /// No description provided for @guideFindJobsFilterDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Narrow by distance, skills and categories. A dot shows when filters are on. Save a search as an alert inside.'**
+  String get guideFindJobsFilterDesc;
+
+  /// No description provided for @guideFindJobsCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Open a job'**
+  String get guideFindJobsCardTitle;
+
+  /// No description provided for @guideFindJobsCardDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a card to read the details and apply.'**
+  String get guideFindJobsCardDesc;
+
+  /// No description provided for @guideFindJobsSectionCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading a job card'**
+  String get guideFindJobsSectionCard;
+
+  /// No description provided for @guideFindJobsSaveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Save for later'**
+  String get guideFindJobsSaveTitle;
+
+  /// No description provided for @guideFindJobsSaveDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the bookmark to keep a job and find it again later.'**
+  String get guideFindJobsSaveDesc;
+
+  /// No description provided for @guideFindJobsTagsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Job tags'**
+  String get guideFindJobsTagsTitle;
+
+  /// No description provided for @guideFindJobsTagsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The category and the job type, for example gig or part-time.'**
+  String get guideFindJobsTagsDesc;
+
+  /// No description provided for @guideFindJobsBudgetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget'**
+  String get guideFindJobsBudgetTitle;
+
+  /// No description provided for @guideFindJobsBudgetDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'What the client plans to pay. You can still quote your own price.'**
+  String get guideFindJobsBudgetDesc;
+
+  /// No description provided for @guideFindJobsSectionFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters and alerts'**
+  String get guideFindJobsSectionFilters;
+
+  /// No description provided for @guideFindJobsChipsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Active filters'**
+  String get guideFindJobsChipsTitle;
+
+  /// No description provided for @guideFindJobsChipsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a chip to remove it, or tap Clear all.'**
+  String get guideFindJobsChipsDesc;
+
+  /// No description provided for @guideFindJobsCountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Results'**
+  String get guideFindJobsCountTitle;
+
+  /// No description provided for @guideFindJobsCountDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'How many jobs are listed right now.'**
+  String get guideFindJobsCountDesc;
+
+  /// No description provided for @guideSellerJobClientTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The client'**
+  String get guideSellerJobClientTitle;
+
+  /// No description provided for @guideSellerJobClientDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'See who posted the job. Tap to view their profile.'**
+  String get guideSellerJobClientDesc;
+
+  /// No description provided for @guideSellerJobSaveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Save for later'**
+  String get guideSellerJobSaveTitle;
+
+  /// No description provided for @guideSellerJobSaveDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the bookmark to keep this job and find it again later.'**
+  String get guideSellerJobSaveDesc;
+
+  /// No description provided for @guideSellerJobReadTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Read the job'**
+  String get guideSellerJobReadTitle;
+
+  /// No description provided for @guideSellerJobReadDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The title and description say what the work is. Check the facts below before you apply.'**
+  String get guideSellerJobReadDesc;
+
+  /// No description provided for @guideSellerJobApplyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get guideSellerJobApplyTitle;
+
+  /// No description provided for @guideSellerJobApplyDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to send your application. You set your price and can add a short message.'**
+  String get guideSellerJobApplyDesc;
+
+  /// No description provided for @guideSellerJobSectionFit.
+  ///
+  /// In en, this message translates to:
+  /// **'Is this job for me?'**
+  String get guideSellerJobSectionFit;
+
+  /// No description provided for @guideSellerJobWhereTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'On-site or remote'**
+  String get guideSellerJobWhereTitle;
+
+  /// No description provided for @guideSellerJobWhereDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'On-site jobs need you at the place. Remote jobs can be done from home.'**
+  String get guideSellerJobWhereDesc;
+
+  /// No description provided for @guideSellerJobBudgetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget'**
+  String get guideSellerJobBudgetTitle;
+
+  /// No description provided for @guideSellerJobBudgetDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The range the client set and how it is paid: total, per hour or per day.'**
+  String get guideSellerJobBudgetDesc;
+
+  /// No description provided for @guideSellerJobShiftTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shift'**
+  String get guideSellerJobShiftTitle;
+
+  /// No description provided for @guideSellerJobShiftDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'When the work happens.'**
+  String get guideSellerJobShiftDesc;
+
+  /// No description provided for @guideSellerJobAppsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Applications so far'**
+  String get guideSellerJobAppsTitle;
+
+  /// No description provided for @guideSellerJobAppsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'How many people already applied.'**
+  String get guideSellerJobAppsDesc;
+
+  /// No description provided for @guideApplyRateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your rate'**
+  String get guideApplyRateTitle;
+
+  /// No description provided for @guideApplyRateDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply at the client\'s rate, or set your own price.'**
+  String get guideApplyRateDesc;
+
+  /// No description provided for @guideApplyPostedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Client\'s rate'**
+  String get guideApplyPostedTitle;
+
+  /// No description provided for @guideApplyPostedDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'This is what the client set. You apply at this rate and can still add a message.'**
+  String get guideApplyPostedDesc;
+
+  /// No description provided for @guideApplyPriceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your price'**
+  String get guideApplyPriceTitle;
+
+  /// No description provided for @guideApplyPriceDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your price and how you quote it, such as total or per hour.'**
+  String get guideApplyPriceDesc;
+
+  /// No description provided for @guideApplyMessageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Message (optional)'**
+  String get guideApplyMessageTitle;
+
+  /// No description provided for @guideApplyMessageDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Say why you fit. Optional, but if you write one, use at least {count} characters.'**
+  String guideApplyMessageDesc(int count);
+
+  /// No description provided for @guideApplySendTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Send application'**
+  String get guideApplySendTitle;
+
+  /// No description provided for @guideApplySendDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Sends your application to the client. You can withdraw it later in Applications.'**
+  String get guideApplySendDesc;
+
+  /// No description provided for @guideSetupReqTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Required details'**
+  String get guideSetupReqTitle;
+
+  /// No description provided for @guideSetupReqDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your job title and birth date. Your age is shown; your birth date stays private.'**
+  String get guideSetupReqDesc;
+
+  /// No description provided for @guideSetupContinueTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get guideSetupContinueTitle;
+
+  /// No description provided for @guideSetupContinueDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Checks this page, then goes to the next one.'**
+  String get guideSetupContinueDesc;
+
+  /// No description provided for @guideSetupLogoutTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Log out'**
+  String get guideSetupLogoutTitle;
+
+  /// No description provided for @guideSetupLogoutDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'This signs you out. Log in again anytime to continue.'**
+  String get guideSetupLogoutDesc;
+
+  /// No description provided for @guideSetupWhereTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Where you work'**
+  String get guideSetupWhereTitle;
+
+  /// No description provided for @guideSetupWhereDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your city so you can find nearby jobs. A map pin makes distance filters work.'**
+  String get guideSetupWhereDesc;
+
+  /// No description provided for @guideSetupSkillsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your skills'**
+  String get guideSetupSkillsTitle;
+
+  /// No description provided for @guideSetupSkillsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick what you are best at. Clients and job alerts match on these skills. Optional.'**
+  String get guideSetupSkillsDesc;
+
+  /// No description provided for @guideSetupAboutTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'About you'**
+  String get guideSetupAboutTitle;
+
+  /// No description provided for @guideSetupAboutDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'A short intro helps clients choose you.'**
+  String get guideSetupAboutDesc;
+
+  /// No description provided for @guideSetupSectionSkills.
+  ///
+  /// In en, this message translates to:
+  /// **'Your skills'**
+  String get guideSetupSectionSkills;
+
+  /// No description provided for @guideSetupBestTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Best at'**
+  String get guideSetupBestTitle;
+
+  /// No description provided for @guideSetupBestDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Your top skills, up to three. Clients see these first.'**
+  String get guideSetupBestDesc;
+
+  /// No description provided for @guideSetupLearningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Still learning'**
+  String get guideSetupLearningTitle;
+
+  /// No description provided for @guideSetupLearningDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Up to three skills you are building. Rate each from 1 to 3 stars.'**
+  String get guideSetupLearningDesc;
+
+  /// No description provided for @guideSetupAddTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a skill'**
+  String get guideSetupAddTitle;
+
+  /// No description provided for @guideSetupAddDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick from the list or type your own.'**
+  String get guideSetupAddDesc;
+
+  /// No description provided for @guideSetupPhotoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your photo'**
+  String get guideSetupPhotoTitle;
+
+  /// No description provided for @guideSetupPhotoDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the camera to add a clear front-facing photo. A plain background is best.'**
+  String get guideSetupPhotoDesc;
+
+  /// No description provided for @guideSetupPickTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a photo'**
+  String get guideSetupPickTitle;
+
+  /// No description provided for @guideSetupPickDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose one from your gallery or take a new one.'**
+  String get guideSetupPickDesc;
+
+  /// No description provided for @guideSetupWhyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Why we ask'**
+  String get guideSetupWhyTitle;
+
+  /// No description provided for @guideSetupWhyDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Clients trust verified freelancers. An admin reviews your selfie before you are verified.'**
+  String get guideSetupWhyDesc;
+
+  /// No description provided for @guideSetupSelfieTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Selfie with ID'**
+  String get guideSetupSelfieTitle;
+
+  /// No description provided for @guideSetupSelfieDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold your ID next to your face and take one photo.'**
+  String get guideSetupSelfieDesc;
+
+  /// No description provided for @guideSetupSaveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Save profile'**
+  String get guideSetupSaveTitle;
+
+  /// No description provided for @guideSetupSaveDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Finishes setup and opens the app. You need the selfie first.'**
+  String get guideSetupSaveDesc;
 }
 
 class _AppLocalizationsDelegate

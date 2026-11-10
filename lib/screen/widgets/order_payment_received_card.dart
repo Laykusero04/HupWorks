@@ -4,6 +4,7 @@ import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
 import 'package:freelancer/services/orders_service.dart';
+import 'package:freelancer/core/guide/guide_anchor.dart';
 
 /// Off-app payment mark for a completed order (work tracker proof, not a PSP).
 class OrderPaymentReceivedCard extends StatefulWidget {
@@ -20,7 +21,11 @@ class OrderPaymentReceivedCard extends StatefulWidget {
     required this.order,
     required this.onChanged,
     this.isSellerView = true,
+    this.guideAnchor,
   }) : super(key: key);
+
+  /// Optional guide target around this widget; see [GuideAnchor].
+  final GuideAnchor? guideAnchor;
 
   @override
   State<OrderPaymentReceivedCard> createState() =>
@@ -94,7 +99,10 @@ class _OrderPaymentReceivedCardState extends State<OrderPaymentReceivedCard> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      GuideAnchor.wrap(widget.guideAnchor, _buildContent(context));
+
+  Widget _buildContent(BuildContext context) {
     final l10n = context.l10n;
     final received = _received;
     final markedOn = _markedOnLabel;

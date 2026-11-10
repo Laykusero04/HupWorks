@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:freelancer/core/widgets/empty_state_widget.dart';
 import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
 import 'package:freelancer/core/guide/guide_host.dart';
+import 'package:freelancer/core/guide/guide_info_button.dart';
 import 'package:freelancer/core/guide/guide_step.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/l10n/l10n_labels.dart';
@@ -33,6 +34,8 @@ class _SellerHomeScreenState extends State<SellerHomeScreen>
   List<Map<String, dynamic>> _myApplications = [];
   bool _isLoading = true;
   bool _loadFailed = false;
+  // True during a reload with the content still shown: guide tear-down.
+  bool _refreshing = false;
   bool _workOverviewOpen = false;
 
   // Guide targets (owned by this State, stable across rebuilds).
@@ -41,6 +44,18 @@ class _SellerHomeScreenState extends State<SellerHomeScreen>
   final GlobalKey _guideBannerKey = GlobalKey();
   final GlobalKey _guideShortcutsKey = GlobalKey();
   final GlobalKey _guideWorkKey = GlobalKey();
+  // "Your work numbers" section targets (inside the Work card).
+  final GlobalKey _guideWorkDisclaimerKey = GlobalKey();
+  final GlobalKey _guideWorkHoursKey = GlobalKey();
+  final GlobalKey _guideWorkPaidKey = GlobalKey();
+  final GlobalKey _guideWorkJobsKey = GlobalKey();
+  // "Needs attention and Applications" section targets.
+  final GlobalKey _guideAttentionKey = GlobalKey();
+  final GlobalKey _guideApplicationsKey = GlobalKey();
+  final GlobalKey _guideLatestAppKey = GlobalKey();
+
+  static const _kSectionWork = 'work';
+  static const _kSectionAttention = 'attention';
 
   @override
   String get guideScreenId => 'seller_home';
@@ -51,7 +66,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen>
   @override
   bool get guideLeadsChain => true;
   @override
-  bool get guideDataReady => !_isLoading;
+  bool get guideDataReady => !_isLoading && !_refreshing;
   @override
   String get guideSkipLabel => context.l10n.guideSkip;
   @override
@@ -82,9 +97,115 @@ class _SellerHomeScreenState extends State<SellerHomeScreen>
           description: l10n.guideSellerHomeShortcutsDesc),
       GuideStep(
           key: _guideWorkKey,
+          enableAutoScroll: true, // card is usually below the fold
           title: l10n.guideSellerHomeWorkTitle,
           description: l10n.guideSellerHomeWorkDesc),
     ];
+  }
+
+  @override
+  List<GuideSection> buildGuideExtraSections(BuildContext context) {
+    final l10n = context.l10n;
+    final hasApps = _myApplications.isNotEmpty;
+    return [
+      GuideSection(
+        id: _kSectionWork,
+        title: l10n.guideSellerHomeSectionWork,
+        steps: [
+          GuideStep(
+              key: _guideWorkDisclaimerKey,
+              enableAutoScroll: true,
+              title: l10n.guideSellerHomePaidOutsideTitle,
+              description: l10n.guideSellerHomePaidOutsideDesc),
+          GuideStep(
+              key: _guideWorkHoursKey,
+              enableAutoScroll: true,
+              title: l10n.guideSellerHomeHoursAmountTitle,
+              description: l10n.guideSellerHomeHoursAmountDesc),
+          GuideStep(
+              key: _guideWorkPaidKey,
+              enableAutoScroll: true,
+              title: l10n.guideSellerHomePaidUnpaidTitle,
+              description: l10n.guideSellerHomePaidUnpaidDesc),
+          GuideStep(
+              key: _guideWorkJobsKey,
+              enableAutoScroll: true,
+              title: l10n.guideSellerHomeJobsDoneTitle,
+              description: l10n.guideSellerHomeJobsDoneDesc),
+        ],
+      ),
+      GuideSection(
+        id: _kSectionAttention,
+        title: l10n.guideSellerHomeSectionAttention,
+        steps: [
+          // Not built when nothing needs attention (dropped).
+          GuideStep(
+              key: _guideAttentionKey,
+              enableAutoScroll: true,
+              title: l10n.guideSellerHomeAttentionTitle,
+              description: l10n.guideSellerHomeAttentionDesc),
+          GuideStep(
+              key: _guideApplicationsKey,
+              enableAutoScroll: true,
+              title: l10n.guideSellerHomeApplicationsTitle,
+              description: l10n.guideSellerHomeApplicationsDesc),
+          GuideStep(
+              key: _guideLatestAppKey,
+              enableAutoScroll: true,
+              title: hasApps
+                  ? l10n.guideSellerHomeLatestAppTitle
+                  : l10n.guideSellerHomeBrowseJobsTitle,
+              description: hasApps
+                  ? l10n.guideSellerHomeLatestAppDesc
+                  : l10n.guideSellerHomeBrowseJobsDesc),
+        ],
+      ),
+    ];
+  }
+
+  // The Work card is collapsed by default, so the "Your work numbers" targets
+  // are not built. List that section anyway (when the page is loaded) and
+  // expand the card before it runs (see [replayGuide]).
+  @override
+  List<GuideSection> availableGuideSections(BuildContext context) {
+    final ready = super.availableGuideSections(context);
+    if (_workOverviewOpen ||
+        _isLoading ||
+        _loadFailed ||
+        !guideEnabled ||
+        !mounted) {
+      return ready;
+    }
+    return buildGuideExtraSections(context)
+        .where((s) => s.id == _kSectionWork || ready.any((r) => r.id == s.id))
+        .toList();
+  }
+
+  @override
+  bool replayGuide({String? sectionId}) {
+    if (sectionId == _kSectionWork && mounted && !_workOverviewOpen) {
+      setState(() => _workOverviewOpen = true);
+      // Start after the card has been laid out open.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) super.replayGuide(sectionId: sectionId);
+      });
+      return true;
+    }
+    return super.replayGuide(sectionId: sectionId);
+  }
+
+  /// Wraps [child] as a target of an on-demand section.
+  Widget _sectionTarget(
+      GlobalKey key, String title, String description, Widget child,
+      {double radius = 12}) {
+    return Showcase(
+      key: key,
+      scope: guideScope,
+      title: title,
+      description: description,
+      targetBorderRadius: BorderRadius.circular(radius),
+      child: child,
+    );
   }
 
   @override
@@ -97,6 +218,9 @@ class _SellerHomeScreenState extends State<SellerHomeScreen>
   }
 
   Future<void> _loadData() async {
+    if (mounted && !_isLoading && !_refreshing) {
+      setState(() => _refreshing = true); // guideDataReady false: tear down
+    }
     try {
       final results = await Future.wait([
         SellerHomeService.getWorkOverview(),
@@ -109,6 +233,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen>
           _overview = results[0] as Map<String, dynamic>;
           _myApplications = apps.take(5).toList();
           _isLoading = false;
+          _refreshing = false;
           _loadFailed = false;
         });
         scheduleGuide();
@@ -118,6 +243,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen>
         final hadOverview = _overview.isNotEmpty;
         setState(() {
           _isLoading = false;
+          _refreshing = false;
           _loadFailed = !hadOverview;
         });
         if (hadOverview) {
@@ -154,11 +280,13 @@ class _SellerHomeScreenState extends State<SellerHomeScreen>
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return Scaffold(
+    final attention = _loadFailed ? null : _buildNeedsAttention(context);
+    return guideBackScope(Scaffold(
       backgroundColor: kDarkWhite,
       appBar: ClientShellAppBar(
         title: l10n.home,
         persona: ShellPersona.seller,
+        actions: [GuideInfoButton(host: this)],
         menuShowcaseKey: _guideMenuKey,
         menuShowcaseScope: guideScope,
         menuShowcaseTitle: l10n.guideShellMenuTitle,
@@ -274,39 +402,44 @@ class _SellerHomeScreenState extends State<SellerHomeScreen>
                             _buildQuickActions(context),
                             const SizedBox(height: 16.0),
                             _buildWorkOverviewCard(context),
-                            if (_buildNeedsAttention(context) != null) ...[
+                            if (attention != null) ...[
                               const SizedBox(height: 12.0),
-                              _buildNeedsAttention(context)!,
+                              attention,
                             ],
                             const SizedBox(height: 20.0),
-                            GestureDetector(
-                              onTap: () async {
-                                await context
-                                    .push(AppRoutes.sellerApplications);
-                                if (mounted) _loadData();
-                              },
-                              child: Row(
-                                children: [
-                                  Text(
-                                    l10n.myApplications,
-                                    style: kTextStyle.copyWith(
-                                        color: kNeutralColor,
-                                        fontWeight: FontWeight.bold),
+                            _sectionTarget(
+                                _guideApplicationsKey,
+                                l10n.guideSellerHomeApplicationsTitle,
+                                l10n.guideSellerHomeApplicationsDesc,
+                                radius: 8,
+                                GestureDetector(
+                                  onTap: () async {
+                                    await context
+                                        .push(AppRoutes.sellerApplications);
+                                    if (mounted) _loadData();
+                                  },
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        l10n.myApplications,
+                                        style: kTextStyle.copyWith(
+                                            color: kNeutralColor,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      const Spacer(),
+                                      Text(
+                                        l10n.viewAll,
+                                        style: kTextStyle.copyWith(
+                                          color: kPrimaryColor,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                      const Icon(Icons.chevron_right_rounded,
+                                          size: 20, color: kPrimaryColor),
+                                    ],
                                   ),
-                                  const Spacer(),
-                                  Text(
-                                    l10n.viewAll,
-                                    style: kTextStyle.copyWith(
-                                      color: kPrimaryColor,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 13,
-                                    ),
-                                  ),
-                                  const Icon(Icons.chevron_right_rounded,
-                                      size: 20, color: kPrimaryColor),
-                                ],
-                              ),
-                            ),
+                                )),
                             const SizedBox(height: 15.0),
                             _myApplications.isEmpty
                                 ? Container(
@@ -345,27 +478,38 @@ class _SellerHomeScreenState extends State<SellerHomeScreen>
                                               height: 1.35),
                                         ),
                                         const SizedBox(height: 16),
-                                        FilledButton(
-                                          style: FilledButton.styleFrom(
-                                            backgroundColor: kPrimaryColor,
-                                            foregroundColor: Colors.white,
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 22, vertical: 12),
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(24)),
-                                          ),
-                                          onPressed: () => context
-                                              .go(AppRoutes.sellerFindJobs),
-                                          child: Text(l10n.browseJobs,
-                                              style: kTextStyle.copyWith(
-                                                  fontWeight: FontWeight.w700)),
-                                        ),
+                                        _sectionTarget(
+                                            _guideLatestAppKey,
+                                            l10n.guideSellerHomeBrowseJobsTitle,
+                                            l10n.guideSellerHomeBrowseJobsDesc,
+                                            radius: 24,
+                                            FilledButton(
+                                              style: FilledButton.styleFrom(
+                                                backgroundColor: kPrimaryColor,
+                                                foregroundColor: Colors.white,
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 22,
+                                                        vertical: 12),
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            24)),
+                                              ),
+                                              onPressed: () => context
+                                                  .go(AppRoutes.sellerFindJobs),
+                                              child: Text(l10n.browseJobs,
+                                                  style: kTextStyle.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w700)),
+                                            )),
                                       ],
                                     ),
                                   )
                                 : Column(
-                                    children: _myApplications.map((app) {
+                                    children: _myApplications.indexed.map((e) {
+                                      final first = e.$1 == 0;
+                                      final app = e.$2;
                                       final jobPost = app['job_posts']
                                           as Map<String, dynamic>?;
                                       final status =
@@ -377,7 +521,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen>
                                           L10nLabels.applicationStatus(
                                               l10n, status);
 
-                                      return Padding(
+                                      final row = Padding(
                                         padding:
                                             const EdgeInsets.only(bottom: 10.0),
                                         child: Material(
@@ -463,6 +607,13 @@ class _SellerHomeScreenState extends State<SellerHomeScreen>
                                           ),
                                         ),
                                       );
+                                      return first
+                                          ? _sectionTarget(
+                                              _guideLatestAppKey,
+                                              l10n.guideSellerHomeLatestAppTitle,
+                                              l10n.guideSellerHomeLatestAppDesc,
+                                              row)
+                                          : row;
                                     }).toList(),
                                   ),
                             const SizedBox(height: 28),
@@ -472,7 +623,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen>
                     ),
                   ),
                 ),
-    );
+    ));
   }
 
   Widget _buildWorkOverviewCard(BuildContext context) {
@@ -482,7 +633,6 @@ class _SellerHomeScreenState extends State<SellerHomeScreen>
       guideKey: _guideWorkKey,
       guideTitle: l10n.guideSellerHomeWorkTitle,
       guideDescription: l10n.guideSellerHomeWorkDesc,
-      guideAutoScroll: true, // card is usually below the fold
       title: l10n.yourWork,
       dropdown: Row(
         mainAxisSize: MainAxisSize.min,
@@ -503,23 +653,29 @@ class _SellerHomeScreenState extends State<SellerHomeScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            decoration: BoxDecoration(
-              color: kDarkWhite,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: kBorderColorTextField),
-            ),
-            child: Text(
-              l10n.workOverviewDisclaimer,
-              style: kTextStyle.copyWith(
-                color: kSubTitleColor,
-                fontSize: 11.5,
-                height: 1.35,
-              ),
-            ),
-          ),
+          _sectionTarget(
+              _guideWorkDisclaimerKey,
+              l10n.guideSellerHomePaidOutsideTitle,
+              l10n.guideSellerHomePaidOutsideDesc,
+              radius: 10,
+              Container(
+                width: double.infinity,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                decoration: BoxDecoration(
+                  color: kDarkWhite,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: kBorderColorTextField),
+                ),
+                child: Text(
+                  l10n.workOverviewDisclaimer,
+                  style: kTextStyle.copyWith(
+                    color: kSubTitleColor,
+                    fontSize: 11.5,
+                    height: 1.35,
+                  ),
+                ),
+              )),
           const SizedBox(height: 12),
           Container(
             decoration: BoxDecoration(
@@ -529,102 +685,119 @@ class _SellerHomeScreenState extends State<SellerHomeScreen>
             clipBehavior: Clip.antiAlias,
             child: Column(
               children: [
-                IntrinsicHeight(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Expanded(
-                        child: _WorkStatPrimary(
-                          value: _formatHours(context),
-                          label: l10n.hoursWorked,
-                          color: kSecondaryColor,
-                          onTap: () async {
-                            await context.push(AppRoutes.sellerAttendance);
-                            if (mounted) _loadData();
-                          },
-                        ),
+                _sectionTarget(
+                    _guideWorkHoursKey,
+                    l10n.guideSellerHomeHoursAmountTitle,
+                    l10n.guideSellerHomeHoursAmountDesc,
+                    radius: 0,
+                    IntrinsicHeight(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                            child: _WorkStatPrimary(
+                              value: _formatHours(context),
+                              label: l10n.hoursWorked,
+                              color: kSecondaryColor,
+                              onTap: () async {
+                                await context.push(AppRoutes.sellerAttendance);
+                                if (mounted) _loadData();
+                              },
+                            ),
+                          ),
+                          VerticalDivider(
+                              width: 1,
+                              thickness: 1,
+                              color: kBorderColorTextField),
+                          Expanded(
+                            child: _WorkStatPrimary(
+                              value: _formatMoney('agreed_contract_value'),
+                              label: l10n.agreedContractValue,
+                              color: StatusColors.success,
+                              onTap: () => context.go('/seller/orders'),
+                            ),
+                          ),
+                        ],
                       ),
-                      VerticalDivider(
-                          width: 1, thickness: 1, color: kBorderColorTextField),
-                      Expanded(
-                        child: _WorkStatPrimary(
-                          value: _formatMoney('agreed_contract_value'),
-                          label: l10n.agreedContractValue,
-                          color: StatusColors.success,
-                          onTap: () => context.go('/seller/orders'),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                    )),
                 const Divider(
                     height: 1, thickness: 1, color: kBorderColorTextField),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: _WorkStatCompact(
-                          value: _formatMoney('payment_received_value'),
-                          label: l10n.paymentReceivedValue,
-                          icon: Icons.fact_check_outlined,
-                          color: StatusColors.success,
-                          onTap: () => context.go('/seller/orders'),
-                        ),
+                _sectionTarget(
+                    _guideWorkPaidKey,
+                    l10n.guideSellerHomePaidUnpaidTitle,
+                    l10n.guideSellerHomePaidUnpaidDesc,
+                    radius: 0,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 4, vertical: 4),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: _WorkStatCompact(
+                              value: _formatMoney('payment_received_value'),
+                              label: l10n.paymentReceivedValue,
+                              icon: Icons.fact_check_outlined,
+                              color: StatusColors.success,
+                              onTap: () => context.go('/seller/orders'),
+                            ),
+                          ),
+                          Container(
+                            width: 1,
+                            height: 44,
+                            color: kBorderColorTextField,
+                          ),
+                          Expanded(
+                            child: _WorkStatCompact(
+                              value: _formatMoney('outstanding_value'),
+                              label: l10n.outstandingValue,
+                              icon: Icons.pending_actions_outlined,
+                              color: StatusColors.warning,
+                              onTap: () => context.go('/seller/orders'),
+                            ),
+                          ),
+                        ],
                       ),
-                      Container(
-                        width: 1,
-                        height: 44,
-                        color: kBorderColorTextField,
-                      ),
-                      Expanded(
-                        child: _WorkStatCompact(
-                          value: _formatMoney('outstanding_value'),
-                          label: l10n.outstandingValue,
-                          icon: Icons.pending_actions_outlined,
-                          color: StatusColors.warning,
-                          onTap: () => context.go('/seller/orders'),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                    )),
                 const Divider(
                     height: 1, thickness: 1, color: kBorderColorTextField),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: _WorkStatCompact(
-                          value: '${_ov('jobs_completed')}',
-                          label: l10n.jobsCompleted,
-                          icon: Icons.check_circle_outline,
-                          color: StatusColors.success,
-                          onTap: () =>
-                              context.go('/seller/orders?status=completed'),
-                        ),
+                _sectionTarget(
+                    _guideWorkJobsKey,
+                    l10n.guideSellerHomeJobsDoneTitle,
+                    l10n.guideSellerHomeJobsDoneDesc,
+                    radius: 0,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 4, vertical: 4),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: _WorkStatCompact(
+                              value: '${_ov('jobs_completed')}',
+                              label: l10n.jobsCompleted,
+                              icon: Icons.check_circle_outline,
+                              color: StatusColors.success,
+                              onTap: () =>
+                                  context.go('/seller/orders?status=completed'),
+                            ),
+                          ),
+                          Container(
+                            width: 1,
+                            height: 44,
+                            color: kBorderColorTextField,
+                          ),
+                          Expanded(
+                            child: _WorkStatCompact(
+                              value: '${_ov('active_contracts')}',
+                              label: l10n.activeContracts,
+                              icon: Icons.work_outline_rounded,
+                              color: kSecondaryColor,
+                              onTap: () =>
+                                  context.go('/seller/orders?status=active'),
+                            ),
+                          ),
+                        ],
                       ),
-                      Container(
-                        width: 1,
-                        height: 44,
-                        color: kBorderColorTextField,
-                      ),
-                      Expanded(
-                        child: _WorkStatCompact(
-                          value: '${_ov('active_contracts')}',
-                          label: l10n.activeContracts,
-                          icon: Icons.work_outline_rounded,
-                          color: kSecondaryColor,
-                          onTap: () =>
-                              context.go('/seller/orders?status=active'),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                    )),
               ],
             ),
           ),
@@ -642,6 +815,9 @@ class _SellerHomeScreenState extends State<SellerHomeScreen>
     final attentionCount = delivered + onsite;
 
     return _buildCard(
+      guideKey: _guideAttentionKey,
+      guideTitle: l10n.guideSellerHomeAttentionTitle,
+      guideDescription: l10n.guideSellerHomeAttentionDesc,
       title: l10n.needsAttention,
       dropdown: Text(
         l10n.attentionItems(attentionCount),
@@ -736,7 +912,6 @@ class _SellerHomeScreenState extends State<SellerHomeScreen>
     GlobalKey? guideKey,
     String? guideTitle,
     String? guideDescription,
-    bool guideAutoScroll = false,
   }) {
     final card = _buildCardBody(
       title: title,
@@ -751,7 +926,6 @@ class _SellerHomeScreenState extends State<SellerHomeScreen>
       scope: guideScope,
       title: guideTitle,
       description: guideDescription,
-      enableAutoScroll: guideAutoScroll,
       targetBorderRadius: BorderRadius.circular(16),
       child: card,
     );

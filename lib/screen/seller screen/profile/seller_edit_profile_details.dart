@@ -135,7 +135,7 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
       );
       return;
     }
-    final skillError = SellerSkillsValidation.validate(_skills);
+    final skillError = SellerSkillsValidation.validate(_skills, context.l10n);
     if (skillError != null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(skillError)));
       return;

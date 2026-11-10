@@ -7,6 +7,7 @@ import 'package:latlong2/latlong.dart';
 
 import 'constant.dart';
 import 'map_location_picker_screen.dart';
+import 'package:freelancer/core/guide/guide_anchor.dart';
 
 /// Opens the shared talent filter bottom sheet. Returns applied filters, or
 /// `null` if dismissed without Apply.
@@ -23,12 +24,11 @@ Future<TalentSellerFilters?> showTalentFilterSheet(
   var draftStanding = initial.standing;
   var draftMinRating = initial.minRating;
   var draftUseDistance = initial.maxDistanceKm != null;
-  var draftDistanceKm = (initial.maxDistanceKm ??
-          TalentSellerFilters.distanceDefaultKm)
-      .clamp(
-        TalentSellerFilters.distanceMinKm,
-        TalentSellerFilters.distanceMaxKm,
-      );
+  var draftDistanceKm =
+      (initial.maxDistanceKm ?? TalentSellerFilters.distanceDefaultKm).clamp(
+    TalentSellerFilters.distanceMinKm,
+    TalentSellerFilters.distanceMaxKm,
+  );
   var draftOrigin = origin;
 
   final applied = await showModalBottomSheet<bool>(
@@ -73,10 +73,9 @@ Future<TalentSellerFilters?> showTalentFilterSheet(
           }
 
           Future<void> pickLocation() async {
-            final LatLng? initialPos =
-                draftOrigin.hasCoordinates
-                    ? LatLng(draftOrigin.latitude!, draftOrigin.longitude!)
-                    : null;
+            final LatLng? initialPos = draftOrigin.hasCoordinates
+                ? LatLng(draftOrigin.latitude!, draftOrigin.longitude!)
+                : null;
             final result =
                 await Navigator.of(ctx).push<MapLocationPickerResult>(
               MaterialPageRoute(
@@ -447,39 +446,49 @@ class TalentFilterButton extends StatelessWidget {
     required this.filters,
     required this.onPressed,
     this.size = 48,
+    this.guideAnchor,
   });
+
+  /// Optional guide target around this widget; see [GuideAnchor].
+  final GuideAnchor? guideAnchor;
 
   final TalentSellerFilters filters;
   final VoidCallback onPressed;
   final double size;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      GuideAnchor.wrap(guideAnchor, _buildContent(context));
+
+  Widget _buildContent(BuildContext context) {
     final active = filters.hasActive;
-    return Material(
-      color: active ? kPrimaryColor.withValues(alpha: 0.12) : kDarkWhite,
-      borderRadius: BorderRadius.circular(12),
-      child: InkWell(
-        onTap: onPressed,
+    return Tooltip(
+      message: context.l10n.filterTalent,
+      child: Material(
+        color: active ? kPrimaryColor.withValues(alpha: 0.12) : kDarkWhite,
         borderRadius: BorderRadius.circular(12),
-        child: Container(
-          width: size,
-          height: size,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: active ? kPrimaryColor : kBorderColorTextField,
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            width: size,
+            height: size,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: active ? kPrimaryColor : kBorderColorTextField,
+              ),
             ),
-          ),
-          child: Badge(
-            isLabelVisible: active,
-            label: Text('${filters.activeCount}'),
-            backgroundColor: kPrimaryColor,
-            child: Icon(
-              Icons.tune_rounded,
-              color: active ? kPrimaryColor : kNeutralColor,
-              size: 22,
+            child: Badge(
+              isLabelVisible: active,
+              label: Text('${filters.activeCount}'),
+              backgroundColor: kPrimaryColor,
+              child: Icon(
+                Icons.tune_rounded,
+                color: active ? kPrimaryColor : kNeutralColor,
+                size: 22,
+              ),
             ),
           ),
         ),

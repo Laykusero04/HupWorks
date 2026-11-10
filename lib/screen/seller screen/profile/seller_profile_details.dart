@@ -151,7 +151,7 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
         elevation: 0,
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
-          'HupWorks',
+          l10n.myProfile,
           style: kTextStyle.copyWith(color: brand, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,

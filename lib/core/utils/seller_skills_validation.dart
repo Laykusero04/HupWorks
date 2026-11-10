@@ -1,4 +1,5 @@
 import 'package:freelancer/data/models/seller_skill_model.dart';
+import 'package:freelancer/l10n/app_localizations.dart';
 
 class SellerSkillsValidation {
   static const int maxFiveStar = 3;
@@ -7,7 +8,7 @@ class SellerSkillsValidation {
 
   /// Returns null when valid, otherwise an error message.
   /// Skills are optional — empty list is allowed.
-  static String? validate(List<SellerSkill> skills) {
+  static String? validate(List<SellerSkill> skills, AppLocalizations l10n) {
     final cleaned = skills
         .where((s) => s.name.trim().isNotEmpty)
         .map((s) => SellerSkill(name: s.name.trim(), stars: s.stars))
@@ -16,14 +17,14 @@ class SellerSkillsValidation {
     if (cleaned.isEmpty) return null;
 
     if (cleaned.length != skills.where((s) => s.name.trim().isNotEmpty).length) {
-      return 'All skills must have a name.';
+      return l10n.skillErrNameRequired;
     }
 
     final seen = <String>{};
     for (final skill in cleaned) {
       final key = skill.name.toLowerCase();
       if (seen.contains(key)) {
-        return 'Duplicate skill: ${skill.name}';
+        return l10n.skillErrDuplicate(skill.name);
       }
       seen.add(key);
     }
@@ -34,17 +35,17 @@ class SellerSkillsValidation {
     final invalid = cleaned.where((s) => s.stars < 1 || s.stars > 5).toList();
 
     if (invalid.isNotEmpty) {
-      return 'Each skill must be rated between 1 and 5 stars.';
+      return l10n.skillErrStarsRange;
     }
 
     if (five.length > maxFiveStar) {
-      return 'At most $maxFiveStar skills at 5 stars.';
+      return l10n.skillErrMaxFive(maxFiveStar);
     }
     if (four.length > maxFourStar) {
-      return 'At most $maxFourStar skills at 4 stars.';
+      return l10n.skillErrMaxFour(maxFourStar);
     }
     if (low.length > maxLowStar) {
-      return 'At most $maxLowStar skills at 1–3 stars.';
+      return l10n.skillErrMaxLow(maxLowStar);
     }
 
     return null;

@@ -168,7 +168,7 @@ class _ClientProfileState extends State<ClientProfile> {
                 ),
                 ProfileMenuListTile(
                   icon: Icons.bookmark_border,
-                  title: l10n.favourites,
+                  title: l10n.savedTalentList,
                   onTap: () => const ClientFavList().launch(context),
                 ),
                 ProfileMenuListTile(

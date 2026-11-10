@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'constant.dart';
+import 'package:freelancer/core/guide/guide_anchor.dart';
 
 /// Plain drawer / profile menu row.
 class ProfileMenuListTile extends StatelessWidget {
@@ -10,7 +11,11 @@ class ProfileMenuListTile extends StatelessWidget {
     required this.title,
     required this.onTap,
     this.subtitle,
+    this.guideAnchor,
   });
+
+  /// Optional guide target around this widget; see [GuideAnchor].
+  final GuideAnchor? guideAnchor;
 
   final IconData icon;
   final String title;
@@ -18,7 +23,10 @@ class ProfileMenuListTile extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      GuideAnchor.wrap(guideAnchor, _buildContent(context));
+
+  Widget _buildContent(BuildContext context) {
     return ListTile(
       dense: true,
       contentPadding: const EdgeInsets.symmetric(horizontal: 8),

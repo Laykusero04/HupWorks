@@ -7,6 +7,7 @@ import 'package:freelancer/services/attendance_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import 'constant.dart';
+import 'package:freelancer/core/guide/guide_anchor.dart';
 
 /// Compact on-site tools for client order / job screens (instructions + QR).
 class ClientSiteSetupPanel extends StatelessWidget {
@@ -22,7 +23,11 @@ class ClientSiteSetupPanel extends StatelessWidget {
     this.onOnboarding,
     this.jobPost,
     this.onJobLocationUpdated,
+    this.guideAnchor,
   });
+
+  /// Optional guide target around this widget; see [GuideAnchor].
+  final GuideAnchor? guideAnchor;
 
   static bool showOnboarding(VoidCallback? onOnboarding) => onOnboarding != null;
 
@@ -60,7 +65,10 @@ class ClientSiteSetupPanel extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      GuideAnchor.wrap(guideAnchor, _buildContent(context));
+
+  Widget _buildContent(BuildContext context) {
     final showInstructions = showOnboarding(onOnboarding);
     final showQrRow = showQr(jobPost);
     if (!showInstructions && !showQrRow) {

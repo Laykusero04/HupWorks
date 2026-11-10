@@ -8,6 +8,7 @@ import 'package:freelancer/services/attendance_service.dart';
 import 'package:go_router/go_router.dart';
 
 import '../widgets/constant.dart';
+import 'package:freelancer/core/guide/guide_anchor.dart';
 
 /// Freelancer attendance actions + today's punch cells.
 class AttendanceActionsCard extends StatefulWidget {
@@ -30,7 +31,20 @@ class AttendanceActionsCard extends StatefulWidget {
     this.statusLabel,
     this.onChanged,
     this.compact = false,
+    this.guideAnchor,
+    this.modeAnchor,
+    this.actionsAnchor,
+    this.todayAnchor,
   });
+
+  /// Optional guide target around this widget; see [GuideAnchor].
+  final GuideAnchor? guideAnchor;
+
+  /// Optional guide targets: header row (mode chip), the action buttons, and
+  /// today's punch cells.
+  final GuideAnchor? modeAnchor;
+  final GuideAnchor? actionsAnchor;
+  final GuideAnchor? todayAnchor;
 
   @override
   State<AttendanceActionsCard> createState() => _AttendanceActionsCardState();
@@ -92,7 +106,8 @@ class _AttendanceActionsCardState extends State<AttendanceActionsCard> {
                 ? '${l10n.attendancePunchTodaySummary(AttendanceFormat.punchLabel(result.punchType, l10n), AttendanceFormat.minutesLabel(result.minutesWorkedToday, l10n))} ${l10n.hoursSentForEmployerReview}'
                 : l10n.attendancePunchTodaySummary(
                     AttendanceFormat.punchLabel(result.punchType, l10n),
-                    AttendanceFormat.minutesLabel(result.minutesWorkedToday, l10n),
+                    AttendanceFormat.minutesLabel(
+                        result.minutesWorkedToday, l10n),
                   ),
           ),
         ),
@@ -197,7 +212,9 @@ class _AttendanceActionsCardState extends State<AttendanceActionsCard> {
       return _actionButton(
         label: done
             ? l10n.checkedIn
-            : (mode == AttendanceMode.qrOnce ? l10n.checkIn : l10n.scanAttendanceQr),
+            : (mode == AttendanceMode.qrOnce
+                ? l10n.checkIn
+                : l10n.scanAttendanceQr),
         color: done ? kLightNeutralColor : primary,
         icon: Icons.qr_code_scanner,
         onPressed: _busy || done ? null : _openScan,
@@ -231,7 +248,10 @@ class _AttendanceActionsCardState extends State<AttendanceActionsCard> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      GuideAnchor.wrap(widget.guideAnchor, _buildContent(context));
+
+  Widget _buildContent(BuildContext context) {
     final l10n = context.l10n;
     final primary = Theme.of(context).colorScheme.primary;
     final mode = AttendanceMode.normalize(widget.attendanceMode);
@@ -247,29 +267,32 @@ class _AttendanceActionsCardState extends State<AttendanceActionsCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Text(
-                l10n.attendance,
-                style: kTextStyle.copyWith(
-                  color: kNeutralColor,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 13,
-                ),
-              ),
-              const SizedBox(width: 8),
-              _statusChip(mode, l10n, primary),
-              const Spacer(),
-              if (widget.statusLabel != null)
+          GuideAnchor.wrap(
+            widget.modeAnchor,
+            Row(
+              children: [
                 Text(
-                  widget.statusLabel!,
+                  l10n.attendance,
                   style: kTextStyle.copyWith(
-                    color: kSubTitleColor,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
+                    color: kNeutralColor,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
                   ),
                 ),
-            ],
+                const SizedBox(width: 8),
+                _statusChip(mode, l10n, primary),
+                const Spacer(),
+                if (widget.statusLabel != null)
+                  Text(
+                    widget.statusLabel!,
+                    style: kTextStyle.copyWith(
+                      color: kSubTitleColor,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+              ],
+            ),
           ),
           if (!widget.compact) ...[
             const SizedBox(height: 4),
@@ -285,14 +308,20 @@ class _AttendanceActionsCardState extends State<AttendanceActionsCard> {
             ),
           ],
           const SizedBox(height: 10),
-          _buildActions(mode, l10n, primary),
+          GuideAnchor.wrap(
+            widget.actionsAnchor,
+            _buildActions(mode, l10n, primary),
+          ),
           if (AttendanceMode.isEnabled(mode)) ...[
             const SizedBox(height: 10),
-            AttendancePunchCells(
-              punches: _todayPunches,
-              isLoading: _loadingPunches,
-              showSellerName: false,
-              emptyMessage: l10n.noPunchesToday,
+            GuideAnchor.wrap(
+              widget.todayAnchor,
+              AttendancePunchCells(
+                punches: _todayPunches,
+                isLoading: _loadingPunches,
+                showSellerName: false,
+                emptyMessage: l10n.noPunchesToday,
+              ),
             ),
           ],
         ],

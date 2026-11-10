@@ -128,7 +128,7 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
         elevation: 0,
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
-          l10n.appTitle,
+          l10n.myProfile,
           style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,

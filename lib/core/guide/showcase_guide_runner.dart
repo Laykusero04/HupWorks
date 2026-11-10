@@ -95,38 +95,38 @@ class ShowcaseGuideRunner {
         final pad = MediaQueryData.fromView(View.of(ctx)).padding;
         final dir = Directionality.of(ctx);
         return FloatingActionWidget.directional(
-                textDirection: dir,
-                start: topPlacement ? null : 12,
-                end: topPlacement ? 12 : null,
-                top: topPlacement ? pad.top + 8 : null,
-                bottom: topPlacement ? null : pad.bottom + 16,
-                child: Material(
-                  color: Colors.white,
-                  shape: const StadiumBorder(),
-                  elevation: 2,
-                  child: Semantics(
-                    button: true,
-                    label: skipLabel,
-                    child: InkWell(
-                      customBorder: const StadiumBorder(),
-                      onTap: () {
-                        _view?.dismiss();
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 10),
-                        child: Text(
-                          skipLabel,
-                          style: const TextStyle(
-                            color: Colors.black87,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
+          textDirection: dir,
+          start: topPlacement ? null : 12,
+          end: topPlacement ? 12 : null,
+          top: topPlacement ? pad.top + 8 : null,
+          bottom: topPlacement ? null : pad.bottom + 16,
+          child: Material(
+            color: Colors.white,
+            shape: const StadiumBorder(),
+            elevation: 2,
+            child: Semantics(
+              button: true,
+              label: skipLabel,
+              child: InkWell(
+                customBorder: const StadiumBorder(),
+                onTap: () {
+                  _view?.dismiss();
+                },
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  child: Text(
+                    skipLabel,
+                    style: const TextStyle(
+                      color: Colors.black87,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
-              );
+              ),
+            ),
+          ),
+        );
       };
       view.startShowCase(live.map((s) => s.key).toList());
       return true;

@@ -28,8 +28,7 @@ class _HostState extends State<_Host> with GuideHost<_Host> {
   @override
   bool get guideLeadsChain => widget.leader;
   @override
-  bool get guideDataReady =>
-      widget.leader || GuideSession.instance.homeSettled;
+  bool get guideDataReady => widget.leader || GuideSession.instance.homeSettled;
   @override
   String? get guideUid => 'u1';
   @override

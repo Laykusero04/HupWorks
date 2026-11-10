@@ -179,240 +179,299 @@ class _SellerHomeScreenState extends State<SellerHomeScreen>
                   },
                 )
               : RubikRefreshIndicator(
-              onRefresh: _loadData,
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(
-                    parent: BouncingScrollPhysics()),
-                padding: const EdgeInsets.fromLTRB(15, 14, 15, 28),
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: _kSellerHomeMaxWidth),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Showcase(
-                          key: _guideBannerKey,
-                          scope: guideScope,
-                          title: l10n.guideSellerHomeBannerTitle,
-                          description: l10n.guideSellerHomeBannerDesc,
-                          targetBorderRadius: BorderRadius.circular(18),
-                          child: GestureDetector(
-                          onTap: () => context.go(AppRoutes.sellerFindJobs),
-                          child: Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(18),
-                              gradient: const LinearGradient(
-                                begin: Alignment.centerLeft,
-                                end: Alignment.centerRight,
-                                colors: kSellerShellGradient,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: kSecondaryColor.withOpacity(0.28),
-                                  blurRadius: 14,
-                                  offset: const Offset(0, 8),
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(10),
+                  onRefresh: _loadData,
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(
+                        parent: BouncingScrollPhysics()),
+                    padding: const EdgeInsets.fromLTRB(15, 14, 15, 28),
+                    child: Align(
+                      alignment: Alignment.topCenter,
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(
+                            maxWidth: _kSellerHomeMaxWidth),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Showcase(
+                              key: _guideBannerKey,
+                              scope: guideScope,
+                              title: l10n.guideSellerHomeBannerTitle,
+                              description: l10n.guideSellerHomeBannerDesc,
+                              targetBorderRadius: BorderRadius.circular(18),
+                              child: GestureDetector(
+                                onTap: () =>
+                                    context.go(AppRoutes.sellerFindJobs),
+                                child: Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 14, vertical: 14),
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.2),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: const Icon(Icons.rocket_launch_rounded, color: Colors.white, size: 22),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        l10n.findYourNextJob,
-                                        style: kTextStyle.copyWith(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w800,
-                                          fontSize: 15,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        l10n.findYourNextJobSubtitle,
-                                        style: kTextStyle.copyWith(
-                                          color: Colors.white.withOpacity(0.9),
-                                          fontSize: 11.5,
-                                          height: 1.25,
-                                        ),
+                                    borderRadius: BorderRadius.circular(18),
+                                    gradient: const LinearGradient(
+                                      begin: Alignment.centerLeft,
+                                      end: Alignment.centerRight,
+                                      colors: kSellerShellGradient,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color:
+                                            kSecondaryColor.withOpacity(0.28),
+                                        blurRadius: 14,
+                                        offset: const Offset(0, 8),
                                       ),
                                     ],
                                   ),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white.withOpacity(0.2),
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                        child: const Icon(
+                                            Icons.rocket_launch_rounded,
+                                            color: Colors.white,
+                                            size: 22),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              l10n.findYourNextJob,
+                                              style: kTextStyle.copyWith(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w800,
+                                                fontSize: 15,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 2),
+                                            Text(
+                                              l10n.findYourNextJobSubtitle,
+                                              style: kTextStyle.copyWith(
+                                                color: Colors.white
+                                                    .withOpacity(0.9),
+                                                fontSize: 11.5,
+                                                height: 1.25,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Icon(Icons.chevron_right_rounded,
+                                          color: Colors.white.withOpacity(0.95),
+                                          size: 26),
+                                    ],
+                                  ),
                                 ),
-                                Icon(Icons.chevron_right_rounded, color: Colors.white.withOpacity(0.95), size: 26),
-                              ],
+                              ),
                             ),
-                          ),
-                        ),
-                        ),
-                        const SizedBox(height: 16.0),
-
-                        _buildQuickActions(context),
-
-                        const SizedBox(height: 16.0),
-                        _buildWorkOverviewCard(context),
-                        if (_buildNeedsAttention(context) != null) ...[
-                          const SizedBox(height: 12.0),
-                          _buildNeedsAttention(context)!,
-                        ],
-                        const SizedBox(height: 20.0),
-
-                        GestureDetector(
-                          onTap: () async {
-                            await context.push(AppRoutes.sellerApplications);
-                            if (mounted) _loadData();
-                          },
-                          child: Row(
-                            children: [
-                              Text(
-                                l10n.myApplications,
-                                style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
-                              ),
-                              const Spacer(),
-                              Text(
-                                l10n.viewAll,
-                                style: kTextStyle.copyWith(
-                                  color: kPrimaryColor,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 13,
-                                ),
-                              ),
-                              const Icon(Icons.chevron_right_rounded, size: 20, color: kPrimaryColor),
+                            const SizedBox(height: 16.0),
+                            _buildQuickActions(context),
+                            const SizedBox(height: 16.0),
+                            _buildWorkOverviewCard(context),
+                            if (_buildNeedsAttention(context) != null) ...[
+                              const SizedBox(height: 12.0),
+                              _buildNeedsAttention(context)!,
                             ],
-                          ),
-                        ),
-                        const SizedBox(height: 15.0),
-                        _myApplications.isEmpty
-                            ? Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-                            decoration: BoxDecoration(
-                              color: kDarkWhite,
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(color: kBorderColorTextField),
-                            ),
-                            child: Column(
-                              children: [
-                                Icon(Icons.outgoing_mail, size: 44, color: kLightNeutralColor.withOpacity(0.85)),
-                                const SizedBox(height: 12),
-                                Text(
-                                  l10n.noApplicationsYet,
-                                  textAlign: TextAlign.center,
-                                  style: kTextStyle.copyWith(
-                                    color: kNeutralColor,
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 15,
+                            const SizedBox(height: 20.0),
+                            GestureDetector(
+                              onTap: () async {
+                                await context
+                                    .push(AppRoutes.sellerApplications);
+                                if (mounted) _loadData();
+                              },
+                              child: Row(
+                                children: [
+                                  Text(
+                                    l10n.myApplications,
+                                    style: kTextStyle.copyWith(
+                                        color: kNeutralColor,
+                                        fontWeight: FontWeight.bold),
                                   ),
-                                ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  l10n.noApplicationsYetHint,
-                                  textAlign: TextAlign.center,
-                                  style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12.5, height: 1.35),
-                                ),
-                                const SizedBox(height: 16),
-                                FilledButton(
-                                  style: FilledButton.styleFrom(
-                                    backgroundColor: kPrimaryColor,
-                                    foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-                                  ),
-                                  onPressed: () => context.go(AppRoutes.sellerFindJobs),
-                                  child: Text(l10n.browseJobs, style: kTextStyle.copyWith(fontWeight: FontWeight.w700)),
-                                ),
-                              ],
-                            ),
-                          )
-                            : Column(
-                                children: _myApplications.map((app) {
-                              final jobPost = app['job_posts'] as Map<String, dynamic>?;
-                              final status = (app['status'] as String?) ?? 'pending';
-                              final (statusFg, statusBg) =
-                                  StatusColors.application(status);
-                              final statusLabel =
-                                  L10nLabels.applicationStatus(l10n, status);
-
-                              return Padding(
-                                padding: const EdgeInsets.only(bottom: 10.0),
-                                child: Material(
-                                  color: Colors.transparent,
-                                  child: InkWell(
-                                    borderRadius: BorderRadius.circular(12),
-                                    onTap: () async {
-                                      final id = jobPost?['id'] as String?;
-                                      if (id == null) return;
-                                      await BuyerRequestDetails(jobPostId: id)
-                                          .launch(context);
-                                      if (mounted) _loadData();
-                                    },
-                                    child: Ink(
-                                      padding: const EdgeInsets.all(12.0),
-                                      decoration: BoxDecoration(
-                                        color: kWhite,
-                                        borderRadius: BorderRadius.circular(12.0),
-                                        border: Border.all(color: kBorderColorTextField),
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Expanded(
-                                                child: Text(
-                                                  jobPost?['title'] ?? l10n.untitledJob,
-                                                  maxLines: 1,
-                                                  overflow: TextOverflow.ellipsis,
-                                                  style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
-                                                ),
-                                              ),
-                                              const SizedBox(width: 8),
-                                              Container(
-                                                padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 8),
-                                                decoration: BoxDecoration(
-                                                  borderRadius: BorderRadius.circular(20),
-                                                  color: statusBg,
-                                                ),
-                                                child: Text(
-                                                  statusLabel,
-                                                  style: kTextStyle.copyWith(color: statusFg, fontSize: 12),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          const SizedBox(height: 6),
-                                          Text(
-                                            '${L10nLabels.offerAmountShort(l10n, app['price'], app['price_basis'])} • ${JobOfferDelivery.formatShort(app['delivery_time'], app['delivery_time_unit'])}',
-                                            style: kTextStyle.copyWith(color: kSubTitleColor),
-                                          ),
-                                        ],
-                                      ),
+                                  const Spacer(),
+                                  Text(
+                                    l10n.viewAll,
+                                    style: kTextStyle.copyWith(
+                                      color: kPrimaryColor,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 13,
                                     ),
                                   ),
-                                ),
-                              );
-                                }).toList(),
+                                  const Icon(Icons.chevron_right_rounded,
+                                      size: 20, color: kPrimaryColor),
+                                ],
                               ),
-                        const SizedBox(height: 28),
-                      ],
+                            ),
+                            const SizedBox(height: 15.0),
+                            _myApplications.isEmpty
+                                ? Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16, vertical: 24),
+                                    decoration: BoxDecoration(
+                                      color: kDarkWhite,
+                                      borderRadius: BorderRadius.circular(16),
+                                      border: Border.all(
+                                          color: kBorderColorTextField),
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        Icon(Icons.outgoing_mail,
+                                            size: 44,
+                                            color: kLightNeutralColor
+                                                .withOpacity(0.85)),
+                                        const SizedBox(height: 12),
+                                        Text(
+                                          l10n.noApplicationsYet,
+                                          textAlign: TextAlign.center,
+                                          style: kTextStyle.copyWith(
+                                            color: kNeutralColor,
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 15,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 6),
+                                        Text(
+                                          l10n.noApplicationsYetHint,
+                                          textAlign: TextAlign.center,
+                                          style: kTextStyle.copyWith(
+                                              color: kLightNeutralColor,
+                                              fontSize: 12.5,
+                                              height: 1.35),
+                                        ),
+                                        const SizedBox(height: 16),
+                                        FilledButton(
+                                          style: FilledButton.styleFrom(
+                                            backgroundColor: kPrimaryColor,
+                                            foregroundColor: Colors.white,
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 22, vertical: 12),
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(24)),
+                                          ),
+                                          onPressed: () => context
+                                              .go(AppRoutes.sellerFindJobs),
+                                          child: Text(l10n.browseJobs,
+                                              style: kTextStyle.copyWith(
+                                                  fontWeight: FontWeight.w700)),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                : Column(
+                                    children: _myApplications.map((app) {
+                                      final jobPost = app['job_posts']
+                                          as Map<String, dynamic>?;
+                                      final status =
+                                          (app['status'] as String?) ??
+                                              'pending';
+                                      final (statusFg, statusBg) =
+                                          StatusColors.application(status);
+                                      final statusLabel =
+                                          L10nLabels.applicationStatus(
+                                              l10n, status);
+
+                                      return Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 10.0),
+                                        child: Material(
+                                          color: Colors.transparent,
+                                          child: InkWell(
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                            onTap: () async {
+                                              final id =
+                                                  jobPost?['id'] as String?;
+                                              if (id == null) return;
+                                              await BuyerRequestDetails(
+                                                      jobPostId: id)
+                                                  .launch(context);
+                                              if (mounted) _loadData();
+                                            },
+                                            child: Ink(
+                                              padding:
+                                                  const EdgeInsets.all(12.0),
+                                              decoration: BoxDecoration(
+                                                color: kWhite,
+                                                borderRadius:
+                                                    BorderRadius.circular(12.0),
+                                                border: Border.all(
+                                                    color:
+                                                        kBorderColorTextField),
+                                              ),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      Expanded(
+                                                        child: Text(
+                                                          jobPost?['title'] ??
+                                                              l10n.untitledJob,
+                                                          maxLines: 1,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          style: kTextStyle.copyWith(
+                                                              color:
+                                                                  kNeutralColor,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                        ),
+                                                      ),
+                                                      const SizedBox(width: 8),
+                                                      Container(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                                vertical: 3,
+                                                                horizontal: 8),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(20),
+                                                          color: statusBg,
+                                                        ),
+                                                        child: Text(
+                                                          statusLabel,
+                                                          style: kTextStyle
+                                                              .copyWith(
+                                                                  color:
+                                                                      statusFg,
+                                                                  fontSize: 12),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  const SizedBox(height: 6),
+                                                  Text(
+                                                    '${L10nLabels.offerAmountShort(l10n, app['price'], app['price_basis'])} • ${JobOfferDelivery.formatShort(app['delivery_time'], app['delivery_time_unit'])}',
+                                                    style: kTextStyle.copyWith(
+                                                        color: kSubTitleColor),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ),
+                            const SizedBox(height: 28),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
     );
   }
 
@@ -485,7 +544,8 @@ class _SellerHomeScreenState extends State<SellerHomeScreen>
                           },
                         ),
                       ),
-                      VerticalDivider(width: 1, thickness: 1, color: kBorderColorTextField),
+                      VerticalDivider(
+                          width: 1, thickness: 1, color: kBorderColorTextField),
                       Expanded(
                         child: _WorkStatPrimary(
                           value: _formatMoney('agreed_contract_value'),
@@ -497,9 +557,11 @@ class _SellerHomeScreenState extends State<SellerHomeScreen>
                     ],
                   ),
                 ),
-                const Divider(height: 1, thickness: 1, color: kBorderColorTextField),
+                const Divider(
+                    height: 1, thickness: 1, color: kBorderColorTextField),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
                   child: Row(
                     children: [
                       Expanded(
@@ -528,9 +590,11 @@ class _SellerHomeScreenState extends State<SellerHomeScreen>
                     ],
                   ),
                 ),
-                const Divider(height: 1, thickness: 1, color: kBorderColorTextField),
+                const Divider(
+                    height: 1, thickness: 1, color: kBorderColorTextField),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
                   child: Row(
                     children: [
                       Expanded(
@@ -554,7 +618,8 @@ class _SellerHomeScreenState extends State<SellerHomeScreen>
                           label: l10n.activeContracts,
                           icon: Icons.work_outline_rounded,
                           color: kSecondaryColor,
-                          onTap: () => context.go('/seller/orders?status=active'),
+                          onTap: () =>
+                              context.go('/seller/orders?status=active'),
                         ),
                       ),
                     ],
@@ -701,7 +766,9 @@ class _SellerHomeScreenState extends State<SellerHomeScreen>
   }) {
     final header = Row(
       children: [
-        Text(title, style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)),
+        Text(title,
+            style: kTextStyle.copyWith(
+                color: kNeutralColor, fontWeight: FontWeight.bold)),
         const Spacer(),
         dropdown,
       ],
@@ -712,7 +779,13 @@ class _SellerHomeScreenState extends State<SellerHomeScreen>
         color: kWhite,
         borderRadius: BorderRadius.circular(16.0),
         border: Border.all(color: kBorderColorTextField),
-        boxShadow: const [BoxShadow(color: kDarkWhite, blurRadius: 5.0, spreadRadius: 2.0, offset: Offset(0, 5))],
+        boxShadow: const [
+          BoxShadow(
+              color: kDarkWhite,
+              blurRadius: 5.0,
+              spreadRadius: 2.0,
+              offset: Offset(0, 5))
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1037,7 +1110,8 @@ class _AttentionRow extends StatelessWidget {
                   ),
                 ),
               ),
-              const Icon(Icons.chevron_right, color: Color(0xFFF59E0B), size: 20),
+              const Icon(Icons.chevron_right,
+                  color: Color(0xFFF59E0B), size: 20),
             ],
           ),
         ),

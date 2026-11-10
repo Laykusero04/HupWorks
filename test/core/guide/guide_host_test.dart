@@ -122,7 +122,8 @@ void main() {
     expect(await _seen(), false);
   });
 
-  testWidgets('replay signal re-shows a resolved guide when visible', (t) async {
+  testWidgets('replay signal re-shows a resolved guide when visible',
+      (t) async {
     await _pump(t, const _Screen());
     await t.tap(find.text('Skip'));
     await t.pump(const Duration(milliseconds: 600));

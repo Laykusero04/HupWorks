@@ -210,7 +210,6 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
     return colors[i % colors.length];
   }
 
-
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -289,72 +288,74 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
         description: l10n.guideClientHomeNudgeDesc,
         targetBorderRadius: BorderRadius.circular(16),
         child: Material(
-        color: kWhite,
-        borderRadius: BorderRadius.circular(16),
-        child: InkWell(
+          color: kWhite,
           borderRadius: BorderRadius.circular(16),
-          onTap: _openCompleteProfile,
-          child: Container(
-            padding: const EdgeInsets.fromLTRB(14, 12, 8, 12),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: kPrimaryColor.withValues(alpha: 0.35)),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: kPrimaryColor.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(12),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(16),
+            onTap: _openCompleteProfile,
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(14, 12, 8, 12),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                border:
+                    Border.all(color: kPrimaryColor.withValues(alpha: 0.35)),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: kPrimaryColor.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.person_outline_rounded,
+                        color: kPrimaryColor, size: 22),
                   ),
-                  child: const Icon(Icons.person_outline_rounded,
-                      color: kPrimaryColor, size: 22),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n.completeYourProfileTitle,
-                        style: kTextStyle.copyWith(
-                          color: kNeutralColor,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 14,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.completeYourProfileTitle,
+                          style: kTextStyle.copyWith(
+                            color: kNeutralColor,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        l10n.completeYourProfileBody,
-                        style: kTextStyle.copyWith(
-                          color: kSubTitleColor,
-                          fontSize: 12.5,
-                          height: 1.35,
+                        const SizedBox(height: 4),
+                        Text(
+                          l10n.completeYourProfileBody,
+                          style: kTextStyle.copyWith(
+                            color: kSubTitleColor,
+                            fontSize: 12.5,
+                            height: 1.35,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        l10n.completeProfileAction,
-                        style: kTextStyle.copyWith(
-                          color: kPrimaryColor,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 13,
+                        const SizedBox(height: 8),
+                        Text(
+                          l10n.completeProfileAction,
+                          style: kTextStyle.copyWith(
+                            color: kPrimaryColor,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 13,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                IconButton(
-                  tooltip: l10n.later,
-                  onPressed: _dismissProfileNudge,
-                  icon: const Icon(Icons.close, size: 18, color: kLightNeutralColor),
-                ),
-              ],
+                  IconButton(
+                    tooltip: l10n.later,
+                    onPressed: _dismissProfileNudge,
+                    icon: const Icon(Icons.close,
+                        size: 18, color: kLightNeutralColor),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
         ),
       ),
     );
@@ -370,39 +371,41 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
         description: context.l10n.guideClientHomeSearchDesc,
         targetBorderRadius: BorderRadius.circular(12),
         child: GestureDetector(
-        onTap: () {
-          showSearch(
-            context: context,
-            delegate: CustomSearchDelegate(l10nContext: context),
-          );
-        },
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-          decoration: BoxDecoration(
-            color: kWhite,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: kBorderColorTextField),
-          ),
-          child: Row(
-            children: [
-              const Icon(Icons.search, color: kLightNeutralColor, size: 22),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  context.l10n.searchHint,
-                  style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 14),
+          onTap: () {
+            showSearch(
+              context: context,
+              delegate: CustomSearchDelegate(l10nContext: context),
+            );
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            decoration: BoxDecoration(
+              color: kWhite,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: kBorderColorTextField),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.search, color: kLightNeutralColor, size: 22),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    context.l10n.searchHint,
+                    style: kTextStyle.copyWith(
+                        color: kLightNeutralColor, fontSize: 14),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
         ),
       ),
     );
   }
 
   /// Wraps [child] as a guide target when [key] is set, else returns it as is.
-  Widget _guideWrap(GlobalKey? key, String title, String description, Widget child) {
+  Widget _guideWrap(
+      GlobalKey? key, String title, String description, Widget child) {
     if (key == null) return child;
     return Showcase(
       key: key,
@@ -473,37 +476,37 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
                     l10n.guideClientHomePostJobTitle,
                     l10n.guideClientHomePostJobDesc,
                     InkWell(
-                    borderRadius: BorderRadius.circular(14),
-                    onTap: a.onTap,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      child: Column(
-                        children: [
-                          Container(
-                            height: 46,
-                            width: 46,
-                            decoration: BoxDecoration(
-                              color: a.color.withOpacity(0.12),
-                              borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(14),
+                      onTap: a.onTap,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Column(
+                          children: [
+                            Container(
+                              height: 46,
+                              width: 46,
+                              decoration: BoxDecoration(
+                                color: a.color.withOpacity(0.12),
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              child: Icon(a.icon, color: a.color, size: 22),
                             ),
-                            child: Icon(a.icon, color: a.color, size: 22),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            a.label,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.center,
-                            style: kTextStyle.copyWith(
-                              fontSize: 11.5,
-                              fontWeight: FontWeight.w600,
-                              color: kNeutralColor,
+                            const SizedBox(height: 6),
+                            Text(
+                              a.label,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                              style: kTextStyle.copyWith(
+                                fontSize: 11.5,
+                                fontWeight: FontWeight.w600,
+                                color: kNeutralColor,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
                   ),
                 ),
               )
@@ -693,9 +696,8 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
               height: 6,
               width: selected ? 22 : 6,
               decoration: BoxDecoration(
-                color: selected
-                    ? kPrimaryColor
-                    : kPrimaryColor.withOpacity(0.25),
+                color:
+                    selected ? kPrimaryColor : kPrimaryColor.withOpacity(0.25),
                 borderRadius: BorderRadius.circular(6),
               ),
             );
@@ -787,8 +789,8 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
                   child: Center(
                     child: LayoutBuilder(
                       builder: (context, constraints) {
-                        final size = constraints.biggest.shortestSide
-                            .clamp(40.0, 56.0);
+                        final size =
+                            constraints.biggest.shortestSide.clamp(40.0, 56.0);
                         return CategoryVisual(
                           iconKey: cat['icon'] as String?,
                           tint: _categoryTint(i),
@@ -879,8 +881,8 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
                   if (mounted) _loadData();
                 },
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
                     color: kPrimaryColor,
                     borderRadius: BorderRadius.circular(20),
@@ -936,7 +938,9 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
                       width: 4,
                       height: 56,
                       decoration: BoxDecoration(
-                        color: isOpen ? StatusColors.success : StatusColors.neutral,
+                        color: isOpen
+                            ? StatusColors.success
+                            : StatusColors.neutral,
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
@@ -964,7 +968,9 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
                               ),
                               const SizedBox(width: 6),
                               _miniChip(
-                                isOpen ? context.l10n.open : context.l10n.closed,
+                                isOpen
+                                    ? context.l10n.open
+                                    : context.l10n.closed,
                                 jobStatusFg,
                               ),
                               const SizedBox(width: 6),
@@ -1050,8 +1056,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
         itemBuilder: (_, i) {
           final seller = _topSellers[i];
           final profileImageUrl = seller['profile_image_url'] as String?;
-          final ratingValue =
-              double.tryParse('${seller['rating'] ?? 0}') ?? 0;
+          final ratingValue = double.tryParse('${seller['rating'] ?? 0}') ?? 0;
           final reviewCount = (seller['review_count'] as num?)?.toInt() ?? 0;
           final isVerified =
               VerificationService.statusFromProfile(seller) == 'verified';
@@ -1215,7 +1220,9 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
     Map<String, dynamic>? row;
     if (sp is Map<String, dynamic>) {
       row = sp;
-    } else if (sp is List && sp.isNotEmpty && sp.first is Map<String, dynamic>) {
+    } else if (sp is List &&
+        sp.isNotEmpty &&
+        sp.first is Map<String, dynamic>) {
       row = sp.first as Map<String, dynamic>;
     }
     final jobTitle = (row?['job_title'] as String?)?.trim();

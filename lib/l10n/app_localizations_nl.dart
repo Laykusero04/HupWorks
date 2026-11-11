@@ -4833,4 +4833,623 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get guideSetupSaveDesc =>
       'Rondt de set-up af en opent de app. Eerst heb je de selfie nodig.';
+
+  @override
+  String get guideQrDispCodeTitle => 'QR-code van de locatie';
+
+  @override
+  String get guideQrDispCodeDesc =>
+      'Freelancers scannen deze code op locatie om in of uit te klokken. Het registreert alleen aanwezigheid.';
+
+  @override
+  String get guideQrDispShareTitle => 'Delen of printen';
+
+  @override
+  String get guideQrDispShareDesc =>
+      'Stuurt een posterafbeelding om te printen en op te hangen op locatie.';
+
+  @override
+  String get guideQrDispRegenTitle => 'QR opnieuw maken';
+
+  @override
+  String get guideQrDispRegenDesc =>
+      'Maakt een nieuwe code. De oude geprinte code werkt niet meer; print en hang de nieuwe op.';
+
+  @override
+  String get guideEmpVerifScoreTitle => 'Vertrouwensscore';
+
+  @override
+  String get guideEmpVerifScoreDesc =>
+      'Verificatie is optioneel. Zodra een beheerder je Selfie met ID accepteert, krijg je punten en een Geverifieerd-badge.';
+
+  @override
+  String get guideEmpVerifHistoryTitle => 'Aannamegeschiedenis';
+
+  @override
+  String get guideEmpVerifHistoryDesc =>
+      'Dit groeit naarmate je opdrachten afrondt en als betaald markeert.';
+
+  @override
+  String get guideEmpVerifPathTitle => 'Kies een route';
+
+  @override
+  String get guideEmpVerifPathDesc =>
+      'Kies Persoonlijk ID of Bedrijf. Bij Bedrijf vragen we ook bedrijfsgegevens.';
+
+  @override
+  String get guideEmpVerifUploadPersonalTitle => 'Selfie met ID';
+
+  @override
+  String get guideEmpVerifUploadPersonalDesc =>
+      'Houd je ID naast je gezicht en maak een duidelijke foto. Een beheerder bekijkt die later.';
+
+  @override
+  String get guideEmpVerifUploadCompanyTitle => 'Bedrijfsdocument';
+
+  @override
+  String get guideEmpVerifUploadCompanyDesc =>
+      'Voeg een duidelijke foto van een bedrijfsdocument toe. Een beheerder bekijkt die later.';
+
+  @override
+  String get guideEmpVerifSubmitTitle => 'Indienen ter controle';
+
+  @override
+  String get guideEmpVerifSubmitDesc =>
+      'Blijft grijs tot je een foto kiest. Bijwerken stuurt het opnieuw ter controle.';
+
+  @override
+  String get guideOnbEditBoxesTitle => 'Instructievakken';
+
+  @override
+  String get guideOnbEditBoxesDesc =>
+      'Vul in waar je heen moet, wanneer je er moet zijn en wie je contacteert.';
+
+  @override
+  String get guideOnbEditDraftTitle => 'Concept opslaan';
+
+  @override
+  String get guideOnbEditDraftDesc =>
+      'Bewaart je notities hier. De freelancer krijgt nog niets te zien.';
+
+  @override
+  String get guideOnbEditPublishTitle => 'Publiceren voor freelancer';
+
+  @override
+  String get guideOnbEditPublishDesc =>
+      'Stuurt deze instructies naar de freelancer die je hebt ingehuurd. Die bevestigt dat ze zijn gelezen.';
+
+  @override
+  String get guideChatRelatedTitle => 'Gerelateerd werk';
+
+  @override
+  String get guideChatRelatedDesc =>
+      'Bekijk de jobs en contracten die je met deze persoon deelt.';
+
+  @override
+  String get guideChatMenuTitle => 'Meer opties';
+
+  @override
+  String get guideChatMenuDesc =>
+      'Bekijk het profiel, blokkeer of rapporteer deze persoon.';
+
+  @override
+  String get guideChatWriteTitle => 'Schrijf een bericht';
+
+  @override
+  String get guideChatWriteDesc => 'Typ hier en tik op verzenden.';
+
+  @override
+  String get guideChatSectionOffers => 'Aanbiedingen';
+
+  @override
+  String get guideChatOfferCardTitle => 'Prijs van sollicitatie';
+
+  @override
+  String get guideChatOfferCardClientDesc =>
+      'Wat de freelancer voorstelde: prijs, duur en bericht.';
+
+  @override
+  String get guideChatOfferCardSellerDesc =>
+      'Jouw prijs, duur en bericht, zoals de klant ze ziet.';
+
+  @override
+  String get guideChatOfferActionsTitle => 'Afwijzen, tegenbod of inhuren';
+
+  @override
+  String get guideChatOfferActionsDesc =>
+      'Inhuren accepteert deze prijs. Tegenbod stelt een andere prijs voor. Afwijzen wijst af. Alleen zichtbaar bij in behandeling.';
+
+  @override
+  String get guideChatOfferStatusTitle => 'Status van aanbieding';
+
+  @override
+  String get guideChatOfferStatusDesc =>
+      'In behandeling, geaccepteerd of afgewezen. De klant beslist.';
+
+  @override
+  String get guideAttHubScanTitle => 'QR scannen';
+
+  @override
+  String get guideAttHubScanDesc =>
+      'Scan op de werklocatie de QR die de opdrachtgever toont om in te klokken.';
+
+  @override
+  String get guideAttHubJobTitle => 'Je klus op locatie';
+
+  @override
+  String get guideAttHubJobDesc =>
+      'Klok hier in en uit. De uren gaan ter controle naar de opdrachtgever.';
+
+  @override
+  String get guideAttHubContractTitle => 'Contract openen';
+
+  @override
+  String get guideAttHubContractDesc =>
+      'Bekijk het volledige contract, de betaling en berichten.';
+
+  @override
+  String get guideAttHubSectionClocking => 'Inklokken';
+
+  @override
+  String get guideAttHubModeTitle => 'Zo werkt deze klus';
+
+  @override
+  String get guideAttHubModeDesc =>
+      'Het label toont hoe tijd wordt bijgehouden: QR-scan of in- en uitklokken.';
+
+  @override
+  String get guideAttHubActionsTitle => 'Inchecken';
+
+  @override
+  String get guideAttHubActionsDesc =>
+      'Scan of tik hier als je begint. Klok uit als je klaar bent; de uren gaan ter controle weg.';
+
+  @override
+  String get guideAttHubTodayTitle => 'Vandaag';
+
+  @override
+  String get guideAttHubTodayDesc =>
+      'Je in- en uitkloktijden van vandaag verschijnen hier.';
+
+  @override
+  String get guideAttScanFrameTitle => 'Scan de QR';
+
+  @override
+  String get guideAttScanFrameDesc =>
+      'Houd je telefoon stil zodat de QR in beeld past. Hij scant vanzelf.';
+
+  @override
+  String get guideAttScanListTitle => 'Lijst nodig?';
+
+  @override
+  String get guideAttScanListDesc =>
+      'Niet bij de juiste klus? Open hier je klussen op locatie.';
+
+  @override
+  String get guideAttConfirmJobTitle => 'Controleer de klus';
+
+  @override
+  String get guideAttConfirmJobDesc =>
+      'Controleer of dit de juiste klus en locatie is voordat je bevestigt.';
+
+  @override
+  String get guideAttConfirmTypeTitle => 'In of uit';
+
+  @override
+  String get guideAttConfirmTypeDesc =>
+      'Kies Inklokken als je begint, Uitklokken als je klaar bent. We kiezen alvast de meest waarschijnlijke.';
+
+  @override
+  String get guideAttConfirmOnceTitle => 'Eén scan per dag';
+
+  @override
+  String get guideAttConfirmOnceDesc =>
+      'Voor deze klus scan je één keer per dag in. Geen scan om uit te klokken.';
+
+  @override
+  String get guideAttConfirmLocationTitle => 'Locatiecontrole';
+
+  @override
+  String get guideAttConfirmLocationDesc =>
+      'We gebruiken je telefoonlocatie om te bevestigen dat je op locatie bent. Sta locatie toe als erom gevraagd wordt.';
+
+  @override
+  String get guideAttConfirmButtonTitle => 'Bevestigen';
+
+  @override
+  String get guideAttConfirmButtonDesc =>
+      'Legt je tijd vast. De uren gaan ter controle naar de opdrachtgever.';
+
+  @override
+  String get guideContractsFilterTitle => 'Filter op status';
+
+  @override
+  String get guideContractsFilterDesc =>
+      'Beperk de lijst tot actieve, opgeleverde of voltooide overeenkomsten.';
+
+  @override
+  String get guideContractsStatusTitle => 'Status';
+
+  @override
+  String get guideContractsStatusDesc =>
+      'Kleur en label tonen de fase van de overeenkomst.';
+
+  @override
+  String get guideContractsOpenTitle => 'Open een overeenkomst';
+
+  @override
+  String get guideContractsOpenDesc =>
+      'Tik om oplevering, uren en betaling te zien.';
+
+  @override
+  String get guideMyJobsFilterTitle => 'Filter jobs';
+
+  @override
+  String get guideMyJobsFilterDesc =>
+      'Toon alleen klus-, voltijd- of deeltijdjobs.';
+
+  @override
+  String get guideMyJobsCardTitle => 'Je jobpost';
+
+  @override
+  String get guideMyJobsCardDesc =>
+      'Tik op een job om aanmelders te bekijken en in te huren.';
+
+  @override
+  String get guideMyJobsPostTitle => 'Job plaatsen';
+
+  @override
+  String get guideMyJobsPostDesc =>
+      'Tik op + om een nieuwe jobpost te starten.';
+
+  @override
+  String get guideApplicationsFilterTitle => 'Filter aanmeldingen';
+
+  @override
+  String get guideApplicationsFilterDesc =>
+      'Opent op In afwachting. Kies Geaccepteerd, Afgewezen of Alles voor de rest.';
+
+  @override
+  String get guideApplicationsApplicantTitle => 'Aanmelder';
+
+  @override
+  String get guideApplicationsApplicantDesc =>
+      'Tik op de naam voor het profiel of op het chatpictogram voor een bericht.';
+
+  @override
+  String get guideApplicationsJobTitle => 'De job';
+
+  @override
+  String get guideApplicationsJobDesc =>
+      'Tik om de job en alle aanmelders te openen.';
+
+  @override
+  String get guideApplicationsHireTitle => 'Inhuren of afwijzen';
+
+  @override
+  String get guideApplicationsHireDesc =>
+      'Inhuren start meteen een overeenkomst. Afwijzen wijst de aanmelding af.';
+
+  @override
+  String get guideContractDetailsMoreTitle => 'Meer opties';
+
+  @override
+  String get guideContractDetailsMoreDesc =>
+      'Stuur de freelancer een bericht of meld een probleem.';
+
+  @override
+  String get guideContractDetailsStageTitle => 'Volgende stap';
+
+  @override
+  String get guideContractDetailsStageDesc =>
+      'Kijk in dit vak wat je nu moet doen, zoals een oplevering beoordelen.';
+
+  @override
+  String get guideContractDetailsSummaryTitle => 'Overzicht';
+
+  @override
+  String get guideContractDetailsSummaryDesc =>
+      'Freelancer, bedrag, deadline en status op een plek.';
+
+  @override
+  String get guideContractDetailsActionTitle => 'Hoofdactie';
+
+  @override
+  String get guideContractDetailsActionDesc =>
+      'Deze knop past zich aan de fase aan. Na oplevering sluit je af met Job als voltooid markeren.';
+
+  @override
+  String get guideContractDetailsSectionMore => 'Meer over deze overeenkomst';
+
+  @override
+  String get guideContractDetailsCancelTitle => 'Annuleringsverzoek';
+
+  @override
+  String get guideContractDetailsCancelDesc =>
+      'De freelancer wil annuleren. Behoud de overeenkomst of keur het verzoek goed.';
+
+  @override
+  String get guideContractDetailsPaymentTitle => 'Betaalregistratie';
+
+  @override
+  String get guideContractDetailsPaymentDesc =>
+      'Betalen gebeurt buiten de app. Markeer het hier als betaald als gedeeld overzicht.';
+
+  @override
+  String get guideContractDetailsSiteTitle => 'Locatie instellen';
+
+  @override
+  String get guideContractDetailsSiteDesc =>
+      'Instructies voor de eerste dag en de aanwezigheids-QR voor deze job.';
+
+  @override
+  String get guideContractDetailsAttendanceTitle => 'Aanwezigheid vandaag';
+
+  @override
+  String get guideContractDetailsAttendanceDesc =>
+      'Zie wie vandaag is ingeklokt.';
+
+  @override
+  String get guideContractDetailsHoursTitle => 'Uren';
+
+  @override
+  String get guideContractDetailsHoursDesc =>
+      'Freelancers melden hier uren. Accepteer of wijs elk af.';
+
+  @override
+  String get guideSellerContractSummaryTitle => 'Je contract';
+
+  @override
+  String get guideSellerContractSummaryDesc =>
+      'De klus, het afgesproken bedrag en de huidige status.';
+
+  @override
+  String get guideSellerContractOnboardTitle => 'Instructies eerste dag';
+
+  @override
+  String get guideSellerContractOnboardDesc =>
+      'De opdrachtgever deelde instructies. Lees ze voor je eerste dag.';
+
+  @override
+  String get guideSellerContractAttendTitle => 'Aanwezigheid';
+
+  @override
+  String get guideSellerContractAttendDesc =>
+      'Scan hier de QR of klok in en uit voor werk op locatie.';
+
+  @override
+  String get guideSellerContractHoursTitle => 'Urenregistraties';
+
+  @override
+  String get guideSellerContractHoursDesc =>
+      'Je uren worden automatisch verstuurd als je uitklokt. De opdrachtgever keurt ze goed of af.';
+
+  @override
+  String get guideSellerContractDeliverTitle => 'Werk opleveren';
+
+  @override
+  String get guideSellerContractDeliverDesc =>
+      'Is de klus klaar? Stuur je werk hier op. Voeg bewijs en een korte notitie toe.';
+
+  @override
+  String get guideSellerContractSectionMessages => 'Berichten en wijzigingen';
+
+  @override
+  String get guideSellerContractMessageTitle => 'Bericht aan opdrachtgever';
+
+  @override
+  String get guideSellerContractMessageDesc =>
+      'Chat met de opdrachtgever over dit contract.';
+
+  @override
+  String get guideSellerContractReportTitle => 'Melden';
+
+  @override
+  String get guideSellerContractReportDesc =>
+      'Meld een probleem met de opdrachtgever of dit contract.';
+
+  @override
+  String get guideSellerContractCancelTitle => 'Annulering aanvragen';
+
+  @override
+  String get guideSellerContractCancelDesc =>
+      'De opdrachtgever moet akkoord gaan voordat het contract stopt. Je kunt het verzoek intrekken.';
+
+  @override
+  String get guideSellerContractSectionDelivery => 'Oplevering en betaling';
+
+  @override
+  String get guideSellerContractDeliveryTitle => 'Jouw oplevering';
+
+  @override
+  String get guideSellerContractDeliveryDesc =>
+      'Wat je naar de opdrachtgever stuurde, met bestanden.';
+
+  @override
+  String get guideSellerContractPaidTitle => 'Markeren als betaald';
+
+  @override
+  String get guideSellerContractPaidDesc =>
+      'Betaalt de opdrachtgever je buiten de app, markeer het dan hier. HupWorks verplaatst geen geld.';
+
+  @override
+  String get guideSellerContractPendingTitle => 'Annuleringsverzoek';
+
+  @override
+  String get guideSellerContractPendingDesc =>
+      'Een annuleringsverzoek wacht op antwoord. Je kunt het hieronder intrekken.';
+
+  @override
+  String get guideSellerContractsPillsTitle => 'Filter op status';
+
+  @override
+  String get guideSellerContractsPillsDesc =>
+      'Tik op een filter om alleen actieve, afgeronde of opgeleverde contracten te zien.';
+
+  @override
+  String get guideSellerContractsCardTitle => 'Een contract';
+
+  @override
+  String get guideSellerContractsCardDesc =>
+      'Elke kaart is één klus waarvoor je bent ingehuurd. Tik om te openen.';
+
+  @override
+  String get guideSellerContractsStatusTitle => 'Status';
+
+  @override
+  String get guideSellerContractsStatusDesc =>
+      'Toont hoe het werk ervoor staat, bijvoorbeeld actief of opgeleverd.';
+
+  @override
+  String get guideSellerContractsTimeTitle => 'Resterende tijd';
+
+  @override
+  String get guideSellerContractsTimeDesc =>
+      'Hoe lang je nog hebt om op te leveren.';
+
+  @override
+  String get guideSellerAppsSearchTitle => 'Zoeken';
+
+  @override
+  String get guideSellerAppsSearchDesc =>
+      'Vind een sollicitatie op de titel van de klus.';
+
+  @override
+  String get guideSellerAppsTabsTitle => 'Filter op status';
+
+  @override
+  String get guideSellerAppsTabsDesc =>
+      'In afwachting betekent dat de opdrachtgever nog beslist. Geaccepteerd betekent dat je bent ingehuurd.';
+
+  @override
+  String get guideSellerAppsCardTitle => 'Een sollicitatie';
+
+  @override
+  String get guideSellerAppsCardDesc =>
+      'Elke kaart is een klus waarop je hebt gesolliciteerd, met je prijs en status.';
+
+  @override
+  String get guideSellerAppsWithdrawTitle => 'Intrekken';
+
+  @override
+  String get guideSellerAppsWithdrawDesc =>
+      'Bedacht je je? Trek een lopende sollicitatie in voordat de opdrachtgever beslist.';
+
+  @override
+  String get guideSellerAppsMessageTitle => 'Bericht sturen';
+
+  @override
+  String get guideSellerAppsMessageDesc =>
+      'Chat met de opdrachtgever over deze klus.';
+
+  @override
+  String get guideSellerAppsAttendanceTitle => 'Aanwezigheid openen';
+
+  @override
+  String get guideSellerAppsAttendanceDesc =>
+      'Open bij klussen op locatie de aanwezigheid om de QR te scannen en in te klokken.';
+
+  @override
+  String get guideSellerAppsInstructionsTitle => 'Instructies eerste dag';
+
+  @override
+  String get guideSellerAppsInstructionsDesc =>
+      'De opdrachtgever stuurde instructies. Tik om ze vóór de eerste dag te lezen.';
+
+  @override
+  String get guideDeliverAttachTitle => 'Bewijs toevoegen';
+
+  @override
+  String get guideDeliverAttachDesc =>
+      'Voeg foto\'s of een bestand toe als bewijs van je werk. Optioneel, tot 1 GB.';
+
+  @override
+  String get guideDeliverMessageTitle => 'Beschrijf je werk';
+
+  @override
+  String get guideDeliverMessageDesc =>
+      'Vertel de opdrachtgever wat je hebt gedaan. Dit is verplicht.';
+
+  @override
+  String get guideDeliverSendTitle => 'Versturen';
+
+  @override
+  String get guideDeliverSendDesc =>
+      'Stuurt je oplevering naar de opdrachtgever, die deze daarna bekijkt.';
+
+  @override
+  String get guideJobAlertsRuleTitle => 'Je meldingen';
+
+  @override
+  String get guideJobAlertsRuleDesc =>
+      'Elke melding is een opgeslagen zoekopdracht. Tik op een melding om te bewerken.';
+
+  @override
+  String get guideJobAlertsSwitchTitle => 'Aan of uit zetten';
+
+  @override
+  String get guideJobAlertsSwitchDesc =>
+      'Zet een melding uit om meldingen te pauzeren zonder hem te verwijderen.';
+
+  @override
+  String get guideJobAlertsNewTitle => 'Nieuwe melding';
+
+  @override
+  String get guideJobAlertsNewDesc =>
+      'Maak nog een melding voor andere vaardigheden of plaatsen.';
+
+  @override
+  String get guideHireReaderHintTitle => 'Inchecken op locatie';
+
+  @override
+  String get guideHireReaderHintDesc =>
+      'Gebruik bij aankomst Aanwezigheids-QR scannen in je contract.';
+
+  @override
+  String get guideHireReaderCardTitle => 'Lees de details';
+
+  @override
+  String get guideHireReaderCardDesc =>
+      'Elke kaart is een onderwerp dat de opdrachtgever voor je eerste dag schreef.';
+
+  @override
+  String get guideHireReaderReadTitle => 'Bevestig dat je het las';
+
+  @override
+  String get guideHireReaderReadDesc =>
+      'Tik als je klaar bent. Dit legt vast dat je de instructies hebt gelezen.';
+
+  @override
+  String get guideIdentityScoreTitle => 'Vertrouwensscore';
+
+  @override
+  String get guideIdentityScoreDesc =>
+      'Je profielfoto en je selfie met ID geven elk punten zodra een beheerder ze accepteert.';
+
+  @override
+  String get guideIdentityStatusTitle => 'Beoordelingsstatus';
+
+  @override
+  String get guideIdentityStatusDesc =>
+      'In afwachting betekent dat een beheerder nog kijkt. Bij afwijzing staat hier de reden.';
+
+  @override
+  String get guideIdentitySelfieTitle => 'Selfie met ID';
+
+  @override
+  String get guideIdentitySelfieDesc =>
+      'Houd je ID naast je gezicht en maak een duidelijke foto. Tik om toe te voegen of te wijzigen.';
+
+  @override
+  String get guideIdentitySubmitTitle => 'Indienen ter controle';
+
+  @override
+  String get guideIdentitySubmitDesc =>
+      'Wordt actief nadat je een foto toevoegt. Een beheerder controleert die, dat kan even duren.';
+
+  @override
+  String get guideSellerAppsSectionHired => 'Nadat je bent ingehuurd';
+
+  @override
+  String get guideNothingToShow => 'Hier is nog niets uit te leggen';
 }

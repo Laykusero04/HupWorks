@@ -8662,6 +8662,1074 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Finishes setup and opens the app. You need the selfie first.'**
   String get guideSetupSaveDesc;
+
+  /// No description provided for @guideQrDispCodeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Site QR code'**
+  String get guideQrDispCodeTitle;
+
+  /// No description provided for @guideQrDispCodeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Freelancers scan this code at the site to clock in or out. It only records attendance.'**
+  String get guideQrDispCodeDesc;
+
+  /// No description provided for @guideQrDispShareTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Share or print'**
+  String get guideQrDispShareTitle;
+
+  /// No description provided for @guideQrDispShareDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Sends a poster image to print and put up at the site.'**
+  String get guideQrDispShareDesc;
+
+  /// No description provided for @guideQrDispRegenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Regenerate QR'**
+  String get guideQrDispRegenTitle;
+
+  /// No description provided for @guideQrDispRegenDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Makes a new code. The old printed code stops working, so print and post the new one.'**
+  String get guideQrDispRegenDesc;
+
+  /// No description provided for @guideEmpVerifScoreTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Trust score'**
+  String get guideEmpVerifScoreTitle;
+
+  /// No description provided for @guideEmpVerifScoreDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification is optional. Once an admin accepts your Selfie with ID, it adds points and a Verified badge.'**
+  String get guideEmpVerifScoreDesc;
+
+  /// No description provided for @guideEmpVerifHistoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hiring history'**
+  String get guideEmpVerifHistoryTitle;
+
+  /// No description provided for @guideEmpVerifHistoryDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'This grows as you complete hires and mark them as paid.'**
+  String get guideEmpVerifHistoryDesc;
+
+  /// No description provided for @guideEmpVerifPathTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a path'**
+  String get guideEmpVerifPathTitle;
+
+  /// No description provided for @guideEmpVerifPathDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick Personal ID or Company. Company also asks for business details.'**
+  String get guideEmpVerifPathDesc;
+
+  /// No description provided for @guideEmpVerifUploadPersonalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Selfie with ID'**
+  String get guideEmpVerifUploadPersonalTitle;
+
+  /// No description provided for @guideEmpVerifUploadPersonalDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold your ID next to your face and take a clear photo. An admin reviews it later.'**
+  String get guideEmpVerifUploadPersonalDesc;
+
+  /// No description provided for @guideEmpVerifUploadCompanyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Company document'**
+  String get guideEmpVerifUploadCompanyTitle;
+
+  /// No description provided for @guideEmpVerifUploadCompanyDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a clear photo of a company document. An admin reviews it later.'**
+  String get guideEmpVerifUploadCompanyDesc;
+
+  /// No description provided for @guideEmpVerifSubmitTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit for review'**
+  String get guideEmpVerifSubmitTitle;
+
+  /// No description provided for @guideEmpVerifSubmitDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Stays grey until you pick a photo. Updating sends it for review again.'**
+  String get guideEmpVerifSubmitDesc;
+
+  /// No description provided for @guideOnbEditBoxesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Instruction boxes'**
+  String get guideOnbEditBoxesTitle;
+
+  /// No description provided for @guideOnbEditBoxesDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Fill in where to go, when to arrive and who to contact.'**
+  String get guideOnbEditBoxesDesc;
+
+  /// No description provided for @guideOnbEditDraftTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Save draft'**
+  String get guideOnbEditDraftTitle;
+
+  /// No description provided for @guideOnbEditDraftDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Keeps your notes here. The freelancer is not told yet.'**
+  String get guideOnbEditDraftDesc;
+
+  /// No description provided for @guideOnbEditPublishTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish to freelancer'**
+  String get guideOnbEditPublishTitle;
+
+  /// No description provided for @guideOnbEditPublishDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Sends these instructions to the freelancer you hired. They confirm they have read them.'**
+  String get guideOnbEditPublishDesc;
+
+  /// No description provided for @guideChatRelatedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Related work'**
+  String get guideChatRelatedTitle;
+
+  /// No description provided for @guideChatRelatedDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'See the jobs and contracts you share with this person.'**
+  String get guideChatRelatedDesc;
+
+  /// No description provided for @guideChatMenuTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'More options'**
+  String get guideChatMenuTitle;
+
+  /// No description provided for @guideChatMenuDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'View profile, block or report this person.'**
+  String get guideChatMenuDesc;
+
+  /// No description provided for @guideChatWriteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a message'**
+  String get guideChatWriteTitle;
+
+  /// No description provided for @guideChatWriteDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Type here and tap send.'**
+  String get guideChatWriteDesc;
+
+  /// No description provided for @guideChatSectionOffers.
+  ///
+  /// In en, this message translates to:
+  /// **'Offers'**
+  String get guideChatSectionOffers;
+
+  /// No description provided for @guideChatOfferCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Application price'**
+  String get guideChatOfferCardTitle;
+
+  /// No description provided for @guideChatOfferCardClientDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'What the freelancer proposed: price, duration and message.'**
+  String get guideChatOfferCardClientDesc;
+
+  /// No description provided for @guideChatOfferCardSellerDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Your price, duration and message, as the client sees them.'**
+  String get guideChatOfferCardSellerDesc;
+
+  /// No description provided for @guideChatOfferActionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject, counter or hire'**
+  String get guideChatOfferActionsTitle;
+
+  /// No description provided for @guideChatOfferActionsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Hire accepts this price. Counter offer proposes a different price. Reject declines it. Only shown while pending.'**
+  String get guideChatOfferActionsDesc;
+
+  /// No description provided for @guideChatOfferStatusTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer status'**
+  String get guideChatOfferStatusTitle;
+
+  /// No description provided for @guideChatOfferStatusDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending, accepted or rejected. The client decides.'**
+  String get guideChatOfferStatusDesc;
+
+  /// No description provided for @guideAttHubScanTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan QR'**
+  String get guideAttHubScanTitle;
+
+  /// No description provided for @guideAttHubScanDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'At the job site, scan the QR the client shows to clock in.'**
+  String get guideAttHubScanDesc;
+
+  /// No description provided for @guideAttHubJobTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your on-site job'**
+  String get guideAttHubJobTitle;
+
+  /// No description provided for @guideAttHubJobDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Clock in and out here. Hours go to the client for review.'**
+  String get guideAttHubJobDesc;
+
+  /// No description provided for @guideAttHubContractTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Open contract'**
+  String get guideAttHubContractTitle;
+
+  /// No description provided for @guideAttHubContractDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'See the full contract, payment and messages.'**
+  String get guideAttHubContractDesc;
+
+  /// No description provided for @guideAttHubSectionClocking.
+  ///
+  /// In en, this message translates to:
+  /// **'Clocking in'**
+  String get guideAttHubSectionClocking;
+
+  /// No description provided for @guideAttHubModeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How this job works'**
+  String get guideAttHubModeTitle;
+
+  /// No description provided for @guideAttHubModeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The label shows how this job tracks time: QR scan or clock in and out.'**
+  String get guideAttHubModeDesc;
+
+  /// No description provided for @guideAttHubActionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Check in'**
+  String get guideAttHubActionsTitle;
+
+  /// No description provided for @guideAttHubActionsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan or tap here when you start. Clock out when you finish; hours are sent for review.'**
+  String get guideAttHubActionsDesc;
+
+  /// No description provided for @guideAttHubTodayTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get guideAttHubTodayTitle;
+
+  /// No description provided for @guideAttHubTodayDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Your clock-ins and outs for today appear here.'**
+  String get guideAttHubTodayDesc;
+
+  /// No description provided for @guideAttScanFrameTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan the QR'**
+  String get guideAttScanFrameTitle;
+
+  /// No description provided for @guideAttScanFrameDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold your phone steady so the QR fits on screen. It scans by itself.'**
+  String get guideAttScanFrameDesc;
+
+  /// No description provided for @guideAttScanListTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Need the list?'**
+  String get guideAttScanListTitle;
+
+  /// No description provided for @guideAttScanListDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Not at the right job? Open your on-site jobs from here.'**
+  String get guideAttScanListDesc;
+
+  /// No description provided for @guideAttConfirmJobTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Check the job'**
+  String get guideAttConfirmJobTitle;
+
+  /// No description provided for @guideAttConfirmJobDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Make sure this is the right job and site before you confirm.'**
+  String get guideAttConfirmJobDesc;
+
+  /// No description provided for @guideAttConfirmTypeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'In or out'**
+  String get guideAttConfirmTypeTitle;
+
+  /// No description provided for @guideAttConfirmTypeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick Clock in when you start, Clock out when you finish. We pre-select the likely one.'**
+  String get guideAttConfirmTypeDesc;
+
+  /// No description provided for @guideAttConfirmOnceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'One scan a day'**
+  String get guideAttConfirmOnceTitle;
+
+  /// No description provided for @guideAttConfirmOnceDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'This job needs one check-in scan per day. No clock-out scan.'**
+  String get guideAttConfirmOnceDesc;
+
+  /// No description provided for @guideAttConfirmLocationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Location check'**
+  String get guideAttConfirmLocationTitle;
+
+  /// No description provided for @guideAttConfirmLocationDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'We use your phone location to confirm you are at the site. Allow location when asked.'**
+  String get guideAttConfirmLocationDesc;
+
+  /// No description provided for @guideAttConfirmButtonTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get guideAttConfirmButtonTitle;
+
+  /// No description provided for @guideAttConfirmButtonDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Records your time. Hours go to the client for review.'**
+  String get guideAttConfirmButtonDesc;
+
+  /// No description provided for @guideContractsFilterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by status'**
+  String get guideContractsFilterTitle;
+
+  /// No description provided for @guideContractsFilterDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Narrow the list to active, delivered or completed contracts.'**
+  String get guideContractsFilterDesc;
+
+  /// No description provided for @guideContractsStatusTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get guideContractsStatusTitle;
+
+  /// No description provided for @guideContractsStatusDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The colour and label show the contract\'s stage.'**
+  String get guideContractsStatusDesc;
+
+  /// No description provided for @guideContractsOpenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Open a contract'**
+  String get guideContractsOpenTitle;
+
+  /// No description provided for @guideContractsOpenDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to see delivery, hours and payment.'**
+  String get guideContractsOpenDesc;
+
+  /// No description provided for @guideMyJobsFilterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter jobs'**
+  String get guideMyJobsFilterTitle;
+
+  /// No description provided for @guideMyJobsFilterDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Gig, Full time or Part time jobs only.'**
+  String get guideMyJobsFilterDesc;
+
+  /// No description provided for @guideMyJobsCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your job post'**
+  String get guideMyJobsCardTitle;
+
+  /// No description provided for @guideMyJobsCardDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a job to review applicants and hire.'**
+  String get guideMyJobsCardDesc;
+
+  /// No description provided for @guideMyJobsPostTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Post a job'**
+  String get guideMyJobsPostTitle;
+
+  /// No description provided for @guideMyJobsPostDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap + to start a new job post.'**
+  String get guideMyJobsPostDesc;
+
+  /// No description provided for @guideApplicationsFilterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter applications'**
+  String get guideApplicationsFilterTitle;
+
+  /// No description provided for @guideApplicationsFilterDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens on Pending. Switch to Accepted, Rejected or All to see the rest.'**
+  String get guideApplicationsFilterDesc;
+
+  /// No description provided for @guideApplicationsApplicantTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Applicant'**
+  String get guideApplicationsApplicantTitle;
+
+  /// No description provided for @guideApplicationsApplicantDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the name for their profile or the chat icon to message them.'**
+  String get guideApplicationsApplicantDesc;
+
+  /// No description provided for @guideApplicationsJobTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The job'**
+  String get guideApplicationsJobTitle;
+
+  /// No description provided for @guideApplicationsJobDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to open the job and all its applicants.'**
+  String get guideApplicationsJobDesc;
+
+  /// No description provided for @guideApplicationsHireTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hire or reject'**
+  String get guideApplicationsHireTitle;
+
+  /// No description provided for @guideApplicationsHireDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Hire starts a contract right away. Reject declines the application.'**
+  String get guideApplicationsHireDesc;
+
+  /// No description provided for @guideContractDetailsMoreTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'More options'**
+  String get guideContractDetailsMoreTitle;
+
+  /// No description provided for @guideContractDetailsMoreDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Message the freelancer or report a problem.'**
+  String get guideContractDetailsMoreDesc;
+
+  /// No description provided for @guideContractDetailsStageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Next step'**
+  String get guideContractDetailsStageTitle;
+
+  /// No description provided for @guideContractDetailsStageDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Check this box for what to do next, such as reviewing a delivery.'**
+  String get guideContractDetailsStageDesc;
+
+  /// No description provided for @guideContractDetailsSummaryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Contract summary'**
+  String get guideContractDetailsSummaryTitle;
+
+  /// No description provided for @guideContractDetailsSummaryDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Freelancer, amount, deadline and status in one place.'**
+  String get guideContractDetailsSummaryDesc;
+
+  /// No description provided for @guideContractDetailsActionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Main action'**
+  String get guideContractDetailsActionTitle;
+
+  /// No description provided for @guideContractDetailsActionDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'This button changes with the stage. After delivery, tap Mark job complete to close it.'**
+  String get guideContractDetailsActionDesc;
+
+  /// No description provided for @guideContractDetailsSectionMore.
+  ///
+  /// In en, this message translates to:
+  /// **'More on this contract'**
+  String get guideContractDetailsSectionMore;
+
+  /// No description provided for @guideContractDetailsCancelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation request'**
+  String get guideContractDetailsCancelTitle;
+
+  /// No description provided for @guideContractDetailsCancelDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The freelancer asked to cancel. Keep the contract or approve the request.'**
+  String get guideContractDetailsCancelDesc;
+
+  /// No description provided for @guideContractDetailsPaymentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment record'**
+  String get guideContractDetailsPaymentTitle;
+
+  /// No description provided for @guideContractDetailsPaymentDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments happen outside the app. Mark it as paid here as a shared record.'**
+  String get guideContractDetailsPaymentDesc;
+
+  /// No description provided for @guideContractDetailsSiteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Site setup'**
+  String get guideContractDetailsSiteTitle;
+
+  /// No description provided for @guideContractDetailsSiteDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'First-day instructions and the attendance QR for this job.'**
+  String get guideContractDetailsSiteDesc;
+
+  /// No description provided for @guideContractDetailsAttendanceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendance today'**
+  String get guideContractDetailsAttendanceTitle;
+
+  /// No description provided for @guideContractDetailsAttendanceDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'See who has clocked in today.'**
+  String get guideContractDetailsAttendanceDesc;
+
+  /// No description provided for @guideContractDetailsHoursTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hour reports'**
+  String get guideContractDetailsHoursTitle;
+
+  /// No description provided for @guideContractDetailsHoursDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Freelancers report hours here. Accept or decline each one.'**
+  String get guideContractDetailsHoursDesc;
+
+  /// No description provided for @guideSellerContractSummaryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your contract'**
+  String get guideSellerContractSummaryTitle;
+
+  /// No description provided for @guideSellerContractSummaryDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The job, the agreed amount and the current status.'**
+  String get guideSellerContractSummaryDesc;
+
+  /// No description provided for @guideSellerContractOnboardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'First-day instructions'**
+  String get guideSellerContractOnboardTitle;
+
+  /// No description provided for @guideSellerContractOnboardDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The client shared instructions. Read them before day one.'**
+  String get guideSellerContractOnboardDesc;
+
+  /// No description provided for @guideSellerContractAttendTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendance'**
+  String get guideSellerContractAttendTitle;
+
+  /// No description provided for @guideSellerContractAttendDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan the QR or clock in and out here for on-site work.'**
+  String get guideSellerContractAttendDesc;
+
+  /// No description provided for @guideSellerContractHoursTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hour reports'**
+  String get guideSellerContractHoursTitle;
+
+  /// No description provided for @guideSellerContractHoursDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Your hours are sent automatically when you clock out. The client accepts or declines them.'**
+  String get guideSellerContractHoursDesc;
+
+  /// No description provided for @guideSellerContractDeliverTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Deliver work'**
+  String get guideSellerContractDeliverTitle;
+
+  /// No description provided for @guideSellerContractDeliverDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'When the job is done, send your work here. Add proof and a short note.'**
+  String get guideSellerContractDeliverDesc;
+
+  /// No description provided for @guideSellerContractSectionMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages and changes'**
+  String get guideSellerContractSectionMessages;
+
+  /// No description provided for @guideSellerContractMessageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Message client'**
+  String get guideSellerContractMessageTitle;
+
+  /// No description provided for @guideSellerContractMessageDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat with the client about this contract.'**
+  String get guideSellerContractMessageDesc;
+
+  /// No description provided for @guideSellerContractReportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Report'**
+  String get guideSellerContractReportTitle;
+
+  /// No description provided for @guideSellerContractReportDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Report a problem with the client or this contract.'**
+  String get guideSellerContractReportDesc;
+
+  /// No description provided for @guideSellerContractCancelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Request cancel'**
+  String get guideSellerContractCancelTitle;
+
+  /// No description provided for @guideSellerContractCancelDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The client must agree before the contract is cancelled. You can withdraw the request.'**
+  String get guideSellerContractCancelDesc;
+
+  /// No description provided for @guideSellerContractSectionDelivery.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery and payment'**
+  String get guideSellerContractSectionDelivery;
+
+  /// No description provided for @guideSellerContractDeliveryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your delivery'**
+  String get guideSellerContractDeliveryTitle;
+
+  /// No description provided for @guideSellerContractDeliveryDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'What you sent to the client, with files.'**
+  String get guideSellerContractDeliveryDesc;
+
+  /// No description provided for @guideSellerContractPaidTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as paid'**
+  String get guideSellerContractPaidTitle;
+
+  /// No description provided for @guideSellerContractPaidDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'After the client pays you outside the app, mark it here. HupWorks does not move money.'**
+  String get guideSellerContractPaidDesc;
+
+  /// No description provided for @guideSellerContractPendingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation request'**
+  String get guideSellerContractPendingTitle;
+
+  /// No description provided for @guideSellerContractPendingDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'A cancel request is waiting for an answer. You can withdraw it below.'**
+  String get guideSellerContractPendingDesc;
+
+  /// No description provided for @guideSellerContractsPillsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by status'**
+  String get guideSellerContractsPillsTitle;
+
+  /// No description provided for @guideSellerContractsPillsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a pill to see only active, completed or delivered contracts.'**
+  String get guideSellerContractsPillsDesc;
+
+  /// No description provided for @guideSellerContractsCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A contract'**
+  String get guideSellerContractsCardTitle;
+
+  /// No description provided for @guideSellerContractsCardDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Each card is one job you were hired for. Tap to open it.'**
+  String get guideSellerContractsCardDesc;
+
+  /// No description provided for @guideSellerContractsStatusTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get guideSellerContractsStatusTitle;
+
+  /// No description provided for @guideSellerContractsStatusDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Shows where the work stands, for example active or delivered.'**
+  String get guideSellerContractsStatusDesc;
+
+  /// No description provided for @guideSellerContractsTimeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Time left'**
+  String get guideSellerContractsTimeTitle;
+
+  /// No description provided for @guideSellerContractsTimeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'How long you have to deliver.'**
+  String get guideSellerContractsTimeDesc;
+
+  /// No description provided for @guideSellerAppsSearchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get guideSellerAppsSearchTitle;
+
+  /// No description provided for @guideSellerAppsSearchDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Find an application by job title.'**
+  String get guideSellerAppsSearchDesc;
+
+  /// No description provided for @guideSellerAppsTabsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by status'**
+  String get guideSellerAppsTabsTitle;
+
+  /// No description provided for @guideSellerAppsTabsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending means waiting for the client. Accepted means you were hired.'**
+  String get guideSellerAppsTabsDesc;
+
+  /// No description provided for @guideSellerAppsCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'An application'**
+  String get guideSellerAppsCardTitle;
+
+  /// No description provided for @guideSellerAppsCardDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Each card is a job you applied to, with your price and status.'**
+  String get guideSellerAppsCardDesc;
+
+  /// No description provided for @guideSellerAppsWithdrawTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw'**
+  String get guideSellerAppsWithdrawTitle;
+
+  /// No description provided for @guideSellerAppsWithdrawDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Changed your mind? Withdraw a pending application before the client decides.'**
+  String get guideSellerAppsWithdrawDesc;
+
+  /// No description provided for @guideSellerAppsMessageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Message client'**
+  String get guideSellerAppsMessageTitle;
+
+  /// No description provided for @guideSellerAppsMessageDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat with the client about this job.'**
+  String get guideSellerAppsMessageDesc;
+
+  /// No description provided for @guideSellerAppsAttendanceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Open attendance'**
+  String get guideSellerAppsAttendanceTitle;
+
+  /// No description provided for @guideSellerAppsAttendanceDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'For on-site jobs, open attendance to scan the QR and clock in.'**
+  String get guideSellerAppsAttendanceDesc;
+
+  /// No description provided for @guideSellerAppsInstructionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'First-day instructions'**
+  String get guideSellerAppsInstructionsTitle;
+
+  /// No description provided for @guideSellerAppsInstructionsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The client sent instructions. Tap to read them before day one.'**
+  String get guideSellerAppsInstructionsDesc;
+
+  /// No description provided for @guideDeliverAttachTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add proof'**
+  String get guideDeliverAttachTitle;
+
+  /// No description provided for @guideDeliverAttachDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach photos or a file as proof of your work. Optional, up to 1 GB.'**
+  String get guideDeliverAttachDesc;
+
+  /// No description provided for @guideDeliverMessageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe your work'**
+  String get guideDeliverMessageTitle;
+
+  /// No description provided for @guideDeliverMessageDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell the client what you did. This is required.'**
+  String get guideDeliverMessageDesc;
+
+  /// No description provided for @guideDeliverSendTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get guideDeliverSendTitle;
+
+  /// No description provided for @guideDeliverSendDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Sends your delivery to the client, who then reviews it.'**
+  String get guideDeliverSendDesc;
+
+  /// No description provided for @guideJobAlertsRuleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your alerts'**
+  String get guideJobAlertsRuleTitle;
+
+  /// No description provided for @guideJobAlertsRuleDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Each alert is a saved search. Tap one to edit it.'**
+  String get guideJobAlertsRuleDesc;
+
+  /// No description provided for @guideJobAlertsSwitchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on or off'**
+  String get guideJobAlertsSwitchTitle;
+
+  /// No description provided for @guideJobAlertsSwitchDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch an alert off to pause notifications without deleting it.'**
+  String get guideJobAlertsSwitchDesc;
+
+  /// No description provided for @guideJobAlertsNewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New alert'**
+  String get guideJobAlertsNewTitle;
+
+  /// No description provided for @guideJobAlertsNewDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Create another alert for different skills or places.'**
+  String get guideJobAlertsNewDesc;
+
+  /// No description provided for @guideHireReaderHintTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'On-site check-in'**
+  String get guideHireReaderHintTitle;
+
+  /// No description provided for @guideHireReaderHintDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'When you arrive, use Scan attendance QR on your contract.'**
+  String get guideHireReaderHintDesc;
+
+  /// No description provided for @guideHireReaderCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Read the details'**
+  String get guideHireReaderCardTitle;
+
+  /// No description provided for @guideHireReaderCardDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Each card is one topic the client wrote for your first day.'**
+  String get guideHireReaderCardDesc;
+
+  /// No description provided for @guideHireReaderReadTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm you read it'**
+  String get guideHireReaderReadTitle;
+
+  /// No description provided for @guideHireReaderReadDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap when done. This records that you read the instructions.'**
+  String get guideHireReaderReadDesc;
+
+  /// No description provided for @guideIdentityScoreTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Trust score'**
+  String get guideIdentityScoreTitle;
+
+  /// No description provided for @guideIdentityScoreDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Your profile photo and your ID selfie each add points once an admin accepts them.'**
+  String get guideIdentityScoreDesc;
+
+  /// No description provided for @guideIdentityStatusTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Review status'**
+  String get guideIdentityStatusTitle;
+
+  /// No description provided for @guideIdentityStatusDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending means waiting for an admin. If it was rejected, the reason is shown here.'**
+  String get guideIdentityStatusDesc;
+
+  /// No description provided for @guideIdentitySelfieTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Selfie with ID'**
+  String get guideIdentitySelfieTitle;
+
+  /// No description provided for @guideIdentitySelfieDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold your ID next to your face and take a clear photo. Tap to add or change it.'**
+  String get guideIdentitySelfieDesc;
+
+  /// No description provided for @guideIdentitySubmitTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit for review'**
+  String get guideIdentitySubmitTitle;
+
+  /// No description provided for @guideIdentitySubmitDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Turns on after you add a photo. An admin checks it, which can take a while.'**
+  String get guideIdentitySubmitDesc;
+
+  /// No description provided for @guideSellerAppsSectionHired.
+  ///
+  /// In en, this message translates to:
+  /// **'After you are hired'**
+  String get guideSellerAppsSectionHired;
+
+  /// No description provided for @guideNothingToShow.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing to explain here yet'**
+  String get guideNothingToShow;
 }
 
 class _AppLocalizationsDelegate

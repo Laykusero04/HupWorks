@@ -151,6 +151,12 @@ mixin GuideHost<T extends StatefulWidget> on State<T> {
         .toList();
   }
 
+  /// Whether enough core-guide targets are on screen for it to run now.
+  bool get canRunCoreGuide =>
+      guideEnabled &&
+      mounted &&
+      _guideRunner.renderedCount(buildGuideSteps(context)) >= 2;
+
   /// Called by [GuideInfoButton] while mounted. The one-time "tap the (i)"
   /// snackbar is only shown on screens that actually have the button.
   void attachInfoButton() => _infoButtons++;

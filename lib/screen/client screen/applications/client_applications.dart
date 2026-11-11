@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/chat/chat_contact_policy.dart';
+import 'package:freelancer/core/guide/guide_anchor.dart';
+import 'package:freelancer/core/guide/guide_host.dart';
+import 'package:freelancer/core/guide/guide_info_button.dart';
+import 'package:freelancer/core/guide/guide_step.dart';
 import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
 import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:freelancer/core/utils/app_date_format.dart';
@@ -28,12 +32,98 @@ class ClientApplications extends StatefulWidget {
   State<ClientApplications> createState() => _ClientApplicationsState();
 }
 
-class _ClientApplicationsState extends State<ClientApplications> {
+class _ClientApplicationsState extends State<ClientApplications>
+    with GuideHost<ClientApplications> {
   List<Map<String, dynamic>> _applications = [];
   bool _isLoading = true;
 
   /// `null` = all; otherwise `pending` / `accepted` / `rejected`.
   String? _statusFilter = 'pending';
+
+  // Guide targets (long-lived). Card keys sit on ONE card each.
+  final GlobalKey _guideFilterKey = GlobalKey();
+  final GlobalKey _guideApplicantKey = GlobalKey();
+  final GlobalKey _guideJobKey = GlobalKey();
+  final GlobalKey _guideHireKey = GlobalKey();
+
+  /// True during every reload after the first (pull-to-refresh, return from
+  /// the job, after Hire/Reject) so a running guide is torn down and restarted.
+  bool _reloading = false;
+
+  @override
+  String get guideScreenId => 'client_applications';
+
+  @override
+  String get guideRole => 'client';
+
+  @override
+  int get guideVersion => 1;
+
+  @override
+  bool get guideDataReady => !_isLoading && !_reloading;
+
+  @override
+  String get guideSkipLabel => context.l10n.guideSkip;
+
+  @override
+  String get guideNextLabel => context.l10n.guideNext;
+
+  @override
+  String get guideDoneLabel => context.l10n.guideDone;
+
+  Widget _guide(GlobalKey key, String title, String description, Widget child,
+          {double radius = 8}) =>
+      GuideAnchor.wrap(
+        GuideAnchor(
+          key: key,
+          scope: guideScope,
+          title: title,
+          description: description,
+          borderRadius: BorderRadius.circular(radius),
+        ),
+        child,
+      );
+
+  Widget _guideIf(bool attach, GlobalKey key, String title, String description,
+          Widget child,
+          {double radius = 8}) =>
+      attach ? _guide(key, title, description, child, radius: radius) : child;
+
+  /// Index (in the visible list) of the first pending application whose job is
+  /// still open: the only card that shows Reject/Hire.
+  int get _guideHireIndex => _visible.indexWhere((a) =>
+      ((a['status'] as String?) ?? 'pending') == 'pending' &&
+      ((a['job_posts'] as Map?)?['status'] as String?) == 'open');
+
+  /// Core: filter chips, applicant row and job line of the first card, and
+  /// Hire/Reject of the first pending card. Unrendered targets are dropped.
+  @override
+  List<GuideStep> buildGuideSteps(BuildContext context) {
+    final l10n = context.l10n;
+    return [
+      GuideStep(
+        key: _guideFilterKey,
+        title: l10n.guideApplicationsFilterTitle,
+        description: l10n.guideApplicationsFilterDesc,
+      ),
+      GuideStep(
+        key: _guideApplicantKey,
+        title: l10n.guideApplicationsApplicantTitle,
+        description: l10n.guideApplicationsApplicantDesc,
+      ),
+      GuideStep(
+        key: _guideJobKey,
+        title: l10n.guideApplicationsJobTitle,
+        description: l10n.guideApplicationsJobDesc,
+      ),
+      GuideStep(
+        key: _guideHireKey,
+        title: l10n.guideApplicationsHireTitle,
+        description: l10n.guideApplicationsHireDesc,
+        enableAutoScroll: true,
+      ),
+    ];
+  }
 
   @override
   void initState() {
@@ -43,17 +133,24 @@ class _ClientApplicationsState extends State<ClientApplications> {
 
   Future<void> _load({bool showLoader = true}) async {
     if (showLoader && mounted) setState(() => _isLoading = true);
+    if (mounted && !_isLoading) setState(() => _reloading = true);
     try {
       final apps = await JobPostsService.getClientApplications();
       if (mounted) {
         setState(() {
           _applications = apps;
           _isLoading = false;
+          _reloading = false;
         });
+        scheduleGuide();
       }
     } catch (e) {
       if (mounted) {
-        setState(() => _isLoading = false);
+        setState(() {
+          _isLoading = false;
+          _reloading = false;
+        });
+        scheduleGuide();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(context.l10n.errorLoadingApplications('$e'))),
         );
@@ -113,8 +210,7 @@ class _ClientApplicationsState extends State<ClientApplications> {
   Future<void> _messageSeller(Map<String, dynamic> app) async {
     final l10n = context.l10n;
     final seller = app['profiles'] as Map<String, dynamic>?;
-    final sellerId =
-        app['seller_id'] as String? ?? seller?['id'] as String?;
+    final sellerId = app['seller_id'] as String? ?? seller?['id'] as String?;
     if (sellerId == null) return;
     try {
       final conversation = await ChatService.getOrCreateConversation(sellerId);
@@ -138,8 +234,9 @@ class _ClientApplicationsState extends State<ClientApplications> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final visible = _visible;
+    final hireIndex = _guideHireIndex;
 
-    return Scaffold(
+    return guideBackScope(Scaffold(
       backgroundColor: kDarkWhite,
       appBar: AppBar(
         backgroundColor: kDarkWhite,
@@ -153,6 +250,7 @@ class _ClientApplicationsState extends State<ClientApplications> {
           ),
         ),
         centerTitle: true,
+        actions: [GuideInfoButton(host: this)],
       ),
       body: Padding(
         padding: const EdgeInsets.only(top: 10.0),
@@ -169,9 +267,14 @@ class _ClientApplicationsState extends State<ClientApplications> {
           child: Column(
             children: [
               const SizedBox(height: 12),
-              _FilterChips(
-                selected: _statusFilter,
-                onChanged: (v) => setState(() => _statusFilter = v),
+              _guide(
+                _guideFilterKey,
+                l10n.guideApplicationsFilterTitle,
+                l10n.guideApplicationsFilterDesc,
+                _FilterChips(
+                  selected: _statusFilter,
+                  onChanged: (v) => setState(() => _statusFilter = v),
+                ),
               ),
               const SizedBox(height: 8),
               Expanded(
@@ -193,8 +296,7 @@ class _ClientApplicationsState extends State<ClientApplications> {
                             : RubikRefreshIndicator(
                                 onRefresh: () => _load(showLoader: false),
                                 child: ListView(
-                                  physics:
-                                      const AlwaysScrollableScrollPhysics(
+                                  physics: const AlwaysScrollableScrollPhysics(
                                     parent: BouncingScrollPhysics(),
                                   ),
                                   children: [
@@ -226,8 +328,9 @@ class _ClientApplicationsState extends State<ClientApplications> {
                                 bottom: 15.0,
                               ),
                               itemCount: visible.length,
-                              itemBuilder: (_, i) =>
-                                  _buildCard(visible[i], l10n),
+                              itemBuilder: (_, i) => _buildCard(
+                                  visible[i], l10n,
+                                  first: i == 0, guideHire: i == hireIndex),
                             ),
                           ),
               ),
@@ -235,10 +338,11 @@ class _ClientApplicationsState extends State<ClientApplications> {
           ),
         ),
       ),
-    );
+    ));
   }
 
-  Widget _buildCard(Map<String, dynamic> app, AppLocalizations l10n) {
+  Widget _buildCard(Map<String, dynamic> app, AppLocalizations l10n,
+      {bool first = false, bool guideHire = false}) {
     final jobPost = app['job_posts'] as Map<String, dynamic>?;
     final seller = app['profiles'] as Map<String, dynamic>?;
     final statusRaw = (app['status'] as String?) ?? 'pending';
@@ -247,8 +351,7 @@ class _ClientApplicationsState extends State<ClientApplications> {
     final sellerName = (seller?['name'] as String?)?.trim().isNotEmpty == true
         ? seller!['name'] as String
         : l10n.talent;
-    final sellerId =
-        app['seller_id'] as String? ?? seller?['id'] as String?;
+    final sellerId = app['seller_id'] as String? ?? seller?['id'] as String?;
     final imageUrl = seller?['profile_image_url'] as String?;
 
     void openProfile() {
@@ -272,88 +375,100 @@ class _ClientApplicationsState extends State<ClientApplications> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(12, 12, 4, 0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: InkWell(
-                        onTap: sellerId == null ? null : openProfile,
-                        borderRadius: BorderRadius.circular(8),
-                        child: Row(
-                          children: [
-                            CircleAvatar(
-                              radius: 22,
-                              backgroundColor: kDarkWhite,
-                              backgroundImage: ProfileImage.provider(imageUrl),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    sellerName,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: kTextStyle.copyWith(
-                                      color: kNeutralColor,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    jobPost?['title'] ?? l10n.untitledJob,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: kTextStyle.copyWith(
-                                      color: kSubTitleColor,
-                                      fontSize: 13,
-                                    ),
-                                  ),
-                                ],
+              _guideIf(
+                first,
+                _guideApplicantKey,
+                l10n.guideApplicationsApplicantTitle,
+                l10n.guideApplicationsApplicantDesc,
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 12, 4, 0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: InkWell(
+                          onTap: sellerId == null ? null : openProfile,
+                          borderRadius: BorderRadius.circular(8),
+                          child: Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 22,
+                                backgroundColor: kDarkWhite,
+                                backgroundImage:
+                                    ProfileImage.provider(imageUrl),
                               ),
-                            ),
-                          ],
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      sellerName,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: kTextStyle.copyWith(
+                                        color: kNeutralColor,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      jobPost?['title'] ?? l10n.untitledJob,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: kTextStyle.copyWith(
+                                        color: kSubTitleColor,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 3.0,
-                        horizontal: 8.0,
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20.0),
-                        color: status.bg,
-                      ),
-                      child: Text(
-                        status.label,
-                        style: kTextStyle.copyWith(
-                          color: status.fg,
-                          fontSize: 12.0,
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 3.0,
+                          horizontal: 8.0,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20.0),
+                          color: status.bg,
+                        ),
+                        child: Text(
+                          status.label,
+                          style: kTextStyle.copyWith(
+                            color: status.fg,
+                            fontSize: 12.0,
+                          ),
                         ),
                       ),
-                    ),
-                    IconButton(
-                      visualDensity: VisualDensity.compact,
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(
-                        minWidth: 36,
-                        minHeight: 36,
+                      IconButton(
+                        visualDensity: VisualDensity.compact,
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(
+                          minWidth: 36,
+                          minHeight: 36,
+                        ),
+                        tooltip: l10n.message,
+                        icon: const Icon(
+                          Icons.chat_bubble_outline,
+                          size: 20,
+                          color: kPrimaryColor,
+                        ),
+                        onPressed: () => _messageSeller(app),
                       ),
-                      tooltip: l10n.message,
-                      icon: const Icon(
-                        Icons.chat_bubble_outline,
-                        size: 20,
-                        color: kPrimaryColor,
-                      ),
-                      onPressed: () => _messageSeller(app),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-              InkWell(
+              _guideIf(
+                first,
+                _guideJobKey,
+                l10n.guideApplicationsJobTitle,
+                l10n.guideApplicationsJobDesc,
+                InkWell(
                   onTap: () => _openJob(app),
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
@@ -414,50 +529,57 @@ class _ClientApplicationsState extends State<ClientApplications> {
                     ),
                   ),
                 ),
-                if (statusRaw == 'pending' && jobOpen) ...[
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-                    child: Row(
-                    children: [
-                      Expanded(
-                        child: ButtonGlobalWithoutIcon(
-                          buttontext: l10n.rejectApplication,
-                          buttonDecoration: kButtonDecoration.copyWith(
-                            color: kWhite,
-                            border: Border.all(color: Colors.red),
+              ),
+              if (statusRaw == 'pending' && jobOpen) ...[
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+                  child: _guideIf(
+                    guideHire,
+                    _guideHireKey,
+                    l10n.guideApplicationsHireTitle,
+                    l10n.guideApplicationsHireDesc,
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ButtonGlobalWithoutIcon(
+                            buttontext: l10n.rejectApplication,
+                            buttonDecoration: kButtonDecoration.copyWith(
+                              color: kWhite,
+                              border: Border.all(color: Colors.red),
+                            ),
+                            onPressed: () => JobOfferChatActions.rejectOffer(
+                              context,
+                              offerId: app['id'] as String,
+                              sellerName: sellerName,
+                              onComplete: () => _load(showLoader: false),
+                            ),
+                            buttonTextColor: Colors.red,
                           ),
-                          onPressed: () => JobOfferChatActions.rejectOffer(
-                            context,
-                            offerId: app['id'] as String,
-                            sellerName: sellerName,
-                            onComplete: () => _load(showLoader: false),
-                          ),
-                          buttonTextColor: Colors.red,
                         ),
-                      ),
-                      Expanded(
-                        child: ButtonGlobalWithoutIcon(
-                          buttontext: l10n.hireAction,
-                          buttonDecoration: kButtonDecoration.copyWith(
-                            color: kPrimaryColor,
+                        Expanded(
+                          child: ButtonGlobalWithoutIcon(
+                            buttontext: l10n.hireAction,
+                            buttonDecoration: kButtonDecoration.copyWith(
+                              color: kPrimaryColor,
+                            ),
+                            onPressed: () => JobOfferChatActions.acceptOffer(
+                              context,
+                              offer: app,
+                              siblingOffers: _siblingsFor(app),
+                              onComplete: () => _load(showLoader: false),
+                            ),
+                            buttonTextColor: kWhite,
                           ),
-                          onPressed: () => JobOfferChatActions.acceptOffer(
-                            context,
-                            offer: app,
-                            siblingOffers: _siblingsFor(app),
-                            onComplete: () => _load(showLoader: false),
-                          ),
-                          buttonTextColor: kWhite,
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                  ),
-                ],
+                ),
               ],
-            ),
+            ],
           ),
         ),
+      ),
     );
   }
 }
@@ -501,9 +623,8 @@ class _FilterChips extends StatelessWidget {
                 ),
                 backgroundColor: kDarkWhite,
                 side: BorderSide(
-                  color: selected == value
-                      ? kPrimaryColor
-                      : kBorderColorTextField,
+                  color:
+                      selected == value ? kPrimaryColor : kBorderColorTextField,
                 ),
               ),
             ),

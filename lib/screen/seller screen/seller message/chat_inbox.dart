@@ -11,6 +11,10 @@ import 'package:nb_utils/nb_utils.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/chat/chat_unread_scope.dart';
+import '../../../core/guide/guide_anchor.dart';
+import '../../../core/guide/guide_host.dart';
+import '../../../core/guide/guide_info_button.dart';
+import '../../../core/guide/guide_step.dart';
 import '../../../core/utils/chat_thread_context.dart';
 import '../../../data/models/chat_order_context.dart';
 import '../../../data/models/chat_thread_context.dart';
@@ -47,7 +51,7 @@ class ChatInbox extends StatefulWidget {
   State<ChatInbox> createState() => _ChatInboxState();
 }
 
-class _ChatInboxState extends State<ChatInbox> {
+class _ChatInboxState extends State<ChatInbox> with GuideHost<ChatInbox> {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _messageController = TextEditingController();
   final FocusNode _msgFocusNode = FocusNode();
@@ -70,6 +74,113 @@ class _ChatInboxState extends State<ChatInbox> {
 
   String get _currentUserId =>
       Supabase.instance.client.auth.currentUser?.id ?? '';
+
+  // ------------------------------------------------------------- Guide
+  // Long-lived keys, each on exactly one widget. The offer keys sit on the
+  // LATEST offer card only (see _guideOfferIdx).
+  final GlobalKey _guideRelatedKey = GlobalKey();
+  final GlobalKey _guideMenuKey = GlobalKey();
+  final GlobalKey _guideWriteKey = GlobalKey();
+  final GlobalKey _guideOfferCardKey = GlobalKey();
+  final GlobalKey _guideOfferActionsKey = GlobalKey();
+  final GlobalKey _guideOfferStatusKey = GlobalKey();
+
+  /// Index in [_messages] of the latest offer card (null: none).
+  int? _guideOfferIdx;
+
+  @override
+  String get guideScreenId => 'chat_conversation';
+  @override
+  String get guideRole => _isClientViewer ? 'client' : 'seller';
+  @override
+  int get guideVersion => 1;
+
+  /// Ready after the FIRST full load (messages and thread context) and while
+  /// the keyboard is closed. New realtime messages only touch [_messages], so
+  /// they never tear a running guide down.
+  @override
+  bool get guideDataReady =>
+      !_isLoading &&
+      !_threadLoading &&
+      (MediaQuery.maybeViewInsetsOf(context)?.bottom ?? 0) == 0;
+  @override
+  String get guideSkipLabel => context.l10n.guideSkip;
+  @override
+  String get guideNextLabel => context.l10n.guideNext;
+  @override
+  String get guideDoneLabel => context.l10n.guideDone;
+
+  GuideAnchor _anchor(GlobalKey key, String title, String desc,
+          {BorderRadius? radius}) =>
+      GuideAnchor(
+        key: key,
+        scope: guideScope,
+        title: title,
+        description: desc,
+        borderRadius: radius,
+      );
+
+  bool _isOfferMessage(Message m) =>
+      m.isJobOfferMessage ||
+      m.jobOfferId != null ||
+      _parseBidMessage(m.content) != null;
+
+  @override
+  List<GuideStep> buildGuideSteps(BuildContext context) {
+    final l10n = context.l10n;
+    return [
+      if (_threadItems.isNotEmpty)
+        GuideStep(
+            key: _guideRelatedKey,
+            title: l10n.guideChatRelatedTitle,
+            description: l10n.guideChatRelatedDesc),
+      GuideStep(
+          key: _guideMenuKey,
+          title: l10n.guideChatMenuTitle,
+          description: l10n.guideChatMenuDesc),
+      if (!_contactBlocked)
+        GuideStep(
+            key: _guideWriteKey,
+            title: l10n.guideChatWriteTitle,
+            description: l10n.guideChatWriteDesc,
+            targetNearBottom: true),
+    ];
+  }
+
+  /// Client: card and Reject/Counter/Hire row. Seller: card and status chip
+  /// (Reject, Counter and Hire are client-only). Hidden from the chooser when
+  /// fewer than 2 targets render (no offer in the chat, or not actionable).
+  @override
+  List<GuideSection> buildGuideExtraSections(BuildContext context) {
+    final l10n = context.l10n;
+    return [
+      GuideSection(
+        id: 'offers',
+        title: l10n.guideChatSectionOffers,
+        steps: [
+          GuideStep(
+              key: _guideOfferCardKey,
+              title: l10n.guideChatOfferCardTitle,
+              description: _isClientViewer
+                  ? l10n.guideChatOfferCardClientDesc
+                  : l10n.guideChatOfferCardSellerDesc,
+              enableAutoScroll: true),
+          if (_isClientViewer)
+            GuideStep(
+                key: _guideOfferActionsKey,
+                title: l10n.guideChatOfferActionsTitle,
+                description: l10n.guideChatOfferActionsDesc,
+                enableAutoScroll: true)
+          else
+            GuideStep(
+                key: _guideOfferStatusKey,
+                title: l10n.guideChatOfferStatusTitle,
+                description: l10n.guideChatOfferStatusDesc,
+                enableAutoScroll: true),
+        ],
+      ),
+    ];
+  }
 
   @override
   void initState() {
@@ -116,10 +227,12 @@ class _ChatInboxState extends State<ChatInbox> {
           _isLoading = false;
         });
         _scrollToBottom();
+        scheduleGuide();
       }
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
+        scheduleGuide();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
         );
@@ -171,6 +284,7 @@ class _ChatInboxState extends State<ChatInbox> {
       if (!mounted) return;
       if (row == null) {
         setState(() => _threadLoading = false);
+        scheduleGuide();
         return;
       }
 
@@ -180,6 +294,7 @@ class _ChatInboxState extends State<ChatInbox> {
       final sellerId = row['seller_id'] as String?;
       if (clientId == null || sellerId == null) {
         setState(() => _threadLoading = false);
+        scheduleGuide();
         return;
       }
 
@@ -194,8 +309,12 @@ class _ChatInboxState extends State<ChatInbox> {
         _threadItems = items;
         _threadLoading = false;
       });
+      scheduleGuide();
     } catch (_) {
-      if (mounted) setState(() => _threadLoading = false);
+      if (mounted) {
+        setState(() => _threadLoading = false);
+        scheduleGuide();
+      }
     }
   }
 
@@ -407,8 +526,8 @@ class _ChatInboxState extends State<ChatInbox> {
       context: context,
       builder: (BuildContext context) {
         return Dialog(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16.0)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
           child: BlockingReasonPopUp(
             blockedUserId: otherId,
             blockedUserName: widget.otherUserName,
@@ -447,8 +566,8 @@ class _ChatInboxState extends State<ChatInbox> {
 
   bool _shouldShowDateHeader(int index) {
     if (index == 0) return true;
-    return !_isSameDay(_messages[index].createdAt,
-        _messages[index - 1].createdAt);
+    return !_isSameDay(
+        _messages[index].createdAt, _messages[index - 1].createdAt);
   }
 
   /// True when the previous message in the list is from the same sender and same day.
@@ -473,7 +592,10 @@ class _ChatInboxState extends State<ChatInbox> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    // Depend on the keyboard inset so the guide re-checks readiness when it
+    // closes (didChangeDependencies of the mixin schedules it).
+    MediaQuery.viewInsetsOf(context);
+    return guideBackScope(Scaffold(
       backgroundColor: kDarkWhite,
       appBar: _buildAppBar(),
       body: Column(
@@ -498,7 +620,7 @@ class _ChatInboxState extends State<ChatInbox> {
           _buildMessageInput(),
         ],
       ),
-    );
+    ));
   }
 
   // ---------------------------------------------------------------- App bar
@@ -566,8 +688,8 @@ class _ChatInboxState extends State<ChatInbox> {
                       child: Text(
                         _threadItems.length == 1
                             ? _threadItems.first.title
-                            : context.l10n.threadContextRelatedCount(
-                                _threadItems.length),
+                            : context.l10n
+                                .threadContextRelatedCount(_threadItems.length),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: kTextStyle.copyWith(
@@ -584,85 +706,97 @@ class _ChatInboxState extends State<ChatInbox> {
         ],
       ),
       actions: [
+        GuideInfoButton(host: this),
         if (_threadItems.isNotEmpty)
-          IconButton(
-            tooltip: context.l10n.threadContextTitle,
-            onPressed: () => showChatThreadContextSheet(
-              context,
-              items: _threadItems,
-              isClientViewer: _isClientViewer,
-              highlightedOrderId: widget.orderContext?.orderId,
-            ),
-            icon: Badge(
-              isLabelVisible: _threadItems.length > 1,
-              label: Text(
-                '${_threadItems.length}',
-                style: const TextStyle(fontSize: 10),
+          GuideAnchor.wrap(
+            _anchor(_guideRelatedKey, l10n.guideChatRelatedTitle,
+                l10n.guideChatRelatedDesc,
+                radius: BorderRadius.circular(24)),
+            IconButton(
+              tooltip: context.l10n.threadContextTitle,
+              onPressed: () => showChatThreadContextSheet(
+                context,
+                items: _threadItems,
+                isClientViewer: _isClientViewer,
+                highlightedOrderId: widget.orderContext?.orderId,
               ),
-              child: const Icon(Icons.work_outline_rounded, color: kNeutralColor),
+              icon: Badge(
+                isLabelVisible: _threadItems.length > 1,
+                label: Text(
+                  '${_threadItems.length}',
+                  style: const TextStyle(fontSize: 10),
+                ),
+                child: const Icon(Icons.work_outline_rounded,
+                    color: kNeutralColor),
+              ),
             ),
           ),
         Padding(
           padding: const EdgeInsets.only(right: 8),
-          child: Container(
-            decoration: BoxDecoration(
-              color: kDarkWhite,
-              shape: BoxShape.circle,
-            ),
-            child: PopupMenuButton<String>(
-              icon: const Icon(FeatherIcons.moreVertical,
-                  color: kNeutralColor, size: 18),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
+          child: GuideAnchor.wrap(
+            _anchor(
+                _guideMenuKey, l10n.guideChatMenuTitle, l10n.guideChatMenuDesc,
+                radius: BorderRadius.circular(24)),
+            Container(
+              decoration: BoxDecoration(
+                color: kDarkWhite,
+                shape: BoxShape.circle,
               ),
-              itemBuilder: (BuildContext bc) => [
-                if (_canOpenOtherProfile)
+              child: PopupMenuButton<String>(
+                icon: const Icon(FeatherIcons.moreVertical,
+                    color: kNeutralColor, size: 18),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                itemBuilder: (BuildContext bc) => [
+                  if (_canOpenOtherProfile)
+                    PopupMenuItem(
+                      value: 'profile',
+                      child: Row(
+                        children: [
+                          const Icon(Icons.person_outline_rounded,
+                              size: 18, color: kNeutralColor),
+                          const SizedBox(width: 10),
+                          Text(l10n.viewProfile,
+                              style: kTextStyle.copyWith(color: kNeutralColor)),
+                        ],
+                      ),
+                    ),
                   PopupMenuItem(
-                    value: 'profile',
+                    value: 'block',
                     child: Row(
                       children: [
-                        const Icon(Icons.person_outline_rounded,
+                        const Icon(Icons.block_rounded,
                             size: 18, color: kNeutralColor),
                         const SizedBox(width: 10),
-                        Text(l10n.viewProfile,
+                        Text(l10n.block,
                             style: kTextStyle.copyWith(color: kNeutralColor)),
                       ],
                     ),
                   ),
-                PopupMenuItem(
-                  value: 'block',
-                  child: Row(
-                    children: [
-                      const Icon(Icons.block_rounded,
-                          size: 18, color: kNeutralColor),
-                      const SizedBox(width: 10),
-                      Text(l10n.block,
-                          style: kTextStyle.copyWith(color: kNeutralColor)),
-                    ],
+                  PopupMenuItem(
+                    value: 'report',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.flag_outlined,
+                            size: 18, color: kNeutralColor),
+                        const SizedBox(width: 10),
+                        Text(l10n.report,
+                            style: kTextStyle.copyWith(color: kNeutralColor)),
+                      ],
+                    ),
                   ),
-                ),
-                PopupMenuItem(
-                  value: 'report',
-                  child: Row(
-                    children: [
-                      const Icon(Icons.flag_outlined,
-                          size: 18, color: kNeutralColor),
-                      const SizedBox(width: 10),
-                      Text(l10n.report,
-                          style: kTextStyle.copyWith(color: kNeutralColor)),
-                    ],
-                  ),
-                ),
-              ],
-              onSelected: (value) {
-                if (value == 'profile') {
-                  Future.delayed(Duration.zero, _openOtherProfile);
-                } else if (value == 'block') {
-                  Future.delayed(Duration.zero, _showBlockPopUp);
-                } else if (value == 'report') {
-                  Future.delayed(Duration.zero, _openReport);
-                }
-              },
+                ],
+                onSelected: (value) {
+                  if (value == 'profile') {
+                    Future.delayed(Duration.zero, _openOtherProfile);
+                  } else if (value == 'block') {
+                    Future.delayed(Duration.zero, _showBlockPopUp);
+                  } else if (value == 'report') {
+                    Future.delayed(Duration.zero, _openReport);
+                  }
+                },
+              ),
             ),
           ),
         ),
@@ -827,6 +961,13 @@ class _ChatInboxState extends State<ChatInbox> {
   // ---------------------------------------------------------------- Messages
   Widget _buildMessageList() {
     final totalCount = _messages.length + _pendingMessages.length;
+    _guideOfferIdx = null;
+    for (var i = _messages.length - 1; i >= 0; i--) {
+      if (_isOfferMessage(_messages[i])) {
+        _guideOfferIdx = i;
+        break;
+      }
+    }
     return ListView.builder(
       controller: _scrollController,
       padding: const EdgeInsets.fromLTRB(14, 10, 14, 14),
@@ -858,6 +999,7 @@ class _ChatInboxState extends State<ChatInbox> {
         _buildMessageBubble(
           message,
           isMine: isMine,
+          guideOffer: index == _guideOfferIdx,
           isContinuation: isContinuation,
           isContinued: isContinued,
         ),
@@ -894,7 +1036,9 @@ class _ChatInboxState extends State<ChatInbox> {
     required bool isMine,
     required bool isContinuation,
     required bool isContinued,
+    bool guideOffer = false,
   }) {
+    final l10n = context.l10n;
     final bidInfo = _parseBidMessage(message.content);
     if (message.isJobOfferMessage ||
         message.jobOfferId != null ||
@@ -905,6 +1049,24 @@ class _ChatInboxState extends State<ChatInbox> {
         isMine: isMine,
         formatTime: (dt) => _formatMessageTime(context, dt),
         smallAvatar: _smallAvatar(),
+        guideCardAnchor: guideOffer
+            ? _anchor(
+                _guideOfferCardKey,
+                l10n.guideChatOfferCardTitle,
+                _isClientViewer
+                    ? l10n.guideChatOfferCardClientDesc
+                    : l10n.guideChatOfferCardSellerDesc,
+                radius: BorderRadius.circular(16))
+            : null,
+        guideStatusAnchor: guideOffer && !_isClientViewer
+            ? _anchor(_guideOfferStatusKey, l10n.guideChatOfferStatusTitle,
+                l10n.guideChatOfferStatusDesc,
+                radius: BorderRadius.circular(12))
+            : null,
+        guideActionsAnchor: guideOffer && _isClientViewer
+            ? _anchor(_guideOfferActionsKey, l10n.guideChatOfferActionsTitle,
+                l10n.guideChatOfferActionsDesc)
+            : null,
         legacyBid: bidInfo == null
             ? null
             : LegacyBidInfo(
@@ -922,12 +1084,8 @@ class _ChatInboxState extends State<ChatInbox> {
     final borderRadius = BorderRadius.only(
       topLeft: isMine ? radius : (isContinuation ? smallRadius : radius),
       topRight: !isMine ? radius : (isContinuation ? smallRadius : radius),
-      bottomLeft: !isMine
-          ? (isContinued ? radius : smallRadius)
-          : radius,
-      bottomRight: isMine
-          ? (isContinued ? radius : smallRadius)
-          : radius,
+      bottomLeft: !isMine ? (isContinued ? radius : smallRadius) : radius,
+      bottomRight: isMine ? (isContinued ? radius : smallRadius) : radius,
     );
 
     return Padding(
@@ -941,10 +1099,7 @@ class _ChatInboxState extends State<ChatInbox> {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (!isMine) ...[
-            if (!isContinued)
-              _smallAvatar()
-            else
-              const SizedBox(width: 28),
+            if (!isContinued) _smallAvatar() else const SizedBox(width: 28),
             const SizedBox(width: 6),
           ],
           Flexible(
@@ -956,8 +1111,8 @@ class _ChatInboxState extends State<ChatInbox> {
                   constraints: BoxConstraints(
                     maxWidth: MediaQuery.of(context).size.width * 0.72,
                   ),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 14, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: isMine
@@ -1057,8 +1212,7 @@ class _ChatInboxState extends State<ChatInbox> {
             )
           else
             Container(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 10, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.18),
                 borderRadius: BorderRadius.circular(10),
@@ -1067,8 +1221,7 @@ class _ChatInboxState extends State<ChatInbox> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Icon(Icons.insert_drive_file_rounded,
-                      color: Colors.white,
-                      size: 18),
+                      color: Colors.white, size: 18),
                   const SizedBox(width: 6),
                   Text(
                     l10n.chatAttachment,
@@ -1109,8 +1262,7 @@ class _ChatInboxState extends State<ChatInbox> {
         color: kPrimaryColor.withOpacity(0.10),
         image: hasImage
             ? DecorationImage(
-                image: NetworkImage(widget.otherUserImage),
-                fit: BoxFit.cover)
+                image: NetworkImage(widget.otherUserImage), fit: BoxFit.cover)
             : null,
       ),
       alignment: Alignment.center,
@@ -1209,8 +1361,8 @@ class _ChatInboxState extends State<ChatInbox> {
                             height: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                  kPrimaryColor),
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(kPrimaryColor),
                             ),
                           )
                         : const Icon(
@@ -1221,27 +1373,32 @@ class _ChatInboxState extends State<ChatInbox> {
                   ),
                   const SizedBox(width: 4),
                   Expanded(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxHeight: 120),
-                      child: TextField(
-                        controller: _messageController,
-                        focusNode: _msgFocusNode,
-                        minLines: 1,
-                        maxLines: 5,
-                        textInputAction: TextInputAction.newline,
-                        style: kTextStyle.copyWith(
-                          color: kNeutralColor,
-                          fontSize: 14,
-                        ),
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          isCollapsed: true,
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 6, vertical: 12),
-                          hintText: l10n.typeAMessage,
-                          hintStyle: kTextStyle.copyWith(
-                            color: kLightNeutralColor,
+                    child: GuideAnchor.wrap(
+                      _anchor(_guideWriteKey, l10n.guideChatWriteTitle,
+                          l10n.guideChatWriteDesc,
+                          radius: BorderRadius.circular(16)),
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(maxHeight: 120),
+                        child: TextField(
+                          controller: _messageController,
+                          focusNode: _msgFocusNode,
+                          minLines: 1,
+                          maxLines: 5,
+                          textInputAction: TextInputAction.newline,
+                          style: kTextStyle.copyWith(
+                            color: kNeutralColor,
                             fontSize: 14,
+                          ),
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            isCollapsed: true,
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 12),
+                            hintText: l10n.typeAMessage,
+                            hintStyle: kTextStyle.copyWith(
+                              color: kLightNeutralColor,
+                              fontSize: 14,
+                            ),
                           ),
                         ),
                       ),
@@ -1337,12 +1494,9 @@ class _ChatInboxState extends State<ChatInbox> {
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             ),
-                      color: isFailed
-                          ? const Color(0xFFFEE2E2)
-                          : null,
+                      color: isFailed ? const Color(0xFFFEE2E2) : null,
                       border: isFailed
-                          ? Border.all(
-                              color: const Color(0xFFEF4444), width: 1)
+                          ? Border.all(color: const Color(0xFFEF4444), width: 1)
                           : null,
                       borderRadius: BorderRadius.only(
                         topLeft: radius,
@@ -1366,10 +1520,8 @@ class _ChatInboxState extends State<ChatInbox> {
                                 width: 220,
                                 height: 220,
                                 color: kDarkWhite,
-                                child: const Icon(
-                                    Icons.broken_image_outlined,
-                                    color: kLightNeutralColor,
-                                    size: 32),
+                                child: const Icon(Icons.broken_image_outlined,
+                                    color: kLightNeutralColor, size: 32),
                               ),
                             ),
                           ),
@@ -1513,7 +1665,11 @@ class _ChatInboxState extends State<ChatInbox> {
       if (proposal.isEmpty) proposal = null;
     }
 
-    return _BidMessageInfo(jobTitle: jobTitle, amount: amount, delivery: delivery, proposal: proposal);
+    return _BidMessageInfo(
+        jobTitle: jobTitle,
+        amount: amount,
+        delivery: delivery,
+        proposal: proposal);
   }
 }
 
@@ -1522,7 +1678,11 @@ class _BidMessageInfo {
   final String amount;
   final String delivery;
   final String? proposal;
-  _BidMessageInfo({required this.jobTitle, required this.amount, required this.delivery, this.proposal});
+  _BidMessageInfo(
+      {required this.jobTitle,
+      required this.amount,
+      required this.delivery,
+      this.proposal});
 }
 
 // =============================================================

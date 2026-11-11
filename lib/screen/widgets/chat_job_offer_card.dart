@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/guide/guide_anchor.dart';
 import 'package:freelancer/core/utils/job_offer_chat_actions.dart';
 import 'package:freelancer/core/utils/job_offer_delivery.dart';
 import 'package:freelancer/l10n/l10n.dart';
@@ -19,6 +20,9 @@ class ChatJobOfferCard extends StatefulWidget {
     required this.formatTime,
     required this.smallAvatar,
     this.legacyBid,
+    this.guideCardAnchor,
+    this.guideStatusAnchor,
+    this.guideActionsAnchor,
   });
 
   final Message message;
@@ -27,6 +31,12 @@ class ChatJobOfferCard extends StatefulWidget {
   final String Function(DateTime) formatTime;
   final Widget smallAvatar;
   final LegacyBidInfo? legacyBid;
+
+  /// Optional guide targets (default null; only the chat screen passes them,
+  /// and only to one card): the whole card, the status chip, the action row.
+  final GuideAnchor? guideCardAnchor;
+  final GuideAnchor? guideStatusAnchor;
+  final GuideAnchor? guideActionsAnchor;
 
   @override
   State<ChatJobOfferCard> createState() => _ChatJobOfferCardState();
@@ -92,9 +102,10 @@ class _ChatJobOfferCardState extends State<ChatJobOfferCard> {
           _offer!['delivery_time'],
           _offer!['delivery_time_unit'],
         ),
-        proposal: (_offer!['cover_letter'] as String?)?.trim().isNotEmpty == true
-            ? (_offer!['cover_letter'] as String).trim()
-            : _legacyFromContent()?.proposal,
+        proposal:
+            (_offer!['cover_letter'] as String?)?.trim().isNotEmpty == true
+                ? (_offer!['cover_letter'] as String).trim()
+                : _legacyFromContent()?.proposal,
       );
     }
     return widget.legacyBid ?? _legacyFromContent();
@@ -235,7 +246,8 @@ class _ChatJobOfferCardState extends State<ChatJobOfferCard> {
           child: SizedBox(
             width: 24,
             height: 24,
-            child: CircularProgressIndicator(strokeWidth: 2, color: kPrimaryColor),
+            child:
+                CircularProgressIndicator(strokeWidth: 2, color: kPrimaryColor),
           ),
         ),
       );
@@ -243,8 +255,7 @@ class _ChatJobOfferCardState extends State<ChatJobOfferCard> {
     if (bid == null) return const SizedBox.shrink();
 
     final isCounter = widget.message.messageType == 'counter_offer';
-    final headerLabel =
-        isCounter ? l10n.counterOfferLabel : l10n.bidOfferLabel;
+    final headerLabel = isCounter ? l10n.counterOfferLabel : l10n.bidOfferLabel;
     final statusLabel = _statusLabel;
     final statusColors = _statusColors;
 
@@ -265,226 +276,245 @@ class _ChatJobOfferCardState extends State<ChatJobOfferCard> {
                   ? CrossAxisAlignment.end
                   : CrossAxisAlignment.start,
               children: [
-                Container(
-                  constraints: BoxConstraints(
-                    maxWidth: MediaQuery.of(context).size.width * 0.78,
-                  ),
-                  decoration: BoxDecoration(
-                    color: kWhite,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: kPrimaryColor.withValues(alpha: 0.25),
-                      width: 1.2,
+                GuideAnchor.wrap(
+                  widget.guideCardAnchor,
+                  Container(
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width * 0.78,
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: kPrimaryColor.withValues(alpha: 0.08),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
+                    decoration: BoxDecoration(
+                      color: kWhite,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: kPrimaryColor.withValues(alpha: 0.25),
+                        width: 1.2,
                       ),
-                    ],
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 10,
+                      boxShadow: [
+                        BoxShadow(
+                          color: kPrimaryColor.withValues(alpha: 0.08),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
                         ),
-                        color: kPrimaryColor.withValues(alpha: 0.10),
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: kPrimaryColor,
-                              ),
-                              child: Icon(
-                                isCounter
-                                    ? Icons.swap_horiz_rounded
-                                    : Icons.assignment_outlined,
-                                color: kWhite,
-                                size: 14,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                headerLabel,
-                                style: kTextStyle.copyWith(
+                      ],
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 10,
+                          ),
+                          color: kPrimaryColor.withValues(alpha: 0.10),
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
                                   color: kPrimaryColor,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 13,
-                                  letterSpacing: 0.3,
+                                ),
+                                child: Icon(
+                                  isCounter
+                                      ? Icons.swap_horiz_rounded
+                                      : Icons.assignment_outlined,
+                                  color: kWhite,
+                                  size: 14,
                                 ),
                               ),
-                            ),
-                            if (statusLabel != null && statusColors != null)
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 3,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: statusColors.$2,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
+                              const SizedBox(width: 8),
+                              Expanded(
                                 child: Text(
-                                  statusLabel,
+                                  headerLabel,
                                   style: kTextStyle.copyWith(
-                                    color: statusColors.$1,
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w600,
+                                    color: kPrimaryColor,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13,
+                                    letterSpacing: 0.3,
                                   ),
                                 ),
                               ),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(14),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              bid.jobTitle,
-                              style: kTextStyle.copyWith(
-                                color: kNeutralColor,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                                height: 1.25,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 10),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: _bidPill(
-                                    icon: Icons.payments_outlined,
-                                    label: l10n.amount.toUpperCase(),
-                                    value: bid.amount,
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: _bidPill(
-                                    icon: Icons.schedule,
-                                    label: l10n.labelDuration.toUpperCase(),
-                                    value: bid.delivery,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            if (bid.proposal != null) ...[
-                              const SizedBox(height: 12),
-                              Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: kDarkWhite,
-                                  borderRadius: BorderRadius.circular(8),
-                                  border:
-                                      Border.all(color: kBorderColorTextField),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      l10n.proposalCaps,
+                              if (statusLabel != null && statusColors != null)
+                                GuideAnchor.wrap(
+                                  widget.guideStatusAnchor,
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 3,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: statusColors.$2,
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Text(
+                                      statusLabel,
                                       style: kTextStyle.copyWith(
-                                        color: kLightNeutralColor,
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w700,
-                                        letterSpacing: 0.5,
+                                        color: statusColors.$1,
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w600,
                                       ),
                                     ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      bid.proposal!,
-                                      style: kTextStyle.copyWith(
-                                        color: kNeutralColor,
-                                        fontSize: 13,
-                                        height: 1.35,
-                                      ),
-                                    ),
-                                  ],
+                                  ),
                                 ),
-                              ),
                             ],
-                            if (_canActOnOffer) ...[
-                              const SizedBox(height: 14),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(14),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                bid.jobTitle,
+                                style: kTextStyle.copyWith(
+                                  color: kNeutralColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                  height: 1.25,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 10),
                               Row(
                                 children: [
                                   Expanded(
-                                    child: OutlinedButton(
-                                      onPressed:
-                                          _actionBusy ? null : _handleReject,
-                                      style: OutlinedButton.styleFrom(
-                                        foregroundColor: StatusColors.danger,
-                                        side: const BorderSide(
-                                          color: StatusColors.danger,
-                                        ),
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 10,
-                                        ),
-                                      ),
-                                      child: Text(l10n.rejectApplication),
+                                    child: _bidPill(
+                                      icon: Icons.payments_outlined,
+                                      label: l10n.amount.toUpperCase(),
+                                      value: bid.amount,
                                     ),
                                   ),
                                   const SizedBox(width: 8),
                                   Expanded(
-                                    child: OutlinedButton(
-                                      onPressed:
-                                          _actionBusy ? null : _handleCounter,
-                                      style: OutlinedButton.styleFrom(
-                                        foregroundColor: kPrimaryColor,
-                                        side: const BorderSide(
-                                          color: kPrimaryColor,
-                                        ),
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 10,
-                                        ),
-                                      ),
-                                      child: Text(l10n.counterOfferAction),
+                                    child: _bidPill(
+                                      icon: Icons.schedule,
+                                      label: l10n.labelDuration.toUpperCase(),
+                                      value: bid.delivery,
                                     ),
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 8),
-                              SizedBox(
-                                width: double.infinity,
-                                child: FilledButton(
-                                  onPressed:
-                                      _actionBusy ? null : _handleAccept,
-                                  style: FilledButton.styleFrom(
-                                    backgroundColor: kPrimaryColor,
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 12,
-                                    ),
+                              if (bid.proposal != null) ...[
+                                const SizedBox(height: 12),
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: kDarkWhite,
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                        color: kBorderColorTextField),
                                   ),
-                                  child: _actionBusy
-                                      ? const SizedBox(
-                                          width: 18,
-                                          height: 18,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            color: kWhite,
-                                          ),
-                                        )
-                                      : Text(l10n.hireAction),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        l10n.proposalCaps,
+                                        style: kTextStyle.copyWith(
+                                          color: kLightNeutralColor,
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w700,
+                                          letterSpacing: 0.5,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        bid.proposal!,
+                                        style: kTextStyle.copyWith(
+                                          color: kNeutralColor,
+                                          fontSize: 13,
+                                          height: 1.35,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
+                              ],
+                              if (_canActOnOffer) ...[
+                                const SizedBox(height: 14),
+                                GuideAnchor.wrap(
+                                  widget.guideActionsAnchor,
+                                  Column(children: [
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: OutlinedButton(
+                                            onPressed: _actionBusy
+                                                ? null
+                                                : _handleReject,
+                                            style: OutlinedButton.styleFrom(
+                                              foregroundColor:
+                                                  StatusColors.danger,
+                                              side: const BorderSide(
+                                                color: StatusColors.danger,
+                                              ),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                vertical: 10,
+                                              ),
+                                            ),
+                                            child: Text(l10n.rejectApplication),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: OutlinedButton(
+                                            onPressed: _actionBusy
+                                                ? null
+                                                : _handleCounter,
+                                            style: OutlinedButton.styleFrom(
+                                              foregroundColor: kPrimaryColor,
+                                              side: const BorderSide(
+                                                color: kPrimaryColor,
+                                              ),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                vertical: 10,
+                                              ),
+                                            ),
+                                            child:
+                                                Text(l10n.counterOfferAction),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8),
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: FilledButton(
+                                        onPressed:
+                                            _actionBusy ? null : _handleAccept,
+                                        style: FilledButton.styleFrom(
+                                          backgroundColor: kPrimaryColor,
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 12,
+                                          ),
+                                        ),
+                                        child: _actionBusy
+                                            ? const SizedBox(
+                                                width: 18,
+                                                height: 18,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  strokeWidth: 2,
+                                                  color: kWhite,
+                                                ),
+                                              )
+                                            : Text(l10n.hireAction),
+                                      ),
+                                    ),
+                                  ]),
+                                ),
+                              ],
                             ],
-                          ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 4),

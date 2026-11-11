@@ -22,7 +22,9 @@ class _Sec extends StatefulWidget {
     this.autoScrollZ = false,
     this.withExtras = true,
     this.nearBottomFlag = false,
+    this.coreTargets = true,
   });
+  final bool coreTargets;
   final String screenId;
   final bool autoScrollZ;
   final bool withExtras;
@@ -94,8 +96,7 @@ class _SecState extends State<_Sec> with GuideHost<_Sec> {
             : SingleChildScrollView(
                 controller: scroll,
                 child: Column(children: [
-                  _t(a, 'A'),
-                  _t(b, 'B'),
+                  if (widget.coreTargets) ...[_t(a, 'A'), _t(b, 'B')],
                   if (widget.withExtras) ...[
                     _t(c, 'C'),
                     _t(d, 'D'),
@@ -232,6 +233,31 @@ void main() {
     expect(find.text('Skip'), findsOneWidget);
     await t.tap(find.text('Skip'));
     await _settle(t);
+  });
+
+  testWidgets('(i) with nothing to show explains it instead of doing nothing',
+      (t) async {
+    await _app(t, const _Sec(withExtras: false, coreTargets: false));
+    await t.tap(find.byIcon(Icons.info_outline));
+    await t.pump();
+    await t.pump(const Duration(milliseconds: 600));
+    expect(find.text('Nothing to explain here yet'), findsOneWidget);
+    expect(find.text('Skip'), findsNothing);
+    expect(find.text('Tips for this screen'), findsNothing);
+  });
+
+  testWidgets('chooser "Main tips" with no core targets explains it',
+      (t) async {
+    await _app(t, const _Sec(coreTargets: false));
+    await t.tap(find.byIcon(Icons.info_outline));
+    await t.pump();
+    await t.pump(const Duration(milliseconds: 600));
+    await t.tap(find.text('Main tips'));
+    await t.pump();
+    await t.pump(const Duration(milliseconds: 600));
+    await t.pump(const Duration(milliseconds: 300));
+    expect(find.text('Nothing to explain here yet'), findsOneWidget);
+    expect(find.text('Skip'), findsNothing);
   });
 
   testWidgets('no renderable extra sections: (i) runs core directly, no sheet',

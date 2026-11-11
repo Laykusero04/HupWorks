@@ -42,7 +42,7 @@ class _GuideInfoButtonState extends State<GuideInfoButton> {
     final host = widget.host;
     final sections = host.availableGuideSections(context);
     if (sections.isEmpty) {
-      host.replayGuide();
+      _replayCore();
       return;
     }
     final picked = await showGuideChooser(context, sections);
@@ -50,7 +50,24 @@ class _GuideInfoButtonState extends State<GuideInfoButton> {
     // Let the sheet's exit animation finish so the route is really gone.
     await Future<void>.delayed(const Duration(milliseconds: 250));
     if (!mounted || !host.mounted) return;
+    if (picked == GuideSection.coreId) {
+      _replayCore();
+      return;
+    }
     host.replayGuide(sectionId: picked);
+  }
+
+  /// Runs the core guide, or says so when too few of its targets are on
+  /// screen (for example an empty list); a tap must never fail silently.
+  void _replayCore() {
+    final host = widget.host;
+    if (host.canRunCoreGuide) {
+      host.replayGuide();
+      return;
+    }
+    ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+      SnackBar(content: Text(context.l10n.guideNothingToShow)),
+    );
   }
 
   @override

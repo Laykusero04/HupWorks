@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/guide/guide_anchor.dart';
+import 'package:freelancer/core/guide/guide_host.dart';
+import 'package:freelancer/core/guide/guide_info_button.dart';
+import 'package:freelancer/core/guide/guide_step.dart';
 import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
 import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
@@ -40,7 +44,8 @@ class ClientOrderDetails extends StatefulWidget {
   State<ClientOrderDetails> createState() => _ClientOrderDetailsState();
 }
 
-class _ClientOrderDetailsState extends State<ClientOrderDetails> {
+class _ClientOrderDetailsState extends State<ClientOrderDetails>
+    with GuideHost<ClientOrderDetails> {
   Map<String, dynamic>? _order;
   Map<String, dynamic>? _service;
   Map<String, dynamic>? _seller;
@@ -50,6 +55,135 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
   bool _clientHasReviewed = false;
   HireOnboardingPacket? _onboardingPacket;
 
+  // Guide targets (long-lived; each key sits on exactly one widget).
+  final GlobalKey _guideMoreKey = GlobalKey();
+  final GlobalKey _guideStageKey = GlobalKey();
+  final GlobalKey _guideSummaryKey = GlobalKey();
+  final GlobalKey _guideActionKey = GlobalKey();
+  final GlobalKey _guideCancelKey = GlobalKey();
+  final GlobalKey _guidePaymentKey = GlobalKey();
+  final GlobalKey _guideSiteKey = GlobalKey();
+  final GlobalKey _guideAttendanceKey = GlobalKey();
+  final GlobalKey _guideHoursKey = GlobalKey();
+
+  static const _sectionMore = 'more';
+
+  /// True during every reload after the first (pull-to-refresh, return from
+  /// the review/editor/chat, cancellation and payment callbacks) so a running
+  /// guide is torn down and restarted.
+  bool _reloading = false;
+
+  @override
+  String get guideScreenId => 'contract_details';
+
+  @override
+  String get guideRole => 'client';
+
+  @override
+  int get guideVersion => 1;
+
+  @override
+  bool get guideDataReady => !_isLoading && !_reloading && _order != null;
+
+  @override
+  String get guideSkipLabel => context.l10n.guideSkip;
+
+  @override
+  String get guideNextLabel => context.l10n.guideNext;
+
+  @override
+  String get guideDoneLabel => context.l10n.guideDone;
+
+  GuideAnchor _anchor(GlobalKey key, String title, String description,
+          {double radius = 12}) =>
+      GuideAnchor(
+        key: key,
+        scope: guideScope,
+        title: title,
+        description: description,
+        borderRadius: BorderRadius.circular(radius),
+      );
+
+  Widget _guide(GlobalKey key, String title, String description, Widget child,
+          {double radius = 12}) =>
+      GuideAnchor.wrap(_anchor(key, title, description, radius: radius), child);
+
+  /// Core: menu, stage box (delivery panel, delivered or active callout),
+  /// summary card, main bottom action. Unrendered targets are dropped (a
+  /// completed or cancelled contract has no stage box).
+  @override
+  List<GuideStep> buildGuideSteps(BuildContext context) {
+    final l10n = context.l10n;
+    return [
+      GuideStep(
+        key: _guideMoreKey,
+        title: l10n.guideContractDetailsMoreTitle,
+        description: l10n.guideContractDetailsMoreDesc,
+      ),
+      GuideStep(
+        key: _guideStageKey,
+        title: l10n.guideContractDetailsStageTitle,
+        description: l10n.guideContractDetailsStageDesc,
+      ),
+      GuideStep(
+        key: _guideSummaryKey,
+        title: l10n.guideContractDetailsSummaryTitle,
+        description: l10n.guideContractDetailsSummaryDesc,
+        enableAutoScroll: true,
+      ),
+      GuideStep(
+        key: _guideActionKey,
+        title: l10n.guideContractDetailsActionTitle,
+        description: l10n.guideContractDetailsActionDesc,
+        targetNearBottom: true,
+      ),
+    ];
+  }
+
+  /// Section "More on this contract": every target is conditional (screen
+  /// order). The chooser hides it when fewer than 2 render.
+  @override
+  List<GuideSection> buildGuideExtraSections(BuildContext context) {
+    final l10n = context.l10n;
+    return [
+      GuideSection(
+        id: _sectionMore,
+        title: l10n.guideContractDetailsSectionMore,
+        steps: [
+          GuideStep(
+            key: _guideCancelKey,
+            title: l10n.guideContractDetailsCancelTitle,
+            description: l10n.guideContractDetailsCancelDesc,
+          ),
+          GuideStep(
+            key: _guidePaymentKey,
+            title: l10n.guideContractDetailsPaymentTitle,
+            description: l10n.guideContractDetailsPaymentDesc,
+            enableAutoScroll: true,
+          ),
+          GuideStep(
+            key: _guideSiteKey,
+            title: l10n.guideContractDetailsSiteTitle,
+            description: l10n.guideContractDetailsSiteDesc,
+            enableAutoScroll: true,
+          ),
+          GuideStep(
+            key: _guideAttendanceKey,
+            title: l10n.guideContractDetailsAttendanceTitle,
+            description: l10n.guideContractDetailsAttendanceDesc,
+            enableAutoScroll: true,
+          ),
+          GuideStep(
+            key: _guideHoursKey,
+            title: l10n.guideContractDetailsHoursTitle,
+            description: l10n.guideContractDetailsHoursDesc,
+            enableAutoScroll: true,
+          ),
+        ],
+      ),
+    ];
+  }
+
   @override
   void initState() {
     super.initState();
@@ -57,6 +191,7 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
   }
 
   Future<void> _loadOrder() async {
+    if (mounted && !_isLoading) setState(() => _reloading = true);
     try {
       await OrdersService.expireStaleCancellationRequests();
       final data = await OrdersService.getOrderDetails(widget.orderId);
@@ -73,11 +208,17 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
           _clientHasReviewed = OrdersService.currentUserHasReviewedOrder(data);
           _onboardingPacket = packet;
           _isLoading = false;
+          _reloading = false;
         });
+        scheduleGuide();
       }
     } catch (e) {
       if (mounted) {
-        setState(() => _isLoading = false);
+        setState(() {
+          _isLoading = false;
+          _reloading = false;
+        });
+        scheduleGuide();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(context.l10n.errorLoadingOrder('$e'))),
         );
@@ -155,9 +296,7 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              approve
-                  ? l10n.contractCancelledSnack
-                  : l10n.contractKeptActive,
+              approve ? l10n.contractCancelledSnack : l10n.contractKeptActive,
             ),
           ),
         );
@@ -217,6 +356,11 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
       onOnboarding: _openOnboardingEditor,
       jobPost: OrderContractDisplay.jobPostFromOrder(_order),
       onJobLocationUpdated: _loadOrder,
+      guideAnchor: _anchor(
+        _guideSiteKey,
+        context.l10n.guideContractDetailsSiteTitle,
+        context.l10n.guideContractDetailsSiteDesc,
+      ),
     );
   }
 
@@ -226,10 +370,18 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
     if (jobPostId == null || !AttendanceService.isOnsiteJob(jobPost)) {
       return null;
     }
-    if (!AttendanceMode.isEnabled(AttendanceMode.effectiveForJobPost(jobPost))) {
+    if (!AttendanceMode.isEnabled(
+        AttendanceMode.effectiveForJobPost(jobPost))) {
       return null;
     }
-    return ClientAttendanceTodayCard(jobPostId: jobPostId);
+    return ClientAttendanceTodayCard(
+      jobPostId: jobPostId,
+      guideAnchor: _anchor(
+        _guideAttendanceKey,
+        context.l10n.guideContractDetailsAttendanceTitle,
+        context.l10n.guideContractDetailsAttendanceDesc,
+      ),
+    );
   }
 
   String _statusKey() =>
@@ -339,8 +491,7 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
     if (sid == null || sid.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(context.l10n.couldNotOpenReviewMissingSeller)),
+          SnackBar(content: Text(context.l10n.couldNotOpenReviewMissingSeller)),
         );
       }
       return;
@@ -528,9 +679,8 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
             children: [
               Expanded(
                 child: ButtonGlobalWithoutIcon(
-                  buttontext: _cancellationBusy
-                      ? l10n.ellipsisBusy
-                      : l10n.keepContract,
+                  buttontext:
+                      _cancellationBusy ? l10n.ellipsisBusy : l10n.keepContract,
                   buttonTextColor: kNeutralColor,
                   buttonDecoration: kButtonDecoration.copyWith(
                     color: kWhite,
@@ -637,9 +787,8 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
         decoration: const BoxDecoration(color: kWhite),
         padding: const EdgeInsets.fromLTRB(12, 10, 12, 16),
         child: ButtonGlobalWithoutIcon(
-          buttontext: _isCompletingJob
-              ? l10n.completingEllipsis
-              : l10n.markJobComplete,
+          buttontext:
+              _isCompletingJob ? l10n.completingEllipsis : l10n.markJobComplete,
           buttonDecoration: kButtonDecoration.copyWith(
             color: _isCompletingJob ? kLightNeutralColor : kPrimaryColor,
           ),
@@ -701,7 +850,15 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
         isCancellationRequested ? null : _buildAttendanceTodayCard();
     final deliveries = OrderDelivery.listFromOrderMap(_order);
 
-    return Scaffold(
+    // Bottom bar is a guide target only when it holds a real action button.
+    final barActionable = isDelivered ||
+        (isCompleted && !_clientHasReviewed) ||
+        (!isCancelled &&
+            !isCancellationRequested &&
+            !isCompleted &&
+            (status == 'active' || status == 'pending'));
+
+    return guideBackScope(Scaffold(
       backgroundColor: kDarkWhite,
       appBar: AppBar(
         backgroundColor: kDarkWhite,
@@ -714,63 +871,77 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
         ),
         centerTitle: true,
         actions: [
-          PopupMenuButton<String>(
-            padding: EdgeInsets.zero,
-            itemBuilder: (BuildContext context) => [
-              PopupMenuItem(
-                value: 'message',
-                child: Row(
-                  children: [
-                    const Icon(IconlyBold.chat, color: kPrimaryColor),
-                    const SizedBox(width: 5.0),
-                    Text(l10n.message,
-                        style: kTextStyle.copyWith(color: kNeutralColor)),
-                  ],
+          GuideInfoButton(host: this),
+          _guide(
+            _guideMoreKey,
+            l10n.guideContractDetailsMoreTitle,
+            l10n.guideContractDetailsMoreDesc,
+            radius: 20,
+            PopupMenuButton<String>(
+              padding: EdgeInsets.zero,
+              itemBuilder: (BuildContext context) => [
+                PopupMenuItem(
+                  value: 'message',
+                  child: Row(
+                    children: [
+                      const Icon(IconlyBold.chat, color: kPrimaryColor),
+                      const SizedBox(width: 5.0),
+                      Text(l10n.message,
+                          style: kTextStyle.copyWith(color: kNeutralColor)),
+                    ],
+                  ),
                 ),
-              ),
-              PopupMenuItem(
-                value: 'report',
-                child: Row(
-                  children: [
-                    const Icon(IconlyBold.document, color: Colors.red),
-                    const SizedBox(width: 5.0),
-                    Text(l10n.report,
-                        style: kTextStyle.copyWith(color: kNeutralColor)),
-                  ],
+                PopupMenuItem(
+                  value: 'report',
+                  child: Row(
+                    children: [
+                      const Icon(IconlyBold.document, color: Colors.red),
+                      const SizedBox(width: 5.0),
+                      Text(l10n.report,
+                          style: kTextStyle.copyWith(color: kNeutralColor)),
+                    ],
+                  ),
                 ),
+              ],
+              onSelected: (value) {
+                if (value == 'message') {
+                  _handleMessageSeller();
+                } else if (value == 'report') {
+                  final sellerId = _seller?['id'] as String?;
+                  ClientReport(
+                    reportedUserId: sellerId,
+                    reportedUserName: _seller?['name'] as String?,
+                    orderId: widget.orderId,
+                  ).launch(context);
+                }
+              },
+              child: const Padding(
+                padding: EdgeInsets.only(right: 10.0),
+                child: Icon(Icons.more_vert_rounded, color: kNeutralColor),
               ),
-            ],
-            onSelected: (value) {
-              if (value == 'message') {
-                _handleMessageSeller();
-              } else if (value == 'report') {
-                final sellerId = _seller?['id'] as String?;
-                ClientReport(
-                  reportedUserId: sellerId,
-                  reportedUserName: _seller?['name'] as String?,
-                  orderId: widget.orderId,
-                ).launch(context);
-              }
-            },
-            child: const Padding(
-              padding: EdgeInsets.only(right: 10.0),
-              child: Icon(Icons.more_vert_rounded, color: kNeutralColor),
             ),
           ),
         ],
       ),
-      bottomNavigationBar: Material(
-        color: kWhite,
-        elevation: 12,
-        shadowColor: Colors.black26,
-        child: Padding(
-          padding: EdgeInsets.only(bottom: bottomInset),
-          child: _buildBottomBar(
-            status: status,
-            isCompleted: isCompleted,
-            isDelivered: isDelivered,
-            isCancelled: isCancelled,
-            isCancellationRequested: isCancellationRequested,
+      bottomNavigationBar: _guideIf(
+        barActionable,
+        _guideActionKey,
+        l10n.guideContractDetailsActionTitle,
+        l10n.guideContractDetailsActionDesc,
+        radius: 0,
+        Material(
+          color: kWhite,
+          elevation: 12,
+          shadowColor: Colors.black26,
+          child: Padding(
+            padding: EdgeInsets.only(bottom: bottomInset),
+            child: _buildBottomBar(
+              status: status,
+              isCompleted: isCompleted,
+              isDelivered: isDelivered,
+              isCancelled: isCancelled,
+              isCancellationRequested: isCancellationRequested,
+            ),
           ),
         ),
       ),
@@ -789,175 +960,221 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
           child: RubikRefreshIndicator(
             onRefresh: _loadOrder,
             child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(
-              parent: BouncingScrollPhysics(),
-            ),
-            child: Column(
-              children: [
-                const SizedBox(height: 15.0),
-                if (isCancellationRequested) ...[
-                  _buildCancellationRequestBanner(sellerName),
-                  const SizedBox(height: 16),
-                ],
-                if (isCompleted) ...[
-                  OrderPaymentReceivedCard(
-                    orderId: widget.orderId,
-                    order: _order,
-                    isSellerView: false,
-                    onChanged: _loadOrder,
-                  ),
-                  const SizedBox(height: 16),
-                ],
-                if (deliveries.isNotEmpty) ...[
-                  OrderDeliveryPanel(
-                    deliveries: deliveries,
-                    title: l10n.sellerSubmittedDelivery,
-                    instruction:
-                        isDelivered ? l10n.deliveredCalloutBody : null,
-                  ),
-                  const SizedBox(height: 16),
-                ] else if (isDelivered) ...[
-                  _buildDeliveredCallout(),
-                  const SizedBox(height: 16),
-                ],
-                if (isOpenContract) ...[
-                  _buildActiveWorkCallout(),
-                  const SizedBox(height: 16),
-                ],
-                if (siteSetup != null) ...[
-                  siteSetup,
-                  const SizedBox(height: 12),
-                ],
-                if (attendanceToday != null) ...[
-                  attendanceToday,
-                  const SizedBox(height: 12),
-                ],
-                if (!isCancellationRequested)
-                  HourReportsSection(
-                    orderId: widget.orderId,
-                    isEmployer: true,
-                    onChanged: _loadOrder,
-                  ),
-                Container(
-                  padding: const EdgeInsets.all(10.0),
-                  width: context.width(),
-                  decoration: BoxDecoration(
-                    color: kWhite,
-                    borderRadius: BorderRadius.circular(8.0),
-                    border: Border.all(color: kBorderColorTextField),
-                    boxShadow: const [
-                      BoxShadow(
-                          color: kDarkWhite,
-                          spreadRadius: 4.0,
-                          blurRadius: 4.0,
-                          offset: Offset(0, 2))
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            l10n.orderIdHash(orderId),
-                            style: kTextStyle.copyWith(
-                                color: kNeutralColor,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          const Spacer(),
-                          if (!isCancelled && !isCancellationRequested)
-                            SlideCountdownSeparated(
-                              duration: _getTimeRemaining(),
-                              separatorType: SeparatorType.symbol,
-                              separatorStyle: kTextStyle.copyWith(
-                                color: Colors.transparent,
-                              ),
-                              decoration: BoxDecoration(
-                                color: (isCompleted || isDelivered)
-                                    ? const Color(0xFFBFBFBF)
-                                    : kPrimaryColor,
-                                borderRadius: BorderRadius.circular(3.0),
-                              ),
-                            ),
+              physics: const AlwaysScrollableScrollPhysics(
+                parent: BouncingScrollPhysics(),
+              ),
+              child: Column(
+                children: [
+                  const SizedBox(height: 15.0),
+                  if (isCancellationRequested) ...[
+                    _guide(
+                      _guideCancelKey,
+                      l10n.guideContractDetailsCancelTitle,
+                      l10n.guideContractDetailsCancelDesc,
+                      _buildCancellationRequestBanner(sellerName),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                  if (isCompleted) ...[
+                    OrderPaymentReceivedCard(
+                      orderId: widget.orderId,
+                      order: _order,
+                      isSellerView: false,
+                      onChanged: _loadOrder,
+                      guideAnchor: _anchor(
+                        _guidePaymentKey,
+                        l10n.guideContractDetailsPaymentTitle,
+                        l10n.guideContractDetailsPaymentDesc,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                  if (deliveries.isNotEmpty) ...[
+                    OrderDeliveryPanel(
+                      deliveries: deliveries,
+                      title: l10n.sellerSubmittedDelivery,
+                      instruction:
+                          isDelivered ? l10n.deliveredCalloutBody : null,
+                      guideAnchor: _anchor(
+                        _guideStageKey,
+                        l10n.guideContractDetailsStageTitle,
+                        l10n.guideContractDetailsStageDesc,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ] else if (isDelivered) ...[
+                    _guide(
+                      _guideStageKey,
+                      l10n.guideContractDetailsStageTitle,
+                      l10n.guideContractDetailsStageDesc,
+                      _buildDeliveredCallout(),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                  if (isOpenContract) ...[
+                    // The stage key is on the delivery panel when there is one.
+                    _guideIf(
+                      deliveries.isEmpty,
+                      _guideStageKey,
+                      l10n.guideContractDetailsStageTitle,
+                      l10n.guideContractDetailsStageDesc,
+                      _buildActiveWorkCallout(),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                  if (siteSetup != null) ...[
+                    siteSetup,
+                    const SizedBox(height: 12),
+                  ],
+                  if (attendanceToday != null) ...[
+                    attendanceToday,
+                    const SizedBox(height: 12),
+                  ],
+                  if (!isCancellationRequested)
+                    HourReportsSection(
+                      orderId: widget.orderId,
+                      isEmployer: true,
+                      onChanged: _loadOrder,
+                      guideAnchor: _anchor(
+                        _guideHoursKey,
+                        l10n.guideContractDetailsHoursTitle,
+                        l10n.guideContractDetailsHoursDesc,
+                      ),
+                    ),
+                  _guide(
+                    _guideSummaryKey,
+                    l10n.guideContractDetailsSummaryTitle,
+                    l10n.guideContractDetailsSummaryDesc,
+                    radius: 8,
+                    Container(
+                      padding: const EdgeInsets.all(10.0),
+                      width: context.width(),
+                      decoration: BoxDecoration(
+                        color: kWhite,
+                        borderRadius: BorderRadius.circular(8.0),
+                        border: Border.all(color: kBorderColorTextField),
+                        boxShadow: const [
+                          BoxShadow(
+                              color: kDarkWhite,
+                              spreadRadius: 4.0,
+                              blurRadius: 4.0,
+                              offset: Offset(0, 2))
                         ],
                       ),
-                      const SizedBox(height: 10.0),
-                      RichText(
-                        text: TextSpan(
-                          text: '${l10n.sellerColon} ',
-                          style: kTextStyle.copyWith(color: kLightNeutralColor),
-                          children: [
-                            TextSpan(
-                                text: sellerName,
-                                style:
-                                    kTextStyle.copyWith(color: kNeutralColor)),
-                            TextSpan(
-                                text: '  |  ',
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                l10n.orderIdHash(orderId),
                                 style: kTextStyle.copyWith(
-                                    color: kLightNeutralColor)),
-                            TextSpan(
-                              text: _formatDate(_order?['created_at']),
+                                    color: kNeutralColor,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              const Spacer(),
+                              if (!isCancelled && !isCancellationRequested)
+                                SlideCountdownSeparated(
+                                  duration: _getTimeRemaining(),
+                                  separatorType: SeparatorType.symbol,
+                                  separatorStyle: kTextStyle.copyWith(
+                                    color: Colors.transparent,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: (isCompleted || isDelivered)
+                                        ? const Color(0xFFBFBFBF)
+                                        : kPrimaryColor,
+                                    borderRadius: BorderRadius.circular(3.0),
+                                  ),
+                                ),
+                            ],
+                          ),
+                          const SizedBox(height: 10.0),
+                          RichText(
+                            text: TextSpan(
+                              text: '${l10n.sellerColon} ',
                               style: kTextStyle.copyWith(
                                   color: kLightNeutralColor),
+                              children: [
+                                TextSpan(
+                                    text: sellerName,
+                                    style: kTextStyle.copyWith(
+                                        color: kNeutralColor)),
+                                TextSpan(
+                                    text: '  |  ',
+                                    style: kTextStyle.copyWith(
+                                        color: kLightNeutralColor)),
+                                TextSpan(
+                                  text: _formatDate(_order?['created_at']),
+                                  style: kTextStyle.copyWith(
+                                      color: kLightNeutralColor),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 8.0),
+                          const Divider(
+                              thickness: 1.0,
+                              color: kBorderColorTextField,
+                              height: 1.0),
+                          const SizedBox(height: 8.0),
+                          _buildRow(l10n.labelTitle, title,
+                              emphasizeValue: true),
+                          const SizedBox(height: 8.0),
+                          _buildRow(l10n.labelServiceInfo, description,
+                              isExpandable: true),
+                          const SizedBox(height: 8.0),
+                          _buildRow(l10n.labelDuration, durationText),
+                          const SizedBox(height: 8.0),
+                          _buildRow(l10n.amount, '$currencySign$price'),
+                          const SizedBox(height: 8.0),
+                          _buildRow(
+                              l10n.labelStatus, _statusLabelForUi(status)),
+                          const SizedBox(height: 15.0),
+                          Text(l10n.orderDetailsTitle,
+                              style: kTextStyle.copyWith(
+                                  color: kNeutralColor,
+                                  fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 8.0),
+                          _buildRow(l10n.labelRevisions, revisionText),
+                          const SizedBox(height: 15.0),
+                          Text(l10n.orderSummary,
+                              style: kTextStyle.copyWith(
+                                  color: kNeutralColor,
+                                  fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 8.0),
+                          _buildRow(l10n.subtotal, '$currencySign$price'),
+                          const SizedBox(height: 8.0),
+                          _buildRow(l10n.labelTotal, '$currencySign$price'),
+                          const SizedBox(height: 8.0),
+                          _buildRow(l10n.deliveryDate,
+                              _formatDate(_order?['delivery_deadline'])),
+                          if (ShiftSchedule.fromOrderMap(_order).displayLabel !=
+                              null) ...[
+                            const SizedBox(height: 8.0),
+                            _buildRow(
+                              l10n.shiftLabel,
+                              ShiftSchedule.fromOrderMap(_order).displayLabel!,
                             ),
                           ],
-                        ),
+                        ],
                       ),
-                      const SizedBox(height: 8.0),
-                      const Divider(
-                          thickness: 1.0,
-                          color: kBorderColorTextField,
-                          height: 1.0),
-                      const SizedBox(height: 8.0),
-                      _buildRow(l10n.labelTitle, title, emphasizeValue: true),
-                      const SizedBox(height: 8.0),
-                      _buildRow(l10n.labelServiceInfo, description,
-                          isExpandable: true),
-                      const SizedBox(height: 8.0),
-                      _buildRow(l10n.labelDuration, durationText),
-                      const SizedBox(height: 8.0),
-                      _buildRow(l10n.amount, '$currencySign$price'),
-                      const SizedBox(height: 8.0),
-                      _buildRow(l10n.labelStatus, _statusLabelForUi(status)),
-                      const SizedBox(height: 15.0),
-                      Text(l10n.orderDetailsTitle,
-                          style: kTextStyle.copyWith(
-                              color: kNeutralColor,
-                              fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 8.0),
-                      _buildRow(l10n.labelRevisions, revisionText),
-                      const SizedBox(height: 15.0),
-                      Text(l10n.orderSummary,
-                          style: kTextStyle.copyWith(
-                              color: kNeutralColor,
-                              fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 8.0),
-                      _buildRow(l10n.subtotal, '$currencySign$price'),
-                      const SizedBox(height: 8.0),
-                      _buildRow(l10n.labelTotal, '$currencySign$price'),
-                      const SizedBox(height: 8.0),
-                      _buildRow(l10n.deliveryDate,
-                          _formatDate(_order?['delivery_deadline'])),
-                      if (ShiftSchedule.fromOrderMap(_order).displayLabel !=
-                          null) ...[
-                        const SizedBox(height: 8.0),
-                        _buildRow(
-                          l10n.shiftLabel,
-                          ShiftSchedule.fromOrderMap(_order).displayLabel!,
-                        ),
-                      ],
-                    ],
+                    ),
                   ),
-                ),
-                SizedBox(height: 15.0 + bottomInset),
-              ],
+                  SizedBox(height: 15.0 + bottomInset),
+                ],
+              ),
             ),
-          ),
           ),
         ),
       ),
-    );
+    ));
   }
+
+  Widget _guideIf(bool attach, GlobalKey key, String title, String description,
+          Widget child,
+          {double radius = 12}) =>
+      attach ? _guide(key, title, description, child, radius: radius) : child;
 
   Widget _buildRow(String label, String value,
       {bool isExpandable = false, bool emphasizeValue = false}) {
@@ -978,7 +1195,8 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(context.l10n.labelColon, style: kTextStyle.copyWith(color: kSubTitleColor)),
+              Text(context.l10n.labelColon,
+                  style: kTextStyle.copyWith(color: kSubTitleColor)),
               const SizedBox(width: 10.0),
               Flexible(
                 child: isExpandable

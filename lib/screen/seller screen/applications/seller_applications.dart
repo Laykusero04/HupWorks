@@ -1,5 +1,9 @@
 import 'dart:async';
 import 'package:freelancer/core/chat/chat_contact_policy.dart';
+import 'package:freelancer/core/guide/guide_anchor.dart';
+import 'package:freelancer/core/guide/guide_host.dart';
+import 'package:freelancer/core/guide/guide_info_button.dart';
+import 'package:freelancer/core/guide/guide_step.dart';
 import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
 import 'package:freelancer/core/widgets/loading_widget.dart';
 
@@ -26,7 +30,116 @@ class SellerApplications extends StatefulWidget {
   State<SellerApplications> createState() => _SellerApplicationsState();
 }
 
-class _SellerApplicationsState extends State<SellerApplications> {
+class _SellerApplicationsState extends State<SellerApplications>
+    with GuideHost<SellerApplications> {
+  // Guide targets (long-lived, one widget each). Card-level targets sit on
+  // the FIRST matching card only (see _guideIdx, recomputed every build).
+  final GlobalKey _guideSearchKey = GlobalKey();
+  final GlobalKey _guideTabsKey = GlobalKey();
+  final GlobalKey _guideCardKey = GlobalKey();
+  final GlobalKey _guideWithdrawKey = GlobalKey();
+  final GlobalKey _guideMessageKey = GlobalKey();
+  final GlobalKey _guideAttendanceKey = GlobalKey();
+  final GlobalKey _guideInstructionsKey = GlobalKey();
+
+  /// Index (in the visible list) of the card that owns each target.
+  Map<String, int> _guideIdx = const {};
+  bool _reloading = false; // any reload in flight (also pull-to-refresh)
+
+  @override
+  String get guideScreenId => 'seller_applications';
+  @override
+  String get guideRole => 'seller';
+  @override
+  int get guideVersion => 1;
+
+  /// False during every reload (spinner, pull-to-refresh, return from job
+  /// details), so a running guide is torn down and restarted.
+  @override
+  bool get guideDataReady => !_isLoading && !_reloading;
+  @override
+  String get guideSkipLabel => context.l10n.guideSkip;
+  @override
+  String get guideNextLabel => context.l10n.guideNext;
+  @override
+  String get guideDoneLabel => context.l10n.guideDone;
+
+  @override
+  List<GuideStep> buildGuideSteps(BuildContext context) {
+    final l10n = context.l10n;
+    return [
+      GuideStep(
+          key: _guideSearchKey,
+          title: l10n.guideSellerAppsSearchTitle,
+          description: l10n.guideSellerAppsSearchDesc),
+      GuideStep(
+          key: _guideTabsKey,
+          title: l10n.guideSellerAppsTabsTitle,
+          description: l10n.guideSellerAppsTabsDesc),
+      GuideStep(
+          key: _guideCardKey,
+          title: l10n.guideSellerAppsCardTitle,
+          description: l10n.guideSellerAppsCardDesc),
+      GuideStep(
+          key: _guideWithdrawKey,
+          title: l10n.guideSellerAppsWithdrawTitle,
+          description: l10n.guideSellerAppsWithdrawDesc,
+          enableAutoScroll: true),
+    ];
+  }
+
+  @override
+  List<GuideSection> buildGuideExtraSections(BuildContext context) {
+    final l10n = context.l10n;
+    return [
+      GuideSection(
+        id: 'hired',
+        title: l10n.guideSellerAppsSectionHired,
+        steps: [
+          GuideStep(
+              key: _guideMessageKey,
+              title: l10n.guideSellerAppsMessageTitle,
+              description: l10n.guideSellerAppsMessageDesc,
+              enableAutoScroll: true),
+          GuideStep(
+              key: _guideAttendanceKey,
+              title: l10n.guideSellerAppsAttendanceTitle,
+              description: l10n.guideSellerAppsAttendanceDesc,
+              enableAutoScroll: true),
+          GuideStep(
+              key: _guideInstructionsKey,
+              title: l10n.guideSellerAppsInstructionsTitle,
+              description: l10n.guideSellerAppsInstructionsDesc,
+              enableAutoScroll: true),
+        ],
+      ),
+    ];
+  }
+
+  GuideAnchor? _a(bool on, GlobalKey key, String title, String desc) => on
+      ? GuideAnchor(key: key, scope: guideScope, title: title, description: desc)
+      : null;
+
+  Map<String, int> _computeGuideIdx(List<Map<String, dynamic>> visible) {
+    final m = <String, int>{};
+    for (var i = 0; i < visible.length; i++) {
+      final app = visible[i];
+      final st = (app['status'] as String?)?.toLowerCase() ?? 'pending';
+      m.putIfAbsent('card', () => i);
+      if (st == 'pending') m.putIfAbsent('withdraw', () => i);
+      if (st == 'accepted') {
+        m.putIfAbsent('message', () => i);
+        if (AttendanceService.isOnsiteJob(
+            app['job_posts'] as Map<String, dynamic>?)) {
+          m.putIfAbsent('attendance', () => i);
+        }
+      }
+      if (app['instructions_pending'] == true) {
+        m.putIfAbsent('instructions', () => i);
+      }
+    }
+    return m;
+  }
   static const _statusTabs = [
     'all',
     'pending',
@@ -59,7 +172,12 @@ class _SellerApplicationsState extends State<SellerApplications> {
   }
 
   Future<void> _load({bool showLoader = true}) async {
-    if (showLoader && mounted) setState(() => _isLoading = true);
+    if (mounted) {
+      setState(() {
+        _reloading = true;
+        if (showLoader) _isLoading = true;
+      });
+    }
     try {
       final apps = await SellerOrdersService.getMyApplications();
       for (final app in apps) {
@@ -80,16 +198,20 @@ class _SellerApplicationsState extends State<SellerApplications> {
         setState(() {
           _applications = apps;
           _isLoading = false;
+          _reloading = false;
           _loadFailed = false;
         });
+        scheduleGuide();
       }
     } catch (e) {
       if (mounted) {
         final keepList = _applications.isNotEmpty;
         setState(() {
           _isLoading = false;
+          _reloading = false;
           _loadFailed = !keepList;
         });
+        scheduleGuide();
         if (keepList) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(context.l10n.errorLoadingApplications('$e'))),
@@ -225,7 +347,10 @@ class _SellerApplicationsState extends State<SellerApplications> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        TextField(
+        GuideAnchor.wrap(
+          _a(true, _guideSearchKey, l10n.guideSellerAppsSearchTitle,
+              l10n.guideSellerAppsSearchDesc),
+          TextField(
           controller: _searchController,
           onChanged: _onSearchChanged,
           style: kTextStyle.copyWith(color: kNeutralColor, fontSize: 14),
@@ -259,9 +384,12 @@ class _SellerApplicationsState extends State<SellerApplications> {
               borderSide: BorderSide(color: primary),
             ),
           ),
-        ),
+        )),
         const SizedBox(height: 12),
-        SizedBox(
+        GuideAnchor.wrap(
+          _a(true, _guideTabsKey, l10n.guideSellerAppsTabsTitle,
+              l10n.guideSellerAppsTabsDesc),
+          SizedBox(
           height: 40,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
@@ -293,7 +421,7 @@ class _SellerApplicationsState extends State<SellerApplications> {
               );
             },
           ),
-        ),
+        )),
       ],
     );
   }
@@ -327,7 +455,7 @@ class _SellerApplicationsState extends State<SellerApplications> {
     );
   }
 
-  Widget _buildCard(Map<String, dynamic> app) {
+  Widget _buildCard(Map<String, dynamic> app, int index) {
     final l10n = context.l10n;
     final primary = Theme.of(context).colorScheme.primary;
     final jobPost = app['job_posts'] as Map<String, dynamic>?;
@@ -335,6 +463,7 @@ class _SellerApplicationsState extends State<SellerApplications> {
     final status = _statusStyle(statusRaw);
     final offerId = app['id'] as String?;
     final withdrawing = offerId != null && _withdrawBusyIds.contains(offerId);
+    bool own(String k) => _guideIdx[k] == index;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
@@ -349,7 +478,10 @@ class _SellerApplicationsState extends State<SellerApplications> {
             await BuyerRequestDetails(jobPostId: id).launch(context);
             if (mounted) _load(showLoader: false);
           },
-          child: Container(
+          child: GuideAnchor.wrap(
+            _a(own('card'), _guideCardKey, l10n.guideSellerAppsCardTitle,
+                l10n.guideSellerAppsCardDesc),
+            Container(
             padding: const EdgeInsets.all(12.0),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10.0),
@@ -390,7 +522,11 @@ class _SellerApplicationsState extends State<SellerApplications> {
                       ),
                     ),
                     if (statusRaw == 'pending' || statusRaw == 'accepted')
-                      IconButton(
+                      GuideAnchor.wrap(
+                        _a(own('message'), _guideMessageKey,
+                            l10n.guideSellerAppsMessageTitle,
+                            l10n.guideSellerAppsMessageDesc),
+                        IconButton(
                         visualDensity: VisualDensity.compact,
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(
@@ -404,7 +540,7 @@ class _SellerApplicationsState extends State<SellerApplications> {
                           color: primary,
                         ),
                         onPressed: () => _openChatWithClient(app),
-                      ),
+                      )),
                   ],
                 ),
                 const SizedBox(height: 8.0),
@@ -459,7 +595,11 @@ class _SellerApplicationsState extends State<SellerApplications> {
                   const SizedBox(height: 10),
                   Align(
                     alignment: Alignment.centerRight,
-                    child: OutlinedButton(
+                    child: GuideAnchor.wrap(
+                      _a(own('withdraw'), _guideWithdrawKey,
+                          l10n.guideSellerAppsWithdrawTitle,
+                          l10n.guideSellerAppsWithdrawDesc),
+                      OutlinedButton(
                       onPressed: withdrawing ? null : () => _withdraw(app),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: StatusColors.danger,
@@ -475,13 +615,17 @@ class _SellerApplicationsState extends State<SellerApplications> {
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           : Text(l10n.withdrawApplication),
-                    ),
+                    )),
                   ),
                 ],
                 if (statusRaw == 'accepted' &&
                     AttendanceService.isOnsiteJob(jobPost)) ...[
                   const SizedBox(height: 8),
-                  InkWell(
+                  GuideAnchor.wrap(
+                    _a(own('attendance'), _guideAttendanceKey,
+                        l10n.guideSellerAppsAttendanceTitle,
+                        l10n.guideSellerAppsAttendanceDesc),
+                    InkWell(
                     onTap: () => context.push(
                       '/seller/attendance?jobPostId=${jobPost?['id']}',
                     ),
@@ -505,11 +649,15 @@ class _SellerApplicationsState extends State<SellerApplications> {
                         ),
                       ),
                     ),
-                  ),
+                  )),
                 ],
                 if (app['instructions_pending'] == true) ...[
                   const SizedBox(height: 8.0),
-                  InkWell(
+                  GuideAnchor.wrap(
+                    _a(own('instructions'), _guideInstructionsKey,
+                        l10n.guideSellerAppsInstructionsTitle,
+                        l10n.guideSellerAppsInstructionsDesc),
+                    InkWell(
                     onTap: () async {
                       final orderId = app['order_id'] as String?;
                       if (orderId == null) return;
@@ -535,11 +683,11 @@ class _SellerApplicationsState extends State<SellerApplications> {
                         ),
                       ),
                     ),
-                  ),
+                  )),
                 ],
               ],
             ),
-          ),
+          )),
         ),
       ),
     );
@@ -550,8 +698,9 @@ class _SellerApplicationsState extends State<SellerApplications> {
     final l10n = context.l10n;
     final primary = Theme.of(context).colorScheme.primary;
     final visible = _visible;
+    _guideIdx = _computeGuideIdx(visible);
 
-    return Scaffold(
+    return guideBackScope(Scaffold(
       backgroundColor: kDarkWhite,
       appBar: AppBar(
         backgroundColor: kDarkWhite,
@@ -565,6 +714,7 @@ class _SellerApplicationsState extends State<SellerApplications> {
           ),
         ),
         centerTitle: true,
+        actions: [GuideInfoButton(host: this)],
       ),
       body: Padding(
         padding: const EdgeInsets.only(top: 10.0),
@@ -609,7 +759,7 @@ class _SellerApplicationsState extends State<SellerApplications> {
                                 ),
                                 padding: const EdgeInsets.only(top: 8, bottom: 15),
                                 itemCount: visible.length,
-                                itemBuilder: (_, i) => _buildCard(visible[i]),
+                                itemBuilder: (_, i) => _buildCard(visible[i], i),
                               ),
                             ),
                     ),
@@ -617,6 +767,6 @@ class _SellerApplicationsState extends State<SellerApplications> {
                 ),
         ),
       ),
-    );
+    ));
   }
 }

@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/guide/guide_anchor.dart';
+import 'package:freelancer/core/guide/guide_host.dart';
+import 'package:freelancer/core/guide/guide_info_button.dart';
+import 'package:freelancer/core/guide/guide_step.dart';
 import 'package:freelancer/core/utils/attendance_location.dart';
 import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:freelancer/core/utils/attendance_format.dart';
@@ -26,14 +30,112 @@ class AttendanceConfirmScreen extends StatefulWidget {
       _AttendanceConfirmScreenState();
 }
 
-class _AttendanceConfirmScreenState extends State<AttendanceConfirmScreen> {
+class _AttendanceConfirmScreenState extends State<AttendanceConfirmScreen>
+    with GuideHost<AttendanceConfirmScreen> {
   late String _selectedPunchType;
   bool _isSubmitting = false;
+
+  final GlobalKey _guideSummaryKey = GlobalKey();
+  final GlobalKey _guideTypeKey = GlobalKey(); // chips OR the QR-once hint
+  final GlobalKey _guideLocationKey = GlobalKey();
+  final GlobalKey _guideConfirmKey = GlobalKey();
+
+  /// True once the push animation is over (targets at their final place).
+  bool _routeSettled = false;
+
+  @override
+  String get guideScreenId => 'seller_attendance_confirm';
+  @override
+  String get guideRole => 'seller';
+  @override
+  int get guideVersion => 1;
+
+  /// Static data (from `widget.resolve`). Not ready while submitting: the
+  /// button is replaced by a spinner and the GPS permission dialog may show.
+  @override
+  bool get guideDataReady => _routeSettled && !_isSubmitting;
+  @override
+  String get guideSkipLabel => context.l10n.guideSkip;
+  @override
+  String get guideNextLabel => context.l10n.guideNext;
+  @override
+  String get guideDoneLabel => context.l10n.guideDone;
+
+  /// In QR-once mode with today's check-in done the button is a no-op
+  /// (`onPressed: () {}`): it is not highlighted and has no step.
+  bool get _confirmIsNoop => _isQrOnceMode && widget.resolve.checkedInToday;
+
+  @override
+  List<GuideStep> buildGuideSteps(BuildContext context) {
+    final l10n = context.l10n;
+    return [
+      GuideStep(
+          key: _guideSummaryKey,
+          title: l10n.guideAttConfirmJobTitle,
+          description: l10n.guideAttConfirmJobDesc),
+      if (_isQrOnceMode)
+        GuideStep(
+            key: _guideTypeKey,
+            title: l10n.guideAttConfirmOnceTitle,
+            description: l10n.guideAttConfirmOnceDesc)
+      else
+        GuideStep(
+            key: _guideTypeKey,
+            title: l10n.guideAttConfirmTypeTitle,
+            description: l10n.guideAttConfirmTypeDesc),
+      GuideStep(
+          key: _guideLocationKey,
+          title: l10n.guideAttConfirmLocationTitle,
+          description: l10n.guideAttConfirmLocationDesc,
+          enableAutoScroll: true),
+      if (!_confirmIsNoop)
+        GuideStep(
+            key: _guideConfirmKey,
+            title: l10n.guideAttConfirmButtonTitle,
+            description: l10n.guideAttConfirmButtonDesc,
+            targetNearBottom: true,
+            enableAutoScroll: true),
+    ];
+  }
+
+  GuideAnchor _anchor(GlobalKey key, String title, String desc,
+          {BorderRadius? radius}) =>
+      GuideAnchor(
+        key: key,
+        scope: guideScope,
+        title: title,
+        description: desc,
+        borderRadius: radius,
+      );
+
+  void _awaitRouteSettled() {
+    if (!mounted) return;
+    final anim = ModalRoute.of(context)?.animation;
+    if (anim == null || anim.isCompleted) {
+      _settleRoute();
+      return;
+    }
+    void listener(AnimationStatus st) {
+      if (st == AnimationStatus.completed) {
+        anim.removeStatusListener(listener);
+        _settleRoute();
+      }
+    }
+
+    anim.addStatusListener(listener);
+  }
+
+  void _settleRoute() {
+    if (!mounted) return;
+    setState(() => _routeSettled = true);
+    scheduleGuide();
+  }
 
   @override
   void initState() {
     super.initState();
     _selectedPunchType = widget.resolve.suggestedAction;
+    WidgetsBinding.instance.addPostFrameCallback((_) => _awaitRouteSettled());
   }
 
   Future<void> _submit() async {
@@ -63,7 +165,8 @@ class _AttendanceConfirmScreenState extends State<AttendanceConfirmScreen> {
                 ? '${l10n.attendancePunchRecorded(AttendanceFormat.punchLabel(result.punchType, l10n), AttendanceFormat.minutesLabel(result.minutesWorkedToday, l10n))} ${l10n.hoursSentForEmployerReview}'
                 : l10n.attendancePunchRecorded(
                     AttendanceFormat.punchLabel(result.punchType, l10n),
-                    AttendanceFormat.minutesLabel(result.minutesWorkedToday, l10n),
+                    AttendanceFormat.minutesLabel(
+                        result.minutesWorkedToday, l10n),
                   ),
           ),
         ),
@@ -125,7 +228,7 @@ class _AttendanceConfirmScreenState extends State<AttendanceConfirmScreen> {
     final r = widget.resolve;
     final primaryIsIn = _selectedPunchType == 'in';
 
-    return Scaffold(
+    return guideBackScope(Scaffold(
       backgroundColor: kDarkWhite,
       appBar: AppBar(
         backgroundColor: kDarkWhite,
@@ -139,72 +242,78 @@ class _AttendanceConfirmScreenState extends State<AttendanceConfirmScreen> {
           ),
         ),
         centerTitle: true,
+        actions: [GuideInfoButton(host: this)],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: kWhite,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: kBorderColorTextField),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    r.title,
-                    style: kTextStyle.copyWith(
-                      color: kNeutralColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    r.clientName,
-                    style: kTextStyle.copyWith(color: kSubTitleColor),
-                  ),
-                  if (r.location != null && r.location!.isNotEmpty) ...[
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        const Icon(Icons.location_on_outlined,
-                            size: 18, color: kPrimaryColor),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: Text(
-                            r.location!,
-                            style: kTextStyle.copyWith(color: kSubTitleColor),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                  const SizedBox(height: 16),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: r.isClockedIn
-                          ? const Color(0xFFE8F5E9)
-                          : kDarkWhite,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      _statusText(l10n, locale),
+            GuideAnchor.wrap(
+              _anchor(_guideSummaryKey, l10n.guideAttConfirmJobTitle,
+                  l10n.guideAttConfirmJobDesc,
+                  radius: BorderRadius.circular(12)),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: kWhite,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: kBorderColorTextField),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      r.title,
                       style: kTextStyle.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: r.isClockedIn
-                            ? const Color(0xFF2E7D32)
-                            : kNeutralColor,
+                        color: kNeutralColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 8),
+                    Text(
+                      r.clientName,
+                      style: kTextStyle.copyWith(color: kSubTitleColor),
+                    ),
+                    if (r.location != null && r.location!.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          const Icon(Icons.location_on_outlined,
+                              size: 18, color: kPrimaryColor),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              r.location!,
+                              style: kTextStyle.copyWith(color: kSubTitleColor),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                    const SizedBox(height: 16),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: r.isClockedIn
+                            ? const Color(0xFFE8F5E9)
+                            : kDarkWhite,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        _statusText(l10n, locale),
+                        style: kTextStyle.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: r.isClockedIn
+                              ? const Color(0xFF2E7D32)
+                              : kNeutralColor,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             if (r.todayPunches.isNotEmpty) ...[
@@ -250,49 +359,68 @@ class _AttendanceConfirmScreenState extends State<AttendanceConfirmScreen> {
             ),
             const SizedBox(height: 12),
             if (_isQrOnceMode) ...[
-              if (r.checkedInToday)
-                Text(
-                  l10n.alreadyCheckedInTodayMessage,
-                  style: kTextStyle.copyWith(color: kSubTitleColor, height: 1.35),
-                )
-              else
-                Text(
-                  l10n.attendanceQrOnceDailyHint,
-                  style: kTextStyle.copyWith(color: kSubTitleColor, height: 1.35),
-                ),
+              // One Text is built at a time, so one key serves both.
+              GuideAnchor.wrap(
+                _anchor(_guideTypeKey, l10n.guideAttConfirmOnceTitle,
+                    l10n.guideAttConfirmOnceDesc),
+                r.checkedInToday
+                    ? Text(
+                        l10n.alreadyCheckedInTodayMessage,
+                        style: kTextStyle.copyWith(
+                            color: kSubTitleColor, height: 1.35),
+                      )
+                    : Text(
+                        l10n.attendanceQrOnceDailyHint,
+                        style: kTextStyle.copyWith(
+                            color: kSubTitleColor, height: 1.35),
+                      ),
+              ),
             ] else ...[
-              Row(
-                children: [
-                  Expanded(
-                    child: _PunchTypeChip(
-                      label: l10n.clockIn,
-                      selected: primaryIsIn,
-                      color: const Color(0xFF2E7D32),
-                      onTap: () => setState(() => _selectedPunchType = 'in'),
+              GuideAnchor.wrap(
+                _anchor(_guideTypeKey, l10n.guideAttConfirmTypeTitle,
+                    l10n.guideAttConfirmTypeDesc),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _PunchTypeChip(
+                        label: l10n.clockIn,
+                        selected: primaryIsIn,
+                        color: const Color(0xFF2E7D32),
+                        onTap: () => setState(() => _selectedPunchType = 'in'),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _PunchTypeChip(
-                      label: l10n.clockOut,
-                      selected: !primaryIsIn,
-                      color: Colors.orange,
-                      onTap: () => setState(() => _selectedPunchType = 'out'),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _PunchTypeChip(
+                        label: l10n.clockOut,
+                        selected: !primaryIsIn,
+                        color: Colors.orange,
+                        onTap: () => setState(() => _selectedPunchType = 'out'),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
             const SizedBox(height: 24),
-            Text(
-              l10n.attendanceLocationCheckHint,
-              style: kTextStyle.copyWith(color: kSubTitleColor, height: 1.35),
+            GuideAnchor.wrap(
+              _anchor(_guideLocationKey, l10n.guideAttConfirmLocationTitle,
+                  l10n.guideAttConfirmLocationDesc),
+              Text(
+                l10n.attendanceLocationCheckHint,
+                style: kTextStyle.copyWith(color: kSubTitleColor, height: 1.35),
+              ),
             ),
             const SizedBox(height: 12),
             if (_isSubmitting)
               const LoadingWidget()
             else
               ButtonGlobalWithoutIcon(
+                guideAnchor: _confirmIsNoop
+                    ? null
+                    : _anchor(_guideConfirmKey, l10n.guideAttConfirmButtonTitle,
+                        l10n.guideAttConfirmButtonDesc,
+                        radius: BorderRadius.circular(8)),
                 buttontext: _isQrOnceMode
                     ? l10n.checkInForToday
                     : AttendanceFormat.punchLabel(_selectedPunchType, l10n),
@@ -300,7 +428,8 @@ class _AttendanceConfirmScreenState extends State<AttendanceConfirmScreen> {
                   color: primaryIsIn ? const Color(0xFF2E7D32) : Colors.orange,
                 ),
                 buttonTextColor: kWhite,
-                onPressed: (r.checkedInToday && _isQrOnceMode) ? () {} : _submit,
+                onPressed:
+                    (r.checkedInToday && _isQrOnceMode) ? () {} : _submit,
               ),
             if (!_isQrOnceMode &&
                 r.suggestClockIn != (_selectedPunchType == 'in')) ...[
@@ -322,7 +451,7 @@ class _AttendanceConfirmScreenState extends State<AttendanceConfirmScreen> {
           ],
         ),
       ),
-    );
+    ));
   }
 }
 

@@ -155,8 +155,12 @@ class _HourReportsSectionState extends State<HourReportsSection> {
   }
 
   @override
-  Widget build(BuildContext context) =>
-      GuideAnchor.wrap(widget.guideAnchor, _buildContent(context));
+  Widget build(BuildContext context) {
+    // Nothing to show: no guide target either (a zero-size Showcase would
+    // count as rendered).
+    if (_reports.isEmpty) return const SizedBox.shrink();
+    return GuideAnchor.wrap(widget.guideAnchor, _buildContent(context));
+  }
 
   Widget _buildContent(BuildContext context) {
     if (_loading && _reports.isEmpty) {

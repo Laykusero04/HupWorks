@@ -4787,4 +4787,618 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get guideSetupSaveDesc =>
       'Finishes setup and opens the app. You need the selfie first.';
+
+  @override
+  String get guideQrDispCodeTitle => 'Site QR code';
+
+  @override
+  String get guideQrDispCodeDesc =>
+      'Freelancers scan this code at the site to clock in or out. It only records attendance.';
+
+  @override
+  String get guideQrDispShareTitle => 'Share or print';
+
+  @override
+  String get guideQrDispShareDesc =>
+      'Sends a poster image to print and put up at the site.';
+
+  @override
+  String get guideQrDispRegenTitle => 'Regenerate QR';
+
+  @override
+  String get guideQrDispRegenDesc =>
+      'Makes a new code. The old printed code stops working, so print and post the new one.';
+
+  @override
+  String get guideEmpVerifScoreTitle => 'Trust score';
+
+  @override
+  String get guideEmpVerifScoreDesc =>
+      'Verification is optional. Once an admin accepts your Selfie with ID, it adds points and a Verified badge.';
+
+  @override
+  String get guideEmpVerifHistoryTitle => 'Hiring history';
+
+  @override
+  String get guideEmpVerifHistoryDesc =>
+      'This grows as you complete hires and mark them as paid.';
+
+  @override
+  String get guideEmpVerifPathTitle => 'Choose a path';
+
+  @override
+  String get guideEmpVerifPathDesc =>
+      'Pick Personal ID or Company. Company also asks for business details.';
+
+  @override
+  String get guideEmpVerifUploadPersonalTitle => 'Selfie with ID';
+
+  @override
+  String get guideEmpVerifUploadPersonalDesc =>
+      'Hold your ID next to your face and take a clear photo. An admin reviews it later.';
+
+  @override
+  String get guideEmpVerifUploadCompanyTitle => 'Company document';
+
+  @override
+  String get guideEmpVerifUploadCompanyDesc =>
+      'Add a clear photo of a company document. An admin reviews it later.';
+
+  @override
+  String get guideEmpVerifSubmitTitle => 'Submit for review';
+
+  @override
+  String get guideEmpVerifSubmitDesc =>
+      'Stays grey until you pick a photo. Updating sends it for review again.';
+
+  @override
+  String get guideOnbEditBoxesTitle => 'Instruction boxes';
+
+  @override
+  String get guideOnbEditBoxesDesc =>
+      'Fill in where to go, when to arrive and who to contact.';
+
+  @override
+  String get guideOnbEditDraftTitle => 'Save draft';
+
+  @override
+  String get guideOnbEditDraftDesc =>
+      'Keeps your notes here. The freelancer is not told yet.';
+
+  @override
+  String get guideOnbEditPublishTitle => 'Publish to freelancer';
+
+  @override
+  String get guideOnbEditPublishDesc =>
+      'Sends these instructions to the freelancer you hired. They confirm they have read them.';
+
+  @override
+  String get guideChatRelatedTitle => 'Related work';
+
+  @override
+  String get guideChatRelatedDesc =>
+      'See the jobs and contracts you share with this person.';
+
+  @override
+  String get guideChatMenuTitle => 'More options';
+
+  @override
+  String get guideChatMenuDesc => 'View profile, block or report this person.';
+
+  @override
+  String get guideChatWriteTitle => 'Write a message';
+
+  @override
+  String get guideChatWriteDesc => 'Type here and tap send.';
+
+  @override
+  String get guideChatSectionOffers => 'Offers';
+
+  @override
+  String get guideChatOfferCardTitle => 'Application price';
+
+  @override
+  String get guideChatOfferCardClientDesc =>
+      'What the freelancer proposed: price, duration and message.';
+
+  @override
+  String get guideChatOfferCardSellerDesc =>
+      'Your price, duration and message, as the client sees them.';
+
+  @override
+  String get guideChatOfferActionsTitle => 'Reject, counter or hire';
+
+  @override
+  String get guideChatOfferActionsDesc =>
+      'Hire accepts this price. Counter offer proposes a different price. Reject declines it. Only shown while pending.';
+
+  @override
+  String get guideChatOfferStatusTitle => 'Offer status';
+
+  @override
+  String get guideChatOfferStatusDesc =>
+      'Pending, accepted or rejected. The client decides.';
+
+  @override
+  String get guideAttHubScanTitle => 'Scan QR';
+
+  @override
+  String get guideAttHubScanDesc =>
+      'At the job site, scan the QR the client shows to clock in.';
+
+  @override
+  String get guideAttHubJobTitle => 'Your on-site job';
+
+  @override
+  String get guideAttHubJobDesc =>
+      'Clock in and out here. Hours go to the client for review.';
+
+  @override
+  String get guideAttHubContractTitle => 'Open contract';
+
+  @override
+  String get guideAttHubContractDesc =>
+      'See the full contract, payment and messages.';
+
+  @override
+  String get guideAttHubSectionClocking => 'Clocking in';
+
+  @override
+  String get guideAttHubModeTitle => 'How this job works';
+
+  @override
+  String get guideAttHubModeDesc =>
+      'The label shows how this job tracks time: QR scan or clock in and out.';
+
+  @override
+  String get guideAttHubActionsTitle => 'Check in';
+
+  @override
+  String get guideAttHubActionsDesc =>
+      'Scan or tap here when you start. Clock out when you finish; hours are sent for review.';
+
+  @override
+  String get guideAttHubTodayTitle => 'Today';
+
+  @override
+  String get guideAttHubTodayDesc =>
+      'Your clock-ins and outs for today appear here.';
+
+  @override
+  String get guideAttScanFrameTitle => 'Scan the QR';
+
+  @override
+  String get guideAttScanFrameDesc =>
+      'Hold your phone steady so the QR fits on screen. It scans by itself.';
+
+  @override
+  String get guideAttScanListTitle => 'Need the list?';
+
+  @override
+  String get guideAttScanListDesc =>
+      'Not at the right job? Open your on-site jobs from here.';
+
+  @override
+  String get guideAttConfirmJobTitle => 'Check the job';
+
+  @override
+  String get guideAttConfirmJobDesc =>
+      'Make sure this is the right job and site before you confirm.';
+
+  @override
+  String get guideAttConfirmTypeTitle => 'In or out';
+
+  @override
+  String get guideAttConfirmTypeDesc =>
+      'Pick Clock in when you start, Clock out when you finish. We pre-select the likely one.';
+
+  @override
+  String get guideAttConfirmOnceTitle => 'One scan a day';
+
+  @override
+  String get guideAttConfirmOnceDesc =>
+      'This job needs one check-in scan per day. No clock-out scan.';
+
+  @override
+  String get guideAttConfirmLocationTitle => 'Location check';
+
+  @override
+  String get guideAttConfirmLocationDesc =>
+      'We use your phone location to confirm you are at the site. Allow location when asked.';
+
+  @override
+  String get guideAttConfirmButtonTitle => 'Confirm';
+
+  @override
+  String get guideAttConfirmButtonDesc =>
+      'Records your time. Hours go to the client for review.';
+
+  @override
+  String get guideContractsFilterTitle => 'Filter by status';
+
+  @override
+  String get guideContractsFilterDesc =>
+      'Narrow the list to active, delivered or completed contracts.';
+
+  @override
+  String get guideContractsStatusTitle => 'Status';
+
+  @override
+  String get guideContractsStatusDesc =>
+      'The colour and label show the contract\'s stage.';
+
+  @override
+  String get guideContractsOpenTitle => 'Open a contract';
+
+  @override
+  String get guideContractsOpenDesc =>
+      'Tap to see delivery, hours and payment.';
+
+  @override
+  String get guideMyJobsFilterTitle => 'Filter jobs';
+
+  @override
+  String get guideMyJobsFilterDesc =>
+      'Show Gig, Full time or Part time jobs only.';
+
+  @override
+  String get guideMyJobsCardTitle => 'Your job post';
+
+  @override
+  String get guideMyJobsCardDesc => 'Tap a job to review applicants and hire.';
+
+  @override
+  String get guideMyJobsPostTitle => 'Post a job';
+
+  @override
+  String get guideMyJobsPostDesc => 'Tap + to start a new job post.';
+
+  @override
+  String get guideApplicationsFilterTitle => 'Filter applications';
+
+  @override
+  String get guideApplicationsFilterDesc =>
+      'Opens on Pending. Switch to Accepted, Rejected or All to see the rest.';
+
+  @override
+  String get guideApplicationsApplicantTitle => 'Applicant';
+
+  @override
+  String get guideApplicationsApplicantDesc =>
+      'Tap the name for their profile or the chat icon to message them.';
+
+  @override
+  String get guideApplicationsJobTitle => 'The job';
+
+  @override
+  String get guideApplicationsJobDesc =>
+      'Tap to open the job and all its applicants.';
+
+  @override
+  String get guideApplicationsHireTitle => 'Hire or reject';
+
+  @override
+  String get guideApplicationsHireDesc =>
+      'Hire starts a contract right away. Reject declines the application.';
+
+  @override
+  String get guideContractDetailsMoreTitle => 'More options';
+
+  @override
+  String get guideContractDetailsMoreDesc =>
+      'Message the freelancer or report a problem.';
+
+  @override
+  String get guideContractDetailsStageTitle => 'Next step';
+
+  @override
+  String get guideContractDetailsStageDesc =>
+      'Check this box for what to do next, such as reviewing a delivery.';
+
+  @override
+  String get guideContractDetailsSummaryTitle => 'Contract summary';
+
+  @override
+  String get guideContractDetailsSummaryDesc =>
+      'Freelancer, amount, deadline and status in one place.';
+
+  @override
+  String get guideContractDetailsActionTitle => 'Main action';
+
+  @override
+  String get guideContractDetailsActionDesc =>
+      'This button changes with the stage. After delivery, tap Mark job complete to close it.';
+
+  @override
+  String get guideContractDetailsSectionMore => 'More on this contract';
+
+  @override
+  String get guideContractDetailsCancelTitle => 'Cancellation request';
+
+  @override
+  String get guideContractDetailsCancelDesc =>
+      'The freelancer asked to cancel. Keep the contract or approve the request.';
+
+  @override
+  String get guideContractDetailsPaymentTitle => 'Payment record';
+
+  @override
+  String get guideContractDetailsPaymentDesc =>
+      'Payments happen outside the app. Mark it as paid here as a shared record.';
+
+  @override
+  String get guideContractDetailsSiteTitle => 'Site setup';
+
+  @override
+  String get guideContractDetailsSiteDesc =>
+      'First-day instructions and the attendance QR for this job.';
+
+  @override
+  String get guideContractDetailsAttendanceTitle => 'Attendance today';
+
+  @override
+  String get guideContractDetailsAttendanceDesc =>
+      'See who has clocked in today.';
+
+  @override
+  String get guideContractDetailsHoursTitle => 'Hour reports';
+
+  @override
+  String get guideContractDetailsHoursDesc =>
+      'Freelancers report hours here. Accept or decline each one.';
+
+  @override
+  String get guideSellerContractSummaryTitle => 'Your contract';
+
+  @override
+  String get guideSellerContractSummaryDesc =>
+      'The job, the agreed amount and the current status.';
+
+  @override
+  String get guideSellerContractOnboardTitle => 'First-day instructions';
+
+  @override
+  String get guideSellerContractOnboardDesc =>
+      'The client shared instructions. Read them before day one.';
+
+  @override
+  String get guideSellerContractAttendTitle => 'Attendance';
+
+  @override
+  String get guideSellerContractAttendDesc =>
+      'Scan the QR or clock in and out here for on-site work.';
+
+  @override
+  String get guideSellerContractHoursTitle => 'Hour reports';
+
+  @override
+  String get guideSellerContractHoursDesc =>
+      'Your hours are sent automatically when you clock out. The client accepts or declines them.';
+
+  @override
+  String get guideSellerContractDeliverTitle => 'Deliver work';
+
+  @override
+  String get guideSellerContractDeliverDesc =>
+      'When the job is done, send your work here. Add proof and a short note.';
+
+  @override
+  String get guideSellerContractSectionMessages => 'Messages and changes';
+
+  @override
+  String get guideSellerContractMessageTitle => 'Message client';
+
+  @override
+  String get guideSellerContractMessageDesc =>
+      'Chat with the client about this contract.';
+
+  @override
+  String get guideSellerContractReportTitle => 'Report';
+
+  @override
+  String get guideSellerContractReportDesc =>
+      'Report a problem with the client or this contract.';
+
+  @override
+  String get guideSellerContractCancelTitle => 'Request cancel';
+
+  @override
+  String get guideSellerContractCancelDesc =>
+      'The client must agree before the contract is cancelled. You can withdraw the request.';
+
+  @override
+  String get guideSellerContractSectionDelivery => 'Delivery and payment';
+
+  @override
+  String get guideSellerContractDeliveryTitle => 'Your delivery';
+
+  @override
+  String get guideSellerContractDeliveryDesc =>
+      'What you sent to the client, with files.';
+
+  @override
+  String get guideSellerContractPaidTitle => 'Mark as paid';
+
+  @override
+  String get guideSellerContractPaidDesc =>
+      'After the client pays you outside the app, mark it here. HupWorks does not move money.';
+
+  @override
+  String get guideSellerContractPendingTitle => 'Cancellation request';
+
+  @override
+  String get guideSellerContractPendingDesc =>
+      'A cancel request is waiting for an answer. You can withdraw it below.';
+
+  @override
+  String get guideSellerContractsPillsTitle => 'Filter by status';
+
+  @override
+  String get guideSellerContractsPillsDesc =>
+      'Tap a pill to see only active, completed or delivered contracts.';
+
+  @override
+  String get guideSellerContractsCardTitle => 'A contract';
+
+  @override
+  String get guideSellerContractsCardDesc =>
+      'Each card is one job you were hired for. Tap to open it.';
+
+  @override
+  String get guideSellerContractsStatusTitle => 'Status';
+
+  @override
+  String get guideSellerContractsStatusDesc =>
+      'Shows where the work stands, for example active or delivered.';
+
+  @override
+  String get guideSellerContractsTimeTitle => 'Time left';
+
+  @override
+  String get guideSellerContractsTimeDesc => 'How long you have to deliver.';
+
+  @override
+  String get guideSellerAppsSearchTitle => 'Search';
+
+  @override
+  String get guideSellerAppsSearchDesc => 'Find an application by job title.';
+
+  @override
+  String get guideSellerAppsTabsTitle => 'Filter by status';
+
+  @override
+  String get guideSellerAppsTabsDesc =>
+      'Pending means waiting for the client. Accepted means you were hired.';
+
+  @override
+  String get guideSellerAppsCardTitle => 'An application';
+
+  @override
+  String get guideSellerAppsCardDesc =>
+      'Each card is a job you applied to, with your price and status.';
+
+  @override
+  String get guideSellerAppsWithdrawTitle => 'Withdraw';
+
+  @override
+  String get guideSellerAppsWithdrawDesc =>
+      'Changed your mind? Withdraw a pending application before the client decides.';
+
+  @override
+  String get guideSellerAppsMessageTitle => 'Message client';
+
+  @override
+  String get guideSellerAppsMessageDesc =>
+      'Chat with the client about this job.';
+
+  @override
+  String get guideSellerAppsAttendanceTitle => 'Open attendance';
+
+  @override
+  String get guideSellerAppsAttendanceDesc =>
+      'For on-site jobs, open attendance to scan the QR and clock in.';
+
+  @override
+  String get guideSellerAppsInstructionsTitle => 'First-day instructions';
+
+  @override
+  String get guideSellerAppsInstructionsDesc =>
+      'The client sent instructions. Tap to read them before day one.';
+
+  @override
+  String get guideDeliverAttachTitle => 'Add proof';
+
+  @override
+  String get guideDeliverAttachDesc =>
+      'Attach photos or a file as proof of your work. Optional, up to 1 GB.';
+
+  @override
+  String get guideDeliverMessageTitle => 'Describe your work';
+
+  @override
+  String get guideDeliverMessageDesc =>
+      'Tell the client what you did. This is required.';
+
+  @override
+  String get guideDeliverSendTitle => 'Send';
+
+  @override
+  String get guideDeliverSendDesc =>
+      'Sends your delivery to the client, who then reviews it.';
+
+  @override
+  String get guideJobAlertsRuleTitle => 'Your alerts';
+
+  @override
+  String get guideJobAlertsRuleDesc =>
+      'Each alert is a saved search. Tap one to edit it.';
+
+  @override
+  String get guideJobAlertsSwitchTitle => 'Turn on or off';
+
+  @override
+  String get guideJobAlertsSwitchDesc =>
+      'Switch an alert off to pause notifications without deleting it.';
+
+  @override
+  String get guideJobAlertsNewTitle => 'New alert';
+
+  @override
+  String get guideJobAlertsNewDesc =>
+      'Create another alert for different skills or places.';
+
+  @override
+  String get guideHireReaderHintTitle => 'On-site check-in';
+
+  @override
+  String get guideHireReaderHintDesc =>
+      'When you arrive, use Scan attendance QR on your contract.';
+
+  @override
+  String get guideHireReaderCardTitle => 'Read the details';
+
+  @override
+  String get guideHireReaderCardDesc =>
+      'Each card is one topic the client wrote for your first day.';
+
+  @override
+  String get guideHireReaderReadTitle => 'Confirm you read it';
+
+  @override
+  String get guideHireReaderReadDesc =>
+      'Tap when done. This records that you read the instructions.';
+
+  @override
+  String get guideIdentityScoreTitle => 'Trust score';
+
+  @override
+  String get guideIdentityScoreDesc =>
+      'Your profile photo and your ID selfie each add points once an admin accepts them.';
+
+  @override
+  String get guideIdentityStatusTitle => 'Review status';
+
+  @override
+  String get guideIdentityStatusDesc =>
+      'Pending means waiting for an admin. If it was rejected, the reason is shown here.';
+
+  @override
+  String get guideIdentitySelfieTitle => 'Selfie with ID';
+
+  @override
+  String get guideIdentitySelfieDesc =>
+      'Hold your ID next to your face and take a clear photo. Tap to add or change it.';
+
+  @override
+  String get guideIdentitySubmitTitle => 'Submit for review';
+
+  @override
+  String get guideIdentitySubmitDesc =>
+      'Turns on after you add a photo. An admin checks it, which can take a while.';
+
+  @override
+  String get guideSellerAppsSectionHired => 'After you are hired';
+
+  @override
+  String get guideNothingToShow => 'Nothing to explain here yet';
 }

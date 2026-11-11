@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/guide/guide_anchor.dart';
+import 'package:freelancer/core/guide/guide_host.dart';
+import 'package:freelancer/core/guide/guide_info_button.dart';
+import 'package:freelancer/core/guide/guide_step.dart';
 import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:freelancer/data/models/hire_onboarding_packet_model.dart';
 import 'package:freelancer/l10n/l10n.dart';
@@ -24,7 +28,82 @@ class HireOnboardingReaderScreen extends StatefulWidget {
       _HireOnboardingReaderScreenState();
 }
 
-class _HireOnboardingReaderScreenState extends State<HireOnboardingReaderScreen> {
+class _HireOnboardingReaderScreenState
+    extends State<HireOnboardingReaderScreen>
+    with GuideHost<HireOnboardingReaderScreen> {
+  // Guide targets (long-lived, one widget each; section card: first only).
+  final GlobalKey _guideHintKey = GlobalKey();
+  final GlobalKey _guideSectionKey = GlobalKey();
+  final GlobalKey _guideReadKey = GlobalKey();
+
+  @override
+  String get guideScreenId => 'seller_hire_reader';
+  @override
+  String get guideRole => 'seller';
+  @override
+  int get guideVersion => 1;
+
+  /// No packet means a single text line: nothing to guide.
+  @override
+  bool get guideDataReady => !_loading && _packet != null && _routeSettled;
+  @override
+  String get guideSkipLabel => context.l10n.guideSkip;
+  @override
+  String get guideNextLabel => context.l10n.guideNext;
+  @override
+  String get guideDoneLabel => context.l10n.guideDone;
+
+  bool _routeSettled = false;
+
+  void _awaitRouteSettled() {
+    if (!mounted) return;
+    final anim = ModalRoute.of(context)?.animation;
+    if (anim == null || anim.isCompleted) {
+      _settleRoute();
+      return;
+    }
+    void listener(AnimationStatus st) {
+      if (st == AnimationStatus.completed) {
+        anim.removeStatusListener(listener);
+        _settleRoute();
+      }
+    }
+
+    anim.addStatusListener(listener);
+  }
+
+  void _settleRoute() {
+    if (!mounted) return;
+    setState(() => _routeSettled = true);
+    scheduleGuide();
+  }
+
+  GuideAnchor _anchor(GlobalKey key, String title, String desc) => GuideAnchor(
+        key: key,
+        scope: guideScope,
+        title: title,
+        description: desc,
+      );
+
+  @override
+  List<GuideStep> buildGuideSteps(BuildContext context) {
+    final l10n = context.l10n;
+    return [
+      GuideStep(
+          key: _guideHintKey,
+          title: l10n.guideHireReaderHintTitle,
+          description: l10n.guideHireReaderHintDesc),
+      GuideStep(
+          key: _guideSectionKey,
+          title: l10n.guideHireReaderCardTitle,
+          description: l10n.guideHireReaderCardDesc),
+      GuideStep(
+          key: _guideReadKey,
+          title: l10n.guideHireReaderReadTitle,
+          description: l10n.guideHireReaderReadDesc,
+          targetNearBottom: true),
+    ];
+  }
   HireOnboardingPacket? _packet;
   bool _loading = true;
   bool _acking = false;
@@ -32,6 +111,7 @@ class _HireOnboardingReaderScreenState extends State<HireOnboardingReaderScreen>
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _awaitRouteSettled());
     _load();
   }
 
@@ -46,6 +126,7 @@ class _HireOnboardingReaderScreenState extends State<HireOnboardingReaderScreen>
           _packet = packet;
           _loading = false;
         });
+        scheduleGuide();
       }
     } catch (e) {
       if (mounted) {
@@ -87,7 +168,7 @@ class _HireOnboardingReaderScreenState extends State<HireOnboardingReaderScreen>
         widget.jobPost != null && AttendanceService.isOnsiteJob(widget.jobPost);
     final acknowledged = _packet?.acknowledged ?? false;
 
-    return Scaffold(
+    return guideBackScope(Scaffold(
       backgroundColor: kDarkWhite,
       appBar: AppBar(
         backgroundColor: kDarkWhite,
@@ -101,6 +182,7 @@ class _HireOnboardingReaderScreenState extends State<HireOnboardingReaderScreen>
           ),
         ),
         centerTitle: true,
+        actions: [GuideInfoButton(host: this)],
       ),
       body: _loading
           ? const LoadingWidget()
@@ -120,7 +202,12 @@ class _HireOnboardingReaderScreenState extends State<HireOnboardingReaderScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             if (showOnsiteHint) ...[
-                              Container(
+                              GuideAnchor.wrap(
+                                _anchor(
+                                    _guideHintKey,
+                                    l10n.guideHireReaderHintTitle,
+                                    l10n.guideHireReaderHintDesc),
+                                Container(
                                 width: double.infinity,
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
@@ -151,7 +238,7 @@ class _HireOnboardingReaderScreenState extends State<HireOnboardingReaderScreen>
                                     ),
                                   ],
                                 ),
-                              ),
+                              )),
                               const SizedBox(height: 16),
                             ],
                             if (_visibleSections.isEmpty)
@@ -160,10 +247,19 @@ class _HireOnboardingReaderScreenState extends State<HireOnboardingReaderScreen>
                                 style: kTextStyle.copyWith(color: kSubTitleColor),
                               )
                             else
-                              ..._visibleSections.map((s) {
+                              ...(_visibleSections.indexed).map((e) {
+                                final i = e.$1;
+                                final s = e.$2;
                                 return Padding(
                                   padding: const EdgeInsets.only(bottom: 14),
-                                  child: Container(
+                                  child: GuideAnchor.wrap(
+                                    i == 0
+                                        ? _anchor(
+                                            _guideSectionKey,
+                                            l10n.guideHireReaderCardTitle,
+                                            l10n.guideHireReaderCardDesc)
+                                        : null,
+                                    Container(
                                     width: context.width(),
                                     padding: const EdgeInsets.all(12),
                                     decoration: BoxDecoration(
@@ -194,7 +290,7 @@ class _HireOnboardingReaderScreenState extends State<HireOnboardingReaderScreen>
                                         ),
                                       ],
                                     ),
-                                  ),
+                                  )),
                                 );
                               }),
                           ],
@@ -208,6 +304,10 @@ class _HireOnboardingReaderScreenState extends State<HireOnboardingReaderScreen>
                         child: Padding(
                           padding: EdgeInsets.fromLTRB(16, 12, 16, 12 + bottom),
                           child: ButtonGlobalWithoutIcon(
+                            guideAnchor: _anchor(
+                                _guideReadKey,
+                                l10n.guideHireReaderReadTitle,
+                                l10n.guideHireReaderReadDesc),
                             buttontext: _acking
                                 ? l10n.pleaseWaitEllipsis
                                 : l10n.onboardingReadUnderstood,
@@ -243,6 +343,6 @@ class _HireOnboardingReaderScreenState extends State<HireOnboardingReaderScreen>
                       ),
                   ],
                 ),
-    );
+    ));
   }
 }

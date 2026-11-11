@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/guide/guide_anchor.dart';
+import 'package:freelancer/core/guide/guide_host.dart';
+import 'package:freelancer/core/guide/guide_info_button.dart';
+import 'package:freelancer/core/guide/guide_step.dart';
 import 'package:freelancer/core/utils/app_logger.dart';
 import 'package:freelancer/core/utils/attendance_location.dart';
 import 'package:freelancer/l10n/l10n.dart';
@@ -19,7 +23,8 @@ class AttendanceScanScreen extends StatefulWidget {
   State<AttendanceScanScreen> createState() => _AttendanceScanScreenState();
 }
 
-class _AttendanceScanScreenState extends State<AttendanceScanScreen> {
+class _AttendanceScanScreenState extends State<AttendanceScanScreen>
+    with GuideHost<AttendanceScanScreen> {
   String? _hintTitle;
   final MobileScannerController _controller = MobileScannerController(
     detectionSpeed: DetectionSpeed.noDuplicates,
@@ -28,9 +33,64 @@ class _AttendanceScanScreenState extends State<AttendanceScanScreen> {
   bool _isProcessing = false;
   bool _holdingBadCode = false;
 
+  // Guide: only the stable UI. Never started while the permission dialog or
+  // camera init is pending (controller not running), during a scan, or after
+  // a scan went to the confirm screen (not resumed on pop-back).
+  final GlobalKey _guideFrameKey = GlobalKey();
+  final GlobalKey _guideListKey = GlobalKey();
+  bool _scanStarted = false;
+  bool _camRunning = false;
+
+  @override
+  String get guideScreenId => 'seller_attendance_scan';
+  @override
+  String get guideRole => 'seller';
+  @override
+  int get guideVersion => 1;
+  @override
+  bool get guideDataReady =>
+      !_scanStarted &&
+      !_isProcessing &&
+      !_holdingBadCode &&
+      _controller.value.isRunning &&
+      _controller.value.error == null;
+  @override
+  String get guideSkipLabel => context.l10n.guideSkip;
+  @override
+  String get guideNextLabel => context.l10n.guideNext;
+  @override
+  String get guideDoneLabel => context.l10n.guideDone;
+
+  void _onCameraChanged() {
+    if (!mounted) return;
+    final running = _controller.value.isRunning;
+    final changed = running != _camRunning;
+    _camRunning = running;
+    if (!changed) return;
+    guideDataChanged(); // camera stopped: tear a running guide down
+    if (running) scheduleGuide(); // camera is up (permission granted)
+  }
+
+  @override
+  List<GuideStep> buildGuideSteps(BuildContext context) {
+    final l10n = context.l10n;
+    return [
+      GuideStep(
+          key: _guideFrameKey,
+          title: l10n.guideAttScanFrameTitle,
+          description: l10n.guideAttScanFrameDesc),
+      GuideStep(
+          key: _guideListKey,
+          title: l10n.guideAttScanListTitle,
+          description: l10n.guideAttScanListDesc,
+          targetNearBottom: true),
+    ];
+  }
+
   @override
   void initState() {
     super.initState();
+    _controller.addListener(_onCameraChanged);
     _loadHint();
   }
 
@@ -50,6 +110,7 @@ class _AttendanceScanScreenState extends State<AttendanceScanScreen> {
 
   @override
   void dispose() {
+    _controller.removeListener(_onCameraChanged);
     _controller.dispose();
     super.dispose();
   }
@@ -84,6 +145,7 @@ class _AttendanceScanScreenState extends State<AttendanceScanScreen> {
       return;
     }
 
+    _scanStarted = true;
     setState(() => _isProcessing = true);
     await _controller.stop();
 
@@ -122,67 +184,85 @@ class _AttendanceScanScreenState extends State<AttendanceScanScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return Scaffold(
+    return guideBackScope(Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.black,
         foregroundColor: kWhite,
         title: Text(l10n.scanAttendanceQr),
         centerTitle: true,
+        actions: [GuideInfoButton(host: this)],
       ),
       body: Stack(
         fit: StackFit.expand,
         children: [
-          MobileScanner(
-            controller: _controller,
-            onDetect: _onDetect,
+          GuideAnchor.wrap(
+            GuideAnchor(
+              key: _guideFrameKey,
+              scope: guideScope,
+              title: l10n.guideAttScanFrameTitle,
+              description: l10n.guideAttScanFrameDesc,
+            ),
+            MobileScanner(
+              controller: _controller,
+              onDetect: _onDetect,
+            ),
           ),
           Positioned(
             left: 24,
             right: 24,
             bottom: 32,
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.black54,
+            child: GuideAnchor.wrap(
+              GuideAnchor(
+                key: _guideListKey,
+                scope: guideScope,
+                title: l10n.guideAttScanListTitle,
+                description: l10n.guideAttScanListDesc,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (_hintTitle != null) ...[
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.black54,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (_hintTitle != null) ...[
+                      Text(
+                        l10n.attendanceScanningForJob(_hintTitle!),
+                        textAlign: TextAlign.center,
+                        style: kTextStyle.copyWith(
+                          color: kWhite,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                    ],
                     Text(
-                      l10n.attendanceScanningForJob(_hintTitle!),
+                      _isProcessing
+                          ? l10n.attendanceScanLoadingDetails
+                          : l10n.attendanceScanCameraHint,
                       textAlign: TextAlign.center,
-                      style: kTextStyle.copyWith(
-                        color: kWhite,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
+                      style: kTextStyle.copyWith(color: kWhite, fontSize: 14),
+                    ),
+                    const SizedBox(height: 12),
+                    TextButton(
+                      onPressed: _isProcessing
+                          ? null
+                          : () => context.push('/seller/attendance'),
+                      child: Text(
+                        l10n.viewMyOnsiteJobs,
+                        style: kTextStyle.copyWith(
+                          color: kWhite,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 8),
                   ],
-                  Text(
-                    _isProcessing
-                        ? l10n.attendanceScanLoadingDetails
-                        : l10n.attendanceScanCameraHint,
-                    textAlign: TextAlign.center,
-                    style: kTextStyle.copyWith(color: kWhite, fontSize: 14),
-                  ),
-                  const SizedBox(height: 12),
-                  TextButton(
-                    onPressed: _isProcessing
-                        ? null
-                        : () => context.push('/seller/attendance'),
-                    child: Text(
-                      l10n.viewMyOnsiteJobs,
-                      style: kTextStyle.copyWith(
-                        color: kWhite,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
           ),
@@ -195,6 +275,6 @@ class _AttendanceScanScreenState extends State<AttendanceScanScreen> {
             ),
         ],
       ),
-    );
+    ));
   }
 }

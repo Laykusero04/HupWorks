@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/guide/guide_anchor.dart';
+import 'package:freelancer/core/guide/guide_host.dart';
+import 'package:freelancer/core/guide/guide_info_button.dart';
+import 'package:freelancer/core/guide/guide_step.dart';
 import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
 import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:freelancer/core/utils/app_date_format.dart';
@@ -26,9 +30,65 @@ class SellerOrderList extends StatefulWidget {
   State<SellerOrderList> createState() => _SellerOrderListState();
 }
 
-class _SellerOrderListState extends State<SellerOrderList> {
+class _SellerOrderListState extends State<SellerOrderList>
+    with GuideHost<SellerOrderList> {
+  // Guide targets (long-lived, one widget each; first card only).
+  final GlobalKey _guidePillsKey = GlobalKey();
+  final GlobalKey _guideCardKey = GlobalKey();
+  final GlobalKey _guideStatusKey = GlobalKey();
+  final GlobalKey _guideTimeKey = GlobalKey();
+
+  @override
+  String get guideScreenId => 'seller_contracts_list';
+  @override
+  String get guideRole => 'seller';
+  @override
+  int get guideVersion => 1;
+
+  /// False during every reload (first load, pill taps, refresh button): the
+  /// list is swapped for a spinner, so a running guide is torn down and
+  /// restarted when the list is back.
+  @override
+  bool get guideDataReady => !_isLoading && !_reloading;
+  @override
+  String get guideSkipLabel => context.l10n.guideSkip;
+  @override
+  String get guideNextLabel => context.l10n.guideNext;
+  @override
+  String get guideDoneLabel => context.l10n.guideDone;
+
+  @override
+  List<GuideStep> buildGuideSteps(BuildContext context) {
+    final l10n = context.l10n;
+    return [
+      GuideStep(
+          key: _guidePillsKey,
+          title: l10n.guideSellerContractsPillsTitle,
+          description: l10n.guideSellerContractsPillsDesc),
+      GuideStep(
+          key: _guideCardKey,
+          title: l10n.guideSellerContractsCardTitle,
+          description: l10n.guideSellerContractsCardDesc),
+      GuideStep(
+          key: _guideStatusKey,
+          title: l10n.guideSellerContractsStatusTitle,
+          description: l10n.guideSellerContractsStatusDesc),
+      GuideStep(
+          key: _guideTimeKey,
+          title: l10n.guideSellerContractsTimeTitle,
+          description: l10n.guideSellerContractsTimeDesc),
+    ];
+  }
+
+  GuideAnchor _anchor(GlobalKey key, String title, String desc) => GuideAnchor(
+        key: key,
+        scope: guideScope,
+        title: title,
+        description: desc,
+      );
   List<Map<String, dynamic>> _orders = [];
   bool _isLoading = true;
+  bool _reloading = false; // any reload in flight (also pull-to-refresh)
   bool _loadFailed = false;
   String _selectedStatus = 'all';
   static const _statusTabs = [
@@ -51,7 +111,12 @@ class _SellerOrderListState extends State<SellerOrderList> {
   }
 
   Future<void> _loadOrders({bool showLoader = true}) async {
-    if (showLoader && mounted) setState(() => _isLoading = true);
+    if (mounted) {
+      setState(() {
+        _reloading = true;
+        if (showLoader) _isLoading = true;
+      });
+    }
     try {
       await OrdersService.expireStaleCancellationRequests();
       final orders = await SellerOrdersService.getSellerOrders(
@@ -61,16 +126,20 @@ class _SellerOrderListState extends State<SellerOrderList> {
         setState(() {
           _orders = orders;
           _isLoading = false;
+          _reloading = false;
           _loadFailed = false;
         });
+        scheduleGuide();
       }
     } catch (e) {
       if (mounted) {
         final keepList = _orders.isNotEmpty;
         setState(() {
           _isLoading = false;
+          _reloading = false;
           _loadFailed = !keepList;
         });
+        scheduleGuide();
         if (keepList) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
@@ -110,12 +179,13 @@ class _SellerOrderListState extends State<SellerOrderList> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final primary = Theme.of(context).colorScheme.primary;
-    return Scaffold(
+    return guideBackScope(Scaffold(
       backgroundColor: kWhite,
       appBar: ClientShellAppBar(
         title: l10n.contracts,
         persona: ShellPersona.seller,
         actions: [
+          GuideInfoButton(host: this),
           IconButton(
             icon: const Icon(Icons.refresh),
             tooltip: l10n.refreshTooltip,
@@ -125,7 +195,10 @@ class _SellerOrderListState extends State<SellerOrderList> {
       ),
       body: Column(
         children: [
-          HorizontalList(
+          GuideAnchor.wrap(
+              _anchor(_guidePillsKey, l10n.guideSellerContractsPillsTitle,
+                  l10n.guideSellerContractsPillsDesc),
+              HorizontalList(
                 padding: const EdgeInsets.only(left: 15.0, top: 15.0),
                 itemCount: _statusTabs.length,
                 itemBuilder: (_, i) {
@@ -148,7 +221,7 @@ class _SellerOrderListState extends State<SellerOrderList> {
                     ),
                   );
                 },
-              ),
+              )),
               const SizedBox(height: 12.0),
               Expanded(
                 child: _isLoading
@@ -206,16 +279,17 @@ class _SellerOrderListState extends State<SellerOrderList> {
                               physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
                               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                               itemCount: _orders.length,
-                              itemBuilder: (_, i) => _buildContractCard(_orders[i]),
+                              itemBuilder: (_, i) =>
+                                  _buildContractCard(_orders[i], first: i == 0),
                             ),
                           ),
               ),
         ],
       ),
-    );
+    ));
   }
 
-  Widget _buildContractCard(Map<String, dynamic> order) {
+  Widget _buildContractCard(Map<String, dynamic> order, {bool first = false}) {
     final primary = Theme.of(context).colorScheme.primary;
     final service = order['services'] as Map<String, dynamic>?;
     final client = order['client'] as Map<String, dynamic>?;
@@ -241,7 +315,12 @@ class _SellerOrderListState extends State<SellerOrderList> {
             });
           }
         },
-        child: Container(
+        child: GuideAnchor.wrap(
+          first
+              ? _anchor(_guideCardKey, context.l10n.guideSellerContractsCardTitle,
+                  context.l10n.guideSellerContractsCardDesc)
+              : null,
+          Container(
           decoration: BoxDecoration(
             color: kWhite,
             borderRadius: BorderRadius.circular(14),
@@ -267,11 +346,20 @@ class _SellerOrderListState extends State<SellerOrderList> {
                           style: kTextStyle.copyWith(
                               color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 13, letterSpacing: 0.5)),
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(color: status.fg, borderRadius: BorderRadius.circular(20)),
-                      child: Text(status.label,
-                          style: kTextStyle.copyWith(color: kWhite, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.3)),
+                    GuideAnchor.wrap(
+                      first
+                          ? _anchor(
+                              _guideStatusKey,
+                              context.l10n.guideSellerContractsStatusTitle,
+                              context.l10n.guideSellerContractsStatusDesc,
+                            )
+                          : null,
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(color: status.fg, borderRadius: BorderRadius.circular(20)),
+                        child: Text(status.label,
+                            style: kTextStyle.copyWith(color: kWhite, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.3)),
+                      ),
                     ),
                   ],
                 ),
@@ -343,11 +431,27 @@ class _SellerOrderListState extends State<SellerOrderList> {
                       10.height,
                       Row(
                         children: [
-                          Icon(Icons.alarm, size: 14, color: status.fg),
-                          6.width,
-                          Text(_formatRemaining(remaining),
-                              style: kTextStyle.copyWith(color: status.fg, fontWeight: FontWeight.w600, fontSize: 12)),
-                          const Spacer(),
+                          Expanded(
+                            child: GuideAnchor.wrap(
+                              first
+                                  ? _anchor(
+                                      _guideTimeKey,
+                                      context.l10n.guideSellerContractsTimeTitle,
+                                      context.l10n.guideSellerContractsTimeDesc,
+                                    )
+                                  : null,
+                              Row(
+                                children: [
+                                  Icon(Icons.alarm, size: 14, color: status.fg),
+                                  6.width,
+                                  Flexible(
+                                    child: Text(_formatRemaining(remaining),
+                                        style: kTextStyle.copyWith(color: status.fg, fontWeight: FontWeight.w600, fontSize: 12)),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                           const Icon(Icons.chevron_right, color: kLightNeutralColor, size: 20),
                         ],
                       ),
@@ -365,7 +469,7 @@ class _SellerOrderListState extends State<SellerOrderList> {
               ),
             ],
           ),
-        ),
+        )),
       ),
     );
   }

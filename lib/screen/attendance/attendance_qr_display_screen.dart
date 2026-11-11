@@ -4,6 +4,10 @@ import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/utils/attendance_location.dart';
+import 'package:freelancer/core/guide/guide_anchor.dart';
+import 'package:freelancer/core/guide/guide_host.dart';
+import 'package:freelancer/core/guide/guide_info_button.dart';
+import 'package:freelancer/core/guide/guide_step.dart';
 import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/widgets/brand_painting_qr.dart';
@@ -29,34 +33,117 @@ class AttendanceQrDisplayScreen extends StatefulWidget {
       _AttendanceQrDisplayScreenState();
 }
 
-class _AttendanceQrDisplayScreenState extends State<AttendanceQrDisplayScreen> {
+class _AttendanceQrDisplayScreenState extends State<AttendanceQrDisplayScreen>
+    with GuideHost<AttendanceQrDisplayScreen> {
   String? _qrPayload;
   bool _isLoading = true;
   bool _isRegenerating = false;
   bool _isSharing = false;
 
+  final GlobalKey _guideCodeKey = GlobalKey();
+  final GlobalKey _guideShareKey = GlobalKey();
+  final GlobalKey _guideRegenKey = GlobalKey();
+
+  @override
+  String get guideScreenId => 'client_attendance_qr';
+  @override
+  String get guideRole => 'client';
+  @override
+  int get guideVersion => 1;
+
+  /// False while loading and while a regenerate is running (the buttons are
+  /// swapped for a spinner), so the guide is cancelled and restarts after.
+  @override
+  bool get guideDataReady => _routeSettled && !_isLoading && !_isRegenerating;
+
+  @override
+  String get guideSkipLabel => context.l10n.guideSkip;
+  @override
+  String get guideNextLabel => context.l10n.guideNext;
+  @override
+  String get guideDoneLabel => context.l10n.guideDone;
+
+  /// True once the push animation finished: targets are at their final place.
+  bool _routeSettled = false;
+
+  void _awaitRouteSettled() {
+    if (!mounted) return;
+    final anim = ModalRoute.of(context)?.animation;
+    if (anim == null || anim.isCompleted) {
+      _settleRoute();
+      return;
+    }
+    void listener(AnimationStatus st) {
+      if (st == AnimationStatus.completed) {
+        anim.removeStatusListener(listener);
+        _settleRoute();
+      }
+    }
+
+    anim.addStatusListener(listener);
+  }
+
+  void _settleRoute() {
+    if (!mounted) return;
+    setState(() => _routeSettled = true);
+    scheduleGuide();
+  }
+
+  GuideAnchor _anchor(GlobalKey key, String title, String desc) => GuideAnchor(
+        key: key,
+        scope: guideScope,
+        title: title,
+        description: desc,
+      );
+
+  @override
+  List<GuideStep> buildGuideSteps(BuildContext context) {
+    final l10n = context.l10n;
+    if (_qrPayload == null) return const [];
+    return [
+      GuideStep(
+          key: _guideCodeKey,
+          title: l10n.guideQrDispCodeTitle,
+          description: l10n.guideQrDispCodeDesc),
+      GuideStep(
+          key: _guideShareKey,
+          title: l10n.guideQrDispShareTitle,
+          description: l10n.guideQrDispShareDesc),
+      GuideStep(
+          key: _guideRegenKey,
+          title: l10n.guideQrDispRegenTitle,
+          description: l10n.guideQrDispRegenDesc,
+          enableAutoScroll: true),
+    ];
+  }
+
   @override
   void initState() {
     super.initState();
     _loadToken();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _awaitRouteSettled());
   }
 
   Future<void> _loadToken({bool generateIfMissing = true}) async {
     setState(() => _isLoading = true);
     try {
-      var result = await AttendanceService.getJobAttendanceToken(widget.jobPostId);
+      var result =
+          await AttendanceService.getJobAttendanceToken(widget.jobPostId);
       if (!result.hasToken && generateIfMissing) {
-        result = await AttendanceService.generateJobAttendanceToken(widget.jobPostId);
+        result = await AttendanceService.generateJobAttendanceToken(
+            widget.jobPostId);
       }
       if (mounted) {
         setState(() {
           _qrPayload = result.qrPayload;
           _isLoading = false;
         });
+        scheduleGuide();
       }
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
+        scheduleGuide();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(attendanceRpcMessage(context.l10n, e))),
         );
@@ -72,8 +159,12 @@ class _AttendanceQrDisplayScreenState extends State<AttendanceQrDisplayScreen> {
         title: Text(l10n.regenerateQrConfirmTitle),
         content: Text(l10n.regenerateQrConfirmBody),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
-          TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text(l10n.regenerate)),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(l10n.cancel)),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text(l10n.regenerate)),
         ],
       ),
     );
@@ -179,7 +270,7 @@ class _AttendanceQrDisplayScreenState extends State<AttendanceQrDisplayScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return Scaffold(
+    return guideBackScope(Scaffold(
       backgroundColor: kDarkWhite,
       appBar: AppBar(
         backgroundColor: kDarkWhite,
@@ -193,6 +284,7 @@ class _AttendanceQrDisplayScreenState extends State<AttendanceQrDisplayScreen> {
           ),
         ),
         centerTitle: true,
+        actions: [GuideInfoButton(host: this)],
       ),
       body: _isLoading
           ? const LoadingWidget()
@@ -217,9 +309,13 @@ class _AttendanceQrDisplayScreenState extends State<AttendanceQrDisplayScreen> {
                   ),
                   const SizedBox(height: 24),
                   if (_qrPayload != null)
-                    BrandPaintingQr(
-                      data: _qrPayload!,
-                      size: 260,
+                    GuideAnchor.wrap(
+                      _anchor(_guideCodeKey, l10n.guideQrDispCodeTitle,
+                          l10n.guideQrDispCodeDesc),
+                      BrandPaintingQr(
+                        data: _qrPayload!,
+                        size: 260,
+                      ),
                     )
                   else
                     Text(
@@ -231,14 +327,23 @@ class _AttendanceQrDisplayScreenState extends State<AttendanceQrDisplayScreen> {
                     const CircularProgressIndicator(color: kPrimaryColor)
                   else ...[
                     ButtonGlobalWithoutIcon(
+                      guideAnchor: _anchor(
+                          _guideShareKey,
+                          l10n.guideQrDispShareTitle,
+                          l10n.guideQrDispShareDesc),
                       buttontext: l10n.attendanceSharePrintInstructions,
                       buttonDecoration:
                           kButtonDecoration.copyWith(color: kPrimaryColor),
                       buttonTextColor: kWhite,
-                      onPressed: _qrPayload == null || _isSharing ? null : _share,
+                      onPressed:
+                          _qrPayload == null || _isSharing ? null : _share,
                     ),
                     const SizedBox(height: 12),
                     ButtonGlobalWithoutIcon(
+                      guideAnchor: _anchor(
+                          _guideRegenKey,
+                          l10n.guideQrDispRegenTitle,
+                          l10n.guideQrDispRegenDesc),
                       buttontext: l10n.regenerateQr,
                       buttonDecoration: kButtonDecoration.copyWith(
                         color: kWhite,
@@ -280,6 +385,6 @@ class _AttendanceQrDisplayScreenState extends State<AttendanceQrDisplayScreen> {
                 ],
               ),
             ),
-    );
+    ));
   }
 }

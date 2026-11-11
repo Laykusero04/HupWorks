@@ -3,6 +3,10 @@ import 'package:freelancer/core/widgets/empty_state_widget.dart';
 import 'package:freelancer/core/widgets/loading_widget.dart';
 
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/guide/guide_anchor.dart';
+import 'package:freelancer/core/guide/guide_host.dart';
+import 'package:freelancer/core/guide/guide_info_button.dart';
+import 'package:freelancer/core/guide/guide_step.dart';
 import 'package:freelancer/core/utils/employer_standing.dart';
 import 'package:freelancer/core/utils/profile_avatar_picker.dart';
 import 'package:freelancer/l10n/l10n.dart';
@@ -25,8 +29,8 @@ class EmployerVerificationScreen extends StatefulWidget {
       _EmployerVerificationScreenState();
 }
 
-class _EmployerVerificationScreenState
-    extends State<EmployerVerificationScreen> {
+class _EmployerVerificationScreenState extends State<EmployerVerificationScreen>
+    with GuideHost<EmployerVerificationScreen> {
   String _upgradeType = EmployerVerificationService.verifyTypePersonalId;
   String? _storedVerifyType;
   String _status = 'unverified';
@@ -39,6 +43,100 @@ class _EmployerVerificationScreenState
   bool _submitting = false;
   int _completedPaidHires = 0;
 
+  final GlobalKey _guideScoreKey = GlobalKey();
+  final GlobalKey _guideHistoryKey = GlobalKey();
+  final GlobalKey _guidePathKey = GlobalKey();
+  final GlobalKey _guideUploadKey = GlobalKey();
+  final GlobalKey _guideSubmitKey = GlobalKey();
+
+  @override
+  String get guideScreenId => 'client_employer_verification';
+  @override
+  String get guideRole => 'client';
+  @override
+  int get guideVersion => 1;
+
+  /// False while loading, after a failed load (no content) and while submitting.
+  @override
+  bool get guideDataReady =>
+      _routeSettled && !_loading && !_loadFailed && !_submitting;
+
+  @override
+  String get guideSkipLabel => context.l10n.guideSkip;
+  @override
+  String get guideNextLabel => context.l10n.guideNext;
+  @override
+  String get guideDoneLabel => context.l10n.guideDone;
+
+  /// True once the push animation finished: targets are at their final place.
+  bool _routeSettled = false;
+
+  void _awaitRouteSettled() {
+    if (!mounted) return;
+    final anim = ModalRoute.of(context)?.animation;
+    if (anim == null || anim.isCompleted) {
+      _settleRoute();
+      return;
+    }
+    void listener(AnimationStatus st) {
+      if (st == AnimationStatus.completed) {
+        anim.removeStatusListener(listener);
+        _settleRoute();
+      }
+    }
+
+    anim.addStatusListener(listener);
+  }
+
+  void _settleRoute() {
+    if (!mounted) return;
+    setState(() => _routeSettled = true);
+    scheduleGuide();
+  }
+
+  GuideAnchor _anchor(GlobalKey key, String title, String desc) => GuideAnchor(
+        key: key,
+        scope: guideScope,
+        title: title,
+        description: desc,
+      );
+
+  bool get _isCompanyPath =>
+      _upgradeType == EmployerVerificationService.verifyTypeCompany;
+
+  @override
+  List<GuideStep> buildGuideSteps(BuildContext context) {
+    final l10n = context.l10n;
+    return [
+      GuideStep(
+          key: _guideScoreKey,
+          title: l10n.guideEmpVerifScoreTitle,
+          description: l10n.guideEmpVerifScoreDesc),
+      GuideStep(
+          key: _guideHistoryKey,
+          title: l10n.guideEmpVerifHistoryTitle,
+          description: l10n.guideEmpVerifHistoryDesc),
+      GuideStep(
+          key: _guidePathKey,
+          title: l10n.guideEmpVerifPathTitle,
+          description: l10n.guideEmpVerifPathDesc),
+      GuideStep(
+          key: _guideUploadKey,
+          title: _isCompanyPath
+              ? l10n.guideEmpVerifUploadCompanyTitle
+              : l10n.guideEmpVerifUploadPersonalTitle,
+          description: _isCompanyPath
+              ? l10n.guideEmpVerifUploadCompanyDesc
+              : l10n.guideEmpVerifUploadPersonalDesc,
+          enableAutoScroll: true),
+      GuideStep(
+          key: _guideSubmitKey,
+          title: l10n.guideEmpVerifSubmitTitle,
+          description: l10n.guideEmpVerifSubmitDesc,
+          targetNearBottom: true),
+    ];
+  }
+
   final _companyNameController = TextEditingController();
   final _registrationController = TextEditingController();
   final _websiteController = TextEditingController();
@@ -47,6 +145,7 @@ class _EmployerVerificationScreenState
   void initState() {
     super.initState();
     _load();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _awaitRouteSettled());
   }
 
   @override
@@ -64,8 +163,7 @@ class _EmployerVerificationScreenState
       String? signedUrl;
       if (row != null) {
         try {
-          signedUrl =
-              await EmployerVerificationService.createOwnDocSignedUrl();
+          signedUrl = await EmployerVerificationService.createOwnDocSignedUrl();
         } catch (_) {
           signedUrl = null;
         }
@@ -101,10 +199,9 @@ class _EmployerVerificationScreenState
           _storedVerifyType = (row['verify_type'] as String?) ??
               EmployerVerificationService.verifyTypePersonalId;
           _upgradeType = _storedVerifyType!;
-          _companyNameController.text =
-              (row['company_name'] as String?) ??
-                  (profile?['company_name'] as String?) ??
-                  '';
+          _companyNameController.text = (row['company_name'] as String?) ??
+              (profile?['company_name'] as String?) ??
+              '';
           _registrationController.text =
               (row['company_registration_number'] as String?) ??
                   (profile?['company_registration_number'] as String?) ??
@@ -123,6 +220,7 @@ class _EmployerVerificationScreenState
         }
         _loading = false;
       });
+      scheduleGuide();
     } catch (_) {
       if (mounted) {
         setState(() {
@@ -265,7 +363,7 @@ class _EmployerVerificationScreenState
             ? l10n.updateAndSubmitForReview
             : l10n.submitForReview;
 
-    return Scaffold(
+    return guideBackScope(Scaffold(
       backgroundColor: kDarkWhite,
       appBar: AppBar(
         backgroundColor: kDarkWhite,
@@ -279,6 +377,7 @@ class _EmployerVerificationScreenState
           ),
         ),
         centerTitle: true,
+        actions: [GuideInfoButton(host: this)],
       ),
       body: Padding(
         padding: const EdgeInsets.only(top: 12),
@@ -294,45 +393,56 @@ class _EmployerVerificationScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                VerificationScoreCard(score: score, accent: kPrimaryColor),
+                VerificationScoreCard(
+                  score: score,
+                  accent: kPrimaryColor,
+                  guideAnchor: _anchor(
+                      _guideScoreKey,
+                      l10n.guideEmpVerifScoreTitle,
+                      l10n.guideEmpVerifScoreDesc),
+                ),
                 const SizedBox(height: 16),
                 Center(child: VerificationStatusBadge(status: badgeStatus)),
                 const SizedBox(height: 12),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: kDarkWhite,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: kBorderColorTextField),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.handshake_outlined,
-                          color: kPrimaryColor),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              standing.label(l10n),
-                              style: kTextStyle.copyWith(
-                                fontWeight: FontWeight.w700,
-                                color: kNeutralColor,
+                GuideAnchor.wrap(
+                  _anchor(_guideHistoryKey, l10n.guideEmpVerifHistoryTitle,
+                      l10n.guideEmpVerifHistoryDesc),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: kDarkWhite,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: kBorderColorTextField),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.handshake_outlined,
+                            color: kPrimaryColor),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                standing.label(l10n),
+                                style: kTextStyle.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  color: kNeutralColor,
+                                ),
                               ),
-                            ),
-                            Text(
-                              l10n.employerStandingHint(_completedPaidHires),
-                              style: kTextStyle.copyWith(
-                                color: kSubTitleColor,
-                                fontSize: 12,
+                              Text(
+                                l10n.employerStandingHint(_completedPaidHires),
+                                style: kTextStyle.copyWith(
+                                  color: kSubTitleColor,
+                                  fontSize: 12,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
                 if (_status == 'rejected' &&
@@ -360,26 +470,30 @@ class _EmployerVerificationScreenState
                   ),
                 ),
                 const SizedBox(height: 10),
-                SegmentedButton<String>(
-                  segments: [
-                    ButtonSegment(
-                      value: EmployerVerificationService.verifyTypePersonalId,
-                      label: Text(l10n.personalIdPath),
-                      icon: const Icon(Icons.badge_outlined, size: 18),
-                    ),
-                    ButtonSegment(
-                      value: EmployerVerificationService.verifyTypeCompany,
-                      label: Text(l10n.companyDocPath),
-                      icon: const Icon(Icons.business_outlined, size: 18),
-                    ),
-                  ],
-                  selected: {_upgradeType},
-                  onSelectionChanged: _submitting
-                      ? null
-                      : (s) => setState(() {
-                            _upgradeType = s.first;
-                            _pickedFile = null;
-                          }),
+                GuideAnchor.wrap(
+                  _anchor(_guidePathKey, l10n.guideEmpVerifPathTitle,
+                      l10n.guideEmpVerifPathDesc),
+                  SegmentedButton<String>(
+                    segments: [
+                      ButtonSegment(
+                        value: EmployerVerificationService.verifyTypePersonalId,
+                        label: Text(l10n.personalIdPath),
+                        icon: const Icon(Icons.badge_outlined, size: 18),
+                      ),
+                      ButtonSegment(
+                        value: EmployerVerificationService.verifyTypeCompany,
+                        label: Text(l10n.companyDocPath),
+                        icon: const Icon(Icons.business_outlined, size: 18),
+                      ),
+                    ],
+                    selected: {_upgradeType},
+                    onSelectionChanged: _submitting
+                        ? null
+                        : (s) => setState(() {
+                              _upgradeType = s.first;
+                              _pickedFile = null;
+                            }),
+                  ),
                 ),
                 const SizedBox(height: 20),
                 if (isCompany) ...[
@@ -465,65 +579,75 @@ class _EmployerVerificationScreenState
                   ),
                 ),
                 const SizedBox(height: 10),
-                GestureDetector(
-                  onTap: _submitting ? null : _pickFile,
-                  child: Container(
-                    height: 220,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      border:
-                          Border.all(color: kBorderColorTextField, width: 2),
-                      color: kDarkWhite,
-                      image: preview != null
-                          ? DecorationImage(image: preview, fit: BoxFit.cover)
-                          : null,
-                    ),
-                    child: preview == null
-                        ? Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                isCompany
-                                    ? Icons.upload_file_outlined
-                                    : Icons.add_a_photo_outlined,
-                                size: 40,
-                                color: kPrimaryColor,
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                isCompany
-                                    ? l10n.uploadCompanyDoc
-                                    : l10n.uploadIdFaceSelfie,
-                                style:
-                                    kTextStyle.copyWith(color: kPrimaryColor),
-                              ),
-                            ],
-                          )
-                        : Align(
-                            alignment: Alignment.bottomCenter,
-                            child: Container(
-                              width: double.infinity,
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 10),
-                              decoration: BoxDecoration(
-                                color: Colors.black.withValues(alpha: 0.55),
-                                borderRadius: const BorderRadius.vertical(
-                                  bottom: Radius.circular(10),
+                GuideAnchor.wrap(
+                  _anchor(
+                      _guideUploadKey,
+                      isCompany
+                          ? l10n.guideEmpVerifUploadCompanyTitle
+                          : l10n.guideEmpVerifUploadPersonalTitle,
+                      isCompany
+                          ? l10n.guideEmpVerifUploadCompanyDesc
+                          : l10n.guideEmpVerifUploadPersonalDesc),
+                  GestureDetector(
+                    onTap: _submitting ? null : _pickFile,
+                    child: Container(
+                      height: 220,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        border:
+                            Border.all(color: kBorderColorTextField, width: 2),
+                        color: kDarkWhite,
+                        image: preview != null
+                            ? DecorationImage(image: preview, fit: BoxFit.cover)
+                            : null,
+                      ),
+                      child: preview == null
+                          ? Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  isCompany
+                                      ? Icons.upload_file_outlined
+                                      : Icons.add_a_photo_outlined,
+                                  size: 40,
+                                  color: kPrimaryColor,
                                 ),
-                              ),
-                              child: Text(
-                                hasNewPick
-                                    ? l10n.newPhotoSelectedTapToChange
-                                    : l10n.tapToChangePhoto,
-                                textAlign: TextAlign.center,
-                                style: kTextStyle.copyWith(
-                                  color: kWhite,
-                                  fontWeight: FontWeight.w600,
+                                const SizedBox(height: 8),
+                                Text(
+                                  isCompany
+                                      ? l10n.uploadCompanyDoc
+                                      : l10n.uploadIdFaceSelfie,
+                                  style:
+                                      kTextStyle.copyWith(color: kPrimaryColor),
+                                ),
+                              ],
+                            )
+                          : Align(
+                              alignment: Alignment.bottomCenter,
+                              child: Container(
+                                width: double.infinity,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withValues(alpha: 0.55),
+                                  borderRadius: const BorderRadius.vertical(
+                                    bottom: Radius.circular(10),
+                                  ),
+                                ),
+                                child: Text(
+                                  hasNewPick
+                                      ? l10n.newPhotoSelectedTapToChange
+                                      : l10n.tapToChangePhoto,
+                                  textAlign: TextAlign.center,
+                                  style: kTextStyle.copyWith(
+                                    color: kWhite,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -533,16 +657,17 @@ class _EmployerVerificationScreenState
         ),
       ),
       bottomNavigationBar: ButtonGlobalWithoutIcon(
+        guideAnchor: _anchor(_guideSubmitKey, l10n.guideEmpVerifSubmitTitle,
+            l10n.guideEmpVerifSubmitDesc),
         buttontext: submitLabel,
         buttonDecoration: kButtonDecoration.copyWith(
-          color: (_submitting || !hasNewPick)
-              ? kLightNeutralColor
-              : kPrimaryColor,
+          color:
+              (_submitting || !hasNewPick) ? kLightNeutralColor : kPrimaryColor,
           borderRadius: BorderRadius.circular(30),
         ),
         onPressed: (_submitting || !hasNewPick) ? null : _submit,
         buttonTextColor: kWhite,
       ),
-    );
+    ));
   }
 }

@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/guide/guide_anchor.dart';
+import 'package:freelancer/core/guide/guide_host.dart';
+import 'package:freelancer/core/guide/guide_info_button.dart';
+import 'package:freelancer/core/guide/guide_step.dart';
 import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
 import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:freelancer/core/widgets/empty_state_widget.dart';
@@ -18,7 +22,82 @@ class SellerJobAlertsScreen extends StatefulWidget {
   State<SellerJobAlertsScreen> createState() => _SellerJobAlertsScreenState();
 }
 
-class _SellerJobAlertsScreenState extends State<SellerJobAlertsScreen> {
+class _SellerJobAlertsScreenState extends State<SellerJobAlertsScreen>
+    with GuideHost<SellerJobAlertsScreen> {
+  // Guide targets (long-lived, one widget each; rule targets: first rule).
+  final GlobalKey _guideRuleKey = GlobalKey();
+  final GlobalKey _guideSwitchKey = GlobalKey();
+  final GlobalKey _guideNewKey = GlobalKey();
+
+  @override
+  String get guideScreenId => 'seller_job_alerts';
+  @override
+  String get guideRole => 'seller';
+  @override
+  int get guideVersion => 1;
+
+  /// False for the whole reload (first load, pull-to-refresh, after the
+  /// editor or a delete) and until the push animation is over.
+  @override
+  bool get guideDataReady => !_loading && _routeSettled;
+  @override
+  String get guideSkipLabel => context.l10n.guideSkip;
+  @override
+  String get guideNextLabel => context.l10n.guideNext;
+  @override
+  String get guideDoneLabel => context.l10n.guideDone;
+
+  bool _routeSettled = false;
+
+  void _awaitRouteSettled() {
+    if (!mounted) return;
+    final anim = ModalRoute.of(context)?.animation;
+    if (anim == null || anim.isCompleted) {
+      _settleRoute();
+      return;
+    }
+    void listener(AnimationStatus st) {
+      if (st == AnimationStatus.completed) {
+        anim.removeStatusListener(listener);
+        _settleRoute();
+      }
+    }
+
+    anim.addStatusListener(listener);
+  }
+
+  void _settleRoute() {
+    if (!mounted) return;
+    setState(() => _routeSettled = true);
+    scheduleGuide();
+  }
+
+  GuideAnchor _anchor(GlobalKey key, String title, String desc) => GuideAnchor(
+        key: key,
+        scope: guideScope,
+        title: title,
+        description: desc,
+      );
+
+  @override
+  List<GuideStep> buildGuideSteps(BuildContext context) {
+    final l10n = context.l10n;
+    return [
+      GuideStep(
+          key: _guideRuleKey,
+          title: l10n.guideJobAlertsRuleTitle,
+          description: l10n.guideJobAlertsRuleDesc),
+      GuideStep(
+          key: _guideSwitchKey,
+          title: l10n.guideJobAlertsSwitchTitle,
+          description: l10n.guideJobAlertsSwitchDesc),
+      GuideStep(
+          key: _guideNewKey,
+          title: l10n.guideJobAlertsNewTitle,
+          description: l10n.guideJobAlertsNewDesc,
+          targetNearBottom: true),
+    ];
+  }
   List<SellerJobAlertRule> _rules = [];
   bool _loading = true;
   bool _loadFailed = false;
@@ -27,6 +106,7 @@ class _SellerJobAlertsScreenState extends State<SellerJobAlertsScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _awaitRouteSettled());
     _load();
   }
 
@@ -46,7 +126,10 @@ class _SellerJobAlertsScreenState extends State<SellerJobAlertsScreen> {
     } catch (_) {
       if (mounted) setState(() => _loadFailed = true);
     } finally {
-      if (mounted) setState(() => _loading = false);
+      if (mounted) {
+        setState(() => _loading = false);
+        scheduleGuide();
+      }
     }
   }
 
@@ -137,20 +220,25 @@ class _SellerJobAlertsScreenState extends State<SellerJobAlertsScreen> {
     final l10n = context.l10n;
     final primary = Theme.of(context).colorScheme.primary;
 
-    return Scaffold(
+    return guideBackScope(Scaffold(
       backgroundColor: kDarkWhite,
       appBar: AppBar(
         backgroundColor: kSellerPrimary,
         foregroundColor: kWhite,
         title: Text(l10n.jobAlertsTitle),
+        actions: [GuideInfoButton(host: this)],
       ),
       floatingActionButton: _loadFailed
           ? null
-          : FloatingActionButton.extended(
-              onPressed: () => _openEditor(),
-              backgroundColor: primary,
-              icon: const Icon(Icons.add),
-              label: Text(l10n.jobAlertNew),
+          : GuideAnchor.wrap(
+              _anchor(_guideNewKey, l10n.guideJobAlertsNewTitle,
+                  l10n.guideJobAlertsNewDesc),
+              FloatingActionButton.extended(
+                onPressed: () => _openEditor(),
+                backgroundColor: primary,
+                icon: const Icon(Icons.add),
+                label: Text(l10n.jobAlertNew),
+              ),
             ),
       body: _loading
           ? const LoadingWidget()
@@ -188,7 +276,14 @@ class _SellerJobAlertsScreenState extends State<SellerJobAlertsScreen> {
                       separatorBuilder: (_, __) => const SizedBox(height: 12),
                       itemBuilder: (_, i) {
                         final rule = _rules[i];
-                        return Material(
+                        return GuideAnchor.wrap(
+                            i == 0
+                                ? _anchor(
+                                    _guideRuleKey,
+                                    l10n.guideJobAlertsRuleTitle,
+                                    l10n.guideJobAlertsRuleDesc)
+                                : null,
+                            Material(
                           color: kWhite,
                           borderRadius: BorderRadius.circular(12),
                           child: InkWell(
@@ -212,12 +307,21 @@ class _SellerJobAlertsScreenState extends State<SellerJobAlertsScreen> {
                                           ),
                                         ),
                                       ),
-                                      Switch(
-                                        value: rule.enabled,
-                                        onChanged: _togglingIds.contains(rule.id)
-                                            ? null
-                                            : (v) => _toggle(rule, v),
-                                        activeThumbColor: primary,
+                                      GuideAnchor.wrap(
+                                        i == 0
+                                            ? _anchor(
+                                                _guideSwitchKey,
+                                                l10n.guideJobAlertsSwitchTitle,
+                                                l10n.guideJobAlertsSwitchDesc)
+                                            : null,
+                                        Switch(
+                                          value: rule.enabled,
+                                          onChanged:
+                                              _togglingIds.contains(rule.id)
+                                                  ? null
+                                                  : (v) => _toggle(rule, v),
+                                          activeThumbColor: primary,
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -242,10 +346,10 @@ class _SellerJobAlertsScreenState extends State<SellerJobAlertsScreen> {
                               ),
                             ),
                           ),
-                        );
+                        ));
                       },
                     ),
             ),
-    );
+    ));
   }
 }

@@ -3,6 +3,10 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:freelancer/core/guide/guide_anchor.dart';
+import 'package:freelancer/core/guide/guide_host.dart';
+import 'package:freelancer/core/guide/guide_info_button.dart';
+import 'package:freelancer/core/guide/guide_step.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/services/seller_orders_service.dart';
@@ -20,7 +24,89 @@ class SellerDeliverOrder extends StatefulWidget {
   State<SellerDeliverOrder> createState() => _SellerDeliverOrderState();
 }
 
-class _SellerDeliverOrderState extends State<SellerDeliverOrder> {
+class _SellerDeliverOrderState extends State<SellerDeliverOrder>
+    with GuideHost<SellerDeliverOrder> {
+  // Guide targets (long-lived, one widget each).
+  final GlobalKey _guideAttachKey = GlobalKey();
+  final GlobalKey _guideMessageKey = GlobalKey();
+  final GlobalKey _guideSendKey = GlobalKey();
+
+  @override
+  String get guideScreenId => 'seller_deliver_work';
+  @override
+  String get guideRole => 'seller';
+  @override
+  int get guideVersion => 1;
+
+  /// Static form: ready once the push animation is over.
+  @override
+  bool get guideDataReady => _routeSettled && !_isSubmitting;
+  @override
+  String get guideSkipLabel => context.l10n.guideSkip;
+  @override
+  String get guideNextLabel => context.l10n.guideNext;
+  @override
+  String get guideDoneLabel => context.l10n.guideDone;
+
+  /// True once the push animation finished: targets are at their final place.
+  bool _routeSettled = false;
+
+  void _awaitRouteSettled() {
+    if (!mounted) return;
+    final anim = ModalRoute.of(context)?.animation;
+    if (anim == null || anim.isCompleted) {
+      _settleRoute();
+      return;
+    }
+    void listener(AnimationStatus st) {
+      if (st == AnimationStatus.completed) {
+        anim.removeStatusListener(listener);
+        _settleRoute();
+      }
+    }
+
+    anim.addStatusListener(listener);
+  }
+
+  void _settleRoute() {
+    if (!mounted) return;
+    setState(() => _routeSettled = true);
+    scheduleGuide();
+  }
+
+  GuideAnchor _anchor(GlobalKey key, String title, String desc) => GuideAnchor(
+        key: key,
+        scope: guideScope,
+        title: title,
+        description: desc,
+      );
+
+  @override
+  List<GuideStep> buildGuideSteps(BuildContext context) {
+    final l10n = context.l10n;
+    return [
+      GuideStep(
+          key: _guideAttachKey,
+          title: l10n.guideDeliverAttachTitle,
+          description: l10n.guideDeliverAttachDesc),
+      GuideStep(
+          key: _guideMessageKey,
+          title: l10n.guideDeliverMessageTitle,
+          description: l10n.guideDeliverMessageDesc,
+          enableAutoScroll: true),
+      GuideStep(
+          key: _guideSendKey,
+          title: l10n.guideDeliverSendTitle,
+          description: l10n.guideDeliverSendDesc,
+          targetNearBottom: true),
+    ];
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _awaitRouteSettled());
+  }
   static const _maxAttachmentBytes = 1024 * 1024 * 1024; // 1 GB
 
   final _messageController = TextEditingController();
@@ -193,11 +279,13 @@ class _SellerDeliverOrderState extends State<SellerDeliverOrder> {
       onPopInvokedWithResult: (didPop, _) async {
         if (didPop) return;
         if (_isSubmitting) return;
+        // Back while the guide runs closes the guide (guideBackScope), not the screen.
+        if (guideRunning.value) return;
         final navigator = Navigator.of(context);
         final leave = await _confirmLeaveIfNeeded();
         if (leave && mounted) navigator.pop();
       },
-      child: Scaffold(
+      child: guideBackScope(Scaffold(
         backgroundColor: kDarkWhite,
         appBar: AppBar(
           backgroundColor: kDarkWhite,
@@ -211,10 +299,13 @@ class _SellerDeliverOrderState extends State<SellerDeliverOrder> {
             ),
           ),
           centerTitle: true,
+          actions: [GuideInfoButton(host: this)],
         ),
         bottomNavigationBar: Container(
           decoration: const BoxDecoration(color: kWhite),
           child: ButtonGlobalWithoutIcon(
+            guideAnchor: _anchor(_guideSendKey, l10n.guideDeliverSendTitle,
+                l10n.guideDeliverSendDesc),
             buttontext: _isSubmitting ? l10n.sending : l10n.send,
             buttonDecoration: kButtonDecoration.copyWith(
               color: _isSubmitting ? kLightNeutralColor : kPrimaryColor,
@@ -242,7 +333,10 @@ class _SellerDeliverOrderState extends State<SellerDeliverOrder> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 20.0),
-                  GestureDetector(
+                  GuideAnchor.wrap(
+                    _anchor(_guideAttachKey, l10n.guideDeliverAttachTitle,
+                        l10n.guideDeliverAttachDesc),
+                    GestureDetector(
                     onTap: _showAttachOptions,
                     child: TextFormField(
                       enabled: false,
@@ -264,7 +358,7 @@ class _SellerDeliverOrderState extends State<SellerDeliverOrder> {
                         ),
                       ),
                     ),
-                  ),
+                  )),
                   if (_attachment != null)
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
@@ -302,7 +396,10 @@ class _SellerDeliverOrderState extends State<SellerDeliverOrder> {
                     style: kTextStyle.copyWith(color: kLightNeutralColor),
                   ),
                   const SizedBox(height: 20.0),
-                  TextFormField(
+                  GuideAnchor.wrap(
+                    _anchor(_guideMessageKey, l10n.guideDeliverMessageTitle,
+                        l10n.guideDeliverMessageDesc),
+                    TextFormField(
                     controller: _messageController,
                     enabled: !_isSubmitting,
                     keyboardType: TextInputType.multiline,
@@ -317,14 +414,14 @@ class _SellerDeliverOrderState extends State<SellerDeliverOrder> {
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       border: const OutlineInputBorder(),
                     ),
-                  ),
+                  )),
                   const SizedBox(height: 20.0),
                 ],
               ),
             ),
           ),
         ),
-      ),
+      )),
     );
   }
 }

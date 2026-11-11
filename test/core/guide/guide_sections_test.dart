@@ -202,7 +202,7 @@ void main() {
     final key = GlobalKey<_SecState>();
     await _app(t, _Sec(key: key));
     await _skipCore(t);
-    await t.tap(find.byIcon(Icons.info_outline));
+    await t.tap(find.byIcon(Icons.help_outline));
     await t.pumpAndSettle();
     expect(find.text('Tips for this screen'), findsOneWidget);
     expect(find.text('Main tips'), findsOneWidget);
@@ -224,7 +224,7 @@ void main() {
     final key = GlobalKey<_SecState>();
     await _app(t, _Sec(key: key));
     await _skipCore(t);
-    await t.tap(find.byIcon(Icons.info_outline));
+    await t.tap(find.byIcon(Icons.help_outline));
     await t.pumpAndSettle();
     await t.tap(find.text('Main tips'));
     await t.pump();
@@ -238,7 +238,7 @@ void main() {
   testWidgets('(i) with nothing to show explains it instead of doing nothing',
       (t) async {
     await _app(t, const _Sec(withExtras: false, coreTargets: false));
-    await t.tap(find.byIcon(Icons.info_outline));
+    await t.tap(find.byIcon(Icons.help_outline));
     await t.pump();
     await t.pump(const Duration(milliseconds: 600));
     expect(find.text('Nothing to explain here yet'), findsOneWidget);
@@ -249,7 +249,7 @@ void main() {
   testWidgets('chooser "Main tips" with no core targets explains it',
       (t) async {
     await _app(t, const _Sec(coreTargets: false));
-    await t.tap(find.byIcon(Icons.info_outline));
+    await t.tap(find.byIcon(Icons.help_outline));
     await t.pump();
     await t.pump(const Duration(milliseconds: 600));
     await t.tap(find.text('Main tips'));
@@ -264,7 +264,7 @@ void main() {
       (t) async {
     await _app(t, const _Sec(withExtras: false));
     await _skipCore(t);
-    await t.tap(find.byIcon(Icons.info_outline));
+    await t.tap(find.byIcon(Icons.help_outline));
     await t.pump();
     await t.pump(const Duration(milliseconds: 100));
     await t.pump(const Duration(milliseconds: 600));

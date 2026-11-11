@@ -326,7 +326,7 @@ void main() {
         ]));
     expect(find.text('Skip'), findsNothing); // both seen
     expect(find.byTooltip('Show tips for this screen'), findsOneWidget);
-    await t.tap(find.byIcon(Icons.info_outline));
+    await t.tap(find.byIcon(Icons.help_outline));
     await t.pump();
     await t.pump();
     expect(find.text('Skip'), findsOneWidget);
@@ -342,7 +342,7 @@ void main() {
 
   testWidgets('(i) hidden with kill switch', (t) async {
     await pumpL10n(t, const _Screen(enabled: false, withBar: true));
-    expect(find.byIcon(Icons.info_outline), findsNothing);
+    expect(find.byIcon(Icons.help_outline), findsNothing);
   });
 
   testWidgets('(i) disabled while data is loading', (t) async {
@@ -489,7 +489,7 @@ void main() {
     expect(find.text('Skip'), findsOneWidget);
     await t.tap(find.text('Skip'));
     await t.pump(const Duration(milliseconds: 50));
-    await t.tap(find.byIcon(Icons.info_outline));
+    await t.tap(find.byIcon(Icons.help_outline));
     await t.pump();
     await t.pump(const Duration(milliseconds: 100));
     expect(find.text('Skip'), findsOneWidget);
@@ -506,7 +506,7 @@ void main() {
         uid: 'u1', role: 'client', screenId: 'test_screen', version: 1);
     await pumpL10n(t, const _Screen(withBar: true));
     GuideSession.drawerOpen.value = true;
-    await t.tap(find.byIcon(Icons.info_outline));
+    await t.tap(find.byIcon(Icons.help_outline));
     await t.pump();
     await t.pump();
     expect(find.text('Skip'), findsNothing);

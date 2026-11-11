@@ -77,7 +77,7 @@ class _GuideInfoButtonState extends State<GuideInfoButton> {
     return ValueListenableBuilder<bool>(
       valueListenable: host.guideRunning,
       builder: (context, running, _) => IconButton(
-        icon: const Icon(Icons.info_outline),
+        icon: const Icon(Icons.help_outline),
         tooltip: context.l10n.guideReplayThisScreen,
         onPressed: (running || !host.guideDataReady) ? null : _onTap,
       ),
@@ -110,7 +110,7 @@ Future<String?> showGuideChooser(
               ),
             ),
             ListTile(
-              leading: const Icon(Icons.info_outline),
+              leading: const Icon(Icons.help_outline),
               title: Text(l10n.guideChooserMainTips),
               onTap: () => Navigator.of(ctx).pop(GuideSection.coreId),
             ),

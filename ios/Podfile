@@ -1,5 +1,5 @@
 # Google Maps (google_maps_flutter) requires CocoaPods on iOS.
-platform :ios, '14.0'
+platform :ios, '15.0'
 
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 

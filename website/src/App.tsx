@@ -1,8 +1,11 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { AuthProvider } from './auth/AuthContext'
+import { RequireAdmin } from './auth/RequireAdmin'
 import { AdminLayout } from './components/AdminLayout'
 import { CatalogPage } from './pages/CatalogPage'
 import { EmployerVerificationPage } from './pages/EmployerVerificationPage'
 import { JobsPage } from './pages/JobsPage'
+import { LoginPage } from './pages/LoginPage'
 import { OverviewPage } from './pages/OverviewPage'
 import { ReportsPage } from './pages/ReportsPage'
 import { UsersPage } from './pages/UsersPage'
@@ -11,7 +14,10 @@ import { VerificationPage } from './pages/VerificationPage'
 export default function App() {
   return (
     <BrowserRouter>
+      <AuthProvider>
       <Routes>
+        <Route path="login" element={<LoginPage />} />
+        <Route element={<RequireAdmin />}>
         <Route element={<AdminLayout />}>
           <Route index element={<OverviewPage />} />
           <Route path="verification" element={<VerificationPage />} />
@@ -22,7 +28,9 @@ export default function App() {
           <Route path="catalog" element={<CatalogPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
+        </Route>
       </Routes>
+      </AuthProvider>
     </BrowserRouter>
   )
 }

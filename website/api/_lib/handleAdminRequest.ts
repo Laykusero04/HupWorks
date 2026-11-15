@@ -4,7 +4,12 @@ export type AdminRequest = {
   path: string
   method: string
   searchParams: URLSearchParams
-  body: unknown
+  /** Lazily reads the JSON body. Called only after the admin gate passes. */
+  readBody: () => Promise<unknown>
+  /** Raw Authorization header value (Bearer <jwt>). */
+  authorization?: string | null
+  /** Client IP for audit rows, if known. */
+  ip?: string | null
 }
 
 export type AdminResponse = {
@@ -27,12 +32,141 @@ function adminClient(): SupabaseClient {
   })
 }
 
-function errorMessage(err: unknown): string {
-  if (err && typeof err === 'object' && 'message' in err) {
-    return String((err as { message: unknown }).message)
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+const MUTATING_ROUTES: Record<string, string> = {
+  '/api/admin/verification-review': 'verification-review',
+  '/api/admin/verifications/review': 'verification-review',
+  '/api/admin/employer-verification-review': 'employer-verification-review',
+  '/api/admin/employer-verifications/review': 'employer-verification-review',
+  '/api/admin/category-update': 'category-update',
+  '/api/admin/categories/update': 'category-update',
+  '/api/admin/users-delete': 'users-delete',
+  '/api/admin/users/delete': 'users-delete',
+  '/api/admin/users-block': 'users-block',
+  '/api/admin/users/block': 'users-block',
+}
+
+function fail(status: number, error: string): AdminResponse {
+  return { status, body: { ok: false, error } }
+}
+
+type AdminIdentity = { id: string }
+
+/**
+ * Fail-closed admin gate. Verifies the bearer JWT with Supabase (server-side,
+ * not a local decode) and requires the user to be in public.admin_users.
+ * Returns the admin identity or a ready-made error response.
+ */
+async function requireAdmin(
+  req: AdminRequest,
+  sb: SupabaseClient,
+): Promise<{ admin: AdminIdentity } | { response: AdminResponse }> {
+  const header = req.authorization ?? ''
+  const match = /^Bearer\s+([A-Za-z0-9._~+/=-]+)\s*$/i.exec(header)
+  if (!match) return { response: fail(401, 'Unauthorized') }
+
+  try {
+    const { data, error } = await sb.auth.getUser(match[1])
+    const user = data?.user
+    if (error) {
+      // 4xx (except 429) = the token itself was rejected. Anything else
+      // (network, 5xx, rate limit, unknown) is transient: 503, still fail-closed.
+      const st = (error as { status?: number }).status
+      if (typeof st === 'number' && st >= 400 && st < 500 && st !== 429) {
+        return { response: fail(401, 'Unauthorized') }
+      }
+      console.error('[admin/auth] getUser upstream failure', error)
+      return { response: fail(503, 'Service unavailable') }
+    }
+    if (!user) return { response: fail(401, 'Unauthorized') }
+    if (!user.email_confirmed_at && !user.confirmed_at) {
+      return { response: fail(403, 'Forbidden') }
+    }
+    if (user.banned_until && new Date(user.banned_until).getTime() > Date.now()) {
+      return { response: fail(403, 'Forbidden') }
+    }
+
+    const { data: row, error: lookupError } = await sb
+      .from('admin_users')
+      .select('user_id')
+      .eq('user_id', user.id)
+      .maybeSingle()
+    if (lookupError) {
+      console.error('[admin/auth] admin_users lookup failed', lookupError)
+      return { response: fail(503, 'Service unavailable') }
+    }
+    if (!row) return { response: fail(403, 'Forbidden') }
+    return { admin: { id: user.id } }
+  } catch (err) {
+    console.error('[admin/auth] verification failed', err)
+    return { response: fail(503, 'Service unavailable') }
   }
-  if (err instanceof Error) return err.message
-  return String(err)
+}
+
+type AuditStatus = 'pending' | 'success' | 'failed' | 'rejected'
+
+/**
+ * Audit policy (fail-closed): for every mutating route an audit row is inserted
+ * BEFORE the mutation with status 'pending'. If that insert fails the request
+ * fails (500) and nothing is mutated. After the mutation the row is updated to
+ * 'success' / 'failed' (with the HTTP status). If that final update fails it is
+ * only logged; the row stays 'pending', which marks "attempted, outcome unknown"
+ * (e.g. a partial users-delete). Requests rejected by validation get a
+ * best-effort 'rejected' row.
+ */
+async function insertAudit(
+  sb: SupabaseClient,
+  adminId: string,
+  action: string,
+  target: string | null,
+  ip: string | null,
+  status: AuditStatus,
+  detail: Record<string, unknown>,
+): Promise<number | null> {
+  try {
+    const { data, error } = await sb
+      .from('admin_audit_log')
+      .insert({ admin_id: adminId, action, target, ip, status, detail })
+      .select('id')
+      .single()
+    if (error || !data) {
+      console.error('[admin/audit] insert failed', error)
+      return null
+    }
+    return data.id as number
+  } catch (err) {
+    console.error('[admin/audit] insert threw', err)
+    return null
+  }
+}
+
+async function finishAudit(
+  sb: SupabaseClient,
+  id: number,
+  status: AuditStatus,
+  detail: Record<string, unknown>,
+): Promise<void> {
+  try {
+    const { error } = await sb.from('admin_audit_log').update({ status, detail }).eq('id', id)
+    if (error) console.error('[admin/audit] update failed', error)
+  } catch (err) {
+    console.error('[admin/audit] update threw', err)
+  }
+}
+
+function auditDetail(action: string, body: unknown): Record<string, unknown> {
+  const b = (body ?? {}) as Record<string, unknown>
+  const str = (v: unknown) => (typeof v === 'string' ? v.slice(0, 64) : undefined)
+  switch (action) {
+    case 'users-block':
+      return { op: b.blocked === true ? 'block' : 'unblock' }
+    case 'verification-review':
+    case 'employer-verification-review':
+      return { decision: str(b.decision), track: str(b.track) }
+    default:
+      return {}
+  }
 }
 
 /** Shared admin API used by Vite middleware and Vercel serverless. */
@@ -40,26 +174,100 @@ export async function handleAdminRequest(req: AdminRequest): Promise<AdminRespon
   try {
     const path = req.path.replace(/\/+$/, '') || '/'
     const method = req.method.toUpperCase()
-    const sb = adminClient()
 
-    if (path === '/api/admin/health' && method === 'GET') {
-      const { error } = await sb.from('profiles').select('id', { count: 'exact', head: true })
-      if (error) throw error
-      const reportsProbe = await sb.from('user_reports').select('id', { count: 'exact', head: true })
-      const blocksProbe = await sb.from('user_blocks').select('id', { count: 'exact', head: true })
-      return {
-        status: 200,
-        body: {
-          ok: true,
-          usingServiceRole: Boolean(process.env.SUPABASE_SECRET_KEY),
-          userReportsReady: !reportsProbe.error,
-          userBlocksReady: !blocksProbe.error,
-          schemaHint:
-            reportsProbe.error || blocksProbe.error
-              ? 'Apply migrations/0039_user_blocks.sql in the Supabase SQL Editor (includes user_reports + soft blocks).'
-              : null,
-        },
+    let sb: SupabaseClient
+    try {
+      sb = adminClient()
+    } catch (err) {
+      console.error('[admin] server misconfigured', err)
+      return fail(500, 'Request failed')
+    }
+
+    const gate = await requireAdmin(req, sb)
+    if ('response' in gate) return gate.response
+    const admin = gate.admin
+
+    // Body is read only after the caller is authenticated as an admin.
+    let body: unknown = {}
+    if (method !== 'GET' && method !== 'HEAD') {
+      try {
+        body = (await req.readBody()) ?? {}
+      } catch {
+        body = {}
       }
+    }
+
+    const action = method === 'POST' ? MUTATING_ROUTES[path] : undefined
+    let target: string | null = null
+    let validatedUserId: string | null = null
+    let auditId: number | null = null
+    let detail: Record<string, unknown> = {}
+
+    if (action) {
+      const b = (body ?? {}) as { userId?: unknown; id?: unknown }
+      const raw = typeof b.userId === 'string' ? b.userId : typeof b.id === 'string' ? b.id : ''
+      target = raw.trim() || null
+      detail = auditDetail(action, body)
+      const ip = req.ip ?? null
+
+      if (action === 'users-delete' || action === 'users-block') {
+        const reject = async (status: number, msg: string, reason: string) => {
+          await insertAudit(sb, admin.id, action, target, ip, 'rejected', { ...detail, reason })
+          return fail(status, msg)
+        }
+        if (!target || !UUID_RE.test(target)) return reject(400, 'Invalid userId', 'invalid_user_id')
+        target = target.toLowerCase()
+        validatedUserId = target
+        if (target === admin.id.toLowerCase()) {
+          return reject(400, 'Cannot target your own account', 'self_target')
+        }
+        const { data: isAdmin, error: adminErr } = await sb
+          .from('admin_users')
+          .select('user_id')
+          .eq('user_id', target)
+          .maybeSingle()
+        if (adminErr) {
+          console.error('[admin] admin target check failed', adminErr)
+          return fail(500, 'Request failed')
+        }
+        if (isAdmin) return reject(400, 'Cannot target another admin', 'admin_target')
+      }
+
+      auditId = await insertAudit(sb, admin.id, action, target, ip, 'pending', detail)
+      if (auditId === null) return fail(500, 'Request failed')
+    }
+
+    let result: AdminResponse
+    try {
+      result = await routeAdminRequest({ ...req, body }, sb, path, method, validatedUserId)
+    } catch (err) {
+      console.error('[admin] route threw', err)
+      result = fail(500, 'Request failed')
+    }
+    if (auditId !== null) {
+      const ok = result.status >= 200 && result.status < 300
+      await finishAudit(sb, auditId, ok ? 'success' : 'failed', {
+        ...detail,
+        http_status: result.status,
+      })
+    }
+    return result
+  } catch (err) {
+    console.error('[admin] unhandled', err)
+    return fail(500, 'Request failed')
+  }
+}
+
+async function routeAdminRequest(
+  req: AdminRequest & { body: unknown },
+  sb: SupabaseClient,
+  path: string,
+  method: string,
+  targetUserId: string | null,
+): Promise<AdminResponse> {
+  try {
+    if (path === '/api/admin/health' && method === 'GET') {
+      return { status: 200, body: { ok: true } }
     }
 
     if (path === '/api/admin/overview' && method === 'GET') {
@@ -114,9 +322,10 @@ export async function handleAdminRequest(req: AdminRequest): Promise<AdminRespon
       ].filter(Boolean)
 
       if (errors.length) {
+        console.error('[admin/overview]', errors.map((e) => e!.message).join('; '))
         return {
           status: 500,
-          body: { ok: false, error: errors.map((e) => e!.message).join('; ') },
+          body: { ok: false, error: 'Request failed' },
         }
       }
 
@@ -804,8 +1013,7 @@ export async function handleAdminRequest(req: AdminRequest): Promise<AdminRespon
       (path === '/api/admin/users-delete' || path === '/api/admin/users/delete') &&
       method === 'POST'
     ) {
-      const body = (req.body ?? {}) as { userId?: string }
-      const userId = (body.userId ?? '').trim()
+      const userId = targetUserId ?? ''
       if (!userId) {
         return { status: 400, body: { ok: false, error: 'userId is required' } }
       }
@@ -861,8 +1069,8 @@ export async function handleAdminRequest(req: AdminRequest): Promise<AdminRespon
       (path === '/api/admin/users-block' || path === '/api/admin/users/block') &&
       method === 'POST'
     ) {
-      const body = (req.body ?? {}) as { userId?: string; blocked?: boolean }
-      const userId = (body.userId ?? '').trim()
+      const body = (req.body ?? {}) as { blocked?: boolean }
+      const userId = targetUserId ?? ''
       const blocked = body.blocked === true
       if (!userId) {
         return { status: 400, body: { ok: false, error: 'userId is required' } }
@@ -887,6 +1095,7 @@ export async function handleAdminRequest(req: AdminRequest): Promise<AdminRespon
 
     return { status: 404, body: { ok: false, error: 'Not found' } }
   } catch (err) {
-    return { status: 500, body: { ok: false, error: errorMessage(err) } }
+    console.error('[admin] route error', err)
+    return fail(500, 'Request failed')
   }
 }

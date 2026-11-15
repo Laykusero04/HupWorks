@@ -1,3 +1,5 @@
+import { supabase } from './supabase'
+
 export type AdminHealth = {
   ok: boolean
   usingServiceRole?: boolean
@@ -124,22 +126,69 @@ export type ReportRow = {
 
 export type ReviewTrack = 'profile' | 'identity'
 
+export class AdminAuthError extends Error {
+  status: 401 | 403
+  constructor(status: 401 | 403) {
+    super(status === 401 ? 'Unauthorized' : 'Forbidden')
+    this.name = 'AdminAuthError'
+    this.status = status
+  }
+}
+
+type AuthFailureHandler = (status: 401 | 403) => void
+let authFailureHandler: AuthFailureHandler | null = null
+
+/** AuthProvider registers this so any 401/403 triggers redirect / sign-out. */
+export function setAuthFailureHandler(handler: AuthFailureHandler | null) {
+  authFailureHandler = handler
+}
+
+const NETWORK_ERROR = "Couldn't reach the server. Check your connection and try again."
+const GENERIC_ERROR = 'Request failed'
+
+async function authedFetch(path: string, init: RequestInit = {}): Promise<Response> {
+  const { data } = await supabase.auth.getSession()
+  const token = data.session?.access_token
+  if (!token) {
+    authFailureHandler?.(401)
+    throw new AdminAuthError(401)
+  }
+  let res: Response
+  try {
+    res = await fetch(path, {
+      ...init,
+      headers: { ...(init.headers as Record<string, string> | undefined), Authorization: `Bearer ${token}` },
+    })
+  } catch (err) {
+    console.error('Admin API network error', err)
+    throw new Error(NETWORK_ERROR)
+  }
+  if (res.status === 503) {
+    // Transient auth/upstream failure: do not sign out, just ask to retry.
+    throw new Error(NETWORK_ERROR)
+  }
+  if (res.status === 401 || res.status === 403) {
+    authFailureHandler?.(res.status)
+    throw new AdminAuthError(res.status)
+  }
+  return res
+}
+
 async function parseJsonResponse<T>(res: Response, path: string): Promise<T & { error?: string }> {
   const text = await res.text()
   try {
     return JSON.parse(text) as T & { error?: string }
   } catch {
-    throw new Error(
-      `Admin API returned non-JSON (${res.status}) for ${path}. If this is a 404, redeploy after the vercel.json /api/admin rewrite fix.`,
-    )
+    console.error(`Admin API returned non-JSON (${res.status}) for ${path}`)
+    throw new Error(GENERIC_ERROR)
   }
 }
 
 async function getJson<T>(path: string): Promise<T> {
-  const res = await fetch(path)
+  const res = await authedFetch(path)
   const body = await parseJsonResponse<T>(res, path)
   if (!res.ok) {
-    throw new Error(body.error || `Request failed (${res.status})`)
+    throw new Error(body.error || GENERIC_ERROR)
   }
   return body
 }
@@ -148,16 +197,34 @@ async function postJson<T extends { ok: boolean; error?: string }>(
   path: string,
   input: unknown,
 ): Promise<T> {
-  const res = await fetch(path, {
+  const res = await authedFetch(path, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
   })
   const body = await parseJsonResponse<T>(res, path)
   if (!res.ok || !body.ok) {
-    throw new Error(body.error || `Request failed (${res.status})`)
+    throw new Error(body.error || GENERIC_ERROR)
   }
   return body
+}
+
+export type AdminProbe = 'admin' | 'unauthorized' | 'forbidden' | 'error'
+
+/** Login-time admin check. Does not fire the global auth-failure handler. */
+export async function probeAdmin(): Promise<AdminProbe> {
+  const { data } = await supabase.auth.getSession()
+  const token = data.session?.access_token
+  if (!token) return 'unauthorized'
+  try {
+    const res = await fetch('/api/admin/health', { headers: { Authorization: `Bearer ${token}` } })
+    if (res.status === 401) return 'unauthorized'
+    if (res.status === 403) return 'forbidden'
+    return res.ok ? 'admin' : 'error'
+  } catch (err) {
+    console.error('Admin check failed', err)
+    return 'error'
+  }
 }
 
 export function fetchHealth() {

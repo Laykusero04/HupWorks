@@ -13,6 +13,7 @@ async function readJson(req: import('http').IncomingMessage): Promise<unknown> {
 function send(res: import('http').ServerResponse, status: number, body: unknown) {
   res.statusCode = status
   res.setHeader('Content-Type', 'application/json')
+  res.setHeader('Cache-Control', 'no-store')
   res.end(JSON.stringify(body))
 }
 
@@ -27,23 +28,18 @@ export function adminApiPlugin(): Plugin {
         try {
           const url = new URL(req.url, 'http://localhost')
           const method = req.method ?? 'GET'
-          const body =
-            method === 'GET' || method === 'HEAD' ? {} : await readJson(req)
           const result = await handleAdminRequest({
             path: url.pathname,
             method,
             searchParams: url.searchParams,
-            body,
+            readBody: () => readJson(req).catch(() => ({})),
+            authorization: req.headers.authorization ?? null,
+            ip: req.socket.remoteAddress ?? null,
           })
           return send(res, result.status, result.body)
         } catch (err) {
-          const message =
-            err && typeof err === 'object' && 'message' in err
-              ? String((err as { message: unknown }).message)
-              : err instanceof Error
-                ? err.message
-                : String(err)
-          return send(res, 500, { ok: false, error: message })
+          console.error('[admin dev server]', err)
+          return send(res, 500, { ok: false, error: 'Request failed' })
         }
       })
     },

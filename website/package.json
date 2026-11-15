@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "node --import ./test/support/register.mjs --test \"test/*.test.ts\""
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.57.4",

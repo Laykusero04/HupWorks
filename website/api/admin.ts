@@ -20,32 +20,24 @@ export default async function handler(request: Request): Promise<Response> {
       ? `/api/admin/${rewritten}`.replace(/\/+$/, '') || '/api/admin'
       : url.pathname.replace(/\/+$/, '') || '/api/admin'
 
-    let body: unknown = {}
-    if (request.method !== 'GET' && request.method !== 'HEAD') {
-      try {
-        body = await request.json()
-      } catch {
-        body = {}
-      }
-    }
-
     const result = await handleAdminRequest({
       path,
       method: request.method,
       searchParams,
-      body,
+      readBody: () => request.json().catch(() => ({})),
+      authorization: request.headers.get('authorization'),
+      ip: request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? null,
     })
 
     return new Response(JSON.stringify(result.body), {
       status: result.status,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
     })
   } catch (err) {
-    const message = err instanceof Error ? err.message : String(err)
     console.error('[api/admin]', err)
-    return new Response(JSON.stringify({ ok: false, error: message }), {
+    return new Response(JSON.stringify({ ok: false, error: 'Request failed' }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
     })
   }
 }

@@ -59,16 +59,15 @@ export function OverviewPage() {
         <StatusAlert variant="danger" title="Not connected">
           <p className="mb-2">{error}</p>
           <p className="mb-0">
-            On Vercel: set <code>SUPABASE_URL</code> + <code>SUPABASE_SECRET_KEY</code>, then
-            redeploy. Locally: put the same in <code>website/.env</code> and restart{' '}
-            <code>npm run dev</code>.
+            The admin server is not fully configured. Check the server environment settings
+            and redeploy (or restart the local dev server).
           </p>
         </StatusAlert>
       )}
 
       {showServiceRoleWarning && (
         <StatusAlert variant="warning" title="Service role missing">
-          Admin queues may fail RLS until <code>SUPABASE_SECRET_KEY</code> is configured.
+          Admin queues may fail until the server-side admin credentials are configured.
           {health?.schemaHint ? (
             <span className="d-block mt-1">Schema: {health.schemaHint}</span>
           ) : null}

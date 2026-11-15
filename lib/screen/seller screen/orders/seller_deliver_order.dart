@@ -107,6 +107,7 @@ class _SellerDeliverOrderState extends State<SellerDeliverOrder>
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) => _awaitRouteSettled());
   }
+
   static const _maxAttachmentBytes = 1024 * 1024 * 1024; // 1 GB
 
   final _messageController = TextEditingController();
@@ -308,7 +309,7 @@ class _SellerDeliverOrderState extends State<SellerDeliverOrder>
                 l10n.guideDeliverSendDesc),
             buttontext: _isSubmitting ? l10n.sending : l10n.send,
             buttonDecoration: kButtonDecoration.copyWith(
-              color: _isSubmitting ? kLightNeutralColor : kPrimaryColor,
+              color: _isSubmitting ? kLightNeutralColor : kPrimaryFill,
               borderRadius: BorderRadius.circular(30.0),
             ),
             onPressed: _isSubmitting ? null : _handleSend,
@@ -334,31 +335,32 @@ class _SellerDeliverOrderState extends State<SellerDeliverOrder>
                 children: [
                   const SizedBox(height: 20.0),
                   GuideAnchor.wrap(
-                    _anchor(_guideAttachKey, l10n.guideDeliverAttachTitle,
-                        l10n.guideDeliverAttachDesc),
-                    GestureDetector(
-                    onTap: _showAttachOptions,
-                    child: TextFormField(
-                      enabled: false,
-                      decoration: kInputDecoration.copyWith(
-                        labelText: l10n.uploadFileOrImage,
-                        labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                        hintText: _attachment != null
-                            ? _fileName(_attachment!.path)
-                            : l10n.tapToAttachFile,
-                        hintStyle: kTextStyle.copyWith(
-                          color: _attachment != null
-                              ? kNeutralColor
-                              : kSubTitleColor,
+                      _anchor(_guideAttachKey, l10n.guideDeliverAttachTitle,
+                          l10n.guideDeliverAttachDesc),
+                      GestureDetector(
+                        onTap: _showAttachOptions,
+                        child: TextFormField(
+                          enabled: false,
+                          decoration: kInputDecoration.copyWith(
+                            labelText: l10n.uploadFileOrImage,
+                            labelStyle:
+                                kTextStyle.copyWith(color: kNeutralColor),
+                            hintText: _attachment != null
+                                ? _fileName(_attachment!.path)
+                                : l10n.tapToAttachFile,
+                            hintStyle: kTextStyle.copyWith(
+                              color: _attachment != null
+                                  ? kNeutralColor
+                                  : kSubTitleColor,
+                            ),
+                            border: const OutlineInputBorder(),
+                            suffixIcon: const Icon(
+                              FeatherIcons.upload,
+                              color: kLightNeutralColor,
+                            ),
+                          ),
                         ),
-                        border: const OutlineInputBorder(),
-                        suffixIcon: const Icon(
-                          FeatherIcons.upload,
-                          color: kLightNeutralColor,
-                        ),
-                      ),
-                    ),
-                  )),
+                      )),
                   if (_attachment != null)
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
@@ -373,7 +375,7 @@ class _SellerDeliverOrderState extends State<SellerDeliverOrder>
                           Expanded(
                             child: Text(
                               _fileName(_attachment!.path),
-                              style: kTextStyle.copyWith(color: kPrimaryColor),
+                              style: kTextStyle.copyWith(color: kPrimaryText),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
@@ -397,24 +399,24 @@ class _SellerDeliverOrderState extends State<SellerDeliverOrder>
                   ),
                   const SizedBox(height: 20.0),
                   GuideAnchor.wrap(
-                    _anchor(_guideMessageKey, l10n.guideDeliverMessageTitle,
-                        l10n.guideDeliverMessageDesc),
-                    TextFormField(
-                    controller: _messageController,
-                    enabled: !_isSubmitting,
-                    keyboardType: TextInputType.multiline,
-                    cursorColor: kNeutralColor,
-                    maxLines: 4,
-                    onChanged: (_) => setState(() {}),
-                    decoration: kInputDecoration.copyWith(
-                      labelText: l10n.describeDeliveryDetails,
-                      labelStyle: kTextStyle.copyWith(color: kNeutralColor),
-                      hintText: l10n.enterDeliveryDetailsHint,
-                      hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
-                      floatingLabelBehavior: FloatingLabelBehavior.always,
-                      border: const OutlineInputBorder(),
-                    ),
-                  )),
+                      _anchor(_guideMessageKey, l10n.guideDeliverMessageTitle,
+                          l10n.guideDeliverMessageDesc),
+                      TextFormField(
+                        controller: _messageController,
+                        enabled: !_isSubmitting,
+                        keyboardType: TextInputType.multiline,
+                        cursorColor: kNeutralColor,
+                        maxLines: 4,
+                        onChanged: (_) => setState(() {}),
+                        decoration: kInputDecoration.copyWith(
+                          labelText: l10n.describeDeliveryDetails,
+                          labelStyle: kTextStyle.copyWith(color: kNeutralColor),
+                          hintText: l10n.enterDeliveryDetailsHint,
+                          hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          border: const OutlineInputBorder(),
+                        ),
+                      )),
                   const SizedBox(height: 20.0),
                 ],
               ),

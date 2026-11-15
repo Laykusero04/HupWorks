@@ -64,7 +64,9 @@ abstract final class JobAlertMatch {
       if (!matched) return false;
     }
 
-    if (ruleJobType != null && ruleJobType.isNotEmpty && ruleJobType != jobType) {
+    if (ruleJobType != null &&
+        ruleJobType.isNotEmpty &&
+        ruleJobType != jobType) {
       return false;
     }
 

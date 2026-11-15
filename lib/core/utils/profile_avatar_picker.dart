@@ -38,7 +38,8 @@ class ProfileAvatarPicker {
 
   /// Opens crop UI (drag / zoom / rotate) with a locked circular 1:1 frame.
   /// If the cropper fails to open, falls back to the original image.
-  static Future<File?> cropAvatar(BuildContext context, String sourcePath) async {
+  static Future<File?> cropAvatar(
+      BuildContext context, String sourcePath) async {
     final l10n = context.l10n;
     try {
       final cropped = await ImageCropper().cropImage(
@@ -147,11 +148,12 @@ class ProfileAvatarPicker {
                           Navigator.pop(dialogContext, ImageSource.gallery),
                       child: Column(
                         children: [
-                          Icon(Icons.photo_library, color: kPrimaryColor, size: 40),
+                          Icon(Icons.photo_library,
+                              color: kPrimaryColor, size: 40),
                           const SizedBox(height: 8),
                           Text(
                             l10n.photoGallery,
-                            style: kTextStyle.copyWith(color: kPrimaryColor),
+                            style: kTextStyle.copyWith(color: kPrimaryText),
                           ),
                         ],
                       ),
@@ -169,7 +171,8 @@ class ProfileAvatarPicker {
                           const SizedBox(height: 8),
                           Text(
                             l10n.takePhoto,
-                            style: kTextStyle.copyWith(color: kLightNeutralColor),
+                            style:
+                                kTextStyle.copyWith(color: kLightNeutralColor),
                           ),
                         ],
                       ),

@@ -107,7 +107,7 @@ class _SellerOrderReviewState extends State<SellerOrderReview> {
             child: ButtonGlobalWithoutIcon(
               buttontext: _isSubmitting ? l10n.publishing : l10n.publishReview,
               buttonDecoration: kButtonDecoration.copyWith(
-                color: _isSubmitting ? kLightNeutralColor : kPrimaryColor,
+                color: _isSubmitting ? kLightNeutralColor : kPrimaryFill,
                 borderRadius: BorderRadius.circular(30.0),
               ),
               onPressed: _isSubmitting

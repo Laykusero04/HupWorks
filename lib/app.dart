@@ -94,4 +94,3 @@ class _HupWorksAppState extends State<HupWorksApp> {
     );
   }
 }
-

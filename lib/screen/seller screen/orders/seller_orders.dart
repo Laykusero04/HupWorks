@@ -1,3 +1,4 @@
+import 'package:freelancer/core/utils/contract_text.dart';
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/guide/guide_anchor.dart';
 import 'package:freelancer/core/guide/guide_host.dart';
@@ -205,43 +206,49 @@ class _SellerOrderListState extends State<SellerOrderList>
                   final tab = _statusTabs[i];
                   final selected = _selectedStatus == tab;
                   return GestureDetector(
-                    onTap: () { setState(() => _selectedStatus = tab); _loadOrders(); },
+                    onTap: () {
+                      setState(() => _selectedStatus = tab);
+                      _loadOrders();
+                    },
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 9),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(30.0),
                         color: selected ? primary : kDarkWhite,
-                        border: Border.all(color: selected ? primary : kBorderColorTextField),
+                        border: Border.all(
+                            color: selected ? primary : kBorderColorTextField),
                       ),
                       child: Text(L10nLabels.orderFilterTabLabel(l10n, tab),
                           style: kTextStyle.copyWith(
                               color: selected ? kWhite : kNeutralColor,
-                              fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
+                              fontWeight: selected
+                                  ? FontWeight.w600
+                                  : FontWeight.normal,
                               fontSize: 13)),
                     ),
                   );
                 },
               )),
-              const SizedBox(height: 12.0),
-              Expanded(
-                child: _isLoading
-                    ? const LoadingWidget()
-                    : _orders.isEmpty
-                        ? RubikRefreshIndicator(
-                            onRefresh: () => _loadOrders(showLoader: false),
-                            child: ListView(
-                              physics: const AlwaysScrollableScrollPhysics(
-                                parent: BouncingScrollPhysics(),
-                              ),
-                              children: [
-                                SizedBox(
-                                  height:
-                                      MediaQuery.sizeOf(context).height * 0.2,
-                                ),
-                                EmptyStateWidget(
-                                  message: _loadFailed
-                                      ? l10n.somethingWentWrong
-                                      : _selectedStatus == 'all'
+          const SizedBox(height: 12.0),
+          Expanded(
+            child: _isLoading
+                ? const LoadingWidget()
+                : _orders.isEmpty
+                    ? RubikRefreshIndicator(
+                        onRefresh: () => _loadOrders(showLoader: false),
+                        child: ListView(
+                          physics: const AlwaysScrollableScrollPhysics(
+                            parent: BouncingScrollPhysics(),
+                          ),
+                          children: [
+                            SizedBox(
+                              height: MediaQuery.sizeOf(context).height * 0.2,
+                            ),
+                            EmptyStateWidget(
+                              message: _loadFailed
+                                  ? l10n.somethingWentWrong
+                                  : _selectedStatus == 'all'
                                       ? l10n.noContractsYet
                                       : l10n.noFilteredContracts(
                                           L10nLabels.orderFilterTabLabel(
@@ -249,41 +256,43 @@ class _SellerOrderListState extends State<SellerOrderList>
                                             _selectedStatus,
                                           ).toLowerCase(),
                                         ),
-                                  hint: _loadFailed
-                                      ? null
-                                      : _selectedStatus == 'all'
+                              hint: _loadFailed
+                                  ? null
+                                  : _selectedStatus == 'all'
                                       ? l10n.noContractsYetSellerHint
                                       : l10n.noFilteredContractsHint,
-                                  icon: Icons.description_outlined,
-                                  actionLabel: _loadFailed
-                                      ? l10n.retry
-                                      : _selectedStatus == 'all'
+                              icon: Icons.description_outlined,
+                              actionLabel: _loadFailed
+                                  ? l10n.retry
+                                  : _selectedStatus == 'all'
                                       ? l10n.browseJobs
                                       : l10n.clearFilters,
-                                  onAction: _loadFailed
-                                      ? () => _loadOrders()
-                                      : _selectedStatus == 'all'
+                              onAction: _loadFailed
+                                  ? () => _loadOrders()
+                                  : _selectedStatus == 'all'
                                       ? () => context.go('/seller/find-jobs')
                                       : () {
                                           setState(
                                               () => _selectedStatus = 'all');
                                           _loadOrders();
                                         },
-                                ),
-                              ],
                             ),
-                          )
-                        : RubikRefreshIndicator(
-                            onRefresh: () => _loadOrders(showLoader: false),
-                            child: ListView.builder(
-                              physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                              itemCount: _orders.length,
-                              itemBuilder: (_, i) =>
-                                  _buildContractCard(_orders[i], first: i == 0),
-                            ),
-                          ),
-              ),
+                          ],
+                        ),
+                      )
+                    : RubikRefreshIndicator(
+                        onRefresh: () => _loadOrders(showLoader: false),
+                        child: ListView.builder(
+                          physics: const AlwaysScrollableScrollPhysics(
+                              parent: BouncingScrollPhysics()),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 6),
+                          itemCount: _orders.length,
+                          itemBuilder: (_, i) =>
+                              _buildContractCard(_orders[i], first: i == 0),
+                        ),
+                      ),
+          ),
         ],
       ),
     ));
@@ -297,12 +306,15 @@ class _SellerOrderListState extends State<SellerOrderList>
     final clientImageUrl =
         ProfileImage.normalize(client?['profile_image_url'] as String?);
     final orderId = order['id'].toString();
-    final idShort = orderId.length >= 8 ? orderId.substring(0, 8).toUpperCase() : orderId.toUpperCase();
+    final idShort = orderId.length >= 8
+        ? orderId.substring(0, 8).toUpperCase()
+        : orderId.toUpperCase();
     final status = _statusStyle(order['status'] as String?);
     final remaining = _getTimeRemaining(order);
     final isActive = (order['status'] as String?)?.toLowerCase() == 'active';
     final title = OrderContractDisplay.title(order, service);
-    final price = order['price'] ?? 0;
+    final price = ContractText.money(
+        order['price'], Localizations.localeOf(context).toString());
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6.0),
@@ -316,160 +328,199 @@ class _SellerOrderListState extends State<SellerOrderList>
           }
         },
         child: GuideAnchor.wrap(
-          first
-              ? _anchor(_guideCardKey, context.l10n.guideSellerContractsCardTitle,
-                  context.l10n.guideSellerContractsCardDesc)
-              : null,
-          Container(
-          decoration: BoxDecoration(
-            color: kWhite,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: kBorderColorTextField),
-            boxShadow: [
-              BoxShadow(color: kNeutralColor.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, 4)),
-            ],
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header strip
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                color: status.bg,
-                child: Row(
-                  children: [
-                    Icon(Icons.description_outlined, size: 16, color: status.fg),
-                    8.width,
-                    Expanded(
-                      child: Text('#$idShort',
-                          style: kTextStyle.copyWith(
-                              color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 13, letterSpacing: 0.5)),
-                    ),
-                    GuideAnchor.wrap(
-                      first
-                          ? _anchor(
-                              _guideStatusKey,
-                              context.l10n.guideSellerContractsStatusTitle,
-                              context.l10n.guideSellerContractsStatusDesc,
-                            )
-                          : null,
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(color: status.fg, borderRadius: BorderRadius.circular(20)),
-                        child: Text(status.label,
-                            style: kTextStyle.copyWith(color: kWhite, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.3)),
-                      ),
-                    ),
-                  ],
-                ),
+            first
+                ? _anchor(
+                    _guideCardKey,
+                    context.l10n.guideSellerContractsCardTitle,
+                    context.l10n.guideSellerContractsCardDesc)
+                : null,
+            Container(
+              decoration: BoxDecoration(
+                color: kWhite,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: kBorderColorTextField),
+                boxShadow: [
+                  BoxShadow(
+                      color: kNeutralColor.withOpacity(0.04),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4)),
+                ],
               ),
-              // Body
-              Padding(
-                padding: const EdgeInsets.all(14),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
+              clipBehavior: Clip.antiAlias,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header strip
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 10),
+                    color: status.bg,
+                    child: Row(
                       children: [
-                        CircleAvatar(
-                          radius: 20,
-                          backgroundColor: primary.withValues(alpha: 0.12),
-                          backgroundImage: ProfileImage.provider(clientImageUrl),
-                        ),
-                        10.width,
+                        Icon(Icons.description_outlined,
+                            size: 16, color: status.fg),
+                        8.width,
                         Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(clientName,
-                                  style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.w600, fontSize: 14),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis),
-                              2.height,
-                              Text(context.l10n.contractStartedOn(_formatDate(order['created_at'] as String?)),
-                                  style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12)),
-                            ],
-                          ),
+                          child: Text('#$idShort',
+                              style: kTextStyle.copyWith(
+                                  color: kNeutralColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
+                                  letterSpacing: 0.5)),
                         ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(context.l10n.amountCaps,
+                        GuideAnchor.wrap(
+                          first
+                              ? _anchor(
+                                  _guideStatusKey,
+                                  context.l10n.guideSellerContractsStatusTitle,
+                                  context.l10n.guideSellerContractsStatusDesc,
+                                )
+                              : null,
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                                color: status.fg,
+                                borderRadius: BorderRadius.circular(20)),
+                            child: Text(status.label,
                                 style: kTextStyle.copyWith(
-                                    color: kLightNeutralColor, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 0.5)),
-                            2.height,
-                            Text('$currencySign$price',
-                                style: kTextStyle.copyWith(color: primary, fontWeight: FontWeight.bold, fontSize: 18)),
-                          ],
+                                    color: kWhite,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 0.3)),
+                          ),
                         ),
                       ],
                     ),
-                    12.height,
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(color: kDarkWhite, borderRadius: BorderRadius.circular(10)),
-                      child: Row(
-                        children: [
-                          Icon(Icons.work_outline, size: 16, color: primary),
-                          8.width,
-                          Expanded(
-                            child: Text(title,
-                                maxLines: 3,
-                                overflow: TextOverflow.ellipsis,
-                                style: kTextStyle.copyWith(
-                                    color: kNeutralColor,
-                                    fontSize: 13,
-                                    height: 1.3,
-                                    fontWeight: FontWeight.w600)),
-                          ),
-                        ],
-                      ),
-                    ),
-                    if (isActive && remaining.inSeconds > 0) ...[
-                      10.height,
-                      Row(
-                        children: [
-                          Expanded(
-                            child: GuideAnchor.wrap(
-                              first
-                                  ? _anchor(
-                                      _guideTimeKey,
-                                      context.l10n.guideSellerContractsTimeTitle,
-                                      context.l10n.guideSellerContractsTimeDesc,
-                                    )
-                                  : null,
-                              Row(
+                  ),
+                  // Body
+                  Padding(
+                    padding: const EdgeInsets.all(14),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 20,
+                              backgroundColor: primary.withValues(alpha: 0.12),
+                              backgroundImage:
+                                  ProfileImage.provider(clientImageUrl),
+                            ),
+                            10.width,
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Icon(Icons.alarm, size: 14, color: status.fg),
-                                  6.width,
-                                  Flexible(
-                                    child: Text(_formatRemaining(remaining),
-                                        style: kTextStyle.copyWith(color: status.fg, fontWeight: FontWeight.w600, fontSize: 12)),
-                                  ),
+                                  Text(clientName,
+                                      style: kTextStyle.copyWith(
+                                          color: kNeutralColor,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 14),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis),
+                                  2.height,
+                                  Text(
+                                      context.l10n.contractStartedOn(
+                                          _formatDate(
+                                              order['created_at'] as String?)),
+                                      style: kTextStyle.copyWith(
+                                          color: kLightNeutralColor,
+                                          fontSize: 12)),
                                 ],
                               ),
                             ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(context.l10n.amountCaps,
+                                    style: kTextStyle.copyWith(
+                                        color: kLightNeutralColor,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w700,
+                                        letterSpacing: 0.5)),
+                                2.height,
+                                Text(price,
+                                    style: kTextStyle.copyWith(
+                                        color: primary,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18)),
+                              ],
+                            ),
+                          ],
+                        ),
+                        12.height,
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                              color: kDarkWhite,
+                              borderRadius: BorderRadius.circular(10)),
+                          child: Row(
+                            children: [
+                              Icon(Icons.work_outline,
+                                  size: 16, color: primary),
+                              8.width,
+                              Expanded(
+                                child: Text(title,
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: kTextStyle.copyWith(
+                                        color: kNeutralColor,
+                                        fontSize: 13,
+                                        height: 1.3,
+                                        fontWeight: FontWeight.w600)),
+                              ),
+                              // No time row below: the chevron sits here instead of
+                              // on its own row (T-0157 N6).
+                              if (!(isActive && remaining.inSeconds > 0))
+                                const Icon(Icons.chevron_right,
+                                    color: kLightNeutralColor, size: 20),
+                            ],
                           ),
-                          const Icon(Icons.chevron_right, color: kLightNeutralColor, size: 20),
+                        ),
+                        if (isActive && remaining.inSeconds > 0) ...[
+                          10.height,
+                          Row(
+                            children: [
+                              Expanded(
+                                child: GuideAnchor.wrap(
+                                  first
+                                      ? _anchor(
+                                          _guideTimeKey,
+                                          context.l10n
+                                              .guideSellerContractsTimeTitle,
+                                          context.l10n
+                                              .guideSellerContractsTimeDesc,
+                                        )
+                                      : null,
+                                  Row(
+                                    children: [
+                                      Icon(Icons.alarm,
+                                          size: 14, color: status.fg),
+                                      6.width,
+                                      Flexible(
+                                        child: Text(_formatRemaining(remaining),
+                                            style: kTextStyle.copyWith(
+                                                color: status.fg,
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 12)),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const Icon(Icons.chevron_right,
+                                  color: kLightNeutralColor, size: 20),
+                            ],
+                          ),
                         ],
-                      ),
-                    ] else ...[
-                      10.height,
-                      Row(
-                        children: const [
-                          Spacer(),
-                          Icon(Icons.chevron_right, color: kLightNeutralColor, size: 20),
-                        ],
-                      ),
-                    ],
-                  ],
-                ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        )),
+            )),
       ),
     );
   }

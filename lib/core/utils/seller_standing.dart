@@ -45,7 +45,8 @@ extension SellerStandingX on SellerStanding {
 class SellerStandingResolver {
   SellerStandingResolver._();
 
-  static const _tiers = <({SellerStanding standing, int minReviews, double minRating})>[
+  static const _tiers =
+      <({SellerStanding standing, int minReviews, double minRating})>[
     (standing: SellerStanding.hupper, minReviews: 1000, minRating: 4.8),
     (standing: SellerStanding.legend, minReviews: 500, minRating: 4.7),
     (standing: SellerStanding.workNinja, minReviews: 200, minRating: 4.6),

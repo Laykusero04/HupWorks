@@ -47,7 +47,7 @@ Future<Map<String, dynamic>?> ensureJobSitePinForQr({
           child: Text(
             l10n.setMapPin,
             style: kTextStyle.copyWith(
-              color: kPrimaryColor,
+              color: kPrimaryText,
               fontWeight: FontWeight.bold,
             ),
           ),

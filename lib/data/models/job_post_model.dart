@@ -57,14 +57,22 @@ class JobPost extends Equatable {
       budgetMin: (json['budget_min'] as num?)?.toDouble(),
       budgetMax: (json['budget_max'] as num?)?.toDouble(),
       budgetBasis: JobPostsService.normalizeBudgetBasis(json['budget_basis']),
-      deadline: json['deadline'] != null ? DateTime.parse(json['deadline'] as String) : null,
+      deadline: json['deadline'] != null
+          ? DateTime.parse(json['deadline'] as String)
+          : null,
       status: (json['status'] as String?) ?? 'open',
       workDate: ShiftSchedule.parseDate(json['work_date']),
-      shiftStart: ShiftSchedule.timeToDb(ShiftSchedule.parseTime(json['shift_start'])),
-      shiftEnd: ShiftSchedule.timeToDb(ShiftSchedule.parseTime(json['shift_end'])),
+      shiftStart:
+          ShiftSchedule.timeToDb(ShiftSchedule.parseTime(json['shift_start'])),
+      shiftEnd:
+          ShiftSchedule.timeToDb(ShiftSchedule.parseTime(json['shift_end'])),
       createdAt: DateTime.parse(json['created_at'] as String),
-      category: categoryData is Map<String, dynamic> ? Category.fromJson(categoryData) : null,
-      client: clientData is Map<String, dynamic> ? Profile.fromJson(clientData) : null,
+      category: categoryData is Map<String, dynamic>
+          ? Category.fromJson(categoryData)
+          : null,
+      client: clientData is Map<String, dynamic>
+          ? Profile.fromJson(clientData)
+          : null,
     );
   }
 

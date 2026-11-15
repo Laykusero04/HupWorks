@@ -87,9 +87,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   }
 
   void _backToLogin() {
-    final route = widget.role == 'seller'
-        ? '/auth/seller/login'
-        : '/auth/client/login';
+    final route =
+        widget.role == 'seller' ? '/auth/seller/login' : '/auth/client/login';
     context.go(route);
   }
 
@@ -113,7 +112,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         centerTitle: true,
         title: Text(
           l10n.authVerification,
-          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+          style: kTextStyle.copyWith(
+              color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
       ),
       body: Center(
@@ -160,7 +160,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                   style: kTextStyle.copyWith(
                     color: (_isResending || _cooldown > 0)
                         ? kLightNeutralColor
-                        : kPrimaryColor,
+                        : kPrimaryText,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -170,17 +170,17 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                 buttontext: l10n.openEmailApp,
                 buttonDecoration: kButtonDecoration.copyWith(
                   color: kWhite,
-                  border: Border.all(color: kPrimaryColor),
+                  border: Border.all(color: kPrimaryText),
                   borderRadius: BorderRadius.circular(30.0),
                 ),
                 onPressed: _openEmailApp,
-                buttonTextColor: kPrimaryColor,
+                buttonTextColor: kPrimaryText,
               ),
               const SizedBox(height: 12.0),
               ButtonGlobalWithoutIcon(
                 buttontext: l10n.authBackToLogIn,
                 buttonDecoration: kButtonDecoration.copyWith(
-                  color: kPrimaryColor,
+                  color: kPrimaryFill,
                   borderRadius: BorderRadius.circular(30.0),
                 ),
                 onPressed: _backToLogin,

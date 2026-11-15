@@ -18,17 +18,22 @@ class InfoShowCase extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(10.0),
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8.0), color: kWhite, border: Border.all(color: kBorderColorTextField)),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8.0),
+          color: kWhite,
+          border: Border.all(color: kBorderColorTextField)),
       child: Column(
         children: [
           Row(
             children: [
               Text(
                 title,
-                style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+                style: kTextStyle.copyWith(
+                    color: kNeutralColor, fontWeight: FontWeight.bold),
               ),
               const Spacer(),
-              const Icon(IconlyBold.edit, color: kLightNeutralColor, size: 18.0),
+              const Icon(IconlyBold.edit,
+                  color: kLightNeutralColor, size: 18.0),
             ],
           ),
           const SizedBox(height: 8.0),
@@ -39,7 +44,8 @@ class InfoShowCase extends StatelessWidget {
                 style: kTextStyle.copyWith(color: kLightNeutralColor),
               ),
               const Spacer(),
-              const Icon(IconlyBold.delete, color: kLightNeutralColor, size: 18.0),
+              const Icon(IconlyBold.delete,
+                  color: kLightNeutralColor, size: 18.0),
             ],
           ),
         ],
@@ -63,13 +69,17 @@ class InfoShowCaseWithoutIcon extends StatelessWidget {
     return Container(
       width: context.width(),
       padding: const EdgeInsets.all(10.0),
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8.0), color: kWhite, border: Border.all(color: kBorderColorTextField)),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8.0),
+          color: kWhite,
+          border: Border.all(color: kBorderColorTextField)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             title,
-            style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+            style: kTextStyle.copyWith(
+                color: kNeutralColor, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8.0),
           Text(
@@ -96,17 +106,22 @@ class InfoShowCase2 extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(10.0),
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8.0), color: kWhite, border: Border.all(color: kBorderColorTextField)),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8.0),
+          color: kWhite,
+          border: Border.all(color: kBorderColorTextField)),
       child: Column(
         children: [
           Row(
             children: [
               Text(
                 title,
-                style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+                style: kTextStyle.copyWith(
+                    color: kNeutralColor, fontWeight: FontWeight.bold),
               ),
               const Spacer(),
-              const Icon(IconlyBold.edit, color: kLightNeutralColor, size: 18.0),
+              const Icon(IconlyBold.edit,
+                  color: kLightNeutralColor, size: 18.0),
             ],
           ),
           const SizedBox(height: 8.0),
@@ -121,7 +136,8 @@ class InfoShowCase2 extends StatelessWidget {
                 ),
               ),
               const Spacer(),
-              const Icon(IconlyBold.delete, color: kLightNeutralColor, size: 18.0),
+              const Icon(IconlyBold.delete,
+                  color: kLightNeutralColor, size: 18.0),
             ],
           ),
         ],
@@ -155,7 +171,8 @@ class Summary extends StatelessWidget {
         children: [
           Text(
             title,
-            style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+            style: kTextStyle.copyWith(
+                color: kNeutralColor, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 10.0),
           Text(
@@ -194,7 +211,8 @@ class SummaryWithoutIcon extends StatelessWidget {
         children: [
           Text(
             title,
-            style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+            style: kTextStyle.copyWith(
+                color: kNeutralColor, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 10.0),
           Text(
@@ -233,12 +251,17 @@ class Summary2 extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           RichText(
-            text: TextSpan(text: title1, style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold), children: [
-              TextSpan(
-                text: title2,
-                style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12.0),
-              )
-            ]),
+            text: TextSpan(
+                text: title1,
+                style: kTextStyle.copyWith(
+                    color: kNeutralColor, fontWeight: FontWeight.bold),
+                children: [
+                  TextSpan(
+                    text: title2,
+                    style: kTextStyle.copyWith(
+                        color: kLightNeutralColor, fontSize: 12.0),
+                  )
+                ]),
           ),
           const SizedBox(height: 10.0),
           Text(
@@ -290,16 +313,22 @@ class LevelSummary extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+                style: kTextStyle.copyWith(
+                    color: kNeutralColor, fontWeight: FontWeight.bold),
               ),
               const Spacer(),
               RichText(
-                text: TextSpan(text: trailing1, style: kTextStyle.copyWith(color: kSubTitleColor, fontWeight: FontWeight.bold), children: [
-                  TextSpan(
-                    text: ' / $trailing2',
-                    style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold),
-                  )
-                ]),
+                text: TextSpan(
+                    text: trailing1,
+                    style: kTextStyle.copyWith(
+                        color: kSubTitleColor, fontWeight: FontWeight.bold),
+                    children: [
+                      TextSpan(
+                        text: ' / $trailing2',
+                        style: kTextStyle.copyWith(
+                            color: kPrimaryText, fontWeight: FontWeight.bold),
+                      )
+                    ]),
               )
             ],
           ),
@@ -362,14 +391,29 @@ class DashBoardInfo extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 5.0),
-          Text(
-            count,
-            style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+          // scaleDown + single line: a long label such as "Completed" shrinks
+          // at large text sizes instead of breaking mid-word (T-0150 F3).
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: AlignmentDirectional.centerStart,
+            child: Text(
+              count,
+              maxLines: 1,
+              softWrap: false,
+              style: kTextStyle.copyWith(
+                  color: kNeutralColor, fontWeight: FontWeight.bold),
+            ),
           ),
           const SizedBox(height: 5.0),
-          Text(
-            title,
-            style: kTextStyle.copyWith(color: kSubTitleColor),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: AlignmentDirectional.centerStart,
+            child: Text(
+              title,
+              maxLines: 1,
+              softWrap: false,
+              style: kTextStyle.copyWith(color: kSubTitleColor),
+            ),
           ),
         ],
       ),

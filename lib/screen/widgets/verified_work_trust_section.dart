@@ -55,7 +55,8 @@ class VerifiedWorkTrustSection extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             l10n.workTrustSectionSubtitle,
-            style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12, height: 1.35),
+            style: kTextStyle.copyWith(
+                color: kSubTitleColor, fontSize: 12, height: 1.35),
           ),
           const SizedBox(height: 12),
           Container(
@@ -136,7 +137,8 @@ class VerifiedWorkTrustSection extends StatelessWidget {
   Widget _highlightRow(BuildContext context, WorkTrustHighlight h) {
     final l10n = context.l10n;
     final monthLabel = h.completedMonth.isNotEmpty
-        ? formatCompletedMonth(l10n, h.completedMonth, AppDateFormat.localeOf(context))
+        ? formatCompletedMonth(
+            l10n, h.completedMonth, AppDateFormat.localeOf(context))
         : '';
 
     return Padding(
@@ -179,7 +181,8 @@ class VerifiedWorkTrustSection extends StatelessWidget {
             if (h.hadAttendance)
               Tooltip(
                 message: l10n.workTrustAttendanceVerifiedTooltip,
-                child: Icon(Icons.check_circle_outline, size: 18, color: accentColor),
+                child: Icon(Icons.check_circle_outline,
+                    size: 18, color: accentColor),
               ),
           ],
         ),

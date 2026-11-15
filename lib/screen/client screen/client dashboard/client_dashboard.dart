@@ -88,7 +88,8 @@ class _ClientDashBoardState extends State<ClientDashBoard> {
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
           l10n.dashboard,
-          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+          style: kTextStyle.copyWith(
+              color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),

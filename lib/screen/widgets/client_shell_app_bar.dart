@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/guide/guide_config.dart';
 import 'package:freelancer/core/notifications/notification_scope.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/router/route_names.dart';
@@ -67,6 +68,11 @@ class ClientShellAppBar extends StatelessWidget implements PreferredSizeWidget {
       scope: menuShowcaseScope,
       title: menuShowcaseTitle,
       description: menuShowcaseDescription,
+      tooltipPadding: GuideConfig.tooltipPadding,
+      titleAlignment: GuideConfig.tooltipTextAlignment,
+      descriptionAlignment: GuideConfig.tooltipTextAlignment,
+      titleTextStyle: GuideConfig.titleStyle(),
+      descTextStyle: GuideConfig.descStyle(),
       child: button,
     );
   }
@@ -80,6 +86,11 @@ class ClientShellAppBar extends StatelessWidget implements PreferredSizeWidget {
       scope: menuShowcaseScope,
       title: bellShowcaseTitle,
       description: bellShowcaseDescription,
+      tooltipPadding: GuideConfig.tooltipPadding,
+      titleAlignment: GuideConfig.tooltipTextAlignment,
+      descriptionAlignment: GuideConfig.tooltipTextAlignment,
+      titleTextStyle: GuideConfig.titleStyle(),
+      descTextStyle: GuideConfig.descStyle(),
       child: bell,
     );
   }
@@ -99,12 +110,17 @@ class ClientShellAppBar extends StatelessWidget implements PreferredSizeWidget {
       actionsIconTheme: const IconThemeData(color: kWhite),
       centerTitle: false,
       leading: _leading(context),
-      title: Text(
-        title,
-        style: kTextStyle.copyWith(
-          color: kWhite,
-          fontWeight: FontWeight.w600,
-          fontSize: 18,
+      title: MediaQuery.withClampedTextScaling(
+        maxScaleFactor: 1.3,
+        child: Text(
+          title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: kTextStyle.copyWith(
+            color: kWhite,
+            fontWeight: FontWeight.w600,
+            fontSize: 18,
+          ),
         ),
       ),
       actions: [

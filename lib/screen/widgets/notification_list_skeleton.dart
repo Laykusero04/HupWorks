@@ -32,7 +32,8 @@ class NotificationListSkeleton extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ProfileSkeletonBone(listenable: shimmer, height: 14, borderRadius: 6),
+                      ProfileSkeletonBone(
+                          listenable: shimmer, height: 14, borderRadius: 6),
                       const SizedBox(height: 10),
                       ProfileSkeletonBone(
                         listenable: shimmer,

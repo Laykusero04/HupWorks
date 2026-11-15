@@ -26,9 +26,10 @@ class ProfileLocationFields extends StatelessWidget {
   final void Function(double latitude, double longitude)? onCoordinatesChanged;
 
   Future<void> _openMap(BuildContext context) async {
-    final LatLng? initialPosition = initialLatitude != null && initialLongitude != null
-        ? LatLng(initialLatitude!, initialLongitude!)
-        : null;
+    final LatLng? initialPosition =
+        initialLatitude != null && initialLongitude != null
+            ? LatLng(initialLatitude!, initialLongitude!)
+            : null;
     final result = await Navigator.of(context).push<MapLocationPickerResult>(
       MaterialPageRoute(
         builder: (_) => MapLocationPickerScreen(
@@ -62,19 +63,22 @@ class ProfileLocationFields extends StatelessWidget {
           icon: Icon(FeatherIcons.mapPin, size: 18, color: accent),
           label: Text(
             context.l10n.pickLocationOnMap,
-            style: kTextStyle.copyWith(color: accent, fontWeight: FontWeight.w600),
+            style:
+                kTextStyle.copyWith(color: accent, fontWeight: FontWeight.w600),
           ),
           style: OutlinedButton.styleFrom(
             foregroundColor: accent,
             side: BorderSide(color: accent.withValues(alpha: 0.45)),
             padding: const EdgeInsets.symmetric(vertical: 12),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           ),
         ),
         const SizedBox(height: 8),
         Text(
           context.l10n.mapPinConfirmHint,
-          style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12, height: 1.3),
+          style: kTextStyle.copyWith(
+              color: kSubTitleColor, fontSize: 12, height: 1.3),
         ),
         const SizedBox(height: 16),
         TextFormField(

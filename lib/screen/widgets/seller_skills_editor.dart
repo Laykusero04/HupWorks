@@ -379,7 +379,7 @@ class _AddSkillButton extends StatelessWidget {
       icon: const Icon(Icons.add, size: 18),
       label: Text(label),
       style: OutlinedButton.styleFrom(
-        foregroundColor: kPrimaryColor,
+        foregroundColor: kPrimaryText,
         side: BorderSide(color: kPrimaryColor.withValues(alpha: 0.4)),
         minimumSize: const Size(double.infinity, 44),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),

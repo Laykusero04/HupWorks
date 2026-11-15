@@ -173,8 +173,8 @@ class _TopSellerState extends State<TopSeller> {
               style: kTextStyle.copyWith(color: kNeutralColor, fontSize: 14),
               decoration: InputDecoration(
                 hintText: l10n.searchFreelancers,
-                hintStyle:
-                    kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 14),
+                hintStyle: kTextStyle.copyWith(
+                    color: kLightNeutralColor, fontSize: 14),
                 prefixIcon: const Icon(Icons.search, color: kLightNeutralColor),
                 suffixIcon: _searchQuery.isNotEmpty
                     ? IconButton(
@@ -221,7 +221,8 @@ class _TopSellerState extends State<TopSeller> {
     return RubikRefreshIndicator(
       onRefresh: _load,
       child: GridView.builder(
-        physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+        physics: const AlwaysScrollableScrollPhysics(
+            parent: BouncingScrollPhysics()),
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
@@ -395,8 +396,7 @@ class _TopSellerState extends State<TopSeller> {
           TalentFilterActiveChips(
             filters: _filters,
             onChanged: (f) {
-              final nearbyChanged =
-                  f.maxDistanceKm != _filters.maxDistanceKm;
+              final nearbyChanged = f.maxDistanceKm != _filters.maxDistanceKm;
               setState(() => _filters = f);
               if (nearbyChanged) {
                 _load();
@@ -416,7 +416,8 @@ class _TopSellerState extends State<TopSeller> {
                     : filtered.isEmpty
                         ? Center(
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 32),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 32),
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [

@@ -18,7 +18,8 @@ class NotificationScope extends StatefulWidget {
   final Widget child;
 
   static AppNotificationController of(BuildContext context) {
-    final scope = context.dependOnInheritedWidgetOfExactType<_InheritedNotificationScope>();
+    final scope = context
+        .dependOnInheritedWidgetOfExactType<_InheritedNotificationScope>();
     assert(scope != null, 'NotificationScope not found above context');
     return scope!.controller;
   }
@@ -27,7 +28,8 @@ class NotificationScope extends StatefulWidget {
   State<NotificationScope> createState() => _NotificationScopeState();
 }
 
-class _NotificationScopeState extends State<NotificationScope> with WidgetsBindingObserver {
+class _NotificationScopeState extends State<NotificationScope>
+    with WidgetsBindingObserver {
   AppNotificationController? _controller;
   StreamSubscription<AuthState>? _authSub;
   OverlayEntry? _bannerEntry;
@@ -40,7 +42,8 @@ class _NotificationScopeState extends State<NotificationScope> with WidgetsBindi
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _authSub = Supabase.instance.client.auth.onAuthStateChange.listen(_onAuthState);
+    _authSub =
+        Supabase.instance.client.auth.onAuthStateChange.listen(_onAuthState);
   }
 
   @override
@@ -160,7 +163,8 @@ class _NotificationScopeState extends State<NotificationScope> with WidgetsBindi
   }
 }
 
-class _InheritedNotificationScope extends InheritedNotifier<AppNotificationController> {
+class _InheritedNotificationScope
+    extends InheritedNotifier<AppNotificationController> {
   _InheritedNotificationScope({
     required AppNotificationController controller,
     required super.child,

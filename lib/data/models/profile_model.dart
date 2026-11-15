@@ -66,5 +66,19 @@ class Profile extends Equatable {
       };
 
   @override
-  List<Object?> get props => [id, role, name, email, phone, country, city, gender, profileImageUrl, bio, rating, balance, createdAt];
+  List<Object?> get props => [
+        id,
+        role,
+        name,
+        email,
+        phone,
+        country,
+        city,
+        gender,
+        profileImageUrl,
+        bio,
+        rating,
+        balance,
+        createdAt
+      ];
 }

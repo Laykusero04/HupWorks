@@ -44,7 +44,8 @@ class _ClientProfileState extends State<ClientProfile> {
 
   Future<void> _loadProfile({bool forceRefresh = false}) async {
     try {
-      final profile = await ProfileService.getProfile(forceRefresh: forceRefresh);
+      final profile =
+          await ProfileService.getProfile(forceRefresh: forceRefresh);
       if (mounted) {
         setState(() {
           _profile = profile;
@@ -115,8 +116,7 @@ class _ClientProfileState extends State<ClientProfile> {
               padding: const EdgeInsets.only(top: 6),
               child: VerificationStatusBadge(
                 status: verificationStatus,
-                score:
-                    EmployerVerificationService.scoreFromProfile(_profile),
+                score: EmployerVerificationService.scoreFromProfile(_profile),
                 compact: true,
                 onTap: () async {
                   Navigator.pop(context);
@@ -135,6 +135,7 @@ class _ClientProfileState extends State<ClientProfile> {
                   icon: Icons.person_outline,
                   title: l10n.myProfile,
                   onTap: () async {
+                    Navigator.pop(context); // close the drawer first (B6)
                     await const ClientProfileDetails().launch(context);
                     _loadProfile(forceRefresh: true);
                   },
@@ -155,7 +156,10 @@ class _ClientProfileState extends State<ClientProfile> {
                 ProfileMenuListTile(
                   icon: Icons.dashboard_outlined,
                   title: l10n.dashboard,
-                  onTap: () => const ClientDashBoard().launch(context),
+                  onTap: () {
+                    Navigator.pop(context);
+                    const ClientDashBoard().launch(context);
+                  },
                 ),
                 ProfileMenuListTile(
                   icon: Icons.pie_chart_outline,
@@ -169,7 +173,10 @@ class _ClientProfileState extends State<ClientProfile> {
                 ProfileMenuListTile(
                   icon: Icons.bookmark_border,
                   title: l10n.savedTalentList,
-                  onTap: () => const ClientFavList().launch(context),
+                  onTap: () {
+                    Navigator.pop(context);
+                    const ClientFavList().launch(context);
+                  },
                 ),
                 ProfileMenuListTile(
                   icon: Icons.assignment_outlined,
@@ -183,6 +190,7 @@ class _ClientProfileState extends State<ClientProfile> {
                   icon: Icons.settings_outlined,
                   title: l10n.settings,
                   onTap: () async {
+                    Navigator.pop(context);
                     await const ClientSetting().launch(context);
                     _loadProfile(forceRefresh: true);
                   },
@@ -190,7 +198,10 @@ class _ClientProfileState extends State<ClientProfile> {
                 ProfileMenuListTile(
                   icon: Icons.person_add_outlined,
                   title: l10n.inviteFriends,
-                  onTap: () => const ClientInvite().launch(context),
+                  onTap: () {
+                    Navigator.pop(context);
+                    const ClientInvite().launch(context);
+                  },
                 ),
                 ProfileMenuListTile(
                   icon: Icons.help_outline,

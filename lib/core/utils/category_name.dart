@@ -16,7 +16,8 @@ abstract final class CategoryName {
     return trimmed.split(' ').map((word) {
       if (word.isEmpty) return word;
       final lower = word.toLowerCase();
-      return lower[0].toUpperCase() + (lower.length > 1 ? lower.substring(1) : '');
+      return lower[0].toUpperCase() +
+          (lower.length > 1 ? lower.substring(1) : '');
     }).join(' ');
   }
 }

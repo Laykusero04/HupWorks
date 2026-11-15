@@ -262,7 +262,8 @@ class AttendanceService {
     return AttendancePunchSummary.fromJson(Map<String, dynamic>.from(row));
   }
 
-  static Future<bool> _hasCheckinToday(String sellerId, String jobPostId) async {
+  static Future<bool> _hasCheckinToday(
+      String sellerId, String jobPostId) async {
     final now = DateTime.now().toUtc();
     final start = DateTime.utc(now.year, now.month, now.day);
     final end = start.add(const Duration(days: 1));

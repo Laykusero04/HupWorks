@@ -8,7 +8,10 @@ import 'package:freelancer/core/guide/guide_anchor.dart';
 class ClientAttendanceTodayCard extends StatelessWidget {
   final String jobPostId;
 
-  const ClientAttendanceTodayCard({super.key, required this.jobPostId, this.guideAnchor,
+  const ClientAttendanceTodayCard({
+    super.key,
+    required this.jobPostId,
+    this.guideAnchor,
   });
 
   /// Optional guide target around this widget; see [GuideAnchor].

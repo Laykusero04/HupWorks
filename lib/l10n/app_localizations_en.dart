@@ -960,7 +960,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String attentionItems(int count) {
-    return '$count items need attention';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count items need attention',
+      one: '1 item needs attention',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -2246,7 +2252,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get openContractCalloutBody =>
-      'Your freelancer must submit delivery before you can complete this contract. You can message the freelancer from the ⋮ menu at the top.';
+      'Your freelancer must submit delivery before you can complete this contract. Use the Message button below to chat with your freelancer.';
 
   @override
   String cancellationRequestBannerBody(String seller) {
@@ -2461,6 +2467,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get workersNeeded => 'Freelancers needed';
+
+  @override
+  String workersNeededCardCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count freelancers needed',
+      one: '1 freelancer needed',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get openHiringNoLimit => 'Open hiring — no set limit';
 
   @override
   String get limitHiresToCount => 'Limit hires to this count';
@@ -2762,6 +2782,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get somethingWentWrong => 'Something went wrong';
+
+  @override
+  String get chatLoadTimeout =>
+      'Loading took too long. Check your connection and try again.';
+
+  @override
+  String get chatLoadFailedHint =>
+      'We could not load your conversations. Check your connection and try again.';
 
   @override
   String get headsUp => 'Heads up';
@@ -3954,7 +3982,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Camera or photo access is blocked. Enable it in App settings.';
 
   @override
-  String get guideSkip => 'Skip';
+  String get guideSkip => 'Skip tour';
 
   @override
   String get guideNext => 'Next';
@@ -4571,7 +4599,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get guideFindJobsTagsDesc =>
-      'The category and the job type, for example gig or part-time.';
+      'The category and the job type, for example shift or part-time.';
 
   @override
   String get guideFindJobsBudgetTitle => 'Budget';
@@ -5039,7 +5067,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get guideMyJobsFilterDesc =>
-      'Show Gig, Full time or Part time jobs only.';
+      'Show Shift, Full-time or Part-time jobs only.';
 
   @override
   String get guideMyJobsCardTitle => 'Your job post';
@@ -5058,7 +5086,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get guideApplicationsFilterDesc =>
-      'Opens on Pending. Switch to Accepted, Rejected or All to see the rest.';
+      'Filter your applications by status: Pending, Accepted, Rejected or All.';
 
   @override
   String get guideApplicationsApplicantTitle => 'Applicant';
@@ -5401,4 +5429,79 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get guideNothingToShow => 'Nothing to explain here yet';
+
+  @override
+  String get clientStatRating => 'Rating';
+
+  @override
+  String get onboardingSectionWhere => 'Where to go';
+
+  @override
+  String get onboardingSectionWhen => 'When to arrive';
+
+  @override
+  String get onboardingSectionWho => 'Who to contact';
+
+  @override
+  String get onboardingSectionAccess => 'Building access';
+
+  @override
+  String get onboardingSectionRules => 'Site rules';
+
+  @override
+  String get onboardingSectionEmergency => 'Emergency';
+
+  @override
+  String get onboardingSectionGeneric => 'Section';
+
+  @override
+  String get clientTapToViewProfile => 'Tap to view full client profile';
+
+  @override
+  String get inviteCopyCodeLabel => 'Copy invite code';
+
+  @override
+  String get jobNoDescription => 'No description';
+
+  @override
+  String get contractAgreedInChat => 'Agreed in chat';
+
+  @override
+  String get contractPerJobAgreement => 'Per job agreement';
+
+  @override
+  String get contractUnlimitedRevisions => 'Unlimited revisions';
+
+  @override
+  String contractDurationDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days',
+      one: '1 day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String contractDurationHours(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count hours',
+      one: '1 hour',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String contractRevisionsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count revisions',
+      one: '1 revision',
+    );
+    return '$_temp0';
+  }
 }

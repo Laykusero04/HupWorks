@@ -1873,7 +1873,7 @@ abstract class AppLocalizations {
   /// No description provided for @attentionItems.
   ///
   /// In en, this message translates to:
-  /// **'{count} items need attention'**
+  /// **'{count, plural, =1{1 item needs attention} other{{count} items need attention}}'**
   String attentionItems(int count);
 
   /// No description provided for @messages.
@@ -4195,7 +4195,7 @@ abstract class AppLocalizations {
   /// No description provided for @openContractCalloutBody.
   ///
   /// In en, this message translates to:
-  /// **'Your freelancer must submit delivery before you can complete this contract. You can message the freelancer from the ⋮ menu at the top.'**
+  /// **'Your freelancer must submit delivery before you can complete this contract. Use the Message button below to chat with your freelancer.'**
   String get openContractCalloutBody;
 
   /// No description provided for @cancellationRequestBannerBody.
@@ -4587,6 +4587,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Freelancers needed'**
   String get workersNeeded;
+
+  /// No description provided for @workersNeededCardCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 freelancer needed} other{{count} freelancers needed}}'**
+  String workersNeededCardCount(int count);
+
+  /// No description provided for @openHiringNoLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Open hiring — no set limit'**
+  String get openHiringNoLimit;
 
   /// No description provided for @limitHiresToCount.
   ///
@@ -5116,6 +5128,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Something went wrong'**
   String get somethingWentWrong;
+
+  /// No description provided for @chatLoadTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading took too long. Check your connection and try again.'**
+  String get chatLoadTimeout;
+
+  /// No description provided for @chatLoadFailedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'We could not load your conversations. Check your connection and try again.'**
+  String get chatLoadFailedHint;
 
   /// No description provided for @headsUp.
   ///
@@ -7208,7 +7232,7 @@ abstract class AppLocalizations {
   /// No description provided for @guideSkip.
   ///
   /// In en, this message translates to:
-  /// **'Skip'**
+  /// **'Skip tour'**
   String get guideSkip;
 
   /// No description provided for @guideNext.
@@ -8282,7 +8306,7 @@ abstract class AppLocalizations {
   /// No description provided for @guideFindJobsTagsDesc.
   ///
   /// In en, this message translates to:
-  /// **'The category and the job type, for example gig or part-time.'**
+  /// **'The category and the job type, for example shift or part-time.'**
   String get guideFindJobsTagsDesc;
 
   /// No description provided for @guideFindJobsBudgetTitle.
@@ -9098,7 +9122,7 @@ abstract class AppLocalizations {
   /// No description provided for @guideMyJobsFilterDesc.
   ///
   /// In en, this message translates to:
-  /// **'Show Gig, Full time or Part time jobs only.'**
+  /// **'Show Shift, Full-time or Part-time jobs only.'**
   String get guideMyJobsFilterDesc;
 
   /// No description provided for @guideMyJobsCardTitle.
@@ -9134,7 +9158,7 @@ abstract class AppLocalizations {
   /// No description provided for @guideApplicationsFilterDesc.
   ///
   /// In en, this message translates to:
-  /// **'Opens on Pending. Switch to Accepted, Rejected or All to see the rest.'**
+  /// **'Filter your applications by status: Pending, Accepted, Rejected or All.'**
   String get guideApplicationsFilterDesc;
 
   /// No description provided for @guideApplicationsApplicantTitle.
@@ -9730,6 +9754,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Nothing to explain here yet'**
   String get guideNothingToShow;
+
+  /// No description provided for @clientStatRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating'**
+  String get clientStatRating;
+
+  /// No description provided for @onboardingSectionWhere.
+  ///
+  /// In en, this message translates to:
+  /// **'Where to go'**
+  String get onboardingSectionWhere;
+
+  /// No description provided for @onboardingSectionWhen.
+  ///
+  /// In en, this message translates to:
+  /// **'When to arrive'**
+  String get onboardingSectionWhen;
+
+  /// No description provided for @onboardingSectionWho.
+  ///
+  /// In en, this message translates to:
+  /// **'Who to contact'**
+  String get onboardingSectionWho;
+
+  /// No description provided for @onboardingSectionAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Building access'**
+  String get onboardingSectionAccess;
+
+  /// No description provided for @onboardingSectionRules.
+  ///
+  /// In en, this message translates to:
+  /// **'Site rules'**
+  String get onboardingSectionRules;
+
+  /// No description provided for @onboardingSectionEmergency.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency'**
+  String get onboardingSectionEmergency;
+
+  /// No description provided for @onboardingSectionGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Section'**
+  String get onboardingSectionGeneric;
+
+  /// No description provided for @clientTapToViewProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to view full client profile'**
+  String get clientTapToViewProfile;
+
+  /// No description provided for @inviteCopyCodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy invite code'**
+  String get inviteCopyCodeLabel;
+
+  /// No description provided for @jobNoDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'No description'**
+  String get jobNoDescription;
+
+  /// No description provided for @contractAgreedInChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Agreed in chat'**
+  String get contractAgreedInChat;
+
+  /// No description provided for @contractPerJobAgreement.
+  ///
+  /// In en, this message translates to:
+  /// **'Per job agreement'**
+  String get contractPerJobAgreement;
+
+  /// No description provided for @contractUnlimitedRevisions.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited revisions'**
+  String get contractUnlimitedRevisions;
+
+  /// No description provided for @contractDurationDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day} other{{count} days}}'**
+  String contractDurationDays(int count);
+
+  /// No description provided for @contractDurationHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 hour} other{{count} hours}}'**
+  String contractDurationHours(int count);
+
+  /// No description provided for @contractRevisionsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 revision} other{{count} revisions}}'**
+  String contractRevisionsCount(int count);
 }
 
 class _AppLocalizationsDelegate

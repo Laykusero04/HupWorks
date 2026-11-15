@@ -736,7 +736,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost>
                     ? context.l10n.postJob
                     : context.l10n.continueLabel,
             buttonDecoration: kButtonDecoration.copyWith(
-              color: _isLoading ? kLightNeutralColor : kPrimaryColor,
+              color: _isLoading ? kLightNeutralColor : kPrimaryFill,
               borderRadius: BorderRadius.circular(30.0),
             ),
             onPressed: _isLoading ? null : (isLastStep ? _handlePost : _goNext),
@@ -810,7 +810,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost>
             Text(
               l10n.savedAsCategory(_customCategoryPreview!),
               style: kTextStyle.copyWith(
-                  color: kPrimaryColor,
+                  color: kPrimaryText,
                   fontSize: 12,
                   fontWeight: FontWeight.w600),
             ),
@@ -857,7 +857,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost>
               label: Text(L10nLabels.jobType(l10n, value)),
               selected: selected,
               onSelected: (_) => setState(() => _selectedJobType = value),
-              selectedColor: kPrimaryColor,
+              selectedColor: kPrimaryFill,
               backgroundColor: kDarkWhite,
               labelStyle:
                   kTextStyle.copyWith(color: selected ? kWhite : kNeutralColor),
@@ -1318,9 +1318,7 @@ class _CreateNewJobPostState extends State<CreateNewJobPost>
           Text(
             l10n.reviewSection,
             style: kTextStyle.copyWith(
-                color: kPrimaryColor,
-                fontWeight: FontWeight.bold,
-                fontSize: 13),
+                color: kPrimaryText, fontWeight: FontWeight.bold, fontSize: 13),
           ),
           const SizedBox(height: 10),
           _reviewLine(l10n.labelTitle, title),
@@ -1706,7 +1704,7 @@ class _CreateJobGateState extends State<_CreateJobGate>
                   ),
                   buttontext: l10n.editProfile,
                   buttonDecoration: kButtonDecoration.copyWith(
-                    color: kPrimaryColor,
+                    color: kPrimaryFill,
                     borderRadius: BorderRadius.circular(30),
                   ),
                   onPressed: widget.onEditProfile,

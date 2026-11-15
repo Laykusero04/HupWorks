@@ -1155,9 +1155,9 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest>
     final jobId = req['id'] as String?;
     final isSaved = jobId != null && _savedJobIds.contains(jobId);
     final saveBusy = jobId != null && _saveBusyIds.contains(jobId);
-    final description = (req['description'] as String?)?.trim() ?? '';
-    final showDescription =
-        description.isNotEmpty && description.toLowerCase() != 'none';
+    final description =
+        JobPostsService.visibleDescription(req['description']) ?? '';
+    final showDescription = description.isNotEmpty;
 
     Widget guide(GlobalKey key, String t, String d, Widget child) =>
         first ? _guide(key, t, d, child) : child;
@@ -1275,10 +1275,16 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest>
                       color: kLightNeutralColor,
                     ),
                     const SizedBox(width: 4),
-                    Text(
-                      JobPostsService.workersNeededCardLine(
-                          req['workers_needed']),
-                      style: kTextStyle.copyWith(color: kSubTitleColor),
+                    Flexible(
+                      child: Text(
+                        JobPostsService.workersNeededIsUnlimited(
+                                req['workers_needed'])
+                            ? l10n.openHiringNoLimit
+                            : l10n.workersNeededCardCount(
+                                JobPostsService.parseWorkersNeeded(
+                                    req['workers_needed'])),
+                        style: kTextStyle.copyWith(color: kSubTitleColor),
+                      ),
                     ),
                   ],
                 ),
@@ -1470,12 +1476,18 @@ class _SellerBuyerRequestState extends State<SellerBuyerRequest>
                 foregroundColor: kWhite,
                 padding: const EdgeInsets.symmetric(horizontal: 8),
               ),
-              child: Text(
-                context.l10n.jobAlertsTitle,
-                style: kTextStyle.copyWith(
-                  color: kWhite,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 13,
+              // Header action text is not scaled up so it cannot push the
+              // screen title out of the app bar (T-0158).
+              child: MediaQuery.withNoTextScaling(
+                child: Text(
+                  context.l10n.jobAlertsTitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: kTextStyle.copyWith(
+                    color: kWhite,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
                 ),
               ),
             ),

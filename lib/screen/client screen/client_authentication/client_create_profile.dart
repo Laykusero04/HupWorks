@@ -66,7 +66,8 @@ class _ClientCreateProfileState extends State<ClientCreateProfile> {
   }
 
   Future<void> _pickImage(ImageSource source) async {
-    final file = await ProfileAvatarPicker.pickFromSourceAndCrop(context, source);
+    final file =
+        await ProfileAvatarPicker.pickFromSourceAndCrop(context, source);
     if (file == null || !mounted) return;
     setState(() {
       _pickedImage = file;
@@ -81,7 +82,8 @@ class _ClientCreateProfileState extends State<ClientCreateProfile> {
       context: context,
       builder: (dialogContext) {
         return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
           child: Padding(
             padding: const EdgeInsets.all(15.0),
             child: Column(
@@ -115,9 +117,11 @@ class _ClientCreateProfileState extends State<ClientCreateProfile> {
                       },
                       child: Column(
                         children: [
-                          Icon(Icons.photo_library, color: kPrimaryColor, size: 40),
+                          Icon(Icons.photo_library,
+                              color: kPrimaryColor, size: 40),
                           const SizedBox(height: 10.0),
-                          Text(l10n.photoGallery, style: kTextStyle.copyWith(color: kPrimaryColor)),
+                          Text(l10n.photoGallery,
+                              style: kTextStyle.copyWith(color: kPrimaryText)),
                         ],
                       ),
                     ),
@@ -128,9 +132,12 @@ class _ClientCreateProfileState extends State<ClientCreateProfile> {
                       },
                       child: Column(
                         children: [
-                          Icon(Icons.photo_camera, color: kLightNeutralColor, size: 40),
+                          Icon(Icons.photo_camera,
+                              color: kLightNeutralColor, size: 40),
                           const SizedBox(height: 10.0),
-                          Text(l10n.takePhoto, style: kTextStyle.copyWith(color: kLightNeutralColor)),
+                          Text(l10n.takePhoto,
+                              style: kTextStyle.copyWith(
+                                  color: kLightNeutralColor)),
                         ],
                       ),
                     ),
@@ -151,7 +158,8 @@ class _ClientCreateProfileState extends State<ClientCreateProfile> {
       context: context,
       builder: (BuildContext context) {
         return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
           child: const SaveProfilePopUp(),
         );
       },
@@ -171,7 +179,8 @@ class _ClientCreateProfileState extends State<ClientCreateProfile> {
     setState(() => _isSaving = true);
     try {
       if (_pickedImage != null && _uploadedImageUrl == null) {
-        _uploadedImageUrl = await ProfileService.uploadProfileImage(_pickedImage!);
+        _uploadedImageUrl =
+            await ProfileService.uploadProfileImage(_pickedImage!);
       }
 
       await ProfileService.updateProfile({
@@ -223,7 +232,8 @@ class _ClientCreateProfileState extends State<ClientCreateProfile> {
         centerTitle: true,
         title: Text(
           l10n.createProfile,
-          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+          style: kTextStyle.copyWith(
+              color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
       ),
       body: Padding(
@@ -236,7 +246,8 @@ class _ClientCreateProfileState extends State<ClientCreateProfile> {
               const SizedBox(height: 20.0),
               Text(
                 l10n.uploadYourPhoto,
-                style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+                style: kTextStyle.copyWith(
+                    color: kNeutralColor, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10.0),
               Center(
@@ -249,12 +260,15 @@ class _ClientCreateProfileState extends State<ClientCreateProfile> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(color: kPrimaryColor),
-                        image: (_pickedImage != null || _uploadedImageUrl != null)
-                            ? DecorationImage(image: _avatarImage, fit: BoxFit.cover)
-                            : null,
+                        image:
+                            (_pickedImage != null || _uploadedImageUrl != null)
+                                ? DecorationImage(
+                                    image: _avatarImage, fit: BoxFit.cover)
+                                : null,
                       ),
                       child: _pickedImage == null && _uploadedImageUrl == null
-                          ? const Icon(IconlyBold.profile, color: kBorderColorTextField, size: 68)
+                          ? const Icon(IconlyBold.profile,
+                              color: kBorderColorTextField, size: 68)
                           : null,
                     ),
                     GestureDetector(
@@ -266,7 +280,8 @@ class _ClientCreateProfileState extends State<ClientCreateProfile> {
                           shape: BoxShape.circle,
                           border: Border.all(color: kPrimaryColor),
                         ),
-                        child: const Icon(IconlyBold.camera, color: kPrimaryColor),
+                        child:
+                            const Icon(IconlyBold.camera, color: kPrimaryColor),
                       ),
                     ),
                   ],
@@ -321,14 +336,16 @@ class _ClientCreateProfileState extends State<ClientCreateProfile> {
                     decoration: kInputDecoration.copyWith(
                       enabledBorder: const OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                        borderSide: BorderSide(color: kBorderColorTextField, width: 2),
+                        borderSide:
+                            BorderSide(color: kBorderColorTextField, width: 2),
                       ),
                       contentPadding: const EdgeInsets.all(7.0),
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       labelText: l10n.selectGender,
                       labelStyle: kTextStyle.copyWith(color: kNeutralColor),
                     ),
-                    child: DropdownButtonHideUnderline(child: _genderDropdown(l10n)),
+                    child: DropdownButtonHideUnderline(
+                        child: _genderDropdown(l10n)),
                   );
                 },
               ),
@@ -347,7 +364,7 @@ class _ClientCreateProfileState extends State<ClientCreateProfile> {
               ButtonGlobalWithoutIcon(
                 buttontext: _isSaving ? l10n.saving : l10n.saveProfile,
                 buttonDecoration: kButtonDecoration.copyWith(
-                  color: _isSaving ? kLightNeutralColor : kPrimaryColor,
+                  color: _isSaving ? kLightNeutralColor : kPrimaryFill,
                   borderRadius: BorderRadius.circular(30.0),
                 ),
                 onPressed: _isSaving ? null : _handleSave,

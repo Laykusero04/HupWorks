@@ -5,5 +5,6 @@ class Language extends StatelessWidget {
   const Language({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => const LanguageSettingsScreen();
+  Widget build(BuildContext context) =>
+      const LanguageSettingsScreen(isSeller: true);
 }

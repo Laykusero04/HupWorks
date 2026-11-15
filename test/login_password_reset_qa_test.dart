@@ -43,7 +43,8 @@ void main() {
     expect(const SellerLogIn().role, 'seller');
   });
 
-  testWidgets('each role login shows its chip and action color', (tester) async {
+  testWidgets('each role login shows its chip and action color',
+      (tester) async {
     Future<void> pumpRole(Widget home) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -66,12 +67,12 @@ void main() {
     await pumpRole(const ClientLogIn());
     expect(find.text('Employer'), findsOneWidget);
     expect(find.text('Freelancer'), findsNothing);
-    expect(buttonColor(), kPrimaryColor);
+    expect(buttonColor(), kPrimaryFill);
 
     await pumpRole(const SellerLogIn());
     expect(find.text('Freelancer'), findsOneWidget);
     expect(find.text('Employer'), findsNothing);
-    expect(buttonColor(), kSellerPrimary);
+    expect(buttonColor(), kSecondaryFill);
   });
 
   testWidgets('password Done submits and fields sit in an autofill group', (
@@ -79,7 +80,8 @@ void main() {
   ) async {
     await pumpLogin(tester);
 
-    final fields = tester.widgetList<TextField>(find.byType(TextField)).toList();
+    final fields =
+        tester.widgetList<TextField>(find.byType(TextField)).toList();
     expect(fields, hasLength(2));
     expect(fields[0].autofillHints, contains(AutofillHints.email));
     expect(fields[0].textInputAction, TextInputAction.next);
@@ -167,7 +169,8 @@ void main() {
 
     expect(find.text('Forgot Password?'), findsOneWidget);
     expect(find.text('person@example.com'), findsOneWidget);
-    expect(find.text('Password reset link sent. Check your email.'), findsNothing);
+    expect(
+        find.text('Password reset link sent. Check your email.'), findsNothing);
   });
 
   testWidgets('successful reset pops and leaves the confirmation on login', (

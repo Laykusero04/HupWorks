@@ -7,9 +7,13 @@ import 'constant.dart';
 
 /// Shared language settings (client + seller). Only locales with ARB files.
 class LanguageSettingsScreen extends StatelessWidget {
-  const LanguageSettingsScreen({super.key});
+  const LanguageSettingsScreen({super.key, this.isSeller = false});
 
-  static final _options = <({Locale locale, String Function(AppLocalizations) label})>[
+  /// Seller (teal) vs client (orange) accent for the selected check mark.
+  final bool isSeller;
+
+  static final _options =
+      <({Locale locale, String Function(AppLocalizations) label})>[
     (locale: const Locale('en'), label: (l) => l.languageEnglish),
     (locale: const Locale('nl'), label: (l) => l.languageDutch),
     // (locale: const Locale('bn'), label: (l) => l.languageBengali), // temporarily disabled
@@ -27,7 +31,8 @@ class LanguageSettingsScreen extends StatelessWidget {
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
           context.l10n.language,
-          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+          style: kTextStyle.copyWith(
+              color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),
@@ -57,7 +62,8 @@ class LanguageSettingsScreen extends StatelessWidget {
                     padding: EdgeInsets.zero,
                     itemBuilder: (_, i) {
                       final option = _options[i];
-                      final selected = localeController.isSelected(option.locale);
+                      final selected =
+                          localeController.isSelected(option.locale);
                       return ListTile(
                         onTap: () async {
                           await localeController.setLocale(option.locale);
@@ -65,7 +71,8 @@ class LanguageSettingsScreen extends StatelessWidget {
                           WidgetsBinding.instance.addPostFrameCallback((_) {
                             if (!context.mounted) return;
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(context.l10n.languageChanged)),
+                              SnackBar(
+                                  content: Text(context.l10n.languageChanged)),
                             );
                           });
                         },
@@ -80,7 +87,7 @@ class LanguageSettingsScreen extends StatelessWidget {
                         ),
                         trailing: Icon(
                           selected ? Icons.check : null,
-                          color: kPrimaryColor,
+                          color: isSeller ? kSecondaryText : kPrimaryColor,
                         ),
                       );
                     },

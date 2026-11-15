@@ -84,7 +84,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         centerTitle: true,
         title: Text(
           l10n.authForgotPasswordTitle,
-          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+          style: kTextStyle.copyWith(
+              color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
       ),
       body: Padding(
@@ -118,7 +119,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             ButtonGlobalWithoutIcon(
               buttontext: isLoading ? l10n.sending : l10n.authResetPassword,
               buttonDecoration: kButtonDecoration.copyWith(
-                color: isLoading ? kLightNeutralColor : kPrimaryColor,
+                color: isLoading ? kLightNeutralColor : kPrimaryFill,
               ),
               onPressed: isLoading ? null : _handleResetPassword,
               buttonTextColor: kWhite,

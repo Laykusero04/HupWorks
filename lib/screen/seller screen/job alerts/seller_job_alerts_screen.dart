@@ -98,6 +98,7 @@ class _SellerJobAlertsScreenState extends State<SellerJobAlertsScreen>
           targetNearBottom: true),
     ];
   }
+
   List<SellerJobAlertRule> _rules = [];
   bool _loading = true;
   bool _loadFailed = false;
@@ -133,7 +134,8 @@ class _SellerJobAlertsScreenState extends State<SellerJobAlertsScreen>
     }
   }
 
-  Future<void> _openEditor({SellerJobAlertRule? rule, String? skill, String? jobType}) async {
+  Future<void> _openEditor(
+      {SellerJobAlertRule? rule, String? skill, String? jobType}) async {
     final changed = await SellerJobAlertEditorScreen(
       existing: rule,
       initialSkillName: skill,
@@ -173,8 +175,12 @@ class _SellerJobAlertsScreenState extends State<SellerJobAlertsScreen>
         title: Text(l10n.jobAlertDeleteTitle),
         content: Text(l10n.jobAlertDeleteMessage),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
-          TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text(l10n.delete)),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(l10n.cancel)),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text(l10n.delete)),
         ],
       ),
     );
@@ -223,7 +229,7 @@ class _SellerJobAlertsScreenState extends State<SellerJobAlertsScreen>
     return guideBackScope(Scaffold(
       backgroundColor: kDarkWhite,
       appBar: AppBar(
-        backgroundColor: kSellerPrimary,
+        backgroundColor: kSecondaryFill,
         foregroundColor: kWhite,
         title: Text(l10n.jobAlertsTitle),
         actions: [GuideInfoButton(host: this)],
@@ -251,105 +257,113 @@ class _SellerJobAlertsScreenState extends State<SellerJobAlertsScreen>
                   },
                 )
               : RubikRefreshIndicator(
-              onRefresh: _load,
-              child: _rules.isEmpty
-                  ? ListView(
-                      physics: const AlwaysScrollableScrollPhysics(
-                        parent: BouncingScrollPhysics(),
-                      ),
-                      children: [
-                        SizedBox(
-                          height: MediaQuery.sizeOf(context).height * 0.12,
-                        ),
-                        EmptyStateWidget(
-                          message: l10n.noJobAlertsYet,
-                          hint: l10n.jobAlertsEmpty,
-                          icon: Icons.notifications_active_outlined,
-                          actionLabel: l10n.jobAlertNew,
-                          onAction: () => _openEditor(),
-                        ),
-                      ],
-                    )
-                  : ListView.separated(
-                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 88),
-                      itemCount: _rules.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 12),
-                      itemBuilder: (_, i) {
-                        final rule = _rules[i];
-                        return GuideAnchor.wrap(
-                            i == 0
-                                ? _anchor(
-                                    _guideRuleKey,
-                                    l10n.guideJobAlertsRuleTitle,
-                                    l10n.guideJobAlertsRuleDesc)
-                                : null,
-                            Material(
-                          color: kWhite,
-                          borderRadius: BorderRadius.circular(12),
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(12),
-                            onTap: () => _openEditor(rule: rule),
-                            child: Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          rule.name?.trim().isNotEmpty == true
-                                              ? rule.name!
-                                              : l10n.jobAlertUntitled,
-                                          style: kTextStyle.copyWith(
-                                            fontWeight: FontWeight.bold,
-                                            color: kNeutralColor,
-                                          ),
-                                        ),
-                                      ),
-                                      GuideAnchor.wrap(
-                                        i == 0
-                                            ? _anchor(
-                                                _guideSwitchKey,
-                                                l10n.guideJobAlertsSwitchTitle,
-                                                l10n.guideJobAlertsSwitchDesc)
-                                            : null,
-                                        Switch(
-                                          value: rule.enabled,
-                                          onChanged:
-                                              _togglingIds.contains(rule.id)
-                                                  ? null
-                                                  : (v) => _toggle(rule, v),
-                                          activeThumbColor: primary,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    _summary(context, rule),
-                                    style: kTextStyle.copyWith(
-                                      color: kSubTitleColor,
-                                      fontSize: 13,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: IconButton(
-                                      icon: const Icon(Icons.delete_outline, color: Colors.red),
-                                      tooltip: l10n.jobAlertDeleteTooltip,
-                                      onPressed: () => _delete(rule),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                  onRefresh: _load,
+                  child: _rules.isEmpty
+                      ? ListView(
+                          physics: const AlwaysScrollableScrollPhysics(
+                            parent: BouncingScrollPhysics(),
                           ),
-                        ));
-                      },
-                    ),
-            ),
+                          children: [
+                            SizedBox(
+                              height: MediaQuery.sizeOf(context).height * 0.12,
+                            ),
+                            EmptyStateWidget(
+                              message: l10n.noJobAlertsYet,
+                              hint: l10n.jobAlertsEmpty,
+                              icon: Icons.notifications_active_outlined,
+                              actionLabel: l10n.jobAlertNew,
+                              onAction: () => _openEditor(),
+                            ),
+                          ],
+                        )
+                      : ListView.separated(
+                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 88),
+                          itemCount: _rules.length,
+                          separatorBuilder: (_, __) =>
+                              const SizedBox(height: 12),
+                          itemBuilder: (_, i) {
+                            final rule = _rules[i];
+                            return GuideAnchor.wrap(
+                                i == 0
+                                    ? _anchor(
+                                        _guideRuleKey,
+                                        l10n.guideJobAlertsRuleTitle,
+                                        l10n.guideJobAlertsRuleDesc)
+                                    : null,
+                                Material(
+                                  color: kWhite,
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(12),
+                                    onTap: () => _openEditor(rule: rule),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(16),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: Text(
+                                                  rule.name
+                                                              ?.trim()
+                                                              .isNotEmpty ==
+                                                          true
+                                                      ? rule.name!
+                                                      : l10n.jobAlertUntitled,
+                                                  style: kTextStyle.copyWith(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: kNeutralColor,
+                                                  ),
+                                                ),
+                                              ),
+                                              GuideAnchor.wrap(
+                                                i == 0
+                                                    ? _anchor(
+                                                        _guideSwitchKey,
+                                                        l10n.guideJobAlertsSwitchTitle,
+                                                        l10n.guideJobAlertsSwitchDesc)
+                                                    : null,
+                                                Switch(
+                                                  value: rule.enabled,
+                                                  onChanged: _togglingIds
+                                                          .contains(rule.id)
+                                                      ? null
+                                                      : (v) => _toggle(rule, v),
+                                                  activeThumbColor: primary,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            _summary(context, rule),
+                                            style: kTextStyle.copyWith(
+                                              color: kSubTitleColor,
+                                              fontSize: 13,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Align(
+                                            alignment: Alignment.centerRight,
+                                            child: IconButton(
+                                              icon: const Icon(
+                                                  Icons.delete_outline,
+                                                  color: Colors.red),
+                                              tooltip:
+                                                  l10n.jobAlertDeleteTooltip,
+                                              onPressed: () => _delete(rule),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ));
+                          },
+                        ),
+                ),
     ));
   }
 }

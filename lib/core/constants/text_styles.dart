@@ -8,7 +8,7 @@ final kTextStyle = GoogleFonts.inter(
 );
 
 const kButtonDecoration = BoxDecoration(
-  color: kPrimaryColor,
+  color: kPrimaryFill,
   borderRadius: BorderRadius.all(
     Radius.circular(40.0),
   ),

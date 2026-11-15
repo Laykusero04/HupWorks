@@ -375,7 +375,7 @@
   "activeContracts": "Active contracts",
   "wallet": "Wallet",
   "needsAttention": "Needs attention",
-  "attentionItems": "{count} items need attention",
+  "attentionItems": "{count, plural, =1{1 item needs attention} other{{count} items need attention}}",
   "@attentionItems": {
     "placeholders": {
       "count": {
@@ -1053,7 +1053,7 @@
   "sellerSubmittedDelivery": "Freelancer submitted delivery",
   "yourDelivery": "Your delivery",
   "deliveredCalloutBody": "Review what they sent. When you are happy with the result, tap Mark job complete below to close the contract. To chat with the freelancer, use the ⋮ menu at the top.",
-  "openContractCalloutBody": "Your freelancer must submit delivery before you can complete this contract. You can message the freelancer from the ⋮ menu at the top.",
+  "openContractCalloutBody": "Your freelancer must submit delivery before you can complete this contract. Use the Message button below to chat with your freelancer.",
   "cancellationRequestBannerBody": "{seller} asked to cancel this contract. You can approve or keep it active. If you do not respond within 48 hours, the contract stays active.",
   "@cancellationRequestBannerBody": {
     "placeholders": {
@@ -1161,6 +1161,15 @@
   "describeJobLabel": "Describe the job",
   "describeJobHint": "Scope, timeline, skills needed",
   "workersNeeded": "Freelancers needed",
+  "workersNeededCardCount": "{count, plural, =1{1 freelancer needed} other{{count} freelancers needed}}",
+  "@workersNeededCardCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "openHiringNoLimit": "Open hiring — no set limit",
   "limitHiresToCount": "Limit hires to this count",
   "budgetMinLabel": "Min",
   "budgetMaxLabel": "Max",
@@ -1335,6 +1344,8 @@
   "offerSentSuccess": "Your application has been sent",
   "successTitle": "Success",
   "somethingWentWrong": "Something went wrong",
+  "chatLoadTimeout": "Loading took too long. Check your connection and try again.",
+  "chatLoadFailedHint": "We could not load your conversations. Check your connection and try again.",
   "headsUp": "Heads up",
   "youAreOffline": "You're offline. Some actions may not work.",
   "applyWithoutCounterBody": "You are applying at the client's posted rate. They will see your application at that rate.",
@@ -1853,7 +1864,7 @@
     }
   },
   "mediaPermissionDenied": "Camera or photo access is blocked. Enable it in App settings.",
-  "guideSkip": "Skip",
+  "guideSkip": "Skip tour",
   "guideNext": "Next",
   "guideDone": "Got it",
   "guideReplayThisScreen": "Show tips for this screen",
@@ -2088,7 +2099,7 @@
   "guideFindJobsSaveTitle": "Save for later",
   "guideFindJobsSaveDesc": "Tap the bookmark to keep a job and find it again later.",
   "guideFindJobsTagsTitle": "Job tags",
-  "guideFindJobsTagsDesc": "The category and the job type, for example gig or part-time.",
+  "guideFindJobsTagsDesc": "The category and the job type, for example shift or part-time.",
   "guideFindJobsBudgetTitle": "Budget",
   "guideFindJobsBudgetDesc": "What the client plans to pay. You can still quote your own price.",
   "guideFindJobsSectionFilters": "Filters and alerts",
@@ -2231,13 +2242,13 @@
   "guideContractsOpenTitle": "Open a contract",
   "guideContractsOpenDesc": "Tap to see delivery, hours and payment.",
   "guideMyJobsFilterTitle": "Filter jobs",
-  "guideMyJobsFilterDesc": "Show Gig, Full time or Part time jobs only.",
+  "guideMyJobsFilterDesc": "Show Shift, Full-time or Part-time jobs only.",
   "guideMyJobsCardTitle": "Your job post",
   "guideMyJobsCardDesc": "Tap a job to review applicants and hire.",
   "guideMyJobsPostTitle": "Post a job",
   "guideMyJobsPostDesc": "Tap + to start a new job post.",
   "guideApplicationsFilterTitle": "Filter applications",
-  "guideApplicationsFilterDesc": "Opens on Pending. Switch to Accepted, Rejected or All to see the rest.",
+  "guideApplicationsFilterDesc": "Filter your applications by status: Pending, Accepted, Rejected or All.",
   "guideApplicationsApplicantTitle": "Applicant",
   "guideApplicationsApplicantDesc": "Tap the name for their profile or the chat icon to message them.",
   "guideApplicationsJobTitle": "The job",
@@ -2336,5 +2347,43 @@
   "guideIdentitySubmitTitle": "Submit for review",
   "guideIdentitySubmitDesc": "Turns on after you add a photo. An admin checks it, which can take a while.",
   "guideSellerAppsSectionHired": "After you are hired",
-  "guideNothingToShow": "Nothing to explain here yet"
+  "guideNothingToShow": "Nothing to explain here yet",
+  "clientStatRating": "Rating",
+  "onboardingSectionWhere": "Where to go",
+  "onboardingSectionWhen": "When to arrive",
+  "onboardingSectionWho": "Who to contact",
+  "onboardingSectionAccess": "Building access",
+  "onboardingSectionRules": "Site rules",
+  "onboardingSectionEmergency": "Emergency",
+  "onboardingSectionGeneric": "Section",
+  "clientTapToViewProfile": "Tap to view full client profile",
+  "inviteCopyCodeLabel": "Copy invite code",
+  "jobNoDescription": "No description",
+  "contractAgreedInChat": "Agreed in chat",
+  "contractPerJobAgreement": "Per job agreement",
+  "contractUnlimitedRevisions": "Unlimited revisions",
+  "contractDurationDays": "{count, plural, =1{1 day} other{{count} days}}",
+  "@contractDurationDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "contractDurationHours": "{count, plural, =1{1 hour} other{{count} hours}}",
+  "@contractDurationHours": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "contractRevisionsCount": "{count, plural, =1{1 revision} other{{count} revisions}}",
+  "@contractRevisionsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

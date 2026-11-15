@@ -65,8 +65,7 @@ class EmployerVerificationService {
       'company_doc_path': path,
       'id_selfie_path': null,
       'company_name': name,
-      'company_registration_number':
-          (reg == null || reg.isEmpty) ? null : reg,
+      'company_registration_number': (reg == null || reg.isEmpty) ? null : reg,
       'company_website': (web == null || web.isEmpty) ? null : web,
       'status': 'pending',
       'submitted_at': DateTime.now().toUtc().toIso8601String(),

@@ -55,7 +55,9 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
       setState(() {
         _profile = profile;
         _reviews = reviews;
-        _skills = profile != null ? ProfileService.sellerSkillsFromProfile(profile) : const [];
+        _skills = profile != null
+            ? ProfileService.sellerSkillsFromProfile(profile)
+            : const [];
         _isLoading = false;
       });
     } catch (e) {
@@ -108,10 +110,18 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
     final email = (_profile?['email'] as String?) ?? '';
     final bio = _profile?['bio'] as String?;
     final profileImageUrl = _profile?['profile_image_url'];
-    final jobTitle = _profile != null ? ProfileService.sellerJobTitleFromProfile(_profile!) : null;
-    final about = _profile != null ? ProfileService.sellerAboutFromProfile(_profile!) : null;
-    final address = _profile != null ? ProfileService.sellerAddressFromProfile(_profile!) : null;
-    final age = _profile != null ? ProfileService.sellerAgeFromProfile(_profile!) : null;
+    final jobTitle = _profile != null
+        ? ProfileService.sellerJobTitleFromProfile(_profile!)
+        : null;
+    final about = _profile != null
+        ? ProfileService.sellerAboutFromProfile(_profile!)
+        : null;
+    final address = _profile != null
+        ? ProfileService.sellerAddressFromProfile(_profile!)
+        : null;
+    final age = _profile != null
+        ? ProfileService.sellerAgeFromProfile(_profile!)
+        : null;
     final reviewStats = ProfileService.resolveReviewDisplay(
       profile: _profile,
       reviews: _reviews,
@@ -120,13 +130,9 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
     final reviewCount = reviewStats.count;
     final phone = _profile?['phone'] as String? ?? '';
     final genderRaw = _profile?['gender'] as String? ?? '';
-    final gender = genderRaw.isEmpty
-        ? ''
-        : L10nLabels.gender(l10n, genderRaw);
-    final verificationStatus =
-        VerificationService.statusFromProfile(_profile);
-    final verificationScore =
-        VerificationService.scoreFromProfile(_profile);
+    final gender = genderRaw.isEmpty ? '' : L10nLabels.gender(l10n, genderRaw);
+    final verificationStatus = VerificationService.statusFromProfile(_profile);
+    final verificationScore = VerificationService.scoreFromProfile(_profile);
 
     final avgLabel = reviewCount > 0 ? rating.toStringAsFixed(1) : '—';
 
@@ -166,7 +172,8 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
       body: RubikRefreshIndicator(
         onRefresh: _load,
         child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+          physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics()),
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -182,7 +189,8 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                   onTap: _changePhoto,
                   onView: () => showProfilePhoto(
                     context,
-                    imageUrl: profileImageUrl is String ? profileImageUrl : null,
+                    imageUrl:
+                        profileImageUrl is String ? profileImageUrl : null,
                   ),
                 ),
               ),
@@ -205,7 +213,8 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                   textAlign: TextAlign.center,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 14),
+                  style:
+                      kTextStyle.copyWith(color: kSubTitleColor, fontSize: 14),
                 ),
               ],
               if (address != null && address.isNotEmpty) ...[
@@ -213,7 +222,8 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.location_on_outlined, size: 14, color: kSellerAccent),
+                    const Icon(Icons.location_on_outlined,
+                        size: 14, color: kSellerAccent),
                     const SizedBox(width: 3),
                     Flexible(
                       child: Text(
@@ -258,11 +268,10 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                   ),
                 ],
               ),
-
               const SizedBox(height: 12),
-
               Container(
-                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
                 decoration: ProfileDetailTheme.statsPanel(accent: brand),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -280,25 +289,22 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                   ],
                 ),
               ),
-
               const SizedBox(height: 10),
-
               VerificationScoreCard(
                 score: verificationScore,
                 accent: brand,
                 onTap: openVerification,
                 compact: true,
               ),
-
               if (bio != null && bio.trim().isNotEmpty) ...[
                 const SizedBox(height: 12),
                 Text(
                   bio.trim(),
                   textAlign: TextAlign.start,
-                  style: kTextStyle.copyWith(color: kSubTitleColor, height: 1.35),
+                  style:
+                      kTextStyle.copyWith(color: kSubTitleColor, height: 1.35),
                 ),
               ],
-
               if (about != null && about.isNotEmpty) ...[
                 const SizedBox(height: 12),
                 Text(
@@ -313,26 +319,24 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                 Text(
                   about,
                   textAlign: TextAlign.start,
-                  style: kTextStyle.copyWith(color: kSubTitleColor, height: 1.35),
+                  style:
+                      kTextStyle.copyWith(color: kSubTitleColor, height: 1.35),
                 ),
               ],
-
               if (_skills.isNotEmpty) ...[
                 const SizedBox(height: 12),
                 SellerSkillsDisplay(skills: _skills, accentColor: brand),
               ],
-
               const SizedBox(height: 14),
-
               ProfileDetailTheme.sectionDivider(
                 gradientStart: brand,
                 gradientEnd: kSellerAccent,
               ),
               const SizedBox(height: 10),
-
               Text(
                 l10n.profileDetails,
-                style: kTextStyle.copyWith(color: brand, fontWeight: FontWeight.bold),
+                style: kTextStyle.copyWith(
+                    color: brand, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               Container(
@@ -344,26 +348,25 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                     _detailRow(l10n.email, email),
                     _detailRow(l10n.phone, phone),
                     _detailRow(l10n.genderLabel, gender),
-                    if (age != null) _detailRow(l10n.ageLabel, l10n.ageYearsOld(age)),
+                    if (age != null)
+                      _detailRow(l10n.ageLabel, l10n.ageYearsOld(age)),
                     if (address != null && address.isNotEmpty)
                       _detailRow(l10n.address, address),
                   ],
                 ),
               ),
-
               const SizedBox(height: 14),
-
               ProfileDetailTheme.sectionDivider(
                 gradientStart: brand,
                 gradientEnd: kSellerAccent,
               ),
               const SizedBox(height: 10),
-
               Row(
                 children: [
                   Text(
                     l10n.reviews,
-                    style: kTextStyle.copyWith(color: brand, fontWeight: FontWeight.bold),
+                    style: kTextStyle.copyWith(
+                        color: brand, fontWeight: FontWeight.bold),
                   ),
                   const Spacer(),
                   Text(
@@ -373,13 +376,14 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                 ],
               ),
               const SizedBox(height: 8),
-
               if (_reviews.isEmpty)
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
                   child: Column(
                     children: [
-                      Icon(IconlyBold.star, size: 36, color: brand.withValues(alpha: 0.45)),
+                      Icon(IconlyBold.star,
+                          size: 36, color: brand.withValues(alpha: 0.45)),
                       const SizedBox(height: 6),
                       Text(
                         l10n.noReviewsYet,
@@ -415,10 +419,12 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
         children: [
           Text(
             value,
-            style: kTextStyle.copyWith(color: accent, fontWeight: FontWeight.bold, fontSize: 16),
+            style: kTextStyle.copyWith(
+                color: accent, fontWeight: FontWeight.bold, fontSize: 16),
           ),
           const SizedBox(height: 1),
-          Text(label, style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 11)),
+          Text(label,
+              style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 11)),
         ],
       ),
     );
@@ -440,19 +446,24 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
         children: [
           Expanded(
             flex: 2,
-            child: Text(label, style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13)),
+            child: Text(label,
+                style:
+                    kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13)),
           ),
           Expanded(
             flex: 4,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(':', style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13)),
+                Text(':',
+                    style: kTextStyle.copyWith(
+                        color: kSubTitleColor, fontSize: 13)),
                 const SizedBox(width: 8.0),
                 Flexible(
                   child: Text(
                     v,
-                    style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13),
+                    style: kTextStyle.copyWith(
+                        color: kSubTitleColor, fontSize: 13),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 3,
                   ),
@@ -508,7 +519,8 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                   ? NetworkImage(imageUrl) as ImageProvider
                   : null,
               child: imageUrl == null || imageUrl.isEmpty
-                  ? Icon(Icons.person_rounded, color: brand.withValues(alpha: 0.55), size: 24)
+                  ? Icon(Icons.person_rounded,
+                      color: brand.withValues(alpha: 0.55), size: 24)
                   : null,
             ),
             const SizedBox(width: 12),
@@ -524,7 +536,9 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                           who,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+                          style: kTextStyle.copyWith(
+                              color: kNeutralColor,
+                              fontWeight: FontWeight.bold),
                         ),
                       ),
                       if (dateStr.isNotEmpty)
@@ -532,7 +546,8 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                           padding: const EdgeInsets.only(left: 8),
                           child: Text(
                             dateStr,
-                            style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 11),
+                            style: kTextStyle.copyWith(
+                                color: kLightNeutralColor, fontSize: 11),
                           ),
                         ),
                     ],
@@ -543,7 +558,8 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                     const SizedBox(height: 8),
                     Text(
                       comment,
-                      style: kTextStyle.copyWith(color: kSubTitleColor, height: 1.35),
+                      style: kTextStyle.copyWith(
+                          color: kSubTitleColor, height: 1.35),
                     ),
                   ],
                 ],

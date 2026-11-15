@@ -50,9 +50,8 @@ class AttendanceModePicker extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.only(bottom: 8),
             child: Material(
-              color: isSelected
-                  ? kPrimaryColor.withValues(alpha: 0.08)
-                  : kWhite,
+              color:
+                  isSelected ? kPrimaryColor.withValues(alpha: 0.08) : kWhite,
               borderRadius: BorderRadius.circular(10),
               child: InkWell(
                 onTap: enabled ? () => onChanged(mode) : null,

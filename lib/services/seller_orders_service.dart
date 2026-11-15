@@ -10,7 +10,8 @@ class SellerOrdersService {
   static final _client = Supabase.instance.client;
 
   /// Fetch seller orders filtered by status
-  static Future<List<Map<String, dynamic>>> getSellerOrders({String? status}) async {
+  static Future<List<Map<String, dynamic>>> getSellerOrders(
+      {String? status}) async {
     final user = _client.auth.currentUser;
     if (user == null) return [];
 
@@ -70,11 +71,12 @@ class SellerOrdersService {
       final path = '${user.id}/${orderId}_delivery.$ext';
 
       await _client.storage.from('chat-attachments').upload(
-        path,
-        attachment,
-        fileOptions: const FileOptions(upsert: true),
-      );
-      attachmentUrl = _client.storage.from('chat-attachments').getPublicUrl(path);
+            path,
+            attachment,
+            fileOptions: const FileOptions(upsert: true),
+          );
+      attachmentUrl =
+          _client.storage.from('chat-attachments').getPublicUrl(path);
     }
 
     await _client.rpc(
@@ -119,7 +121,8 @@ class SellerOrdersService {
     required String reasonNote,
   }) async {
     try {
-      final conversation = await ChatService.getOrCreateJobApplicationConversation(
+      final conversation =
+          await ChatService.getOrCreateJobApplicationConversation(
         buyerUserId: clientId,
       );
       final label = _cancellationReasonLabel(reasonCode);
@@ -210,7 +213,8 @@ class SellerOrdersService {
   }
 
   /// Fetch single job post details with offer count + client public stats.
-  static Future<Map<String, dynamic>> getBuyerRequestDetails(String jobPostId) async {
+  static Future<Map<String, dynamic>> getBuyerRequestDetails(
+      String jobPostId) async {
     final data = await _client
         .from('job_posts')
         .select(
@@ -252,8 +256,8 @@ class SellerOrdersService {
       data['client_rating'] = reviewStats.reviewCount > 0
           ? reviewStats.rating
           : ProfileService.parseRatingValue(
-              (data['profiles'] as Map<String, dynamic>?)?['rating'],
-            ) ??
+                (data['profiles'] as Map<String, dynamic>?)?['rating'],
+              ) ??
               0.0;
 
       final embedded = data['profiles'];
@@ -289,7 +293,8 @@ class SellerOrdersService {
         .single();
 
     if ((job['status'] as String?)?.toLowerCase() != 'open') {
-      throw Exception('This job is closed and is not accepting new applications.');
+      throw Exception(
+          'This job is closed and is not accepting new applications.');
     }
     if (job['client_id'] == user.id) {
       throw Exception('You cannot apply to your own job post.');
@@ -318,7 +323,8 @@ class SellerOrdersService {
     };
     if (deliveryTime != null && deliveryTime > 0 && deliveryTimeUnit != null) {
       insert['delivery_time'] = deliveryTime;
-      insert['delivery_time_unit'] = JobOfferDelivery.normalizeUnit(deliveryTimeUnit);
+      insert['delivery_time_unit'] =
+          JobOfferDelivery.normalizeUnit(deliveryTimeUnit);
     } else {
       insert['delivery_time'] = null;
       insert['delivery_time_unit'] = null;

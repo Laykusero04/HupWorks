@@ -1,3 +1,4 @@
+import 'package:freelancer/core/utils/contract_text.dart';
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
 import 'package:freelancer/core/widgets/loading_widget.dart';
@@ -213,10 +214,10 @@ class _ClientOrderListState extends State<ClientOrderList>
                           horizontal: 14, vertical: 9),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(30.0),
-                        color: selected ? kPrimaryColor : kDarkWhite,
+                        color: selected ? kPrimaryFill : kDarkWhite,
                         border: Border.all(
                             color: selected
-                                ? kPrimaryColor
+                                ? kPrimaryFill
                                 : kBorderColorTextField),
                       ),
                       child: Text(
@@ -309,7 +310,8 @@ class _ClientOrderListState extends State<ClientOrderList>
     final remaining = _getTimeRemaining(order);
     final isActive = (order['status'] as String?)?.toLowerCase() == 'active';
     final title = OrderContractDisplay.title(order, service);
-    final price = order['price'] ?? 0;
+    final price = ContractText.money(
+        order['price'], Localizations.localeOf(context).toString());
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6.0),
@@ -393,7 +395,7 @@ class _ClientOrderListState extends State<ClientOrderList>
                                   ? sellerName[0].toUpperCase()
                                   : '?',
                               style: kTextStyle.copyWith(
-                                  color: kPrimaryColor,
+                                  color: kPrimaryText,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 15),
                             ),
@@ -430,9 +432,9 @@ class _ClientOrderListState extends State<ClientOrderList>
                                       fontWeight: FontWeight.w700,
                                       letterSpacing: 0.5)),
                               2.height,
-                              Text('$currencySign$price',
+                              Text(price,
                                   style: kTextStyle.copyWith(
-                                      color: kPrimaryColor,
+                                      color: kPrimaryText,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 18)),
                             ],
@@ -461,6 +463,11 @@ class _ClientOrderListState extends State<ClientOrderList>
                                       height: 1.3,
                                       fontWeight: FontWeight.w600)),
                             ),
+                            // No time row below: the chevron sits here
+                            // instead of on its own row (T-0158 B8).
+                            if (!(isActive && remaining.inSeconds > 0))
+                              const Icon(Icons.chevron_right,
+                                  color: kLightNeutralColor, size: 20),
                           ],
                         ),
                       ),
@@ -479,15 +486,6 @@ class _ClientOrderListState extends State<ClientOrderList>
                                     fontSize: 12)),
                             const Spacer(),
                             const Icon(Icons.chevron_right,
-                                color: kLightNeutralColor, size: 20),
-                          ],
-                        ),
-                      ] else ...[
-                        10.height,
-                        Row(
-                          children: const [
-                            Spacer(),
-                            Icon(Icons.chevron_right,
                                 color: kLightNeutralColor, size: 20),
                           ],
                         ),

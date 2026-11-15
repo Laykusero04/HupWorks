@@ -3,6 +3,19 @@ import 'package:freelancer/l10n/l10n.dart';
 
 import '../constant.dart';
 
+/// One-orange rule: the brand orange [kPrimaryColor] is decoration only, so
+/// text and text-bearing fills built from an auth accent map to the AA tokens.
+/// Seller cyan follows the same rule (T-0156): bright cyan is decoration only.
+Color authAccentText(Color c) => c == kPrimaryColor
+    ? kPrimaryText
+    : (c == kSellerPrimary || c == kSecondaryColor ? kSecondaryText : c);
+Color authAccentOnTint(Color c) => c == kPrimaryColor
+    ? kPrimaryOnTint
+    : (c == kSellerPrimary || c == kSecondaryColor ? kSecondaryOnTint : c);
+Color authAccentFill(Color c) => c == kPrimaryColor
+    ? kPrimaryFill
+    : (c == kSellerPrimary || c == kSecondaryColor ? kSecondaryFill : c);
+
 /// Shared auth layout — matches welcome screen (illustration + white sheet).
 class AuthScaffold extends StatelessWidget {
   const AuthScaffold({
@@ -57,7 +70,7 @@ class AuthScaffold extends StatelessWidget {
                       child: Text(
                         roleLabel!,
                         style: kTextStyle.copyWith(
-                          color: accentColor,
+                          color: authAccentOnTint(accentColor),
                           fontWeight: FontWeight.w600,
                           fontSize: 13,
                         ),
@@ -238,7 +251,8 @@ class AuthPrimaryButton extends StatelessWidget {
       child: FilledButton(
         onPressed: isLoading ? null : onPressed,
         style: FilledButton.styleFrom(
-          backgroundColor: isLoading ? kLightNeutralColor : accentColor,
+          backgroundColor:
+              isLoading ? kLightNeutralColor : authAccentFill(accentColor),
           disabledBackgroundColor: kLightNeutralColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
@@ -293,7 +307,7 @@ class AuthFooterLink extends StatelessWidget {
               TextSpan(
                 text: action,
                 style: kTextStyle.copyWith(
-                  color: accentColor,
+                  color: authAccentText(accentColor),
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
                 ),
@@ -353,7 +367,7 @@ class AuthTermsRow extends StatelessWidget {
                   TextSpan(
                     text: l10n.authTermsOfService,
                     style: kTextStyle.copyWith(
-                      color: accentColor,
+                      color: authAccentText(accentColor),
                       fontWeight: FontWeight.bold,
                       fontSize: 13,
                     ),

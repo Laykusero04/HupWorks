@@ -25,8 +25,9 @@ class ShellTabHeader extends StatelessWidget {
     this.actions = const [],
   });
 
-  List<Color> get _gradientColors =>
-      persona == ShellPersona.client ? kClientShellGradient : kSellerShellGradient;
+  List<Color> get _gradientColors => persona == ShellPersona.client
+      ? kClientShellGradient
+      : kSellerShellGradient;
 
   Color get _shadowColor {
     if (persona == ShellPersona.client) {
@@ -112,13 +113,13 @@ class ShellTabHeader extends StatelessWidget {
 class ShellTabIconButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback? onPressed;
-  final String? tooltip;
+  final String tooltip;
 
   const ShellTabIconButton({
     super.key,
     required this.icon,
+    required this.tooltip,
     this.onPressed,
-    this.tooltip,
   });
 
   @override
@@ -130,7 +131,9 @@ class ShellTabIconButton extends StatelessWidget {
         onTap: onPressed,
         customBorder: const CircleBorder(),
         child: Container(
-          padding: const EdgeInsets.all(10),
+          width: 48,
+          height: 48,
+          alignment: Alignment.center,
           decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: 0.18),
             shape: BoxShape.circle,
@@ -138,14 +141,20 @@ class ShellTabIconButton extends StatelessWidget {
           ),
           child: Icon(
             icon,
-            color: enabled ? Colors.white : Colors.white.withValues(alpha: 0.45),
-            size: 22,
+            color:
+                enabled ? Colors.white : Colors.white.withValues(alpha: 0.45),
+            size: 24,
           ),
         ),
       ),
     );
-    if (tooltip == null || tooltip!.isEmpty) return inner;
-    return Tooltip(message: tooltip!, child: inner);
+    return Semantics(
+      button: true,
+      enabled: enabled,
+      label: tooltip,
+      excludeSemantics: true,
+      child: Tooltip(message: tooltip, child: inner),
+    );
   }
 }
 

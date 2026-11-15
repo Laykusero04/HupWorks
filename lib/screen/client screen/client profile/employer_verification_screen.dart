@@ -10,9 +10,9 @@ import 'package:freelancer/core/guide/guide_step.dart';
 import 'package:freelancer/core/utils/employer_standing.dart';
 import 'package:freelancer/core/utils/profile_avatar_picker.dart';
 import 'package:freelancer/l10n/l10n.dart';
-import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
 import 'package:freelancer/screen/widgets/verification_score_card.dart';
+import 'package:freelancer/screen/widgets/verification_submit_bar.dart';
 import 'package:freelancer/screen/widgets/verification_status_badge.dart';
 import 'package:freelancer/services/employer_verification_service.dart';
 import 'package:freelancer/services/profile_service.dart';
@@ -111,15 +111,24 @@ class _EmployerVerificationScreenState extends State<EmployerVerificationScreen>
       GuideStep(
           key: _guideScoreKey,
           title: l10n.guideEmpVerifScoreTitle,
-          description: l10n.guideEmpVerifScoreDesc),
+          description: l10n.guideEmpVerifScoreDesc,
+          // Scroll the target into view so the spotlight never lands on
+          // another element (T-0159 N6).
+          enableAutoScroll: true),
       GuideStep(
           key: _guideHistoryKey,
           title: l10n.guideEmpVerifHistoryTitle,
-          description: l10n.guideEmpVerifHistoryDesc),
+          description: l10n.guideEmpVerifHistoryDesc,
+          // Scroll the target into view so the spotlight never lands on
+          // another element (T-0159 N6).
+          enableAutoScroll: true),
       GuideStep(
           key: _guidePathKey,
           title: l10n.guideEmpVerifPathTitle,
-          description: l10n.guideEmpVerifPathDesc),
+          description: l10n.guideEmpVerifPathDesc,
+          // Scroll the target into view so the spotlight never lands on
+          // another element (T-0159 N6).
+          enableAutoScroll: true),
       GuideStep(
           key: _guideUploadKey,
           title: _isCompanyPath
@@ -369,11 +378,19 @@ class _EmployerVerificationScreenState extends State<EmployerVerificationScreen>
         backgroundColor: kDarkWhite,
         elevation: 0,
         iconTheme: const IconThemeData(color: kNeutralColor),
-        title: Text(
-          l10n.employerVerification,
-          style: kTextStyle.copyWith(
-            color: kNeutralColor,
-            fontWeight: FontWeight.bold,
+        // Capped at 1.3 and scaled down to one line, never ellipsized.
+        title: MediaQuery.withClampedTextScaling(
+          maxScaleFactor: 1.3,
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              l10n.employerVerification,
+              maxLines: 1,
+              style: kTextStyle.copyWith(
+                color: kNeutralColor,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ),
         centerTitle: true,
@@ -619,7 +636,7 @@ class _EmployerVerificationScreenState extends State<EmployerVerificationScreen>
                                       ? l10n.uploadCompanyDoc
                                       : l10n.uploadIdFaceSelfie,
                                   style:
-                                      kTextStyle.copyWith(color: kPrimaryColor),
+                                      kTextStyle.copyWith(color: kPrimaryText),
                                 ),
                               ],
                             )
@@ -656,17 +673,15 @@ class _EmployerVerificationScreenState extends State<EmployerVerificationScreen>
           ),
         ),
       ),
-      bottomNavigationBar: ButtonGlobalWithoutIcon(
-        guideAnchor: _anchor(_guideSubmitKey, l10n.guideEmpVerifSubmitTitle,
+      bottomNavigationBar: GuideAnchor.wrap(
+        _anchor(_guideSubmitKey, l10n.guideEmpVerifSubmitTitle,
             l10n.guideEmpVerifSubmitDesc),
-        buttontext: submitLabel,
-        buttonDecoration: kButtonDecoration.copyWith(
-          color:
-              (_submitting || !hasNewPick) ? kLightNeutralColor : kPrimaryColor,
-          borderRadius: BorderRadius.circular(30),
+        VerificationSubmitBar(
+          label: submitLabel,
+          enabled: !_submitting && hasNewPick,
+          onPressed: _submit,
+          enabledColor: kPrimaryFill,
         ),
-        onPressed: (_submitting || !hasNewPick) ? null : _submit,
-        buttonTextColor: kWhite,
       ),
     ));
   }

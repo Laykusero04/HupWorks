@@ -84,6 +84,9 @@ class _JobPostState extends State<JobPost> with GuideHost<JobPost> {
         key: _guideFilterKey,
         title: l10n.guideMyJobsFilterTitle,
         description: l10n.guideMyJobsFilterDesc,
+        // The list may be scrolled when the tour starts: bring the chips
+        // into view before showing this step (T-0158).
+        enableAutoScroll: true,
       ),
       GuideStep(
         key: _guideCardKey,
@@ -100,7 +103,7 @@ class _JobPostState extends State<JobPost> with GuideHost<JobPost> {
   }
 
   /// Tail padding for scroll content above the tab bar + FAB.
-  static const double _scrollEndPadding = 24;
+  static const double _scrollEndPadding = 96; // clears the FAB (56 + margins)
   static const double _horizontalPadding = 16;
 
   static const _filterValues = <String?>[null, 'gig', 'full_time', 'part_time'];
@@ -183,7 +186,7 @@ class _JobPostState extends State<JobPost> with GuideHost<JobPost> {
             );
             _loadJobPosts();
           },
-          backgroundColor: kPrimaryColor,
+          backgroundColor: kPrimaryFill,
           child: const Icon(FeatherIcons.plus, color: kWhite),
         ),
       ),
@@ -245,7 +248,7 @@ class _JobPostState extends State<JobPost> with GuideHost<JobPost> {
                                         selected: selected,
                                         onSelected: (_) =>
                                             setState(() => _typeFilter = value),
-                                        selectedColor: kPrimaryColor,
+                                        selectedColor: kPrimaryFill,
                                         backgroundColor: kDarkWhite,
                                         labelStyle: kTextStyle.copyWith(
                                           color:
@@ -297,142 +300,180 @@ class _JobPostState extends State<JobPost> with GuideHost<JobPost> {
                                             .launch(context);
                                         _loadJobPosts();
                                       },
-                                      child: Container(
-                                        width: double.infinity,
-                                        padding: const EdgeInsets.all(12.0),
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(10.0),
-                                          color: kWhite,
-                                          border: Border.all(
-                                              color: kBorderColorTextField),
-                                        ),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Expanded(
-                                                  child: Text(
-                                                    job['title'] ??
-                                                        l10n.untitled,
-                                                    style: kTextStyle.copyWith(
-                                                        color: kNeutralColor,
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                    maxLines: 1,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                  ),
-                                                ),
-                                                const SizedBox(width: 8.0),
-                                                Container(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      vertical: 3.0,
-                                                      horizontal: 8.0),
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            20.0),
-                                                    color: kPrimaryColor
-                                                        .withOpacity(0.1),
-                                                  ),
-                                                  child: Text(
-                                                    _jobTypeLabel(
-                                                        job['job_type']
-                                                            as String?),
-                                                    style: kTextStyle.copyWith(
-                                                      color: kPrimaryColor,
-                                                      fontSize: 12.0,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            const SizedBox(height: 10.0),
-                                            Text(
-                                              job['description'] ?? '',
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: kTextStyle.copyWith(
-                                                  color: kSubTitleColor),
-                                            ),
-                                            const SizedBox(height: 10.0),
-                                            RichText(
-                                              text: TextSpan(
-                                                text: '${l10n.categoryLabel}: ',
-                                                style: kTextStyle.copyWith(
-                                                    color: kNeutralColor),
-                                                children: [
-                                                  TextSpan(
-                                                    text:
-                                                        LocalizedCategory.name(
-                                                      category,
-                                                      LocalizedCategory
-                                                          .languageCodeOf(
-                                                              context),
-                                                      fallback:
-                                                          l10n.categoryGeneral,
-                                                    ),
-                                                    style: kTextStyle.copyWith(
-                                                        color: kSubTitleColor),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            if ((job['location'] as String?)
-                                                    ?.isNotEmpty ??
-                                                false) ...[
-                                              const SizedBox(height: 6.0),
+                                      child: MediaQuery.withClampedTextScaling(
+                                        maxScaleFactor: 1.3,
+                                        child: Container(
+                                          width: double.infinity,
+                                          padding: const EdgeInsets.all(12.0),
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                            color: kWhite,
+                                            border: Border.all(
+                                                color: kBorderColorTextField),
+                                          ),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
                                               Row(
                                                 children: [
-                                                  const Icon(
-                                                      FeatherIcons.mapPin,
-                                                      size: 14,
-                                                      color:
-                                                          kLightNeutralColor),
-                                                  const SizedBox(width: 4.0),
                                                   Expanded(
                                                     child: Text(
-                                                      job['location'] as String,
-                                                      style: kTextStyle.copyWith(
-                                                          color:
-                                                              kSubTitleColor),
+                                                      job['title'] ??
+                                                          l10n.untitled,
+                                                      style:
+                                                          kTextStyle.copyWith(
+                                                              color:
+                                                                  kNeutralColor,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
                                                       maxLines: 1,
                                                       overflow:
                                                           TextOverflow.ellipsis,
                                                     ),
                                                   ),
-                                                ],
-                                              ),
-                                            ],
-                                            if (JobPostsService
-                                                .workersNeededShowOnCard(
-                                                    job['workers_needed'])) ...[
-                                              const SizedBox(height: 6.0),
-                                              Row(
-                                                children: [
-                                                  const Icon(FeatherIcons.users,
-                                                      size: 14,
-                                                      color:
-                                                          kLightNeutralColor),
-                                                  const SizedBox(width: 4.0),
-                                                  Text(
-                                                    JobPostsService
-                                                        .workersNeededCardLine(
-                                                            job['workers_needed']),
-                                                    style: kTextStyle.copyWith(
-                                                        color: kSubTitleColor),
+                                                  const SizedBox(width: 8.0),
+                                                  Flexible(
+                                                    child: Container(
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          vertical: 3.0,
+                                                          horizontal: 8.0),
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(20.0),
+                                                        color: kPrimaryColor
+                                                            .withOpacity(0.1),
+                                                      ),
+                                                      child: Text(
+                                                        _jobTypeLabel(
+                                                            job['job_type']
+                                                                as String?),
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        style:
+                                                            kTextStyle.copyWith(
+                                                          color: kPrimaryText,
+                                                          fontSize: 12.0,
+                                                        ),
+                                                      ),
+                                                    ),
                                                   ),
                                                 ],
                                               ),
-                                            ],
-                                            const SizedBox(height: 10.0),
-                                            Row(
-                                              children: [
-                                                Container(
+                                              const SizedBox(height: 10.0),
+                                              () {
+                                                final desc = JobPostsService
+                                                    .visibleDescription(
+                                                        job['description']);
+                                                return Text(
+                                                  desc ?? l10n.jobNoDescription,
+                                                  maxLines: 2,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: kTextStyle.copyWith(
+                                                    color: kSubTitleColor,
+                                                    fontStyle: desc == null
+                                                        ? FontStyle.italic
+                                                        : null,
+                                                  ),
+                                                );
+                                              }(),
+                                              const SizedBox(height: 10.0),
+                                              RichText(
+                                                text: TextSpan(
+                                                  text:
+                                                      '${l10n.categoryLabel}: ',
+                                                  style: kTextStyle.copyWith(
+                                                      color: kNeutralColor),
+                                                  children: [
+                                                    TextSpan(
+                                                      text: LocalizedCategory
+                                                          .name(
+                                                        category,
+                                                        LocalizedCategory
+                                                            .languageCodeOf(
+                                                                context),
+                                                        fallback: l10n
+                                                            .categoryGeneral,
+                                                      ),
+                                                      style: kTextStyle.copyWith(
+                                                          color:
+                                                              kSubTitleColor),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              if ((job['location'] as String?)
+                                                      ?.isNotEmpty ??
+                                                  false) ...[
+                                                const SizedBox(height: 6.0),
+                                                Row(
+                                                  children: [
+                                                    const Icon(
+                                                        FeatherIcons.mapPin,
+                                                        size: 14,
+                                                        color:
+                                                            kLightNeutralColor),
+                                                    const SizedBox(width: 4.0),
+                                                    Expanded(
+                                                      child: Text(
+                                                        job['location']
+                                                            as String,
+                                                        style: kTextStyle.copyWith(
+                                                            color:
+                                                                kSubTitleColor),
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                              if (JobPostsService
+                                                  .workersNeededShowOnCard(job[
+                                                      'workers_needed'])) ...[
+                                                const SizedBox(height: 6.0),
+                                                Row(
+                                                  children: [
+                                                    const Icon(
+                                                        FeatherIcons.users,
+                                                        size: 14,
+                                                        color:
+                                                            kLightNeutralColor),
+                                                    const SizedBox(width: 4.0),
+                                                    Expanded(
+                                                      child: Text(
+                                                        JobPostsService
+                                                                .workersNeededIsUnlimited(job[
+                                                                    'workers_needed'])
+                                                            ? l10n
+                                                                .openHiringNoLimit
+                                                            : l10n.workersNeededCardCount(
+                                                                JobPostsService
+                                                                    .parseWorkersNeeded(
+                                                                        job['workers_needed'])),
+                                                        maxLines: 2,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        style: kTextStyle.copyWith(
+                                                            color:
+                                                                kSubTitleColor),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                              const SizedBox(height: 10.0),
+                                              Align(
+                                                alignment: AlignmentDirectional
+                                                    .centerStart,
+                                                child: Container(
                                                   padding: const EdgeInsets
                                                       .symmetric(
                                                       vertical: 5.0,
@@ -456,24 +497,28 @@ class _JobPostState extends State<JobPost> with GuideHost<JobPost> {
                                                       '' => l10n.unknown,
                                                       final other => other,
                                                     },
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
                                                     style: kTextStyle.copyWith(
                                                       color: job['status'] ==
                                                               'open'
-                                                          ? kPrimaryColor
+                                                          ? kPrimaryText
                                                           : kNeutralColor,
                                                     ),
                                                   ),
                                                 ),
-                                                const Spacer(),
-                                                Text(
-                                                  'Date: ${_formatDate(job['created_at'])}',
-                                                  style: kTextStyle.copyWith(
-                                                      color:
-                                                          kLightNeutralColor),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
+                                              ),
+                                              const SizedBox(height: 6.0),
+                                              Text(
+                                                '${l10n.dateLabel}: ${_formatDate(job['created_at'])}',
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: kTextStyle.copyWith(
+                                                    color: kLightNeutralColor),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),

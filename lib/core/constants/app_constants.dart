@@ -48,7 +48,11 @@ Map<String, double> dataMap = {
 };
 
 //__________Category____________________________________________________
-const List<String> category = ['Food Service', 'Skilled Trades', 'Cleaning & Janitorial'];
+const List<String> category = [
+  'Food Service',
+  'Skilled Trades',
+  'Cleaning & Janitorial'
+];
 String selectedCategory = 'App Development';
 
 const List<String> subcategory = ['Flutter', 'React Native', 'Java'];
@@ -59,7 +63,14 @@ const List<String> serviceType = ['Online', 'Offline'];
 String selectedServiceType = 'Online';
 
 //__________Delivery Time_______________________________________________
-const List<String> deliveryTime = ['3 days', '5 days', '7 days', '12 days', '15 days', '20 days'];
+const List<String> deliveryTime = [
+  '3 days',
+  '5 days',
+  '7 days',
+  '12 days',
+  '15 days',
+  '20 days'
+];
 String selectedDeliveryTime = '3 days';
 
 const List<String> pageCount = ['10 screen', '15 days', '20 days'];
@@ -76,7 +87,14 @@ List<TitleModel> selectedTitle = [];
 const List<String> titleList = ['Active', 'Pending', 'Completed', 'Cancelled'];
 String isSelected = 'Active';
 
-const List<String> deliveryTimeList = ['3 days', '5 days', '7 days', '12 days', '15 days', '20 days'];
+const List<String> deliveryTimeList = [
+  '3 days',
+  '5 days',
+  '7 days',
+  '12 days',
+  '15 days',
+  '20 days'
+];
 String selectedDeliveryTimeList = '3 days';
 
 const List<String> revisionTime = ['1 time', '2 time', '3 time', '4 time'];

@@ -9,7 +9,8 @@ class ChatService {
 
   /// Get or create a conversation between the current user and another user.
   /// Determines client/seller roles from profiles.
-  static Future<Map<String, dynamic>> getOrCreateConversation(String otherUserId) async {
+  static Future<Map<String, dynamic>> getOrCreateConversation(
+      String otherUserId) async {
     final user = _client.auth.currentUser;
     if (user == null) throw Exception('Not authenticated');
 
@@ -29,16 +30,24 @@ class ChatService {
     await ChatPrivacyService.assertCanStartChat(otherUserId);
 
     // Determine who is client and who is seller
-    final myProfile = await _client.from('profiles').select('role').eq('id', user.id).single();
+    final myProfile = await _client
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
     final myRole = myProfile['role'] as String;
 
     final clientId = myRole == 'client' ? user.id : otherUserId;
     final sellerId = myRole == 'seller' ? user.id : otherUserId;
 
-    final newConversation = await _client.from('conversations').insert({
-      'client_id': clientId,
-      'seller_id': sellerId,
-    }).select().single();
+    final newConversation = await _client
+        .from('conversations')
+        .insert({
+          'client_id': clientId,
+          'seller_id': sellerId,
+        })
+        .select()
+        .single();
 
     return newConversation;
   }
@@ -53,7 +62,8 @@ class ChatService {
     final user = _client.auth.currentUser;
     if (user == null) throw Exception('Not authenticated');
     if (buyerUserId == user.id) {
-      throw Exception('Cannot start a job application conversation with yourself');
+      throw Exception(
+          'Cannot start a job application conversation with yourself');
     }
 
     const clientIdField = 'client_id';
@@ -77,10 +87,14 @@ class ChatService {
     }
     await ChatPrivacyService.assertCanStartChat(buyerUserId);
 
-    return await _client.from('conversations').insert({
-      'client_id': clientId,
-      'seller_id': sellerId,
-    }).select().single();
+    return await _client
+        .from('conversations')
+        .insert({
+          'client_id': clientId,
+          'seller_id': sellerId,
+        })
+        .select()
+        .single();
   }
 
   /// Fetch conversation list for the current user, joined with profile info
@@ -90,7 +104,8 @@ class ChatService {
 
     final data = await _client
         .from('conversations')
-        .select('*, client:profiles!conversations_client_id_fkey(*), seller:profiles!conversations_seller_id_fkey(*)')
+        .select(
+            '*, client:profiles!conversations_client_id_fkey(*), seller:profiles!conversations_seller_id_fkey(*)')
         .or('client_id.eq.${user.id},seller_id.eq.${user.id}')
         .order('last_message_at', ascending: false);
 
@@ -101,7 +116,8 @@ class ChatService {
   ///
   /// Keys are conversation ids. Only conversations in [conversationIds] are returned.
   static Future<Map<String, ConversationInboxMeta>> getInboxMetaByConversation({
-    required List<({String id, String clientId, String sellerId})> conversations,
+    required List<({String id, String clientId, String sellerId})>
+        conversations,
   }) async {
     final user = _client.auth.currentUser;
     if (user == null || conversations.isEmpty) return {};
@@ -122,14 +138,16 @@ class ChatService {
 
     final offersFuture = _client
         .from('job_offers')
-        .select('id, status, seller_id, job_posts!job_post_id(client_id, status)')
+        .select(
+            'id, status, seller_id, job_posts!job_post_id(client_id, status)')
         .eq('status', 'pending')
         .eq('seller_id', user.id);
 
     // Pending offers where I'm the client are filtered client-side via job_posts.
     final clientOffersFuture = _client
         .from('job_offers')
-        .select('id, status, seller_id, job_posts!job_post_id!inner(client_id, status)')
+        .select(
+            'id, status, seller_id, job_posts!job_post_id!inner(client_id, status)')
         .eq('status', 'pending')
         .eq('job_posts.client_id', user.id);
 
@@ -140,8 +158,10 @@ class ChatService {
     ]);
 
     final orders = List<Map<String, dynamic>>.from(results[0] as List);
-    final sellerSideOffers = List<Map<String, dynamic>>.from(results[1] as List);
-    final clientSideOffers = List<Map<String, dynamic>>.from(results[2] as List);
+    final sellerSideOffers =
+        List<Map<String, dynamic>>.from(results[1] as List);
+    final clientSideOffers =
+        List<Map<String, dynamic>>.from(results[2] as List);
 
     for (final order in orders) {
       final clientId = order['client_id'] as String?;
@@ -205,10 +225,12 @@ class ChatService {
       '$clientId|$sellerId';
 
   /// Fetch messages for a conversation
-  static Future<List<Map<String, dynamic>>> getMessages(String conversationId) async {
+  static Future<List<Map<String, dynamic>>> getMessages(
+      String conversationId) async {
     final data = await _client
         .from('messages')
-        .select('*, sender:profiles!messages_sender_id_fkey(id, name, profile_image_url)')
+        .select(
+            '*, sender:profiles!messages_sender_id_fkey(id, name, profile_image_url)')
         .eq('conversation_id', conversationId)
         .order('created_at', ascending: true);
 
@@ -240,14 +262,19 @@ class ChatService {
       }
     }
 
-    final message = await _client.from('messages').insert({
-      'conversation_id': conversationId,
-      'sender_id': user.id,
-      'content': content,
-      if (attachmentUrl != null) 'attachment_url': attachmentUrl,
-      'message_type': messageType,
-      if (jobOfferId != null) 'job_offer_id': jobOfferId,
-    }).select('*, sender:profiles!messages_sender_id_fkey(id, name, profile_image_url)').single();
+    final message = await _client
+        .from('messages')
+        .insert({
+          'conversation_id': conversationId,
+          'sender_id': user.id,
+          'content': content,
+          if (attachmentUrl != null) 'attachment_url': attachmentUrl,
+          'message_type': messageType,
+          if (jobOfferId != null) 'job_offer_id': jobOfferId,
+        })
+        .select(
+            '*, sender:profiles!messages_sender_id_fkey(id, name, profile_image_url)')
+        .single();
 
     // Update conversation's last_message and last_message_at
     await _client.from('conversations').update({
@@ -334,19 +361,18 @@ class ChatService {
   }
 
   /// Upload a file attachment to Supabase Storage
-  static Future<String> uploadAttachment(File file, String conversationId) async {
+  static Future<String> uploadAttachment(
+      File file, String conversationId) async {
     final user = _client.auth.currentUser;
     if (user == null) throw Exception('Not authenticated');
 
-    final fileName = '${user.id}/${DateTime.now().millisecondsSinceEpoch}_${file.path.split('/').last.split('\\').last}';
+    final fileName =
+        '${user.id}/${DateTime.now().millisecondsSinceEpoch}_${file.path.split('/').last.split('\\').last}';
 
-    await _client.storage
-        .from('chat-attachments')
-        .upload(fileName, file);
+    await _client.storage.from('chat-attachments').upload(fileName, file);
 
-    final publicUrl = _client.storage
-        .from('chat-attachments')
-        .getPublicUrl(fileName);
+    final publicUrl =
+        _client.storage.from('chat-attachments').getPublicUrl(fileName);
 
     return publicUrl;
   }
@@ -360,7 +386,8 @@ class ChatService {
   }
 
   /// Fetch a single conversation with participant profiles.
-  static Future<Map<String, dynamic>?> getConversation(String conversationId) async {
+  static Future<Map<String, dynamic>?> getConversation(
+      String conversationId) async {
     final user = _client.auth.currentUser;
     if (user == null) return null;
 
@@ -384,9 +411,8 @@ class ChatService {
         .select('id')
         .or('client_id.eq.${user.id},seller_id.eq.${user.id}');
 
-    final conversationIds = (convRows as List)
-        .map((row) => row['id'] as String)
-        .toList();
+    final conversationIds =
+        (convRows as List).map((row) => row['id'] as String).toList();
     if (conversationIds.isEmpty) return {};
 
     final unreadRows = await _client
@@ -423,15 +449,19 @@ class ChatService {
         )
         .eq('client_id', clientId)
         .eq('seller_id', sellerId)
-        .inFilter('status', ['pending', 'active', 'delivered', 'cancellation_requested'])
+        .inFilter('status',
+            ['pending', 'active', 'delivered', 'cancellation_requested'])
         .order('created_at', ascending: false)
         .limit(1)
         .maybeSingle();
   }
 
   /// Active contracts + pending applications shared by a client–seller pair.
-  static Future<({List<Map<String, dynamic>> orders, List<Map<String, dynamic>> jobOffers})>
-      getThreadContextRows({
+  static Future<
+      ({
+        List<Map<String, dynamic>> orders,
+        List<Map<String, dynamic>> jobOffers
+      })> getThreadContextRows({
     required String clientId,
     required String sellerId,
   }) async {
@@ -444,10 +474,9 @@ class ChatService {
         .eq('client_id', clientId)
         .eq('seller_id', sellerId)
         .inFilter(
-          'status',
-          ['pending', 'active', 'delivered', 'cancellation_requested'],
-        )
-        .order('created_at', ascending: false);
+      'status',
+      ['pending', 'active', 'delivered', 'cancellation_requested'],
+    ).order('created_at', ascending: false);
 
     final offersFuture = _client
         .from('job_offers')

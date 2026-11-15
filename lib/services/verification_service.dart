@@ -22,13 +22,13 @@ class VerificationService {
 
     try {
       await _client.storage.from(bucket).upload(
-        path,
-        imageFile,
-        fileOptions: const FileOptions(
-          upsert: true,
-          contentType: 'image/jpeg',
-        ),
-      );
+            path,
+            imageFile,
+            fileOptions: const FileOptions(
+              upsert: true,
+              contentType: 'image/jpeg',
+            ),
+          );
     } catch (e) {
       final msg = e.toString();
       if (msg.contains('Bucket not found') ||
@@ -166,8 +166,10 @@ class VerificationScore {
   bool get adminAccepted => profilePhotoAccepted && identityAccepted;
 
   factory VerificationScore.fromProfile(Map<String, dynamic>? profile) {
-    final photoStatus = VerificationService.profilePhotoStatusFromProfile(profile);
-    final identityStatus = VerificationService.identityStatusFromProfile(profile);
+    final photoStatus =
+        VerificationService.profilePhotoStatusFromProfile(profile);
+    final identityStatus =
+        VerificationService.identityStatusFromProfile(profile);
     final hasPhoto =
         (profile?['profile_image_url'] as String?)?.trim().isNotEmpty == true ||
             photoStatus == 'pending' ||

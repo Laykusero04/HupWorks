@@ -38,7 +38,8 @@ class SellerSkillsDisplay extends StatelessWidget {
     );
   }
 
-  Widget _tierGroup(String label, List<SellerSkill> tierSkills, int? fixedStars) {
+  Widget _tierGroup(
+      String label, List<SellerSkill> tierSkills, int? fixedStars) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -64,7 +65,8 @@ class SellerSkillsDisplay extends StatelessWidget {
                   const SizedBox(width: 4),
                   ...List.generate(
                     stars.clamp(1, 5),
-                    (_) => Icon(Icons.star_rounded, size: 12, color: ratingBarColor),
+                    (_) => Icon(Icons.star_rounded,
+                        size: 12, color: ratingBarColor),
                   ),
                 ],
               ),

@@ -167,11 +167,23 @@ class L10nLabels {
     AppLocalizations l10n,
   ) =>
       [
-        (title: l10n.privacySectionCollectTitle, body: l10n.privacySectionCollectBody),
+        (
+          title: l10n.privacySectionCollectTitle,
+          body: l10n.privacySectionCollectBody
+        ),
         (title: l10n.privacySectionUseTitle, body: l10n.privacySectionUseBody),
-        (title: l10n.privacySectionShareTitle, body: l10n.privacySectionShareBody),
-        (title: l10n.privacySectionChoicesTitle, body: l10n.privacySectionChoicesBody),
-        (title: l10n.privacySectionContactTitle, body: l10n.privacySectionContactBody),
+        (
+          title: l10n.privacySectionShareTitle,
+          body: l10n.privacySectionShareBody
+        ),
+        (
+          title: l10n.privacySectionChoicesTitle,
+          body: l10n.privacySectionChoicesBody
+        ),
+        (
+          title: l10n.privacySectionContactTitle,
+          body: l10n.privacySectionContactBody
+        ),
       ];
 
   /// Full platform journey: signup → ownership vision (9 steps).

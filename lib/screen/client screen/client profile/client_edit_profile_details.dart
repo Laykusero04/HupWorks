@@ -154,7 +154,8 @@ class _ClientEditProfileState extends State<ClientEditProfile> {
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
           l10n.editProfile,
-          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+          style: kTextStyle.copyWith(
+              color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),
@@ -278,7 +279,8 @@ class _ClientEditProfileState extends State<ClientEditProfile> {
                       decoration: InputDecoration(
                         enabledBorder: const OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                          borderSide: BorderSide(color: kBorderColorTextField, width: 2),
+                          borderSide: BorderSide(
+                              color: kBorderColorTextField, width: 2),
                         ),
                         contentPadding: const EdgeInsets.all(7.0),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -288,7 +290,9 @@ class _ClientEditProfileState extends State<ClientEditProfile> {
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton<String>(
                           icon: const Icon(FeatherIcons.chevronDown),
-                          value: gender.contains(_selectedGender) ? _selectedGender : gender.first,
+                          value: gender.contains(_selectedGender)
+                              ? _selectedGender
+                              : gender.first,
                           style: kTextStyle.copyWith(color: kSubTitleColor),
                           items: gender
                               .map(
@@ -317,7 +321,7 @@ class _ClientEditProfileState extends State<ClientEditProfile> {
         child: ButtonGlobalWithoutIcon(
           buttontext: _isSaving ? l10n.updating : l10n.updateProfile,
           buttonDecoration: kButtonDecoration.copyWith(
-            color: _isSaving ? kLightNeutralColor : kPrimaryColor,
+            color: _isSaving ? kLightNeutralColor : kPrimaryFill,
             borderRadius: BorderRadius.circular(30.0),
           ),
           onPressed: _isSaving ? null : _handleSave,

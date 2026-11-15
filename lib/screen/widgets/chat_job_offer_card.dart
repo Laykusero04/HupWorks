@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/utils/contract_text.dart';
 import 'package:freelancer/core/guide/guide_anchor.dart';
 import 'package:freelancer/core/utils/job_offer_chat_actions.dart';
 import 'package:freelancer/core/utils/job_offer_delivery.dart';
@@ -329,7 +330,7 @@ class _ChatJobOfferCardState extends State<ChatJobOfferCard> {
                                 child: Text(
                                   headerLabel,
                                   style: kTextStyle.copyWith(
-                                    color: kPrimaryColor,
+                                    color: kPrimaryText,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 13,
                                     letterSpacing: 0.3,
@@ -392,7 +393,7 @@ class _ChatJobOfferCardState extends State<ChatJobOfferCard> {
                                     child: _bidPill(
                                       icon: Icons.schedule,
                                       label: l10n.labelDuration.toUpperCase(),
-                                      value: bid.delivery,
+                                      value: ContractText.localizeLegacy(l10n, bid.delivery),
                                     ),
                                   ),
                                 ],
@@ -467,9 +468,9 @@ class _ChatJobOfferCardState extends State<ChatJobOfferCard> {
                                                 ? null
                                                 : _handleCounter,
                                             style: OutlinedButton.styleFrom(
-                                              foregroundColor: kPrimaryColor,
+                                              foregroundColor: kPrimaryText,
                                               side: const BorderSide(
-                                                color: kPrimaryColor,
+                                                color: kPrimaryText,
                                               ),
                                               padding:
                                                   const EdgeInsets.symmetric(
@@ -489,7 +490,7 @@ class _ChatJobOfferCardState extends State<ChatJobOfferCard> {
                                         onPressed:
                                             _actionBusy ? null : _handleAccept,
                                         style: FilledButton.styleFrom(
-                                          backgroundColor: kPrimaryColor,
+                                          backgroundColor: kPrimaryFill,
                                           padding: const EdgeInsets.symmetric(
                                             vertical: 12,
                                           ),

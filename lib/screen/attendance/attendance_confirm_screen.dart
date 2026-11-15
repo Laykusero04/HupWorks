@@ -443,7 +443,7 @@ class _AttendanceConfirmScreenState extends State<AttendanceConfirmScreen>
                     l10n.useSuggestedPunch(
                       AttendanceFormat.punchLabel(r.suggestedAction, l10n),
                     ),
-                    style: kTextStyle.copyWith(color: kPrimaryColor),
+                    style: kTextStyle.copyWith(color: kPrimaryText),
                   ),
                 ),
               ),

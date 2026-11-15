@@ -59,7 +59,8 @@ class DashboardRepository {
     }
   }
 
-  Future<Map<String, dynamic>> getPerformance({required bool isLastMonth}) async {
+  Future<Map<String, dynamic>> getPerformance(
+      {required bool isLastMonth}) async {
     try {
       return await SellerHomeService.getPerformance(isLastMonth: isLastMonth);
     } catch (e) {

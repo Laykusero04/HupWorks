@@ -337,13 +337,10 @@ void main() {
   });
 
   testWidgets(
-      'skip pill moves to the top for a bottom-half target even '
-      'without the flag', (t) async {
+      'skip pill moves to the top for a bottom-half target (restored '
+      'fallback)', (t) async {
     final key = GlobalKey<_SecState>();
     await _app(t, _Sec(key: key, nearBottomFlag: true));
-    // A and B are at the top (pill at bottom). Go to Z, which is below the
-    // fold and not scrolled to (no autoscroll): its centre is off-screen
-    // bottom half -> pill at top.
     final h = t.view.physicalSize.height / t.view.devicePixelRatio;
     expect(t.getCenter(find.text('Skip')).dy, greaterThan(h / 2));
     await _next(t);

@@ -42,7 +42,10 @@ class _ProcessingPopUpState extends State<ProcessingPopUp> {
               l10n.processingOrder,
               maxLines: 2,
               textAlign: TextAlign.center,
-              style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 18.0),
+              style: kTextStyle.copyWith(
+                  color: kNeutralColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18.0),
             ),
             const SizedBox(height: 10.0),
             Text(
@@ -62,7 +65,8 @@ class UploadRequirementsPopUp extends StatefulWidget {
   const UploadRequirementsPopUp({Key? key}) : super(key: key);
 
   @override
-  State<UploadRequirementsPopUp> createState() => _UploadRequirementsPopUpState();
+  State<UploadRequirementsPopUp> createState() =>
+      _UploadRequirementsPopUpState();
 }
 
 class _UploadRequirementsPopUpState extends State<UploadRequirementsPopUp> {
@@ -81,7 +85,8 @@ class _UploadRequirementsPopUpState extends State<UploadRequirementsPopUp> {
               children: [
                 Text(
                   l10n.chooseYourAction,
-                  style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+                  style: kTextStyle.copyWith(
+                      color: kNeutralColor, fontWeight: FontWeight.bold),
                 ),
                 const Spacer(),
                 GestureDetector(
@@ -104,7 +109,7 @@ class _UploadRequirementsPopUpState extends State<UploadRequirementsPopUp> {
                     const SizedBox(height: 10.0),
                     Text(
                       l10n.openGallery,
-                      style: kTextStyle.copyWith(color: kPrimaryColor),
+                      style: kTextStyle.copyWith(color: kPrimaryText),
                     ),
                   ],
                 ),
@@ -157,13 +162,17 @@ class _UploadCompletePopUpState extends State<UploadCompletePopUp> {
               width: 209,
               decoration: const BoxDecoration(
                 shape: BoxShape.rectangle,
-                image: DecorationImage(image: AssetImage('images/success.png'), fit: BoxFit.cover),
+                image: DecorationImage(
+                    image: AssetImage('images/success.png'), fit: BoxFit.cover),
               ),
             ),
             const SizedBox(height: 15.0),
             Text(
               l10n.congratulations,
-              style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 18.0),
+              style: kTextStyle.copyWith(
+                  color: kNeutralColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18.0),
             ),
             const SizedBox(height: 10.0),
             Text(
@@ -173,7 +182,7 @@ class _UploadCompletePopUpState extends State<UploadCompletePopUp> {
             ),
             const SizedBox(height: 10.0),
             Button(
-              containerBg: kPrimaryColor,
+              containerBg: kPrimaryFill,
               borderColor: Colors.transparent,
               buttonText: l10n.done,
               textColor: kWhite,
@@ -215,7 +224,8 @@ class _CancelJobPopUpState extends State<CancelJobPopUp> {
                   l10n.cancelJobConfirmTitle,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+                  style: kTextStyle.copyWith(
+                      color: kNeutralColor, fontWeight: FontWeight.bold),
                 ),
                 const Spacer(),
                 const Icon(
@@ -248,7 +258,7 @@ class _CancelJobPopUpState extends State<CancelJobPopUp> {
                 ),
                 Expanded(
                   child: Button(
-                    containerBg: kPrimaryColor,
+                    containerBg: kPrimaryFill,
                     borderColor: Colors.transparent,
                     buttonText: l10n.yesLabel,
                     textColor: kWhite,
@@ -291,7 +301,8 @@ class _CancelOrderPopUpState extends State<CancelOrderPopUp> {
               l10n.cancelOrderWhy,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+              style: kTextStyle.copyWith(
+                  color: kNeutralColor, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10.0),
             const Divider(
@@ -305,7 +316,14 @@ class _CancelOrderPopUpState extends State<CancelOrderPopUp> {
               maxLines: 2,
               cursorColor: kNeutralColor,
               textInputAction: TextInputAction.next,
-              decoration: kInputDecoration.copyWith(labelText: l10n.enterReason, labelStyle: kTextStyle.copyWith(color: kNeutralColor), hintText: '', hintStyle: kTextStyle.copyWith(color: kSubTitleColor), focusColor: kNeutralColor, border: const OutlineInputBorder(), floatingLabelBehavior: FloatingLabelBehavior.always),
+              decoration: kInputDecoration.copyWith(
+                  labelText: l10n.enterReason,
+                  labelStyle: kTextStyle.copyWith(color: kNeutralColor),
+                  hintText: '',
+                  hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
+                  focusColor: kNeutralColor,
+                  border: const OutlineInputBorder(),
+                  floatingLabelBehavior: FloatingLabelBehavior.always),
             ),
             const SizedBox(height: 10.0),
             Row(
@@ -325,7 +343,7 @@ class _CancelOrderPopUpState extends State<CancelOrderPopUp> {
                 ),
                 Expanded(
                   child: Button(
-                    containerBg: kPrimaryColor,
+                    containerBg: kPrimaryFill,
                     borderColor: Colors.transparent,
                     buttonText: l10n.confirm,
                     textColor: kWhite,

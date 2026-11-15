@@ -69,6 +69,28 @@ class GuideSession extends ChangeNotifier {
   bool get isBusy => _holder != null;
   bool get homeSettled => _homeSettled;
 
+  bool _shellSuppressed = false;
+
+  /// True after the user tapped a bottom tab during the HOME tour (T-0156 B4/M2). The
+  /// shell "Your tabs" guide must not chain after the ended Home tour: the
+  /// user already chose where to go. Session only (not persisted); cleared
+  /// when the user lands on Home again, a new Home chain starts or guides are
+  /// replayed.
+  bool get shellSuppressed => _shellSuppressed;
+
+  void suppressShellGuide() {
+    if (_shellSuppressed) return;
+    _shellSuppressed = true;
+    notifyListeners();
+  }
+
+  /// The user landed on Home again: the shell guide may run.
+  void clearShellSuppression() {
+    if (!_shellSuppressed) return;
+    _shellSuppressed = false;
+    notifyListeners();
+  }
+
   /// True if [owner] now holds the session (or already did).
   bool tryAcquire(Object owner) {
     if (_holder != null && !identical(_holder, owner)) return false;
@@ -91,6 +113,7 @@ class GuideSession extends ChangeNotifier {
 
   /// A new Home chain leader was created (new screen instance / sign-in).
   void resetHome() {
+    _shellSuppressed = false;
     if (!_homeSettled) return;
     _homeSettled = false;
     notifyListeners();
@@ -104,5 +127,6 @@ class GuideSession extends ChangeNotifier {
     anyRunning.value = false;
     _holder = null;
     _homeSettled = false;
+    _shellSuppressed = false;
   }
 }

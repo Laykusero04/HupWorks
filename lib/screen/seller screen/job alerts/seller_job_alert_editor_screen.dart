@@ -37,10 +37,12 @@ class SellerJobAlertEditorScreen extends StatefulWidget {
   final bool? initialIncludeRemote;
 
   @override
-  State<SellerJobAlertEditorScreen> createState() => _SellerJobAlertEditorScreenState();
+  State<SellerJobAlertEditorScreen> createState() =>
+      _SellerJobAlertEditorScreenState();
 }
 
-class _SellerJobAlertEditorScreenState extends State<SellerJobAlertEditorScreen> {
+class _SellerJobAlertEditorScreenState
+    extends State<SellerJobAlertEditorScreen> {
   final _nameController = TextEditingController();
 
   bool _enabled = true;
@@ -62,7 +64,12 @@ class _SellerJobAlertEditorScreenState extends State<SellerJobAlertEditorScreen>
   String? _profileCity;
   String? _profileCountry;
 
-  static const _jobTypeValues = <String?>[null, 'gig', 'full_time', 'part_time'];
+  static const _jobTypeValues = <String?>[
+    null,
+    'gig',
+    'full_time',
+    'part_time'
+  ];
 
   @override
   void initState() {
@@ -164,7 +171,8 @@ class _SellerJobAlertEditorScreenState extends State<SellerJobAlertEditorScreen>
 
     try {
       await ProfileService.updateProfile({
-        if (result.country != null && result.country!.isNotEmpty) 'country': result.country,
+        if (result.country != null && result.country!.isNotEmpty)
+          'country': result.country,
         if (result.city != null && result.city!.isNotEmpty) 'city': result.city,
         'latitude': result.latitude,
         'longitude': result.longitude,
@@ -206,7 +214,8 @@ class _SellerJobAlertEditorScreenState extends State<SellerJobAlertEditorScreen>
                     );
                     return CheckboxListTile(
                       value: selected.contains(id),
-                      title: Text(name, style: kTextStyle.copyWith(fontSize: 14)),
+                      title:
+                          Text(name, style: kTextStyle.copyWith(fontSize: 14)),
                       onChanged: (v) {
                         setDialogState(() {
                           if (v == true) {
@@ -221,7 +230,9 @@ class _SellerJobAlertEditorScreenState extends State<SellerJobAlertEditorScreen>
                 ),
               ),
               actions: [
-                TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l10n.cancel)),
+                TextButton(
+                    onPressed: () => Navigator.pop(ctx),
+                    child: Text(l10n.cancel)),
                 TextButton(
                   onPressed: () {
                     setState(() {
@@ -306,9 +317,10 @@ class _SellerJobAlertEditorScreenState extends State<SellerJobAlertEditorScreen>
     if (_loading) {
       return Scaffold(
         appBar: AppBar(
-          backgroundColor: kSellerPrimary,
+          backgroundColor: kSecondaryFill,
           foregroundColor: kWhite,
-          title: Text(widget.existing == null ? l10n.jobAlertNew : l10n.jobAlertEdit),
+          title: Text(
+              widget.existing == null ? l10n.jobAlertNew : l10n.jobAlertEdit),
         ),
         body: const LoadingWidget(),
       );
@@ -317,9 +329,10 @@ class _SellerJobAlertEditorScreenState extends State<SellerJobAlertEditorScreen>
     if (_catalogFailed) {
       return Scaffold(
         appBar: AppBar(
-          backgroundColor: kSellerPrimary,
+          backgroundColor: kSecondaryFill,
           foregroundColor: kWhite,
-          title: Text(widget.existing == null ? l10n.jobAlertNew : l10n.jobAlertEdit),
+          title: Text(
+              widget.existing == null ? l10n.jobAlertNew : l10n.jobAlertEdit),
         ),
         body: EmptyStateWidget(
           message: l10n.somethingWentWrong,
@@ -344,9 +357,10 @@ class _SellerJobAlertEditorScreenState extends State<SellerJobAlertEditorScreen>
     return Scaffold(
       backgroundColor: kDarkWhite,
       appBar: AppBar(
-        backgroundColor: kSellerPrimary,
+        backgroundColor: kSecondaryFill,
         foregroundColor: kWhite,
-        title: Text(widget.existing == null ? l10n.jobAlertNew : l10n.jobAlertEdit),
+        title: Text(
+            widget.existing == null ? l10n.jobAlertNew : l10n.jobAlertEdit),
       ),
       bottomNavigationBar: Container(
         color: kWhite,
@@ -355,7 +369,7 @@ class _SellerJobAlertEditorScreenState extends State<SellerJobAlertEditorScreen>
           child: ButtonGlobalWithoutIcon(
             buttontext: _saving ? l10n.saving : l10n.save,
             buttonDecoration: kButtonDecoration.copyWith(
-              color: _saving ? kLightNeutralColor : kSellerPrimary,
+              color: _saving ? kLightNeutralColor : kSecondaryFill,
               borderRadius: BorderRadius.circular(30),
             ),
             onPressed: _saving ? null : _save,
@@ -373,17 +387,20 @@ class _SellerJobAlertEditorScreenState extends State<SellerJobAlertEditorScreen>
               hintText: l10n.jobAlertNameHint,
               filled: true,
               fillColor: kWhite,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             ),
           ),
           const SizedBox(height: 16),
           SwitchListTile(
             value: _enabled,
             onChanged: (v) => setState(() => _enabled = v),
-            title: Text(l10n.jobAlertEnabled, style: kTextStyle.copyWith(color: kNeutralColor)),
+            title: Text(l10n.jobAlertEnabled,
+                style: kTextStyle.copyWith(color: kNeutralColor)),
             activeThumbColor: primary,
             tileColor: kWhite,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
           const SizedBox(height: 16),
           _sectionTitle(l10n.jobAlertSkillsSection),
@@ -427,7 +444,8 @@ class _SellerJobAlertEditorScreenState extends State<SellerJobAlertEditorScreen>
             decoration: InputDecoration(
               filled: true,
               fillColor: kWhite,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             ),
             items: _jobTypeValues
                 .map(
@@ -455,9 +473,12 @@ class _SellerJobAlertEditorScreenState extends State<SellerJobAlertEditorScreen>
                 children: [
                   Text(
                     hasCoords
-                        ? (locationLabel.isNotEmpty ? locationLabel : l10n.jobAlertLocationSet)
+                        ? (locationLabel.isNotEmpty
+                            ? locationLabel
+                            : l10n.jobAlertLocationSet)
                         : l10n.jobAlertLocationMissing,
-                    style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13),
+                    style: kTextStyle.copyWith(
+                        color: kSubTitleColor, fontSize: 13),
                   ),
                   const SizedBox(height: 8),
                   OutlinedButton.icon(
@@ -473,10 +494,12 @@ class _SellerJobAlertEditorScreenState extends State<SellerJobAlertEditorScreen>
           SwitchListTile(
             value: _useDistance,
             onChanged: (v) => setState(() => _useDistance = v),
-            title: Text(l10n.jobAlertLimitDistance, style: kTextStyle.copyWith(color: kNeutralColor)),
+            title: Text(l10n.jobAlertLimitDistance,
+                style: kTextStyle.copyWith(color: kNeutralColor)),
             activeThumbColor: primary,
             tileColor: kWhite,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
           if (_useDistance) ...[
             Slider(
@@ -491,10 +514,12 @@ class _SellerJobAlertEditorScreenState extends State<SellerJobAlertEditorScreen>
           SwitchListTile(
             value: _includeRemote,
             onChanged: (v) => setState(() => _includeRemote = v),
-            title: Text(l10n.jobAlertIncludeRemote, style: kTextStyle.copyWith(color: kNeutralColor)),
+            title: Text(l10n.jobAlertIncludeRemote,
+                style: kTextStyle.copyWith(color: kNeutralColor)),
             activeThumbColor: primary,
             tileColor: kWhite,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
         ],
       ),

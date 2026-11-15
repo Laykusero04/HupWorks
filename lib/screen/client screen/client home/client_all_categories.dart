@@ -82,7 +82,8 @@ class _ClientAllCategoriesState extends State<ClientAllCategories> {
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
           l10n.allCategories,
-          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+          style: kTextStyle.copyWith(
+              color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
       ),
       body: Padding(
@@ -108,124 +109,153 @@ class _ClientAllCategoriesState extends State<ClientAllCategories> {
                       },
                     )
                   : _categories.isEmpty
-                  ? Center(
-                      child: Text(
-                        l10n.noCategoriesYet,
-                        style: kTextStyle.copyWith(color: kLightNeutralColor),
-                      ),
-                    )
-                  : Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 15, 0, 10),
-                          child: TextField(
-                            controller: _searchController,
-                            onChanged: (v) => setState(() => _query = v),
-                            cursorColor: kNeutralColor,
-                            decoration: kInputDecoration.copyWith(
-                              hintText: l10n.searchCategories,
-                              hintStyle: kTextStyle.copyWith(color: kSubTitleColor),
-                              prefixIcon: const Icon(Icons.search, color: kLightNeutralColor),
-                              suffixIcon: _query.isEmpty
-                                  ? null
-                                  : IconButton(
-                                      icon: const Icon(Icons.clear, color: kLightNeutralColor),
-                                      onPressed: () {
-                                        _searchController.clear();
-                                        setState(() => _query = '');
+                      ? Center(
+                          child: Text(
+                            l10n.noCategoriesYet,
+                            style:
+                                kTextStyle.copyWith(color: kLightNeutralColor),
+                          ),
+                        )
+                      : Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 15, 0, 10),
+                              child: TextField(
+                                controller: _searchController,
+                                onChanged: (v) => setState(() => _query = v),
+                                cursorColor: kNeutralColor,
+                                decoration: kInputDecoration.copyWith(
+                                  hintText: l10n.searchCategories,
+                                  hintStyle: kTextStyle.copyWith(
+                                      color: kSubTitleColor),
+                                  prefixIcon: const Icon(Icons.search,
+                                      color: kLightNeutralColor),
+                                  suffixIcon: _query.isEmpty
+                                      ? null
+                                      : IconButton(
+                                          icon: const Icon(Icons.clear,
+                                              color: kLightNeutralColor),
+                                          onPressed: () {
+                                            _searchController.clear();
+                                            setState(() => _query = '');
+                                          },
+                                        ),
+                                  border: const OutlineInputBorder(),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: _filtered.isEmpty
+                                  ? Center(
+                                      child: Text(
+                                        l10n.noCategoriesMatch,
+                                        style: kTextStyle.copyWith(
+                                            color: kLightNeutralColor),
+                                      ),
+                                    )
+                                  : ListView.separated(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 24),
+                                      itemCount: _filtered.length,
+                                      separatorBuilder: (_, __) =>
+                                          const SizedBox(height: 10),
+                                      itemBuilder: (_, i) {
+                                        final cat = _filtered[i];
+                                        final lang =
+                                            LocalizedCategory.languageCodeOf(
+                                                context);
+                                        final name =
+                                            LocalizedCategory.name(cat, lang);
+                                        final desc =
+                                            LocalizedCategory.description(
+                                                cat, lang);
+                                        final icon = cat['icon'] as String?;
+                                        final color =
+                                            CategoryIcons.tintColor(i);
+
+                                        return Material(
+                                          color: kWhite,
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          child: InkWell(
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                            onTap: () {
+                                              showSearch(
+                                                context: context,
+                                                query: name,
+                                                delegate: CustomSearchDelegate(
+                                                  l10nContext: context,
+                                                ),
+                                              );
+                                            },
+                                            child: Container(
+                                              padding: const EdgeInsets.all(14),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                border: Border.all(
+                                                    color:
+                                                        kBorderColorTextField),
+                                              ),
+                                              child: Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  CategoryVisual(
+                                                    iconKey: icon,
+                                                    tint: color.withValues(
+                                                        alpha: 0.12),
+                                                    iconColor: color,
+                                                    size: 44,
+                                                    radius: 12,
+                                                    iconSize: 24,
+                                                  ),
+                                                  const SizedBox(width: 12),
+                                                  Expanded(
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          name,
+                                                          style: kTextStyle
+                                                              .copyWith(
+                                                            color:
+                                                                kNeutralColor,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                        if (desc
+                                                            .isNotEmpty) ...[
+                                                          const SizedBox(
+                                                              height: 4),
+                                                          Text(
+                                                            desc,
+                                                            style: kTextStyle
+                                                                .copyWith(
+                                                              color:
+                                                                  kSubTitleColor,
+                                                              fontSize: 12,
+                                                              height: 1.35,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        );
                                       },
                                     ),
-                              border: const OutlineInputBorder(),
                             ),
-                          ),
+                          ],
                         ),
-                        Expanded(
-                          child: _filtered.isEmpty
-                              ? Center(
-                                  child: Text(
-                                    l10n.noCategoriesMatch,
-                                    style: kTextStyle.copyWith(color: kLightNeutralColor),
-                                  ),
-                                )
-                              : ListView.separated(
-                      padding: const EdgeInsets.only(bottom: 24),
-                      itemCount: _filtered.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 10),
-                      itemBuilder: (_, i) {
-                        final cat = _filtered[i];
-                        final lang = LocalizedCategory.languageCodeOf(context);
-                        final name = LocalizedCategory.name(cat, lang);
-                        final desc = LocalizedCategory.description(cat, lang);
-                        final icon = cat['icon'] as String?;
-                        final color = CategoryIcons.tintColor(i);
-
-                        return Material(
-                          color: kWhite,
-                          borderRadius: BorderRadius.circular(12),
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(12),
-                            onTap: () {
-                              showSearch(
-                                context: context,
-                                query: name,
-                                delegate: CustomSearchDelegate(
-                                  l10nContext: context,
-                                ),
-                              );
-                            },
-                            child: Container(
-                          padding: const EdgeInsets.all(14),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: kBorderColorTextField),
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              CategoryVisual(
-                                iconKey: icon,
-                                tint: color.withValues(alpha: 0.12),
-                                iconColor: color,
-                                size: 44,
-                                radius: 12,
-                                iconSize: 24,
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      name,
-                                      style: kTextStyle.copyWith(
-                                        color: kNeutralColor,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    if (desc.isNotEmpty) ...[
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        desc,
-                                        style: kTextStyle.copyWith(
-                                          color: kSubTitleColor,
-                                          fontSize: 12,
-                                          height: 1.35,
-                                        ),
-                                      ),
-                                    ],
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                        ),
-                      ],
-                    ),
         ),
       ),
     );

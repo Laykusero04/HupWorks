@@ -241,7 +241,7 @@ class _FileChip extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: kTextStyle.copyWith(
-                    color: kPrimaryColor,
+                    color: kPrimaryText,
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
                   ),

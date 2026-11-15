@@ -41,7 +41,8 @@ class JobLocationMapPreview extends StatelessWidget {
               Expanded(
                 child: Text(
                   label,
-                  style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.w600),
+                  style: kTextStyle.copyWith(
+                      color: kNeutralColor, fontWeight: FontWeight.w600),
                 ),
               ),
             ],
@@ -73,7 +74,8 @@ class JobLocationMapPreview extends StatelessWidget {
                           point: point,
                           width: 40,
                           height: 40,
-                          child: Icon(Icons.location_on, color: accent, size: 40),
+                          child:
+                              Icon(Icons.location_on, color: accent, size: 40),
                         ),
                       ],
                     ),
@@ -98,7 +100,8 @@ class JobLocationMapPreview extends StatelessWidget {
                       padding: const EdgeInsets.fromLTRB(10, 16, 10, 8),
                       child: Text(
                         '${latitude.toStringAsFixed(4)}, ${longitude.toStringAsFixed(4)}',
-                        style: kTextStyle.copyWith(color: Colors.white, fontSize: 11),
+                        style: kTextStyle.copyWith(
+                            color: Colors.white, fontSize: 11),
                       ),
                     ),
                   ),
@@ -153,10 +156,12 @@ class JobLocationSection extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(Icons.location_on_outlined, size: 18, color: accentColor ?? kPrimaryColor),
+        Icon(Icons.location_on_outlined,
+            size: 18, color: accentColor ?? kPrimaryColor),
         const SizedBox(width: 8),
         Expanded(
-          child: Text(location!, style: kTextStyle.copyWith(color: kSubTitleColor)),
+          child: Text(location!,
+              style: kTextStyle.copyWith(color: kSubTitleColor)),
         ),
       ],
     );

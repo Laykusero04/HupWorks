@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui' show SemanticsRole;
 
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/guide/guide_config.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
 import 'package:showcaseview/showcaseview.dart';
@@ -11,6 +12,7 @@ import '../core/auth/role_cache.dart';
 import '../core/chat/chat_unread_scope.dart';
 import '../core/constants/colors.dart';
 import '../core/guide/guide_host.dart';
+import '../core/guide/guide_nav_bridge.dart';
 import '../core/guide/guide_session.dart';
 import '../core/guide/guide_step.dart';
 import '../core/onboarding/onboarding_prefs.dart';
@@ -80,15 +82,17 @@ final sellerShellScaffoldKey = GlobalKey<ScaffoldState>();
 ThemeData sellerShellTheme(ThemeData base) {
   return base.copyWith(
     colorScheme: base.colorScheme.copyWith(
-      primary: kSellerPrimary,
+      // AA: bright cyan is decoration only (T-0156); this token carries text
+      // and white-on-fill in every widget that reads colorScheme.primary.
+      primary: kSecondaryFill,
       secondary: kSellerAccent,
       onPrimary: kWhite,
     ),
-    primaryColor: kSellerPrimary,
+    primaryColor: kSecondaryFill,
     scaffoldBackgroundColor: kSellerSurface,
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: kSellerPrimary,
+        backgroundColor: kSecondaryFill,
         foregroundColor: kWhite,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30.0),
@@ -96,11 +100,11 @@ ThemeData sellerShellTheme(ThemeData base) {
       ),
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: kSellerPrimary,
+      backgroundColor: kSecondaryFill,
       foregroundColor: kWhite,
     ),
     progressIndicatorTheme:
-        const ProgressIndicatorThemeData(color: kSellerPrimary),
+        const ProgressIndicatorThemeData(color: kSecondaryFill),
   );
 }
 
@@ -538,6 +542,7 @@ class _ScaffoldWithNavBar extends StatefulWidget {
 class _ScaffoldWithNavBarState extends State<_ScaffoldWithNavBar>
     with GuideHost<_ScaffoldWithNavBar> {
   final GlobalKey _guideBarKey = GlobalKey();
+  final GlobalKey _navBarKey = GlobalKey(); // measured by GuideNavBridge
   // One long-lived key per guided tile index (created once, never in build).
   final Map<int, GlobalKey> _guideTileKeys = {
     for (var i = 1; i <= 4; i++) i: GlobalKey(),
@@ -549,7 +554,7 @@ class _ScaffoldWithNavBarState extends State<_ScaffoldWithNavBar>
   GlobalKey<ScaffoldState>? get scaffoldKey => widget.scaffoldKey;
 
   Color get _accentColor =>
-      persona == ShellPersona.client ? kPrimaryColor : kSellerPrimary;
+      persona == ShellPersona.client ? kPrimaryText : kSecondaryText;
 
   // Guided tiles in step order. Client: My Jobs (3), Contracts (4).
   // Seller: Messages (1), Find Jobs (2), Contracts (3).
@@ -591,7 +596,9 @@ class _ScaffoldWithNavBarState extends State<_ScaffoldWithNavBar>
   /// Runs after the Home guide is done for this session (seen, finished,
   /// skipped or given up), never together with it (GuideSession).
   @override
-  bool get guideDataReady => GuideSession.instance.homeSettled;
+  bool get guideDataReady =>
+      GuideSession.instance.homeSettled &&
+      !GuideSession.instance.shellSuppressed;
   @override
   String get guideSkipLabel => context.l10n.guideSkip;
   @override
@@ -599,8 +606,27 @@ class _ScaffoldWithNavBarState extends State<_ScaffoldWithNavBar>
   @override
   String get guideDoneLabel => context.l10n.guideDone;
 
+  int _navItemCount = 0; // set in build from the real item list
+
+  late final GuideNavHandle _navHandle = GuideNavHandle(
+    barKey: _navBarKey,
+    tabCount: () => _navItemCount,
+    onTab: (i) => navigationShell.goBranch(
+      i,
+      initialLocation: i == navigationShell.currentIndex,
+    ),
+    isVisible: () => mounted && (ModalRoute.of(context)?.isCurrent ?? true),
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    GuideNavBridge.register(_navHandle);
+  }
+
   @override
   void dispose() {
+    GuideNavBridge.unregister(_navHandle);
     // Sign-out happens from the drawer, so the shell usually goes away with
     // the drawer open and onDrawerChanged(false) never fires. Clear the flag
     // so the next shell (e.g. another account) is not blocked from guides.
@@ -638,6 +664,7 @@ class _ScaffoldWithNavBarState extends State<_ScaffoldWithNavBar>
         final items = persona == ShellPersona.client
             ? _clientNavItems(context, unread)
             : _sellerNavItems(context, unread);
+        _navItemCount = items.length;
 
         return guideBackScope(Scaffold(
           key: scaffoldKey,
@@ -649,6 +676,7 @@ class _ScaffoldWithNavBarState extends State<_ScaffoldWithNavBar>
           bottomNavigationBar: _ShellBottomNav(
             guideScope: guideScope,
             guideBarKey: _guideBarKey,
+            measureKey: _navBarKey,
             guideTiles: _guideTileSpecs(context.l10n),
             guideBarTitle: context.l10n.guideShellTabsTitle,
             guideBarDescription: context.l10n.guideShellTabsDesc,
@@ -753,7 +781,7 @@ Widget debugShellBottomNav({
   required List<String> labels,
 }) {
   return _ShellBottomNav(
-    accent: kPrimaryColor,
+    accent: kPrimaryText,
     currentIndex: currentIndex,
     items: [
       for (final label in labels)
@@ -780,6 +808,7 @@ class _ShellBottomNav extends StatelessWidget {
   const _ShellBottomNav({
     this.guideScope,
     this.guideBarKey,
+    this.measureKey,
     this.guideTiles = const {},
     this.guideBarTitle,
     this.guideBarDescription,
@@ -793,6 +822,7 @@ class _ShellBottomNav extends StatelessWidget {
   // All null in tests (debugShellBottomNav): the bar then renders plainly.
   final String? guideScope;
   final GlobalKey? guideBarKey;
+  final GlobalKey? measureKey;
   final Map<int, _GuideTileSpec> guideTiles;
   final String? guideBarTitle;
   final String? guideBarDescription;
@@ -813,6 +843,11 @@ class _ShellBottomNav extends StatelessWidget {
       scope: guideScope,
       title: guideBarTitle,
       description: guideBarDescription,
+      tooltipPadding: GuideConfig.tooltipPadding,
+      titleAlignment: GuideConfig.tooltipTextAlignment,
+      descriptionAlignment: GuideConfig.tooltipTextAlignment,
+      titleTextStyle: GuideConfig.titleStyle(),
+      descTextStyle: GuideConfig.descStyle(),
       targetBorderRadius: BorderRadius.zero,
       targetShapeBorder: const RoundedRectangleBorder(),
       child: _bar(bottomInset),
@@ -821,6 +856,7 @@ class _ShellBottomNav extends StatelessWidget {
 
   Widget _bar(double bottomInset) {
     return Material(
+      key: measureKey,
       color: kWhite,
       elevation: 0,
       child: DecoratedBox(
@@ -844,21 +880,41 @@ class _ShellBottomNav extends StatelessWidget {
           child: Padding(
             padding:
                 EdgeInsets.fromLTRB(6, 6, 6, bottomInset > 0 ? bottomInset : 8),
-            child: Row(
-              children: [
-                for (var i = 0; i < items.length; i++)
-                  Expanded(
-                    child: _wrapTile(
-                      i,
-                      _ShellBottomNavTile(
-                        item: items[i],
-                        selected: i == currentIndex,
-                        accent: accent,
-                        onTap: () => onTap(i),
-                      ),
-                    ),
-                  ),
-              ],
+            // Nav labels are capped at 1.25x (iOS/Android tab-bar practice):
+            // 5 tabs on a 375dp phone cannot hold larger text. Semantics
+            // labels stay full, and a label that still does not fit is hidden
+            // behind a tooltip instead of being cut mid-word.
+            child: MediaQuery.withClampedTextScaling(
+              maxScaleFactor: 1.25,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  // One shared label scale for the whole bar: every tab label
+                  // has the same size (T-0159 N4).
+                  final labelScale = navLabelScale(
+                    labels: [for (final it in items) it.label],
+                    tileWidth: constraints.maxWidth / items.length,
+                    ambientScale: MediaQuery.textScalerOf(context).scale(1.0),
+                    textDirection: Directionality.of(context),
+                  );
+                  return Row(
+                    children: [
+                      for (var i = 0; i < items.length; i++)
+                        Expanded(
+                          child: _wrapTile(
+                            i,
+                            _ShellBottomNavTile(
+                              item: items[i],
+                              selected: i == currentIndex,
+                              accent: accent,
+                              labelScale: labelScale,
+                              onTap: () => onTap(i),
+                            ),
+                          ),
+                        ),
+                    ],
+                  );
+                },
+              ),
             ),
           ),
         ),
@@ -874,10 +930,66 @@ class _ShellBottomNav extends StatelessWidget {
       scope: guideScope,
       title: spec.title,
       description: spec.description,
+      tooltipPadding: GuideConfig.tooltipPadding,
+      titleAlignment: GuideConfig.tooltipTextAlignment,
+      descriptionAlignment: GuideConfig.tooltipTextAlignment,
+      titleTextStyle: GuideConfig.titleStyle(ambientCap: 1.25),
+      descTextStyle: GuideConfig.descStyle(ambientCap: 1.25),
       targetBorderRadius: BorderRadius.circular(14),
       child: tile,
     );
   }
+}
+
+/// Uniform text scale for all labels of one bottom nav bar: the system scale
+/// (already capped by the caller), reduced just enough that the LONGEST label
+/// fits one line in [tileWidth], never below 0.8 (a label that still does not
+/// fit is shrunk by a FittedBox in its tile; it is never hidden or wrapped).
+@visibleForTesting
+double navLabelScale({
+  required List<String> labels,
+  required double tileWidth,
+  required double ambientScale,
+  required TextDirection textDirection,
+}) {
+  final key = '${labels.join('\u0001')}|$tileWidth|$ambientScale|'
+      '${textDirection.index}';
+  final hit = _navLabelScaleCache[key];
+  if (hit != null) return hit;
+  final v = _navLabelScaleCompute(
+    labels: labels,
+    tileWidth: tileWidth,
+    ambientScale: ambientScale,
+    textDirection: textDirection,
+  );
+  if (_navLabelScaleCache.length > 32) _navLabelScaleCache.clear();
+  return _navLabelScaleCache[key] = v;
+}
+
+final Map<String, double> _navLabelScaleCache = <String, double>{};
+
+double _navLabelScaleCompute({
+  required List<String> labels,
+  required double tileWidth,
+  required double ambientScale,
+  required TextDirection textDirection,
+}) {
+  const style =
+      TextStyle(fontSize: 11, fontWeight: FontWeight.w700, height: 1.1);
+  var widest = 0.0;
+  for (final l in labels) {
+    final tp = TextPainter(
+      text: TextSpan(text: l, style: style),
+      maxLines: 1,
+      textDirection: textDirection,
+    )..layout();
+    if (tp.width > widest) widest = tp.width;
+    tp.dispose();
+  }
+  if (widest <= 0) return ambientScale;
+  final fit = (tileWidth - 4) / widest;
+  final floor = fit < 0.8 ? 0.8 : fit;
+  return ambientScale < floor ? ambientScale : floor;
 }
 
 class _ShellBottomNavTile extends StatelessWidget {
@@ -885,12 +997,14 @@ class _ShellBottomNavTile extends StatelessWidget {
     required this.item,
     required this.selected,
     required this.accent,
+    required this.labelScale,
     required this.onTap,
   });
 
   final _ShellNavItem item;
   final bool selected;
   final Color accent;
+  final double labelScale;
   final VoidCallback onTap;
 
   @override
@@ -903,66 +1017,54 @@ class _ShellBottomNavTile extends StatelessWidget {
       height: 1.1,
     );
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final painter = TextPainter(
-          text: TextSpan(text: item.label, style: labelStyle),
-          maxLines: 1,
-          textDirection: Directionality.of(context),
-        )..layout();
-        final labelClips = painter.width > constraints.maxWidth - 4;
-        painter.dispose();
+    final icon = AnimatedContainer(
+      duration: const Duration(milliseconds: 180),
+      curve: Curves.easeOut,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      decoration: BoxDecoration(
+        color: selected ? accent.withValues(alpha: 0.12) : Colors.transparent,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: IconTheme(
+        data: IconThemeData(color: color, size: 22),
+        child: selected ? item.activeIcon : item.icon,
+      ),
+    );
 
-        final icon = AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
-          curve: Curves.easeOut,
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-          decoration: BoxDecoration(
-            color:
-                selected ? accent.withValues(alpha: 0.12) : Colors.transparent,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: IconTheme(
-            data: IconThemeData(color: color, size: 22),
-            child: selected ? item.activeIcon : item.icon,
-          ),
-        );
-
-        final tile = InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(14),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                icon,
-                if (!labelClips) ...[
-                  const SizedBox(height: 2),
-                  Text(
-                    item.label,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
-                    style: labelStyle,
-                  ),
-                ],
-              ],
+    final tile = InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            icon,
+            const SizedBox(height: 2),
+            // Same scaler for every tab; the FittedBox only acts when even the
+            // 0.8 floor does not fit (very narrow bars): never ellipsis/hidden.
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                item.label,
+                maxLines: 1,
+                softWrap: false,
+                textAlign: TextAlign.center,
+                textScaler: TextScaler.linear(labelScale),
+                style: labelStyle,
+              ),
             ),
-          ),
-        );
+          ],
+        ),
+      ),
+    );
 
-        return Semantics(
-          role: SemanticsRole.tab,
-          selected: selected,
-          label: item.label,
-          onTap: onTap,
-          child: ExcludeSemantics(
-            child:
-                labelClips ? Tooltip(message: item.label, child: tile) : tile,
-          ),
-        );
-      },
+    return Semantics(
+      role: SemanticsRole.tab,
+      selected: selected,
+      label: item.label,
+      onTap: onTap,
+      child: ExcludeSemantics(child: tile),
     );
   }
 }

@@ -22,11 +22,13 @@ class AppErrorWidget extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline, size: 48, color: kLightNeutralColor),
+            const Icon(Icons.error_outline,
+                size: 48, color: kLightNeutralColor),
             const SizedBox(height: 16),
             Text(
               message,
-              style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 15),
+              style:
+                  kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 15),
               textAlign: TextAlign.center,
             ),
             if (onRetry != null) ...[

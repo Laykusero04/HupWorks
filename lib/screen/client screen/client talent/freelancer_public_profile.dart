@@ -41,7 +41,8 @@ class FreelancerPublicProfile extends StatefulWidget {
   final String? initialName;
 
   @override
-  State<FreelancerPublicProfile> createState() => _FreelancerPublicProfileState();
+  State<FreelancerPublicProfile> createState() =>
+      _FreelancerPublicProfileState();
 }
 
 class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
@@ -121,8 +122,8 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
   }
 
   Future<void> _openService() async {
-    final serviceId =
-        await ClientHomeService.getFirstActiveServiceIdForSeller(widget.sellerId);
+    final serviceId = await ClientHomeService.getFirstActiveServiceIdForSeller(
+        widget.sellerId);
     if (!mounted) return;
     if (serviceId != null) {
       await ClientServiceDetails(serviceId: serviceId).launch(context);
@@ -200,10 +201,8 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
     final bio = _profile!['bio'] as String?;
     final profileImageUrl = _profile!['profile_image_url'] as String?;
     final jobTitle = ProfileService.sellerJobTitleFromProfile(_profile!);
-    final verificationStatus =
-        VerificationService.statusFromProfile(_profile);
-    final verificationScore =
-        VerificationService.scoreFromProfile(_profile);
+    final verificationStatus = VerificationService.statusFromProfile(_profile);
+    final verificationScore = VerificationService.scoreFromProfile(_profile);
     final about = ProfileService.sellerAboutFromProfile(_profile!);
     final address = ProfileService.sellerAddressFromProfile(_profile!);
     final age = ProfileService.sellerAgeFromProfile(_profile!);
@@ -230,9 +229,7 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
         centerTitle: true,
         actions: [
           IconButton(
-            tooltip: _isSaved
-                ? l10n.removeSavedTalent
-                : l10n.favorite,
+            tooltip: _isSaved ? l10n.removeSavedTalent : l10n.favorite,
             onPressed: _saveBusy ? null : _toggleSaved,
             icon: Icon(
               _isSaved ? Icons.bookmark : Icons.bookmark_border,
@@ -355,9 +352,7 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
                   ),
                 ],
               ),
-
               const SizedBox(height: 12),
-
               Container(
                 padding:
                     const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
@@ -378,9 +373,7 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
                   ],
                 ),
               ),
-
               const SizedBox(height: 12),
-
               Row(
                 children: [
                   Expanded(
@@ -431,7 +424,6 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
                   ),
                 ],
               ),
-
               if (bio != null && bio.trim().isNotEmpty) ...[
                 const SizedBox(height: 12),
                 Text(
@@ -443,7 +435,6 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
                   ),
                 ),
               ],
-
               if (about != null && about.isNotEmpty) ...[
                 const SizedBox(height: 12),
                 Text(
@@ -464,19 +455,15 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
                   ),
                 ),
               ],
-
               if (skills.isNotEmpty) ...[
                 const SizedBox(height: 12),
                 SellerSkillsDisplay(skills: skills, accentColor: brand),
               ],
-
               if (_workTrust.shouldShowSection) ...[
                 const SizedBox(height: 14),
                 VerifiedWorkTrustSection(trust: _workTrust),
               ],
-
-              if (age != null ||
-                  (address != null && address.isNotEmpty)) ...[
+              if (age != null || (address != null && address.isNotEmpty)) ...[
                 const SizedBox(height: 14),
                 ProfileDetailTheme.sectionDivider(
                   gradientStart: brand,
@@ -505,15 +492,12 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
                   ),
                 ),
               ],
-
               const SizedBox(height: 14),
-
               ProfileDetailTheme.sectionDivider(
                 gradientStart: brand,
                 gradientEnd: kSecondaryColor,
               ),
               const SizedBox(height: 10),
-
               Row(
                 children: [
                   Text(
@@ -531,7 +515,6 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
                 ],
               ),
               const SizedBox(height: 8),
-
               if (_reviews.isEmpty)
                 Padding(
                   padding:

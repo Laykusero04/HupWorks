@@ -35,7 +35,10 @@ class SellerJobAlertRule extends Equatable {
 
     List<String> textList(dynamic raw) {
       if (raw is! List) return [];
-      return raw.map((e) => e.toString()).where((s) => s.trim().isNotEmpty).toList();
+      return raw
+          .map((e) => e.toString())
+          .where((s) => s.trim().isNotEmpty)
+          .toList();
     }
 
     return SellerJobAlertRule(
@@ -102,7 +105,8 @@ class SellerJobAlertRule extends Equatable {
       categoryIds: categoryIds ?? this.categoryIds,
       skillNames: skillNames ?? this.skillNames,
       jobType: clearJobType ? null : (jobType ?? this.jobType),
-      maxDistanceKm: clearMaxDistance ? null : (maxDistanceKm ?? this.maxDistanceKm),
+      maxDistanceKm:
+          clearMaxDistance ? null : (maxDistanceKm ?? this.maxDistanceKm),
       includeRemote: includeRemote ?? this.includeRemote,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,

@@ -41,7 +41,8 @@ class _SellerProfileState extends State<SellerProfile> {
 
   Future<void> _loadProfile({bool forceRefresh = false}) async {
     try {
-      final profile = await ProfileService.getProfile(forceRefresh: forceRefresh);
+      final profile =
+          await ProfileService.getProfile(forceRefresh: forceRefresh);
       if (mounted) {
         setState(() {
           _profile = profile;
@@ -95,8 +96,7 @@ class _SellerProfileState extends State<SellerProfile> {
     final profileImageUrl = _profile?['profile_image_url'] as String?;
     final rating = (_profile?['rating'] as num?)?.toDouble() ?? 0;
     final reviewCount = (_profile?['review_count'] as num?)?.toInt() ?? 0;
-    final verificationStatus =
-        VerificationService.statusFromProfile(_profile);
+    final verificationStatus = VerificationService.statusFromProfile(_profile);
 
     return Material(
       color: kWhite,
@@ -184,7 +184,10 @@ class _SellerProfileState extends State<SellerProfile> {
                 ProfileMenuListTile(
                   icon: Icons.bookmark_border,
                   title: l10n.favouriteList,
-                  onTap: () => const SellerFavList().launch(context),
+                  onTap: () {
+                    Navigator.pop(context);
+                    const SellerFavList().launch(context);
+                  },
                 ),
                 ProfileMenuListTile(
                   icon: Icons.settings_outlined,
@@ -198,7 +201,10 @@ class _SellerProfileState extends State<SellerProfile> {
                 ProfileMenuListTile(
                   icon: Icons.person_add_outlined,
                   title: l10n.inviteFriends,
-                  onTap: () => const SellerInvite().launch(context),
+                  onTap: () {
+                    Navigator.pop(context);
+                    const SellerInvite().launch(context);
+                  },
                 ),
                 ProfileMenuListTile(
                   icon: Icons.help_outline,

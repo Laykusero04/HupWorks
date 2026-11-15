@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/utils/contract_text.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:freelancer/l10n/l10n.dart';
@@ -693,7 +694,7 @@ class _ChatInboxState extends State<ChatInbox> with GuideHost<ChatInbox> {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: kTextStyle.copyWith(
-                          color: kPrimaryColor,
+                          color: kPrimaryText,
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
                         ),
@@ -907,7 +908,7 @@ class _ChatInboxState extends State<ChatInbox> with GuideHost<ChatInbox> {
           : Text(
               initial,
               style: kTextStyle.copyWith(
-                color: kPrimaryColor,
+                color: kPrimaryText,
                 fontWeight: FontWeight.w700,
                 fontSize: 15,
               ),
@@ -1072,7 +1073,7 @@ class _ChatInboxState extends State<ChatInbox> with GuideHost<ChatInbox> {
             : LegacyBidInfo(
                 jobTitle: bidInfo.jobTitle,
                 amount: bidInfo.amount,
-                delivery: bidInfo.delivery,
+                delivery: ContractText.localizeLegacy(l10n, bidInfo.delivery),
                 proposal: bidInfo.proposal,
               ),
       );
@@ -1271,7 +1272,7 @@ class _ChatInboxState extends State<ChatInbox> with GuideHost<ChatInbox> {
           : Text(
               initial,
               style: kTextStyle.copyWith(
-                color: kPrimaryColor,
+                color: kPrimaryText,
                 fontWeight: FontWeight.w700,
                 fontSize: 11,
               ),

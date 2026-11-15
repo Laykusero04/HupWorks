@@ -11,7 +11,10 @@ import 'constant.dart';
 
 /// Shared Invite Friends screen (client + seller). Share-only MVP — no reward claims.
 class InviteFriendsScreen extends StatefulWidget {
-  const InviteFriendsScreen({super.key});
+  const InviteFriendsScreen({super.key, this.isSeller = false});
+
+  /// Seller role uses the teal fill/text tokens, client stays orange.
+  final bool isSeller;
 
   @override
   State<InviteFriendsScreen> createState() => _InviteFriendsScreenState();
@@ -57,7 +60,8 @@ class _InviteFriendsScreenState extends State<InviteFriendsScreen> {
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
           l10n.invite,
-          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+          style: kTextStyle.copyWith(
+              color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),
@@ -123,7 +127,8 @@ class _InviteFriendsScreenState extends State<InviteFriendsScreen> {
                                 padding: const EdgeInsets.all(10),
                                 height: 60,
                                 decoration: BoxDecoration(
-                                  border: Border.all(color: kBorderColorTextField),
+                                  border:
+                                      Border.all(color: kBorderColorTextField),
                                   borderRadius: const BorderRadius.only(
                                     topLeft: Radius.circular(8.0),
                                     bottomLeft: Radius.circular(8.0),
@@ -142,21 +147,29 @@ class _InviteFriendsScreenState extends State<InviteFriendsScreen> {
                             ),
                             Expanded(
                               flex: 1,
-                              child: GestureDetector(
-                                onTap: _copyCode,
-                                child: Container(
-                                  padding: const EdgeInsets.all(10),
-                                  height: 60,
-                                  decoration: const BoxDecoration(
-                                    color: kPrimaryColor,
-                                    borderRadius: BorderRadius.only(
-                                      topRight: Radius.circular(8.0),
-                                      bottomRight: Radius.circular(8.0),
+                              child: Semantics(
+                                  button: true,
+                                  label: context.l10n.inviteCopyCodeLabel,
+                                  excludeSemantics: true,
+                                  onTap: _copyCode,
+                                  child: GestureDetector(
+                                    onTap: _copyCode,
+                                    child: Container(
+                                      padding: const EdgeInsets.all(10),
+                                      height: 60,
+                                      decoration: BoxDecoration(
+                                        color: widget.isSeller
+                                            ? kSecondaryFill
+                                            : kPrimaryFill,
+                                        borderRadius: const BorderRadius.only(
+                                          topRight: Radius.circular(8.0),
+                                          bottomRight: Radius.circular(8.0),
+                                        ),
+                                      ),
+                                      child: const Icon(FeatherIcons.copy,
+                                          color: kWhite),
                                     ),
-                                  ),
-                                  child: const Icon(FeatherIcons.copy, color: kWhite),
-                                ),
-                              ),
+                                  )),
                             ),
                           ],
                         ),
@@ -166,7 +179,9 @@ class _InviteFriendsScreenState extends State<InviteFriendsScreen> {
                           child: ElevatedButton.icon(
                             onPressed: _shareInvite,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: kPrimaryColor,
+                              backgroundColor: widget.isSeller
+                                  ? kSecondaryFill
+                                  : kPrimaryFill,
                               foregroundColor: kWhite,
                               padding: const EdgeInsets.symmetric(vertical: 14),
                               shape: RoundedRectangleBorder(

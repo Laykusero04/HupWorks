@@ -53,8 +53,13 @@ class BrandPaintingQr extends StatelessWidget {
       textAlign: TextAlign.center,
     )..layout(maxWidth: width - pad * 2);
 
-    final height =
-        pad + titlePainter.height + 40 + qrSize + 40 + captionPainter.height + pad;
+    final height = pad +
+        titlePainter.height +
+        40 +
+        qrSize +
+        40 +
+        captionPainter.height +
+        pad;
 
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(recorder);
@@ -112,7 +117,8 @@ class BrandPaintingQr extends StatelessWidget {
       decoration: BoxDecoration(
         color: BrandQrPalette.background,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: BrandQrPalette.outline.withValues(alpha: 0.18), width: 1.5),
+        border: Border.all(
+            color: BrandQrPalette.outline.withValues(alpha: 0.18), width: 1.5),
         boxShadow: [
           BoxShadow(
             color: BrandQrPalette.washPink.withValues(alpha: 0.12),
@@ -171,11 +177,31 @@ class _BrandPaintingQrPainter extends CustomPainter {
 
   void _paintWash(Canvas canvas, Size size) {
     final washes = <(Color, Offset, double)>[
-      (BrandQrPalette.washGreen, Offset(size.width * 0.15, size.height * 0.2), size.width * 0.45),
-      (BrandQrPalette.washPink, Offset(size.width * 0.85, size.height * 0.25), size.width * 0.4),
-      (BrandQrPalette.washYellow, Offset(size.width * 0.55, size.height * 0.8), size.width * 0.42),
-      (BrandQrPalette.washCyan, Offset(size.width * 0.2, size.height * 0.75), size.width * 0.35),
-      (BrandQrPalette.washOrange, Offset(size.width * 0.75, size.height * 0.55), size.width * 0.3),
+      (
+        BrandQrPalette.washGreen,
+        Offset(size.width * 0.15, size.height * 0.2),
+        size.width * 0.45
+      ),
+      (
+        BrandQrPalette.washPink,
+        Offset(size.width * 0.85, size.height * 0.25),
+        size.width * 0.4
+      ),
+      (
+        BrandQrPalette.washYellow,
+        Offset(size.width * 0.55, size.height * 0.8),
+        size.width * 0.42
+      ),
+      (
+        BrandQrPalette.washCyan,
+        Offset(size.width * 0.2, size.height * 0.75),
+        size.width * 0.35
+      ),
+      (
+        BrandQrPalette.washOrange,
+        Offset(size.width * 0.75, size.height * 0.55),
+        size.width * 0.3
+      ),
     ];
 
     for (final (color, center, radius) in washes) {

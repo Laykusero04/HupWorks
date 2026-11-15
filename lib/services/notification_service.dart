@@ -51,8 +51,7 @@ class NotificationService {
   static Future<void> markAsRead(String notificationId) async {
     await _client
         .from('notifications')
-        .update({'read': true})
-        .eq('id', notificationId);
+        .update({'read': true}).eq('id', notificationId);
   }
 
   /// Mark all notifications as read

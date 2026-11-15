@@ -60,8 +60,9 @@ Future<TalentSellerFilters?> showTalentFilterSheet(
               selected: selected,
               onSelected: (_) => onTap(),
               selectedColor: kPrimaryColor.withValues(alpha: 0.15),
+              checkmarkColor: kPrimaryOnTint,
               labelStyle: kTextStyle.copyWith(
-                color: selected ? kPrimaryColor : kNeutralColor,
+                color: selected ? kPrimaryText : kNeutralColor,
                 fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
                 fontSize: 13,
               ),
@@ -325,7 +326,7 @@ Future<TalentSellerFilters?> showTalentFilterSheet(
                               Navigator.pop(ctx, true);
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: kPrimaryColor,
+                              backgroundColor: kPrimaryFill,
                               foregroundColor: kWhite,
                               minimumSize: const Size.fromHeight(46),
                               elevation: 0,
@@ -385,7 +386,7 @@ class TalentFilterActiveChips extends StatelessWidget {
           backgroundColor: kPrimaryColor.withValues(alpha: 0.1),
           side: BorderSide(color: kPrimaryColor.withValues(alpha: 0.35)),
           labelStyle: kTextStyle.copyWith(
-            color: kPrimaryColor,
+            color: kPrimaryText,
             fontSize: 12,
             fontWeight: FontWeight.w600,
           ),
@@ -483,7 +484,7 @@ class TalentFilterButton extends StatelessWidget {
             child: Badge(
               isLabelVisible: active,
               label: Text('${filters.activeCount}'),
-              backgroundColor: kPrimaryColor,
+              backgroundColor: kPrimaryFill,
               child: Icon(
                 Icons.tune_rounded,
                 color: active ? kPrimaryColor : kNeutralColor,

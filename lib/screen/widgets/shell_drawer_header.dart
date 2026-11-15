@@ -66,14 +66,17 @@ class ShellDrawerHeader extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: kTextStyle.copyWith(
-                      color: kWhite,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 18,
+                  MediaQuery.withClampedTextScaling(
+                    maxScaleFactor: 1.3,
+                    child: Text(
+                      name,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: kTextStyle.copyWith(
+                        color: kWhite,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18,
+                      ),
                     ),
                   ),
                   if (balanceLabel != null) ...[

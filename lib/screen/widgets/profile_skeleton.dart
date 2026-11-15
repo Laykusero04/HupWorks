@@ -25,13 +25,16 @@ class ProfileSkeletonBone extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final w = (width == null || width == double.infinity) ? constraints.maxWidth : width!;
+        final w = (width == null || width == double.infinity)
+            ? constraints.maxWidth
+            : width!;
         return AnimatedBuilder(
           animation: listenable,
           builder: (context, _) {
             final t = (listenable as Animation<double>).value;
             return ClipRRect(
-              borderRadius: BorderRadius.circular(circular ? height / 2 : borderRadius),
+              borderRadius:
+                  BorderRadius.circular(circular ? height / 2 : borderRadius),
               child: SizedBox(
                 width: w,
                 height: height,
@@ -68,7 +71,8 @@ class ProfileSkeletonHost extends StatefulWidget {
   State<ProfileSkeletonHost> createState() => _ProfileSkeletonHostState();
 }
 
-class _ProfileSkeletonHostState extends State<ProfileSkeletonHost> with SingleTickerProviderStateMixin {
+class _ProfileSkeletonHostState extends State<ProfileSkeletonHost>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
 
   @override
@@ -123,15 +127,27 @@ class ProfileTabSkeleton extends StatelessWidget {
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
                     child: Row(
                       children: [
-                        ProfileSkeletonBone(listenable: shimmer, width: 56, height: 56, circular: true),
+                        ProfileSkeletonBone(
+                            listenable: shimmer,
+                            width: 56,
+                            height: 56,
+                            circular: true),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              ProfileSkeletonBone(listenable: shimmer, width: 140, height: 18, borderRadius: 6),
+                              ProfileSkeletonBone(
+                                  listenable: shimmer,
+                                  width: 140,
+                                  height: 18,
+                                  borderRadius: 6),
                               const SizedBox(height: 8),
-                              ProfileSkeletonBone(listenable: shimmer, width: 100, height: 14, borderRadius: 6),
+                              ProfileSkeletonBone(
+                                  listenable: shimmer,
+                                  width: 100,
+                                  height: 14,
+                                  borderRadius: 6),
                             ],
                           ),
                         ),
@@ -143,7 +159,8 @@ class ProfileTabSkeleton extends StatelessWidget {
               const Divider(height: 1),
               Expanded(
                 child: ListView.separated(
-                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                   itemCount: 8,
                   separatorBuilder: (_, __) => const SizedBox(height: 4),
                   itemBuilder: (_, __) => ProfileSkeletonBone(
@@ -181,7 +198,8 @@ class ProfileDetailsSkeleton extends StatelessWidget {
             elevation: 0,
             leading: BackButton(color: kNeutralColor.withValues(alpha: 0.45)),
             toolbarHeight: 52,
-            title: ProfileSkeletonBone(listenable: shimmer, width: 110, height: 18, borderRadius: 8),
+            title: ProfileSkeletonBone(
+                listenable: shimmer, width: 110, height: 18, borderRadius: 8),
             centerTitle: true,
           ),
           body: SingleChildScrollView(
@@ -190,14 +208,30 @@ class ProfileDetailsSkeleton extends StatelessWidget {
             child: Column(
               children: [
                 Center(
-                  child: ProfileSkeletonBone(listenable: shimmer, width: 168, height: 168, circular: true),
+                  child: ProfileSkeletonBone(
+                      listenable: shimmer,
+                      width: 168,
+                      height: 168,
+                      circular: true),
                 ),
                 const SizedBox(height: 14),
-                ProfileSkeletonBone(listenable: shimmer, width: 180, height: 22, borderRadius: 8),
+                ProfileSkeletonBone(
+                    listenable: shimmer,
+                    width: 180,
+                    height: 22,
+                    borderRadius: 8),
                 const SizedBox(height: 10),
-                ProfileSkeletonBone(listenable: shimmer, width: 140, height: 14, borderRadius: 6),
+                ProfileSkeletonBone(
+                    listenable: shimmer,
+                    width: 140,
+                    height: 14,
+                    borderRadius: 6),
                 const SizedBox(height: 14),
-                ProfileSkeletonBone(listenable: shimmer, width: 120, height: 16, borderRadius: 8),
+                ProfileSkeletonBone(
+                    listenable: shimmer,
+                    width: 120,
+                    height: 16,
+                    borderRadius: 8),
                 const SizedBox(height: 22),
                 ProfileSkeletonBone(
                   listenable: shimmer,
@@ -213,9 +247,14 @@ class ProfileDetailsSkeleton extends StatelessWidget {
                   borderRadius: 12,
                 ),
                 const SizedBox(height: 24),
-                ProfileSkeletonBone(listenable: shimmer, width: 80, height: 4, borderRadius: 2),
+                ProfileSkeletonBone(
+                    listenable: shimmer, width: 80, height: 4, borderRadius: 2),
                 const SizedBox(height: 18),
-                ProfileSkeletonBone(listenable: shimmer, width: 140, height: 16, borderRadius: 8),
+                ProfileSkeletonBone(
+                    listenable: shimmer,
+                    width: 140,
+                    height: 16,
+                    borderRadius: 8),
                 const SizedBox(height: 12),
                 ProfileSkeletonBone(
                   listenable: shimmer,
@@ -232,9 +271,17 @@ class ProfileDetailsSkeleton extends StatelessWidget {
                 ),
                 if (extraSection) ...[
                   const SizedBox(height: 24),
-                  ProfileSkeletonBone(listenable: shimmer, width: 80, height: 4, borderRadius: 2),
+                  ProfileSkeletonBone(
+                      listenable: shimmer,
+                      width: 80,
+                      height: 4,
+                      borderRadius: 2),
                   const SizedBox(height: 18),
-                  ProfileSkeletonBone(listenable: shimmer, width: 100, height: 16, borderRadius: 8),
+                  ProfileSkeletonBone(
+                      listenable: shimmer,
+                      width: 100,
+                      height: 16,
+                      borderRadius: 8),
                   const SizedBox(height: 12),
                   ProfileSkeletonBone(
                     listenable: shimmer,

@@ -203,7 +203,8 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
           l10n.notifications,
-          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+          style: kTextStyle.copyWith(
+              color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         actions: [
@@ -218,7 +219,7 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
                     )
                   : Text(
                       l10n.readAll,
-                      style: kTextStyle.copyWith(color: kPrimaryColor),
+                      style: kTextStyle.copyWith(color: kPrimaryText),
                     ),
             ),
         ],
@@ -247,7 +248,8 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
                             ),
                             children: [
                               SizedBox(
-                                height: MediaQuery.sizeOf(context).height * 0.15,
+                                height:
+                                    MediaQuery.sizeOf(context).height * 0.15,
                               ),
                               EmptyStateWidget(
                                 message: l10n.noNotifications,
@@ -257,63 +259,74 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
                             ],
                           )
                         : ListView.builder(
-                          controller: _scrollController,
-                          physics: const AlwaysScrollableScrollPhysics(
-                            parent: BouncingScrollPhysics(),
-                          ),
-                          padding: const EdgeInsets.only(top: 15.0, bottom: 15.0),
-                          itemCount: _notifications.length + (_isLoadingMore ? 1 : 0),
-                          itemBuilder: (_, i) {
-                            if (i >= _notifications.length) {
-                              return const NotificationListLoadMoreSkeleton();
-                            }
+                            controller: _scrollController,
+                            physics: const AlwaysScrollableScrollPhysics(
+                              parent: BouncingScrollPhysics(),
+                            ),
+                            padding:
+                                const EdgeInsets.only(top: 15.0, bottom: 15.0),
+                            itemCount: _notifications.length +
+                                (_isLoadingMore ? 1 : 0),
+                            itemBuilder: (_, i) {
+                              if (i >= _notifications.length) {
+                                return const NotificationListLoadMoreSkeleton();
+                              }
 
-                            final notif = _notifications[i];
-                            final isRead = notif.read;
+                              final notif = _notifications[i];
+                              final isRead = notif.read;
 
-                            return ListTile(
-                              onTap: () => _onTapNotification(i),
-                              contentPadding: EdgeInsets.zero,
-                              leading: Container(
-                                padding: const EdgeInsets.all(10.0),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: isRead ? kDarkWhite : kPrimaryColor.withOpacity(0.1),
-                                ),
-                                child: Icon(
-                                  _iconForType(notif.type),
-                                  color: isRead ? kLightNeutralColor : kPrimaryColor,
-                                ),
-                              ),
-                              title: Text(
-                                notif.title,
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 2,
-                                style: kTextStyle.copyWith(
-                                  color: kNeutralColor,
-                                  fontWeight: isRead ? FontWeight.normal : FontWeight.bold,
-                                ),
-                              ),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  if (notif.body != null && notif.body!.isNotEmpty)
-                                    Text(
-                                      notif.body!,
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 2,
-                                      style: kTextStyle.copyWith(color: kSubTitleColor),
-                                    ),
-                                  Text(
-                                    _timeAgo(notif.createdAt),
-                                    style: kTextStyle.copyWith(color: kLightNeutralColor),
+                              return ListTile(
+                                onTap: () => _onTapNotification(i),
+                                contentPadding: EdgeInsets.zero,
+                                leading: Container(
+                                  padding: const EdgeInsets.all(10.0),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: isRead
+                                        ? kDarkWhite
+                                        : kPrimaryColor.withOpacity(0.1),
                                   ),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
-                      ),
+                                  child: Icon(
+                                    _iconForType(notif.type),
+                                    color: isRead
+                                        ? kLightNeutralColor
+                                        : kPrimaryColor,
+                                  ),
+                                ),
+                                title: Text(
+                                  notif.title,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 2,
+                                  style: kTextStyle.copyWith(
+                                    color: kNeutralColor,
+                                    fontWeight: isRead
+                                        ? FontWeight.normal
+                                        : FontWeight.bold,
+                                  ),
+                                ),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    if (notif.body != null &&
+                                        notif.body!.isNotEmpty)
+                                      Text(
+                                        notif.body!,
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 2,
+                                        style: kTextStyle.copyWith(
+                                            color: kSubTitleColor),
+                                      ),
+                                    Text(
+                                      _timeAgo(notif.createdAt),
+                                      style: kTextStyle.copyWith(
+                                          color: kLightNeutralColor),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                  ),
           ),
         ),
       ),

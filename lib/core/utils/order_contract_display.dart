@@ -1,4 +1,5 @@
 import 'package:freelancer/core/utils/job_offer_delivery.dart';
+import 'package:freelancer/services/job_posts_service.dart';
 
 /// Resolves title, description, and related copy for `orders` rows that may
 /// come from either a marketplace `services` row or a job-offer contract
@@ -43,8 +44,9 @@ class OrderContractDisplay {
   static String serviceInfo(
       Map<String, dynamic>? order, Map<String, dynamic>? service) {
     final jp = jobPostFromOrder(order);
-    final postDesc = (jp?['description'] as String?)?.trim();
-    if (postDesc != null && postDesc.isNotEmpty) return postDesc;
+    // Placeholder/empty job text falls through to cover letter / service text.
+    final postDesc = JobPostsService.visibleDescription(jp?['description']);
+    if (postDesc != null) return postDesc;
     final jo = jobOfferFromOrder(order);
     final letter = (jo?['cover_letter'] as String?)?.trim();
     if (letter != null && letter.isNotEmpty) return letter;

@@ -1,3 +1,4 @@
+import 'package:freelancer/screen/widgets/label_value_row.dart';
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/guide/guide_anchor.dart';
 import 'package:freelancer/core/guide/guide_host.dart';
@@ -26,7 +27,8 @@ import 'create_customer_offer.dart';
 class BuyerRequestDetails extends StatefulWidget {
   final String jobPostId;
 
-  const BuyerRequestDetails({Key? key, required this.jobPostId}) : super(key: key);
+  const BuyerRequestDetails({Key? key, required this.jobPostId})
+      : super(key: key);
 
   /// Parent seller shell uses a floating capsule nav; inner [Scaffold.bottomNavigationBar]
   /// sits under it unless we add this lift (see client Job Post FAB pattern).
@@ -232,7 +234,9 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails>
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(next ? context.l10n.addedToFavourites : context.l10n.removedFromFavourites),
+          content: Text(next
+              ? context.l10n.addedToFavourites
+              : context.l10n.removedFromFavourites),
         ),
       );
     } catch (e) {
@@ -250,7 +254,9 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails>
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) return const Scaffold(backgroundColor: kDarkWhite, body: const LoadingWidget());
+    if (_isLoading)
+      return const Scaffold(
+          backgroundColor: kDarkWhite, body: const LoadingWidget());
 
     final l10n = context.l10n;
     if (_jobPost == null) {
@@ -286,7 +292,8 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails>
       fallback: l10n.categoryGeneral,
     );
     final title = _jobPost?['title'] ?? l10n.jobPostFallback;
-    final description = _jobPost?['description'] ?? '';
+    final description =
+        JobPostsService.visibleDescription(_jobPost?['description']) ?? '';
     final budgetMin = _jobPost?['budget_min'];
     final budgetMax = _jobPost?['budget_max'];
     final offerCount = _jobPost?['offer_count'] ?? 0;
@@ -296,13 +303,19 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails>
     final applyBlock = _applyBlockedReason(l10n);
     final canApply = applyBlock == null;
 
-    final bottomLift = MediaQuery.paddingOf(context).bottom + BuyerRequestDetails._shellFloatingNavLift;
+    final bottomLift = MediaQuery.paddingOf(context).bottom +
+        BuyerRequestDetails._shellFloatingNavLift;
 
     return guideBackScope(Scaffold(
       backgroundColor: kDarkWhite,
       appBar: AppBar(
-        backgroundColor: kDarkWhite, elevation: 0, iconTheme: const IconThemeData(color: kNeutralColor),
-        title: Text(l10n.buyerRequestDetailsTitle, style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)), centerTitle: true,
+        backgroundColor: kDarkWhite,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: kNeutralColor),
+        title: Text(l10n.buyerRequestDetailsTitle,
+            style: kTextStyle.copyWith(
+                color: kNeutralColor, fontWeight: FontWeight.bold)),
+        centerTitle: true,
         actions: [
           GuideInfoButton(host: this),
           GuideAnchor.wrap(
@@ -313,7 +326,7 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails>
               onPressed: _favBusy ? null : _toggleFavourite,
               icon: Icon(
                 _isFavourited ? Icons.bookmark : Icons.bookmark_border,
-                color: _isFavourited ? kPrimaryColor : kNeutralColor,
+                color: _isFavourited ? kSellerPrimary : kNeutralColor,
               ),
             ),
           ),
@@ -348,7 +361,10 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails>
                   child: Text(
                     applyBlock,
                     textAlign: TextAlign.center,
-                    style: kTextStyle.copyWith(color: const Color(0xFF92400E), fontSize: 13, height: 1.35),
+                    style: kTextStyle.copyWith(
+                        color: const Color(0xFF92400E),
+                        fontSize: 13,
+                        height: 1.35),
                   ),
                 ),
               ButtonGlobalWithoutIcon(
@@ -359,13 +375,15 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails>
                 buttontext: canApply
                     ? l10n.submitOfferAction
                     : l10n.cannotSubmitApplication,
+                disabledLook: !canApply,
                 buttonDecoration: kButtonDecoration.copyWith(
-                  color: canApply ? kPrimaryColor : kLightNeutralColor,
+                  color: canApply ? kSecondaryFill : kLightNeutralColor,
                   borderRadius: BorderRadius.circular(30.0),
                 ),
                 onPressed: !canApply
                     ? () {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(applyBlock)));
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(SnackBar(content: Text(applyBlock)));
                       }
                     : () async {
                         await CreateCustomerOffer(
@@ -388,75 +406,106 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails>
         child: Container(
           padding: const EdgeInsets.only(left: 15.0, right: 15.0),
           width: context.width(),
-          decoration: const BoxDecoration(color: kWhite, borderRadius: BorderRadius.only(topLeft: Radius.circular(30.0), topRight: Radius.circular(30.0))),
+          decoration: const BoxDecoration(
+              color: kWhite,
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(30.0),
+                  topRight: Radius.circular(30.0))),
           child: RubikRefreshIndicator(
             onRefresh: _loadDetails,
             child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(
-              parent: BouncingScrollPhysics(),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 15.0),
-                JobClientInfoCard.fromJobPost(
-                  _jobPost,
-                  guideAnchor: _anchor(_guideClientKey,
-                      l10n.guideSellerJobClientTitle,
-                      l10n.guideSellerJobClientDesc),
-                ),
-                const SizedBox(height: 15.0),
-
-                // Title + description
-                GuideAnchor.wrap(
-                  _anchor(_guideReadKey, l10n.guideSellerJobReadTitle,
-                      l10n.guideSellerJobReadDesc),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(title, style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 16)),
-                      const SizedBox(height: 10.0),
-                      ReadMoreText(
-                        description,
-                        style: kTextStyle.copyWith(color: kSubTitleColor),
-                        trimLines: 3, colorClickableText: kPrimaryColor, trimMode: TrimMode.Line,
-                        trimCollapsedText: l10n.readMoreSuffix, trimExpandedText: l10n.readLessSuffix,
-                      ),
-                    ],
+              physics: const AlwaysScrollableScrollPhysics(
+                parent: BouncingScrollPhysics(),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 15.0),
+                  JobClientInfoCard.fromJobPost(
+                    _jobPost,
+                    guideAnchor: _anchor(
+                        _guideClientKey,
+                        l10n.guideSellerJobClientTitle,
+                        l10n.guideSellerJobClientDesc),
                   ),
-                ),
-                const SizedBox(height: 15.0),
+                  const SizedBox(height: 15.0),
 
-                // Details
-                _row(l10n.categoryLabel, category),
-                const SizedBox(height: 8.0),
-                if (JobPostsService.skillNamesFromJob(_jobPost).isNotEmpty) ...[
+                  // Title + description
+                  GuideAnchor.wrap(
+                    _anchor(_guideReadKey, l10n.guideSellerJobReadTitle,
+                        l10n.guideSellerJobReadDesc),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(title,
+                            style: kTextStyle.copyWith(
+                                color: kNeutralColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16)),
+                        if (description.isNotEmpty) ...[
+                          const SizedBox(height: 10.0),
+                          ReadMoreText(
+                            description,
+                            style: kTextStyle.copyWith(color: kSubTitleColor),
+                            trimLines: 3,
+                            colorClickableText: kSecondaryText,
+                            trimMode: TrimMode.Line,
+                            trimCollapsedText: l10n.readMoreSuffix,
+                            trimExpandedText: l10n.readLessSuffix,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 15.0),
+
+                  // Details
+                  _row(l10n.categoryLabel, category),
+                  const SizedBox(height: 8.0),
+                  if (JobPostsService.skillNamesFromJob(_jobPost)
+                      .isNotEmpty) ...[
+                    _row(
+                      l10n.skills,
+                      JobPostsService.skillNamesFromJob(_jobPost).join(', '),
+                    ),
+                    const SizedBox(height: 8.0),
+                  ],
+                  if (budgetMin != null || budgetMax != null) ...[
+                    _row(
+                        l10n.budgetLabel,
+                        JobPostsService.formatBudgetRange(
+                            budgetMin, budgetMax, _jobPost?['budget_basis']),
+                        anchor: _anchor(
+                            _guideBudgetKey,
+                            l10n.guideSellerJobBudgetTitle,
+                            l10n.guideSellerJobBudgetDesc)),
+                    const SizedBox(height: 8.0),
+                  ],
+                  _buildLocationSection(_jobPost),
                   _row(
-                    l10n.skills,
-                    JobPostsService.skillNamesFromJob(_jobPost).join(', '),
-                  ),
+                      l10n.workersNeeded,
+                      JobPostsService.workersNeededDetailLabel(
+                          _jobPost?['workers_needed'])),
                   const SizedBox(height: 8.0),
-                ],
-                if (budgetMin != null || budgetMax != null) ...[
-                  _row(l10n.budgetLabel, JobPostsService.formatBudgetRange(budgetMin, budgetMax, _jobPost?['budget_basis']),
-                      anchor: _anchor(_guideBudgetKey, l10n.guideSellerJobBudgetTitle, l10n.guideSellerJobBudgetDesc)),
+                  if (ShiftSchedule.fromMap(_jobPost).displayLabel != null) ...[
+                    _row(l10n.shiftLabel,
+                        ShiftSchedule.fromMap(_jobPost).displayLabel!,
+                        anchor: _anchor(
+                            _guideShiftKey,
+                            l10n.guideSellerJobShiftTitle,
+                            l10n.guideSellerJobShiftDesc)),
+                    const SizedBox(height: 8.0),
+                  ],
+                  _row(l10n.applicationsReceived, '$offerCount',
+                      anchor: _anchor(
+                          _guideAppsKey,
+                          l10n.guideSellerJobAppsTitle,
+                          l10n.guideSellerJobAppsDesc)),
                   const SizedBox(height: 8.0),
+                  _row(l10n.dateLabel, _formatDate(_jobPost?['created_at'])),
+                  SizedBox(height: bottomLift + 24),
                 ],
-                _buildLocationSection(_jobPost),
-                _row(l10n.workersNeeded, JobPostsService.workersNeededDetailLabel(_jobPost?['workers_needed'])),
-                const SizedBox(height: 8.0),
-                if (ShiftSchedule.fromMap(_jobPost).displayLabel != null) ...[
-                  _row(l10n.shiftLabel, ShiftSchedule.fromMap(_jobPost).displayLabel!,
-                      anchor: _anchor(_guideShiftKey, l10n.guideSellerJobShiftTitle, l10n.guideSellerJobShiftDesc)),
-                  const SizedBox(height: 8.0),
-                ],
-                _row(l10n.applicationsReceived, '$offerCount',
-                    anchor: _anchor(_guideAppsKey, l10n.guideSellerJobAppsTitle, l10n.guideSellerJobAppsDesc)),
-                const SizedBox(height: 8.0),
-                _row(l10n.dateLabel, _formatDate(_jobPost?['created_at'])),
-                SizedBox(height: bottomLift + 24),
-              ],
-            ),
+              ),
             ),
           ),
         ),
@@ -464,22 +513,27 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails>
     ));
   }
 
-  Widget _row(String l, String v, {GuideAnchor? anchor}) => GuideAnchor.wrap(anchor, _rowContent(l, v));
+  Widget _row(String l, String v, {GuideAnchor? anchor}) =>
+      GuideAnchor.wrap(anchor, _rowContent(l, v));
 
-  Widget _rowContent(String l, String v) => Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-    Expanded(flex: 2, child: Text(l, style: kTextStyle.copyWith(color: kSubTitleColor))),
-    Expanded(flex: 4, child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(context.l10n.labelColon, style: kTextStyle.copyWith(color: kSubTitleColor)), const SizedBox(width: 10.0),
-      Flexible(child: Text(v, style: kTextStyle.copyWith(color: kSubTitleColor), overflow: TextOverflow.ellipsis, maxLines: 2)),
-    ])),
-  ]);
+  Widget _rowContent(String l, String v) => LabelValueRow(
+        label: l,
+        labelStyle: kTextStyle.copyWith(color: kSubTitleColor),
+        colon: context.l10n.labelColon,
+        value: Text(v,
+            style: kTextStyle.copyWith(color: kSubTitleColor),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 2),
+      );
 
   Widget _buildLocationSection(Map<String, dynamic>? job) {
     final l10n = context.l10n;
     final location = (job?['location'] as String?)?.trim();
     final locationType = (job?['location_type'] as String?)?.trim();
     final coords = jobPostCoordinates(job);
-    if ((location == null || location.isEmpty) && coords == null && locationType == null) {
+    if ((location == null || location.isEmpty) &&
+        coords == null &&
+        locationType == null) {
       return const SizedBox.shrink();
     }
     return Column(
@@ -491,9 +545,11 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails>
             _anchor(_guideWhereKey, l10n.guideSellerJobWhereTitle,
                 l10n.guideSellerJobWhereDesc),
             Row(children: [
-              Text(l10n.locationLabel, style: kTextStyle.copyWith(color: kSubTitleColor)),
+              Text(l10n.locationLabel,
+                  style: kTextStyle.copyWith(color: kSubTitleColor)),
               const SizedBox(width: 8),
-              Text(l10n.labelColon, style: kTextStyle.copyWith(color: kSubTitleColor)),
+              Text(l10n.labelColon,
+                  style: kTextStyle.copyWith(color: kSubTitleColor)),
               const SizedBox(width: 10),
               _locationTypeBadge(locationType),
             ]),
@@ -513,12 +569,21 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails>
 
   Widget _locationTypeBadge(String type) {
     final (Color bg, Color fg, IconData icon) = switch (type) {
-      'On-site' => (const Color(0xFFE8F5E9), const Color(0xFF2E7D32), Icons.location_on_outlined),
-      _         => (const Color(0xFFE3F2FD), const Color(0xFF1565C0), Icons.laptop_outlined),
+      'On-site' => (
+          const Color(0xFFE8F5E9),
+          const Color(0xFF2E7D32),
+          Icons.location_on_outlined
+        ),
+      _ => (
+          const Color(0xFFE3F2FD),
+          const Color(0xFF1565C0),
+          Icons.laptop_outlined
+        ),
     };
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(20)),
+      decoration:
+          BoxDecoration(color: bg, borderRadius: BorderRadius.circular(20)),
       child: Row(mainAxisSize: MainAxisSize.min, children: [
         Icon(icon, size: 14, color: fg),
         const SizedBox(width: 4),
@@ -528,7 +593,8 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails>
             'Remote' => context.l10n.locationRemote,
             _ => type,
           },
-          style: kTextStyle.copyWith(color: fg, fontSize: 12, fontWeight: FontWeight.bold),
+          style: kTextStyle.copyWith(
+              color: fg, fontSize: 12, fontWeight: FontWeight.bold),
         ),
       ]),
     );

@@ -20,7 +20,8 @@ class PlatformContributionScreen extends StatefulWidget {
       _PlatformContributionScreenState();
 }
 
-class _PlatformContributionScreenState extends State<PlatformContributionScreen> {
+class _PlatformContributionScreenState
+    extends State<PlatformContributionScreen> {
   PlatformContribution? _data;
   String? _cause;
   bool _isLoading = true;
@@ -272,7 +273,8 @@ class _CauseLink extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           child: Row(
             children: [
-              const Icon(Icons.volunteer_activism_outlined, color: kNeutralColor, size: 20),
+              const Icon(Icons.volunteer_activism_outlined,
+                  color: kNeutralColor, size: 20),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
@@ -292,7 +294,8 @@ class _CauseLink extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              const Icon(Icons.chevron_right, color: kLightNeutralColor, size: 20),
+              const Icon(Icons.chevron_right,
+                  color: kLightNeutralColor, size: 20),
             ],
           ),
         ),

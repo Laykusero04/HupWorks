@@ -111,8 +111,8 @@ class AttendanceResolveResult extends Equatable {
 
     final checkedIn = (json['checked_in_today'] as bool?) ?? false;
     final checkedOut = (json['checked_out_this_shift'] as bool?) ?? false;
-    final complete = (json['shift_complete'] as bool?) ??
-        (checkedIn && checkedOut);
+    final complete =
+        (json['shift_complete'] as bool?) ?? (checkedIn && checkedOut);
 
     return AttendanceResolveResult(
       jobPostId: json['job_post_id'] as String,

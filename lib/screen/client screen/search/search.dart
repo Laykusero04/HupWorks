@@ -15,8 +15,7 @@ import 'package:nb_utils/nb_utils.dart';
 class CustomSearchDelegate extends SearchDelegate<void> {
   CustomSearchDelegate({String? searchHint, BuildContext? l10nContext})
       : super(
-          searchFieldLabel:
-              searchHint ?? l10nContext?.l10n.searchHint,
+          searchFieldLabel: searchHint ?? l10nContext?.l10n.searchHint,
         ) {
     _loadOrigin();
   }
@@ -63,7 +62,7 @@ class CustomSearchDelegate extends SearchDelegate<void> {
             icon: Badge(
               isLabelVisible: value.hasActive,
               label: Text('${value.activeCount}'),
-              backgroundColor: kPrimaryColor,
+              backgroundColor: kPrimaryFill,
               child: Icon(
                 Icons.tune_rounded,
                 color: value.hasActive ? kPrimaryColor : kNeutralColor,
@@ -320,7 +319,8 @@ class _MarketplaceSearchBodyState extends State<_MarketplaceSearchBody> {
     return null;
   }
 
-  String? _distanceLabel(Map<String, dynamic> seller, TalentSellerFilters filters) {
+  String? _distanceLabel(
+      Map<String, dynamic> seller, TalentSellerFilters filters) {
     if (!filters.usesNearbySearch) return null;
     final distance = (seller['distance_km'] as num?)?.toDouble();
     if (distance == null) return null;
@@ -529,7 +529,11 @@ class _MarketplaceSearchBodyState extends State<_MarketplaceSearchBody> {
     final location = [
       seller['city'] as String?,
       seller['country'] as String?,
-    ].whereType<String>().map((s) => s.trim()).where((s) => s.isNotEmpty).join(', ');
+    ]
+        .whereType<String>()
+        .map((s) => s.trim())
+        .where((s) => s.isNotEmpty)
+        .join(', ');
 
     return ListTile(
       onTap: () => _openSeller(seller),

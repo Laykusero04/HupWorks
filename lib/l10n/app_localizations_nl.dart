@@ -967,7 +967,13 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String attentionItems(int count) {
-    return '$count items vragen aandacht';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count items vragen aandacht',
+      one: '1 item vraagt aandacht',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -2261,7 +2267,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get openContractCalloutBody =>
-      'Je freelancer moet de levering indienen voordat je dit overeenkomst kunt voltooien. Bericht de freelancer via het ⋮-menu bovenaan.';
+      'Je freelancer moet de levering indienen voordat je deze overeenkomst kunt voltooien. Gebruik de knop Bericht hieronder om met de freelancer te chatten.';
 
   @override
   String cancellationRequestBannerBody(String seller) {
@@ -2480,6 +2486,20 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get workersNeeded => 'Benodigde freelancers';
+
+  @override
+  String workersNeededCardCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count freelancers nodig',
+      one: '1 freelancer nodig',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get openHiringNoLimit => 'Open werving — geen vaste limiet';
 
   @override
   String get limitHiresToCount => 'Beperk hires tot dit aantal';
@@ -2782,6 +2802,14 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get somethingWentWrong => 'Er ging iets mis';
+
+  @override
+  String get chatLoadTimeout =>
+      'Laden duurde te lang. Controleer je verbinding en probeer het opnieuw.';
+
+  @override
+  String get chatLoadFailedHint =>
+      'We konden je gesprekken niet laden. Controleer je verbinding en probeer het opnieuw.';
 
   @override
   String get headsUp => 'Let op';
@@ -3988,7 +4016,7 @@ class AppLocalizationsNl extends AppLocalizations {
       'Camera- of fototoegang is geblokkeerd. Schakel die in via de app-instellingen.';
 
   @override
-  String get guideSkip => 'Overslaan';
+  String get guideSkip => 'Tour overslaan';
 
   @override
   String get guideNext => 'Volgende';
@@ -4614,7 +4642,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get guideFindJobsTagsDesc =>
-      'De categorie en het soort job, bijvoorbeeld klus of deeltijd.';
+      'De categorie en het soort job, bijvoorbeeld shift of deeltijd.';
 
   @override
   String get guideFindJobsBudgetTitle => 'Budget';
@@ -5086,7 +5114,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get guideMyJobsFilterDesc =>
-      'Toon alleen klus-, voltijd- of deeltijdjobs.';
+      'Toon alleen shift-, voltijd- of deeltijdjobs.';
 
   @override
   String get guideMyJobsCardTitle => 'Je jobpost';
@@ -5107,7 +5135,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get guideApplicationsFilterDesc =>
-      'Opent op In afwachting. Kies Geaccepteerd, Afgewezen of Alles voor de rest.';
+      'Filter je aanmeldingen op status: In afwachting, Geaccepteerd, Afgewezen of Alles.';
 
   @override
   String get guideApplicationsApplicantTitle => 'Aanmelder';
@@ -5452,4 +5480,80 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get guideNothingToShow => 'Hier is nog niets uit te leggen';
+
+  @override
+  String get clientStatRating => 'Beoordeling';
+
+  @override
+  String get onboardingSectionWhere => 'Waar naartoe';
+
+  @override
+  String get onboardingSectionWhen => 'Wanneer aankomen';
+
+  @override
+  String get onboardingSectionWho => 'Wie je kunt bereiken';
+
+  @override
+  String get onboardingSectionAccess => 'Toegang tot het gebouw';
+
+  @override
+  String get onboardingSectionRules => 'Locatieregels';
+
+  @override
+  String get onboardingSectionEmergency => 'Noodgeval';
+
+  @override
+  String get onboardingSectionGeneric => 'Sectie';
+
+  @override
+  String get clientTapToViewProfile =>
+      'Tik om het volledige klantprofiel te bekijken';
+
+  @override
+  String get inviteCopyCodeLabel => 'Uitnodigingscode kopiëren';
+
+  @override
+  String get jobNoDescription => 'Geen beschrijving';
+
+  @override
+  String get contractAgreedInChat => 'Afgesproken in de chat';
+
+  @override
+  String get contractPerJobAgreement => 'Volgens jobafspraak';
+
+  @override
+  String get contractUnlimitedRevisions => 'Onbeperkt aantal revisies';
+
+  @override
+  String contractDurationDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count dagen',
+      one: '1 dag',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String contractDurationHours(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count uur',
+      one: '1 uur',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String contractRevisionsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count revisies',
+      one: '1 revisie',
+    );
+    return '$_temp0';
+  }
 }

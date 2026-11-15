@@ -18,7 +18,9 @@ class SubCategory extends Equatable {
       id: json['id'] as String,
       categoryId: json['category_id'] as String,
       name: json['name'] as String,
-      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'] as String)
+          : null,
     );
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/screen/onboarding/hire_onboarding_section_titles.dart';
 import 'package:freelancer/core/guide/guide_anchor.dart';
 import 'package:freelancer/core/guide/guide_host.dart';
 import 'package:freelancer/core/guide/guide_info_button.dart';
@@ -328,7 +329,8 @@ class _HireOnboardingEditorScreenState extends State<HireOnboardingEditorScreen>
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          _sections[i].title,
+                                          _sections[i]
+                                              .localizedTitle(context.l10n),
                                           style: kTextStyle.copyWith(
                                             color: kNeutralColor,
                                             fontWeight: FontWeight.bold,
@@ -382,9 +384,9 @@ class _HireOnboardingEditorScreenState extends State<HireOnboardingEditorScreen>
                                   _saving ? l10n.saving : l10n.saveDraft,
                               buttonDecoration: kButtonDecoration.copyWith(
                                 color: kWhite,
-                                border: Border.all(color: kPrimaryColor),
+                                border: Border.all(color: kPrimaryText),
                               ),
-                              buttonTextColor: kPrimaryColor,
+                              buttonTextColor: kPrimaryText,
                               onPressed: _saving ? () {} : _saveDraft,
                             ),
                             const SizedBox(height: 10),
@@ -397,7 +399,7 @@ class _HireOnboardingEditorScreenState extends State<HireOnboardingEditorScreen>
                                   ? l10n.pleaseWaitEllipsis
                                   : l10n.publishToFreelancer,
                               buttonDecoration: kButtonDecoration.copyWith(
-                                color: kPrimaryColor,
+                                color: kPrimaryFill,
                               ),
                               onPressed: _saving ? () {} : _publish,
                               buttonTextColor: kWhite,

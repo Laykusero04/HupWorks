@@ -10,8 +10,10 @@ class ProfileRatingSummary extends StatelessWidget {
     required this.rating,
     required this.reviewCount,
     this.compact = false,
+
     /// When true, text is tuned for green/blue [ShellTabHeader] gradients (drawer profile).
     this.onBrandGradient = false,
+
     /// When set (e.g. seller shell blue), used instead of [kPrimaryColor] for rating value / empty state.
     this.accentColor,
   });
@@ -53,7 +55,8 @@ class ProfileRatingSummary extends StatelessWidget {
           const SizedBox(width: 2),
           Text(
             rating.toStringAsFixed(1),
-            style: valueStyle.copyWith(color: onSoft, fontSize: compact ? 12 : 14),
+            style:
+                valueStyle.copyWith(color: onSoft, fontSize: compact ? 12 : 14),
           ),
           if (reviewCount > 0) ...[
             Text(' · ', style: metaStyle.copyWith(color: onMuted)),

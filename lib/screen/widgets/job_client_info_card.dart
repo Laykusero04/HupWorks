@@ -9,6 +9,7 @@ import 'package:freelancer/services/profile_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import 'constant.dart';
+import 'word_safe_text.dart';
 import 'profile_rating_summary.dart';
 import 'package:freelancer/core/guide/guide_anchor.dart';
 
@@ -95,7 +96,7 @@ class JobClientInfoCard extends StatelessWidget {
         EmployerVerificationService.statusFromProfile(clientProfile);
 
     return Material(
-      color: kPrimaryColor.withValues(alpha: 0.05),
+      color: kSellerPrimary.withValues(alpha: 0.05),
       borderRadius: BorderRadius.circular(10),
       child: InkWell(
         onTap: clientId != null ? () => _openProfile(context) : null,
@@ -149,13 +150,13 @@ class JobClientInfoCard extends StatelessWidget {
                           rating: r,
                           reviewCount: reviews,
                           compact: true,
-                          accentColor: kPrimaryColor,
+                          accentColor: kSellerPrimary,
                         ),
                       ],
                     ),
                   ),
                   if (clientId != null)
-                    const Icon(Icons.chevron_right, color: kPrimaryColor),
+                    const Icon(Icons.chevron_right, color: kSellerPrimary),
                 ],
               ),
               const SizedBox(height: 10),
@@ -172,21 +173,21 @@ class JobClientInfoCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: _StatCell(
-                          label: 'Rating',
+                          label: context.l10n.clientStatRating,
                           value: reviews > 0 ? r.toStringAsFixed(1) : '—',
                         ),
                       ),
                       Container(width: 1, color: kBorderColorTextField),
                       Expanded(
                         child: _StatCell(
-                          label: 'Jobs posted',
+                          label: context.l10n.jobsPosted,
                           value: '$jobs',
                         ),
                       ),
                       Container(width: 1, color: kBorderColorTextField),
                       Expanded(
                         child: _StatCell(
-                          label: 'Member since',
+                          label: context.l10n.memberSince,
                           value: memberSince ?? '—',
                         ),
                       ),
@@ -197,9 +198,9 @@ class JobClientInfoCard extends StatelessWidget {
               if (clientId != null) ...[
                 const SizedBox(height: 6),
                 Text(
-                  'Tap to view full client profile',
+                  context.l10n.clientTapToViewProfile,
                   style: kTextStyle.copyWith(
-                    color: kPrimaryColor,
+                    color: kSecondaryText,
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
                   ),
@@ -226,8 +227,10 @@ class _StatCell extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          WordSafeText(
             label,
+            maxLines: 2,
+            minScale: 0.75,
             style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 10),
           ),
           const SizedBox(height: 4),

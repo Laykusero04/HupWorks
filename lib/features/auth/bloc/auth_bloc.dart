@@ -23,7 +23,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthPasswordResetRequested>(_onPasswordResetRequested);
   }
 
-  Future<void> _onCheckRequested(AuthCheckRequested event, Emitter<AuthState> emit) async {
+  Future<void> _onCheckRequested(
+      AuthCheckRequested event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
     try {
       if (!_authRepository.isLoggedIn) {
@@ -43,10 +44,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  Future<void> _onLoginRequested(AuthLoginRequested event, Emitter<AuthState> emit) async {
+  Future<void> _onLoginRequested(
+      AuthLoginRequested event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
     try {
-      await _authRepository.signIn(email: event.email, password: event.password);
+      await _authRepository.signIn(
+          email: event.email, password: event.password);
       final profile = await _authRepository.getCurrentProfile();
       if (profile == null) {
         emit(const AuthError('Profile not found'));
@@ -60,7 +63,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  Future<void> _onSignUpRequested(AuthSignUpRequested event, Emitter<AuthState> emit) async {
+  Future<void> _onSignUpRequested(
+      AuthSignUpRequested event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
     try {
       await _authRepository.signUp(
@@ -83,7 +87,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  Future<void> _onLogoutRequested(AuthLogoutRequested event, Emitter<AuthState> emit) async {
+  Future<void> _onLogoutRequested(
+      AuthLogoutRequested event, Emitter<AuthState> emit) async {
     try {
       await _authRepository.signOut();
     } catch (_) {
@@ -92,7 +97,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(Unauthenticated());
   }
 
-  Future<void> _onPasswordResetRequested(AuthPasswordResetRequested event, Emitter<AuthState> emit) async {
+  Future<void> _onPasswordResetRequested(
+      AuthPasswordResetRequested event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
     try {
       await _authRepository.resetPassword(email: event.email);

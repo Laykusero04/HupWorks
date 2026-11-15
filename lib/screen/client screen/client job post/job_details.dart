@@ -1,3 +1,4 @@
+import 'package:freelancer/screen/widgets/label_value_row.dart';
 import 'package:freelancer/core/chat/chat_contact_policy.dart';
 import 'package:freelancer/core/guide/guide_anchor.dart';
 import 'package:freelancer/core/guide/guide_host.dart';
@@ -376,7 +377,7 @@ class _JobDetailsState extends State<JobDetails> with GuideHost<JobDetails> {
               ButtonGlobalWithoutIcon(
                 buttontext: context.l10n.addInstructionsNow,
                 buttonDecoration:
-                    kButtonDecoration.copyWith(color: kPrimaryColor),
+                    kButtonDecoration.copyWith(color: kPrimaryFill),
                 onPressed: () {
                   Navigator.pop(ctx);
                   _openOnboardingEditor(orderId);
@@ -541,7 +542,7 @@ class _JobDetailsState extends State<JobDetails> with GuideHost<JobDetails> {
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(l10n.hireAction,
                 style: kTextStyle.copyWith(
-                    color: kPrimaryColor, fontWeight: FontWeight.bold)),
+                    color: kPrimaryText, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -621,7 +622,9 @@ class _JobDetailsState extends State<JobDetails> with GuideHost<JobDetails> {
     }
 
     final title = _jobPost?['title'] ?? l10n.jobPostFallback;
-    final description = _jobPost?['description'] ?? '';
+    final visibleDesc =
+        JobPostsService.visibleDescription(_jobPost?['description']);
+    final description = visibleDesc ?? l10n.jobNoDescription;
     final category = LocalizedCategory.name(
       _jobPost?['categories'] as Map<String, dynamic>?,
       LocalizedCategory.languageCodeOf(context),
@@ -724,9 +727,12 @@ class _JobDetailsState extends State<JobDetails> with GuideHost<JobDetails> {
                         const SizedBox(height: 10.0),
                         ReadMoreText(
                           description,
-                          style: kTextStyle.copyWith(color: kSubTitleColor),
+                          style: kTextStyle.copyWith(
+                              color: visibleDesc == null
+                                  ? kLightNeutralColor
+                                  : kSubTitleColor),
                           trimLines: 2,
-                          colorClickableText: kPrimaryColor,
+                          colorClickableText: kPrimaryText,
                           trimMode: TrimMode.Line,
                           trimCollapsedText: l10n.readMoreSuffix,
                           trimExpandedText: l10n.readLessSuffix,
@@ -966,7 +972,7 @@ class _JobDetailsState extends State<JobDetails> with GuideHost<JobDetails> {
                                         label: Text(
                                           l10n.firstDayInstructions,
                                           style: kTextStyle.copyWith(
-                                            color: kPrimaryColor,
+                                            color: kPrimaryText,
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
@@ -1182,7 +1188,11 @@ class _JobDetailsState extends State<JobDetails> with GuideHost<JobDetails> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          // Wrap (not Row + Spacer): at large text the QR link drops below the
+          // title instead of overflowing (T-0159 N2).
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               Text(
                 l10n.attendance,
@@ -1192,7 +1202,6 @@ class _JobDetailsState extends State<JobDetails> with GuideHost<JobDetails> {
                   fontSize: 13,
                 ),
               ),
-              const Spacer(),
               if (showQr)
                 _guide(
                   _guideQrKey,
@@ -1210,7 +1219,7 @@ class _JobDetailsState extends State<JobDetails> with GuideHost<JobDetails> {
                     child: Text(
                       l10n.attendanceQrShort,
                       style: kTextStyle.copyWith(
-                        color: kPrimaryColor,
+                        color: kPrimaryText,
                         fontWeight: FontWeight.w700,
                         fontSize: 13,
                       ),
@@ -1224,25 +1233,30 @@ class _JobDetailsState extends State<JobDetails> with GuideHost<JobDetails> {
             _guideMethodKey,
             l10n.guideJobDetailsMethodTitle,
             l10n.guideJobDetailsMethodDesc,
-            DropdownButtonHideUnderline(
-              child: DropdownButton<String>(
-                isExpanded: true,
-                isDense: true,
-                value: mode,
-                style: kTextStyle.copyWith(color: kNeutralColor, fontSize: 13),
-                items: modeLabels.entries
-                    .map(
-                      (e) => DropdownMenuItem(
-                        value: e.key,
-                        child: Text(e.value),
-                      ),
-                    )
-                    .toList(),
-                onChanged: _savingAttendanceMode
-                    ? null
-                    : (v) {
-                        if (v != null) _onAttendanceModeSelected(v);
-                      },
+            MediaQuery.withClampedTextScaling(
+              maxScaleFactor: 1.3,
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  isExpanded: true,
+                  isDense: true,
+                  value: mode,
+                  style:
+                      kTextStyle.copyWith(color: kNeutralColor, fontSize: 13),
+                  items: modeLabels.entries
+                      .map(
+                        (e) => DropdownMenuItem(
+                          value: e.key,
+                          child: Text(e.value,
+                              maxLines: 1, overflow: TextOverflow.ellipsis),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: _savingAttendanceMode
+                      ? null
+                      : (v) {
+                          if (v != null) _onAttendanceModeSelected(v);
+                        },
+                ),
               ),
             ),
           ),
@@ -1277,7 +1291,7 @@ class _JobDetailsState extends State<JobDetails> with GuideHost<JobDetails> {
                       child: Text(
                         l10n.setSitePin,
                         style: kTextStyle.copyWith(
-                          color: kPrimaryColor,
+                          color: kPrimaryText,
                           fontWeight: FontWeight.w700,
                           fontSize: 13,
                         ),
@@ -1395,32 +1409,14 @@ class _JobDetailsState extends State<JobDetails> with GuideHost<JobDetails> {
   }
 
   Widget _buildRow(String label, String value) {
-    final l10n = context.l10n;
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          flex: 2,
-          child: Text(label, style: kTextStyle.copyWith(color: kSubTitleColor)),
-        ),
-        Expanded(
-          flex: 4,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(l10n.labelColon,
-                  style: kTextStyle.copyWith(color: kSubTitleColor)),
-              const SizedBox(width: 10.0),
-              Flexible(
-                child: Text(value,
-                    style: kTextStyle.copyWith(color: kSubTitleColor),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2),
-              ),
-            ],
-          ),
-        ),
-      ],
+    return LabelValueRow(
+      label: label,
+      labelStyle: kTextStyle.copyWith(color: kSubTitleColor),
+      colon: context.l10n.labelColon,
+      value: Text(value,
+          style: kTextStyle.copyWith(color: kSubTitleColor),
+          overflow: TextOverflow.ellipsis,
+          maxLines: 2),
     );
   }
 }

@@ -4,8 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class HourReportsService {
   static final _client = Supabase.instance.client;
 
-  static const _select =
-      '*, seller:profiles!seller_id(name)';
+  static const _select = '*, seller:profiles!seller_id(name)';
 
   static Future<List<HourReport>> listForOrder(String orderId) async {
     final data = await _client

@@ -88,7 +88,8 @@ class _CustomSkillNameDialogState extends State<_CustomSkillNameDialog> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return AlertDialog(
-      title: Text(l10n.addCustomSkill, style: kTextStyle.copyWith(fontWeight: FontWeight.bold)),
+      title: Text(l10n.addCustomSkill,
+          style: kTextStyle.copyWith(fontWeight: FontWeight.bold)),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -111,7 +112,8 @@ class _CustomSkillNameDialogState extends State<_CustomSkillNameDialog> {
         ],
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
+        TextButton(
+            onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
         FilledButton(onPressed: _submit, child: Text(l10n.add)),
       ],
     );
@@ -161,13 +163,15 @@ class _SkillPickerSheetState extends State<_SkillPickerSheet> {
     final filtered = _available.where((s) {
       if (q.isEmpty) return true;
       final name = (s['name'] as String? ?? '').toLowerCase();
-      final cat = (SkillService.categoryName(s, languageCode: lang) ?? '').toLowerCase();
+      final cat = (SkillService.categoryName(s, languageCode: lang) ?? '')
+          .toLowerCase();
       return name.contains(q) || cat.contains(q);
     }).toList();
 
     final groups = <String, List<Map<String, dynamic>>>{};
     for (final skill in filtered) {
-      final cat = SkillService.categoryName(skill, languageCode: lang) ?? context.l10n.other;
+      final cat = SkillService.categoryName(skill, languageCode: lang) ??
+          context.l10n.other;
       groups.putIfAbsent(cat, () => []).add(skill);
     }
 
@@ -178,7 +182,8 @@ class _SkillPickerSheetState extends State<_SkillPickerSheet> {
   bool get _hasExactCatalogMatch {
     final q = _query.trim().toLowerCase();
     if (q.isEmpty) return false;
-    return _available.any((s) => (s['name'] as String? ?? '').trim().toLowerCase() == q);
+    return _available
+        .any((s) => (s['name'] as String? ?? '').trim().toLowerCase() == q);
   }
 
   Future<void> _addCustom({String? prefilled}) async {
@@ -240,7 +245,8 @@ class _SkillPickerSheetState extends State<_SkillPickerSheet> {
                   decoration: kInputDecoration.copyWith(
                     hintText: context.l10n.skillPickerSearchHint,
                     prefixIcon: const Icon(Icons.search, size: 20),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
                     contentPadding: const EdgeInsets.symmetric(vertical: 0),
                   ),
                   onChanged: (v) => setState(() => _query = v),
@@ -252,9 +258,12 @@ class _SkillPickerSheetState extends State<_SkillPickerSheet> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 24),
                           child: Text(
-                            _query.isEmpty ? context.l10n.skillPickerNoneLoaded : context.l10n.skillPickerNoMatch(_query),
+                            _query.isEmpty
+                                ? context.l10n.skillPickerNoneLoaded
+                                : context.l10n.skillPickerNoMatch(_query),
                             textAlign: TextAlign.center,
-                            style: kTextStyle.copyWith(color: kLightNeutralColor),
+                            style:
+                                kTextStyle.copyWith(color: kLightNeutralColor),
                           ),
                         ),
                       )
@@ -264,17 +273,19 @@ class _SkillPickerSheetState extends State<_SkillPickerSheet> {
                         children: [
                           if (showQueryCustom)
                             ListTile(
-                              leading: Icon(Icons.add_circle_outline, color: kPrimaryColor),
+                              leading: Icon(Icons.add_circle_outline,
+                                  color: kPrimaryColor),
                               title: Text(
                                 context.l10n.skillPickerAddToProfile(query),
                                 style: kTextStyle.copyWith(
-                                  color: kPrimaryColor,
+                                  color: kPrimaryText,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
                               subtitle: Text(
                                 context.l10n.skillPickerCustomSubtitle,
-                                style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 11),
+                                style: kTextStyle.copyWith(
+                                    color: kLightNeutralColor, fontSize: 11),
                               ),
                               onTap: () => _addCustom(prefilled: query),
                             ),
@@ -284,7 +295,7 @@ class _SkillPickerSheetState extends State<_SkillPickerSheet> {
                               child: Text(
                                 entry.key,
                                 style: kTextStyle.copyWith(
-                                  color: kPrimaryColor,
+                                  color: kPrimaryText,
                                   fontWeight: FontWeight.w600,
                                   fontSize: 12,
                                 ),
@@ -294,7 +305,9 @@ class _SkillPickerSheetState extends State<_SkillPickerSheet> {
                               final name = skill['name'] as String? ?? '';
                               return ListTile(
                                 dense: true,
-                                title: Text(name, style: kTextStyle.copyWith(color: kSubTitleColor)),
+                                title: Text(name,
+                                    style: kTextStyle.copyWith(
+                                        color: kSubTitleColor)),
                                 onTap: () => widget.onSelected(name),
                               );
                             }),
@@ -306,13 +319,15 @@ class _SkillPickerSheetState extends State<_SkillPickerSheet> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
                   child: OutlinedButton.icon(
-                    onPressed: () => _addCustom(prefilled: query.isNotEmpty ? query : null),
+                    onPressed: () =>
+                        _addCustom(prefilled: query.isNotEmpty ? query : null),
                     icon: const Icon(Icons.edit_outlined, size: 18),
                     label: Text(context.l10n.addCustomSkill),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: kPrimaryColor,
+                      foregroundColor: kPrimaryText,
                       minimumSize: const Size(double.infinity, 44),
-                      side: BorderSide(color: kPrimaryColor.withValues(alpha: 0.4)),
+                      side: BorderSide(
+                          color: kPrimaryColor.withValues(alpha: 0.4)),
                     ),
                   ),
                 ),
@@ -357,14 +372,18 @@ class SkillSlotTile extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
-              color: selected ? kPrimaryColor.withValues(alpha: 0.35) : kBorderColorTextField,
+              color: selected
+                  ? kPrimaryColor.withValues(alpha: 0.35)
+                  : kBorderColorTextField,
             ),
           ),
           child: Row(
             children: [
               CircleAvatar(
                 radius: 13,
-                backgroundColor: selected ? kPrimaryColor : kBorderColorTextField.withValues(alpha: 0.5),
+                backgroundColor: selected
+                    ? kPrimaryFill
+                    : kBorderColorTextField.withValues(alpha: 0.5),
                 child: Text(
                   '$index',
                   style: kTextStyle.copyWith(
@@ -383,13 +402,15 @@ class SkillSlotTile extends StatelessWidget {
                       selected ? name! : context.l10n.skillPickerTapToChoose,
                       style: kTextStyle.copyWith(
                         color: selected ? kNeutralColor : kLightNeutralColor,
-                        fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
+                        fontWeight:
+                            selected ? FontWeight.w600 : FontWeight.normal,
                       ),
                     ),
                     if (selected && isCustom)
                       Text(
                         context.l10n.skillCustomBadge,
-                        style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 11),
+                        style: kTextStyle.copyWith(
+                            color: kLightNeutralColor, fontSize: 11),
                       ),
                   ],
                 ),
@@ -399,12 +420,15 @@ class SkillSlotTile extends StatelessWidget {
                 IconButton(
                   visualDensity: VisualDensity.compact,
                   padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                  constraints:
+                      const BoxConstraints(minWidth: 32, minHeight: 32),
                   onPressed: onClear,
-                  icon: const Icon(Icons.close, size: 18, color: kLightNeutralColor),
+                  icon: const Icon(Icons.close,
+                      size: 18, color: kLightNeutralColor),
                 )
               else if (!selected)
-                Icon(Icons.chevron_right, color: kLightNeutralColor.withValues(alpha: 0.8)),
+                Icon(Icons.chevron_right,
+                    color: kLightNeutralColor.withValues(alpha: 0.8)),
             ],
           ),
         ),

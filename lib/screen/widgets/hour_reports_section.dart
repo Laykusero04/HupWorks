@@ -200,7 +200,8 @@ class _HourReportsSectionState extends State<HourReportsSection> {
             widget.isEmployer
                 ? context.l10n.hourReportsEmployerHint
                 : context.l10n.hourReportsFreelancerHint,
-            style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 11, height: 1.3),
+            style: kTextStyle.copyWith(
+                color: kSubTitleColor, fontSize: 11, height: 1.3),
           ),
           const SizedBox(height: 10),
           ..._reports.map(_buildRow),
@@ -237,7 +238,8 @@ class _HourReportsSectionState extends State<HourReportsSection> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
                     color: _statusColor(report.status).withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(20),
@@ -258,7 +260,8 @@ class _HourReportsSectionState extends State<HourReportsSection> {
               ],
             ),
             if (widget.isEmployer &&
-                (report.sellerName != null && report.sellerName!.isNotEmpty)) ...[
+                (report.sellerName != null &&
+                    report.sellerName!.isNotEmpty)) ...[
               const SizedBox(height: 4),
               Text(
                 report.sellerName!,
@@ -295,7 +298,7 @@ class _HourReportsSectionState extends State<HourReportsSection> {
                     child: ElevatedButton(
                       onPressed: busy ? null : () => _accept(report),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: kPrimaryColor,
+                        backgroundColor: kPrimaryFill,
                         foregroundColor: Colors.white,
                       ),
                       child: busy

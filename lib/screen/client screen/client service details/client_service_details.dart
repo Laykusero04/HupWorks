@@ -16,7 +16,6 @@ import 'package:nb_utils/nb_utils.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-
 class ClientServiceDetails extends StatefulWidget {
   final String? serviceId;
 
@@ -26,7 +25,8 @@ class ClientServiceDetails extends StatefulWidget {
   State<ClientServiceDetails> createState() => _ClientServiceDetailsState();
 }
 
-class _ClientServiceDetailsState extends State<ClientServiceDetails> with TickerProviderStateMixin {
+class _ClientServiceDetailsState extends State<ClientServiceDetails>
+    with TickerProviderStateMixin {
   PageController pageController = PageController(initialPage: 0);
   TabController? tabController;
   ScrollController? _scrollController;
@@ -49,7 +49,9 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
   }
 
   bool get _isShrink {
-    return _scrollController != null && _scrollController!.hasClients && _scrollController!.offset > (height - kToolbarHeight);
+    return _scrollController != null &&
+        _scrollController!.hasClients &&
+        _scrollController!.offset > (height - kToolbarHeight);
   }
 
   @override
@@ -109,7 +111,8 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
 
   double get _averageRating {
     if (_reviews.isEmpty) return 0;
-    final total = _reviews.fold<int>(0, (sum, r) => sum + (r['rating'] as int? ?? 0));
+    final total =
+        _reviews.fold<int>(0, (sum, r) => sum + (r['rating'] as int? ?? 0));
     return total / _reviews.length;
   }
 
@@ -126,16 +129,21 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
     if (_placingOrder) return;
     final l10n = context.l10n;
     final sellerId = _seller?['id']?.toString();
-    if (widget.serviceId == null || _service == null || sellerId == null || sellerId.isEmpty) {
+    if (widget.serviceId == null ||
+        _service == null ||
+        sellerId == null ||
+        sellerId.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.errorPlacingOrder(l10n.missingOrderDetails))),
+        SnackBar(
+            content: Text(l10n.errorPlacingOrder(l10n.missingOrderDetails))),
       );
       return;
     }
 
     final price = double.tryParse(_service!['price'].toString()) ?? 0;
     final rawDays = _service!['delivery_time'];
-    final deliveryDays = rawDays is int ? rawDays : int.tryParse('$rawDays') ?? 7;
+    final deliveryDays =
+        rawDays is int ? rawDays : int.tryParse('$rawDays') ?? 7;
 
     setState(() => _placingOrder = true);
     try {
@@ -213,7 +221,7 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
         bottomNavigationBar: ButtonGlobalWithoutIcon(
             buttontext: context.l10n.orderNow,
             buttonDecoration: kButtonDecoration.copyWith(
-              color: _placingOrder ? kLightNeutralColor : kPrimaryColor,
+              color: _placingOrder ? kLightNeutralColor : kPrimaryFill,
               borderRadius: BorderRadius.circular(30.0),
             ),
             onPressed: _placingOrder ? null : _placeOrder,
@@ -235,7 +243,8 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
                 leading: _isShrink
                     ? GestureDetector(
                         onTap: () => Navigator.pop(context),
-                        child: const Icon(Icons.arrow_back, color: kNeutralColor),
+                        child:
+                            const Icon(Icons.arrow_back, color: kNeutralColor),
                       )
                     : Padding(
                         padding: const EdgeInsets.all(10.0),
@@ -243,8 +252,10 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
                           onTap: () => Navigator.pop(context),
                           child: Container(
                             padding: const EdgeInsets.all(5.0),
-                            decoration: const BoxDecoration(shape: BoxShape.circle, color: kWhite),
-                            child: const Icon(Icons.arrow_back, color: kNeutralColor),
+                            decoration: const BoxDecoration(
+                                shape: BoxShape.circle, color: kWhite),
+                            child: const Icon(Icons.arrow_back,
+                                color: kNeutralColor),
                           ),
                         ),
                       ),
@@ -270,7 +281,8 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
                         scrollDirection: Axis.horizontal,
                       ),
                       itemCount: images.isEmpty ? 1 : images.length,
-                      itemBuilder: (BuildContext context, int index, int realIndex) {
+                      itemBuilder:
+                          (BuildContext context, int index, int realIndex) {
                         return Stack(
                           alignment: Alignment.bottomCenter,
                           children: [
@@ -280,7 +292,8 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
                               decoration: BoxDecoration(
                                 image: DecorationImage(
                                   image: images.isNotEmpty
-                                      ? NetworkImage(images[index]) as ImageProvider
+                                      ? NetworkImage(images[index])
+                                          as ImageProvider
                                       : const AssetImage('images/bg2.png'),
                                   fit: BoxFit.fitWidth,
                                 ),
@@ -357,23 +370,29 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
                                     Text(
                                       title,
                                       maxLines: 2,
-                                      style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+                                      style: kTextStyle.copyWith(
+                                          color: kNeutralColor,
+                                          fontWeight: FontWeight.bold),
                                     ),
                                     const SizedBox(height: 5.0),
 
                                     // Rating
                                     Row(
                                       children: [
-                                        const Icon(IconlyBold.star, color: Colors.amber, size: 18.0),
+                                        const Icon(IconlyBold.star,
+                                            color: Colors.amber, size: 18.0),
                                         const SizedBox(width: 5.0),
                                         RichText(
                                           text: TextSpan(
-                                            text: '${rating is double ? rating.toStringAsFixed(1) : rating} ',
-                                            style: kTextStyle.copyWith(color: kNeutralColor),
+                                            text:
+                                                '${rating is double ? rating.toStringAsFixed(1) : rating} ',
+                                            style: kTextStyle.copyWith(
+                                                color: kNeutralColor),
                                             children: [
                                               TextSpan(
                                                 text: '($reviewCount Reviews)',
-                                                style: kTextStyle.copyWith(color: kLightNeutralColor),
+                                                style: kTextStyle.copyWith(
+                                                    color: kLightNeutralColor),
                                               ),
                                             ],
                                           ),
@@ -397,35 +416,45 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
                                       leading: CircleAvatar(
                                         radius: 22.0,
                                         backgroundImage: sellerImage != null
-                                            ? NetworkImage(sellerImage) as ImageProvider
-                                            : const AssetImage('images/profilepic2.png'),
+                                            ? NetworkImage(sellerImage)
+                                                as ImageProvider
+                                            : const AssetImage(
+                                                'images/profilepic2.png'),
                                       ),
                                       title: Text(
                                         sellerName,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
-                                        style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+                                        style: kTextStyle.copyWith(
+                                            color: kNeutralColor,
+                                            fontWeight: FontWeight.bold),
                                       ),
                                       subtitle: Text(
                                         'View Profile',
-                                        style: kTextStyle.copyWith(color: kPrimaryColor),
+                                        style: kTextStyle.copyWith(
+                                            color: kPrimaryText),
                                       ),
                                     ),
-                                    const Divider(thickness: 1.0, color: kBorderColorTextField),
+                                    const Divider(
+                                        thickness: 1.0,
+                                        color: kBorderColorTextField),
                                     const SizedBox(height: 5.0),
 
                                     // Description
                                     Text(
                                       'Details',
                                       maxLines: 1,
-                                      style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+                                      style: kTextStyle.copyWith(
+                                          color: kNeutralColor,
+                                          fontWeight: FontWeight.bold),
                                     ),
                                     const SizedBox(height: 5.0),
                                     ReadMoreText(
                                       description,
-                                      style: kTextStyle.copyWith(color: kLightNeutralColor),
+                                      style: kTextStyle.copyWith(
+                                          color: kLightNeutralColor),
                                       trimLines: 3,
-                                      colorClickableText: kPrimaryColor,
+                                      colorClickableText: kPrimaryText,
                                       trimMode: TrimMode.Line,
                                       trimCollapsedText: '..Read more',
                                       trimExpandedText: '..Read less',
@@ -436,43 +465,67 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
                                     Text(
                                       'Price',
                                       maxLines: 1,
-                                      style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+                                      style: kTextStyle.copyWith(
+                                          color: kNeutralColor,
+                                          fontWeight: FontWeight.bold),
                                     ),
                                     const SizedBox(height: 10.0),
                                     Container(
                                       padding: const EdgeInsets.all(15.0),
                                       decoration: BoxDecoration(
                                         color: kWhite,
-                                        border: Border.all(color: kBorderColorTextField),
-                                        borderRadius: BorderRadius.circular(8.0),
+                                        border: Border.all(
+                                            color: kBorderColorTextField),
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
                                       ),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             '$currencySign$price',
-                                            style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 20),
+                                            style: kTextStyle.copyWith(
+                                                color: kNeutralColor,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 20),
                                           ),
                                           const SizedBox(height: 15.0),
                                           Row(
                                             children: [
-                                              const Icon(IconlyLight.timeCircle, color: kPrimaryColor, size: 18.0),
+                                              const Icon(IconlyLight.timeCircle,
+                                                  color: kPrimaryColor,
+                                                  size: 18.0),
                                               const SizedBox(width: 5.0),
-                                              Text(context.l10n.deliveryDays, style: kTextStyle.copyWith(color: kSubTitleColor)),
+                                              Text(context.l10n.deliveryDays,
+                                                  style: kTextStyle.copyWith(
+                                                      color: kSubTitleColor)),
                                               const Spacer(),
-                                              Text(context.l10n.deliveryDaysCount(deliveryTime), style: kTextStyle.copyWith(color: kNeutralColor)),
+                                              Text(
+                                                  context.l10n
+                                                      .deliveryDaysCount(
+                                                          deliveryTime),
+                                                  style: kTextStyle.copyWith(
+                                                      color: kNeutralColor)),
                                             ],
                                           ),
                                           const SizedBox(height: 10.0),
                                           Row(
                                             children: [
-                                              const Icon(Icons.loop, color: kPrimaryColor, size: 18.0),
+                                              const Icon(Icons.loop,
+                                                  color: kPrimaryColor,
+                                                  size: 18.0),
                                               const SizedBox(width: 5.0),
-                                              Text(context.l10n.revisions, style: kTextStyle.copyWith(color: kSubTitleColor)),
+                                              Text(context.l10n.revisions,
+                                                  style: kTextStyle.copyWith(
+                                                      color: kSubTitleColor)),
                                               const Spacer(),
                                               Text(
-                                                revisionCount == 0 ? 'Unlimited' : '$revisionCount',
-                                                style: kTextStyle.copyWith(color: kNeutralColor),
+                                                revisionCount == 0
+                                                    ? 'Unlimited'
+                                                    : '$revisionCount',
+                                                style: kTextStyle.copyWith(
+                                                    color: kNeutralColor),
                                               ),
                                             ],
                                           ),
@@ -480,25 +533,38 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
                                           // Requirements
                                           if (_requirements.isNotEmpty) ...[
                                             const SizedBox(height: 15.0),
-                                            const Divider(height: 0, thickness: 1.0, color: kBorderColorTextField),
+                                            const Divider(
+                                                height: 0,
+                                                thickness: 1.0,
+                                                color: kBorderColorTextField),
                                             const SizedBox(height: 15.0),
-                                            ..._requirements.map((req) => Padding(
-                                                  padding: const EdgeInsets.only(bottom: 5.0),
-                                                  child: Row(
-                                                    children: [
-                                                      Expanded(
-                                                        child: Text(
-                                                          req['question'] ?? '',
-                                                          style: kTextStyle.copyWith(color: kNeutralColor),
-                                                        ),
+                                            ..._requirements
+                                                .map((req) => Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              bottom: 5.0),
+                                                      child: Row(
+                                                        children: [
+                                                          Expanded(
+                                                            child: Text(
+                                                              req['question'] ??
+                                                                  '',
+                                                              style: kTextStyle
+                                                                  .copyWith(
+                                                                      color:
+                                                                          kNeutralColor),
+                                                            ),
+                                                          ),
+                                                          Icon(
+                                                            Icons.check_rounded,
+                                                            color: req['is_required'] ==
+                                                                    true
+                                                                ? kPrimaryColor
+                                                                : kLightNeutralColor,
+                                                          ),
+                                                        ],
                                                       ),
-                                                      Icon(
-                                                        Icons.check_rounded,
-                                                        color: req['is_required'] == true ? kPrimaryColor : kLightNeutralColor,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                )),
+                                                    )),
                                           ],
                                         ],
                                       ),
@@ -510,7 +576,9 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
                                     Text(
                                       'Reviews',
                                       maxLines: 1,
-                                      style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+                                      style: kTextStyle.copyWith(
+                                          color: kNeutralColor,
+                                          fontWeight: FontWeight.bold),
                                     ),
                                     const SizedBox(height: 15.0),
 
@@ -518,14 +586,19 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
                                     if (_reviews.isNotEmpty) ...[
                                       _buildReviewSummary(),
                                       const SizedBox(height: 15.0),
-                                      ..._reviews.take(3).map((review) => Padding(
-                                            padding: const EdgeInsets.only(bottom: 15.0),
-                                            child: _buildReviewCard(review),
-                                          )),
+                                      ..._reviews
+                                          .take(3)
+                                          .map((review) => Padding(
+                                                padding: const EdgeInsets.only(
+                                                    bottom: 15.0),
+                                                child: _buildReviewCard(review),
+                                              )),
                                     ] else
                                       Padding(
                                         padding: const EdgeInsets.all(10.0),
-                                        child: Text(context.l10n.noReviewsYet, style: kTextStyle.copyWith(color: kLightNeutralColor)),
+                                        child: Text(context.l10n.noReviewsYet,
+                                            style: kTextStyle.copyWith(
+                                                color: kLightNeutralColor)),
                                       ),
                                   ],
                                 ),
@@ -566,12 +639,16 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
                 child: Center(
                   child: Text(
                     _averageRating.toStringAsFixed(1),
-                    style: kTextStyle.copyWith(fontSize: 30, fontWeight: FontWeight.bold, color: kPrimaryColor),
+                    style: kTextStyle.copyWith(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                        color: kPrimaryText),
                   ),
                 ),
               ),
               const SizedBox(height: 10),
-              Text(context.l10n.totalReviewsCount(total), style: kTextStyle.copyWith(color: kNeutralColor)),
+              Text(context.l10n.totalReviewsCount(total),
+                  style: kTextStyle.copyWith(color: kNeutralColor)),
             ],
           ),
           Positioned(
@@ -584,7 +661,10 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
                 final percent = total > 0 ? count / total : 0.0;
                 return Row(
                   children: [
-                    ...List.generate(stars, (_) => const Icon(Icons.star, size: 18, color: ratingBarColor)),
+                    ...List.generate(
+                        stars,
+                        (_) => const Icon(Icons.star,
+                            size: 18, color: ratingBarColor)),
                     LinearPercentIndicator(
                       width: 130,
                       lineHeight: 8.0,
@@ -610,7 +690,9 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
     final reviewerImage = reviewer?['profile_image_url'];
     final reviewRating = review['rating'] ?? 0;
     final comment = review['comment'] ?? '';
-    final createdAt = review['created_at'] != null ? DateTime.tryParse(review['created_at']) : null;
+    final createdAt = review['created_at'] != null
+        ? DateTime.tryParse(review['created_at'])
+        : null;
     final dateStr = createdAt != null
         ? AppDateFormat.dMmmY(createdAt, AppDateFormat.localeOf(context))
         : '';
@@ -622,7 +704,13 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
         color: kWhite,
         borderRadius: BorderRadius.circular(8.0),
         border: Border.all(color: kBorderColorTextField),
-        boxShadow: const [BoxShadow(color: kBorderColorTextField, spreadRadius: 1.0, blurRadius: 5.0, offset: Offset(0, 3))],
+        boxShadow: const [
+          BoxShadow(
+              color: kBorderColorTextField,
+              spreadRadius: 1.0,
+              blurRadius: 5.0,
+              offset: Offset(0, 3))
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -647,15 +735,21 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails> with Ticker
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(reviewerName, style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold)),
+                    Text(reviewerName,
+                        style: kTextStyle.copyWith(
+                            color: kNeutralColor, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 4.0),
                     Row(
                       children: [
-                        const Icon(IconlyBold.star, color: ratingBarColor, size: 18.0),
+                        const Icon(IconlyBold.star,
+                            color: ratingBarColor, size: 18.0),
                         const SizedBox(width: 5.0),
-                        Text('$reviewRating', style: kTextStyle.copyWith(color: kNeutralColor)),
+                        Text('$reviewRating',
+                            style: kTextStyle.copyWith(color: kNeutralColor)),
                         const Spacer(),
-                        Text(dateStr, style: kTextStyle.copyWith(color: kLightNeutralColor)),
+                        Text(dateStr,
+                            style:
+                                kTextStyle.copyWith(color: kLightNeutralColor)),
                       ],
                     ),
                   ],

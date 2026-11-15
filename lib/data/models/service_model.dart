@@ -61,7 +61,9 @@ class ServiceModel extends Equatable {
       rating: (json['rating'] as num?)?.toDouble() ?? 0,
       reviewCount: (json['review_count'] as int?) ?? 0,
       createdAt: DateTime.parse(json['created_at'] as String),
-      seller: sellerData is Map<String, dynamic> ? Profile.fromJson(sellerData) : null,
+      seller: sellerData is Map<String, dynamic>
+          ? Profile.fromJson(sellerData)
+          : null,
     );
   }
 
@@ -84,5 +86,22 @@ class ServiceModel extends Equatable {
       };
 
   @override
-  List<Object?> get props => [id, sellerId, title, description, categoryId, subCategoryId, serviceType, price, deliveryTime, revisionCount, images, status, rating, reviewCount, createdAt, seller];
+  List<Object?> get props => [
+        id,
+        sellerId,
+        title,
+        description,
+        categoryId,
+        subCategoryId,
+        serviceType,
+        price,
+        deliveryTime,
+        revisionCount,
+        images,
+        status,
+        rating,
+        reviewCount,
+        createdAt,
+        seller
+      ];
 }

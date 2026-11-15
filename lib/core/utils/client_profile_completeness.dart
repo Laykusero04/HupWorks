@@ -14,7 +14,8 @@ class ClientProfileCompleteness {
   /// Soft home nudge — photo, phone, or city missing.
   static bool isIncomplete(Map<String, dynamic>? profile) {
     if (profile == null) return true;
-    final photo = ProfileImage.normalize(profile['profile_image_url'] as String?);
+    final photo =
+        ProfileImage.normalize(profile['profile_image_url'] as String?);
     final phone = (profile['phone'] as String?)?.trim() ?? '';
     final city = (profile['city'] as String?)?.trim() ?? '';
     return photo == null || phone.isEmpty || city.isEmpty;
@@ -23,11 +24,15 @@ class ClientProfileCompleteness {
   /// Hard gate before creating a job post.
   static bool canPostJobs(Map<String, dynamic>? profile) {
     if (profile == null) return false;
-    final photo = ProfileImage.normalize(profile['profile_image_url'] as String?);
+    final photo =
+        ProfileImage.normalize(profile['profile_image_url'] as String?);
     final phone = (profile['phone'] as String?)?.trim() ?? '';
     final city = (profile['city'] as String?)?.trim() ?? '';
     final bio = (profile['bio'] as String?)?.trim() ?? '';
-    return photo != null && phone.isNotEmpty && city.isNotEmpty && bio.isNotEmpty;
+    return photo != null &&
+        phone.isNotEmpty &&
+        city.isNotEmpty &&
+        bio.isNotEmpty;
   }
 
   /// Missing fields for gate UI copy.
@@ -36,7 +41,8 @@ class ClientProfileCompleteness {
       return ['photo', 'phone', 'city', 'bio'];
     }
     final missing = <String>[];
-    if (ProfileImage.normalize(profile['profile_image_url'] as String?) == null) {
+    if (ProfileImage.normalize(profile['profile_image_url'] as String?) ==
+        null) {
       missing.add('photo');
     }
     if (((profile['phone'] as String?)?.trim() ?? '').isEmpty) {

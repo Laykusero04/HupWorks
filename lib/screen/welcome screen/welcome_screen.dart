@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/screen/widgets/auth/auth_ui.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
 import 'package:go_router/go_router.dart';
 
@@ -82,32 +83,35 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         ),
                       ),
                       const SizedBox(height: 24),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _ChoiceCard(
-                              label: l10n.authRoleClient,
-                              hint: l10n.authRoleClientSubtitle,
-                              icon: Icons.person_outline_rounded,
-                              color: kPrimaryColor,
-                              selected: !_isFreelancer,
-                              onTap: () =>
-                                  setState(() => _isFreelancer = false),
+                      IntrinsicHeight(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Expanded(
+                              child: _ChoiceCard(
+                                label: l10n.authRoleClient,
+                                hint: l10n.authRoleClientSubtitle,
+                                icon: Icons.person_outline_rounded,
+                                color: kPrimaryColor,
+                                selected: !_isFreelancer,
+                                onTap: () =>
+                                    setState(() => _isFreelancer = false),
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: _ChoiceCard(
-                              label: l10n.authRoleFreelancer,
-                              hint: l10n.authRoleFreelancerSubtitle,
-                              icon: Icons.work_outline_rounded,
-                              color: kSellerPrimary,
-                              selected: _isFreelancer,
-                              onTap: () =>
-                                  setState(() => _isFreelancer = true),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: _ChoiceCard(
+                                label: l10n.authRoleFreelancer,
+                                hint: l10n.authRoleFreelancerSubtitle,
+                                icon: Icons.work_outline_rounded,
+                                color: kSellerPrimary,
+                                selected: _isFreelancer,
+                                onTap: () =>
+                                    setState(() => _isFreelancer = true),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                       const SizedBox(height: 28),
                       SizedBox(
@@ -117,7 +121,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           onPressed: _goToSignUp,
                           style: FilledButton.styleFrom(
                             backgroundColor:
-                                _isFreelancer ? kSellerPrimary : kPrimaryColor,
+                                _isFreelancer ? kSecondaryFill : kPrimaryFill,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(14),
                             ),
@@ -142,7 +146,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           onPressed: _goToLogin,
                           style: OutlinedButton.styleFrom(
                             foregroundColor: kNeutralColor,
-                            side: const BorderSide(color: kBorderColorTextField),
+                            side:
+                                const BorderSide(color: kBorderColorTextField),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(14),
                             ),
@@ -194,7 +199,7 @@ class _ChoiceCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 12),
+          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 8),
           decoration: BoxDecoration(
             color: selected ? color.withValues(alpha: 0.1) : kWhite,
             borderRadius: BorderRadius.circular(16),
@@ -211,12 +216,22 @@ class _ChoiceCard extends StatelessWidget {
                 color: selected ? color : kLightNeutralColor,
               ),
               const SizedBox(height: 12),
-              Text(
-                label,
-                style: kTextStyle.copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: selected ? color : kNeutralColor,
+              // Single line, scaled down instead of breaking mid-word.
+              SizedBox(
+                width: double.infinity,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    label,
+                    maxLines: 1,
+                    softWrap: false,
+                    textAlign: TextAlign.center,
+                    style: kTextStyle.copyWith(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: selected ? authAccentOnTint(color) : kNeutralColor,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 4),

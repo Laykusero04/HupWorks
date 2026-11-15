@@ -32,7 +32,8 @@ class ReportService {
 
     await _client.from('user_reports').insert({
       'reporter_id': user.id,
-      'reported_user_id': (reported == null || reported.isEmpty) ? null : reported,
+      'reported_user_id':
+          (reported == null || reported.isEmpty) ? null : reported,
       'reason': trimmedReason,
       'details': trimmedDetails,
       'job_post_id': _nullIfEmpty(jobPostId),

@@ -99,7 +99,8 @@ class BlockService {
       },
     );
 
-    final map = raw is Map ? Map<String, dynamic>.from(raw) : <String, dynamic>{};
+    final map =
+        raw is Map ? Map<String, dynamic>.from(raw) : <String, dynamic>{};
     final idsRaw = map['open_order_ids'];
     final ids = <String>[];
     if (idsRaw is List) {

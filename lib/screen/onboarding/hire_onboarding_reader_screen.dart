@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/screen/onboarding/hire_onboarding_section_titles.dart';
 import 'package:freelancer/core/guide/guide_anchor.dart';
 import 'package:freelancer/core/guide/guide_host.dart';
 import 'package:freelancer/core/guide/guide_info_button.dart';
@@ -28,8 +29,7 @@ class HireOnboardingReaderScreen extends StatefulWidget {
       _HireOnboardingReaderScreenState();
 }
 
-class _HireOnboardingReaderScreenState
-    extends State<HireOnboardingReaderScreen>
+class _HireOnboardingReaderScreenState extends State<HireOnboardingReaderScreen>
     with GuideHost<HireOnboardingReaderScreen> {
   // Guide targets (long-lived, one widget each; section card: first only).
   final GlobalKey _guideHintKey = GlobalKey();
@@ -104,6 +104,7 @@ class _HireOnboardingReaderScreenState
           targetNearBottom: true),
     ];
   }
+
   HireOnboardingPacket? _packet;
   bool _loading = true;
   bool _acking = false;
@@ -203,48 +204,52 @@ class _HireOnboardingReaderScreenState
                           children: [
                             if (showOnsiteHint) ...[
                               GuideAnchor.wrap(
-                                _anchor(
-                                    _guideHintKey,
-                                    l10n.guideHireReaderHintTitle,
-                                    l10n.guideHireReaderHintDesc),
-                                Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF2E7D32).withOpacity(0.08),
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(
-                                    color: const Color(0xFF2E7D32).withOpacity(0.3),
-                                  ),
-                                ),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Icon(
-                                      Icons.qr_code_scanner,
-                                      color: Color(0xFF2E7D32),
-                                      size: 22,
-                                    ),
-                                    const SizedBox(width: 10),
-                                    Expanded(
-                                      child: Text(
-                                        l10n.onboardingUseScanQrHint,
-                                        style: kTextStyle.copyWith(
-                                          color: kSubTitleColor,
-                                          fontSize: 13,
-                                          height: 1.35,
-                                        ),
+                                  _anchor(
+                                      _guideHintKey,
+                                      l10n.guideHireReaderHintTitle,
+                                      l10n.guideHireReaderHintDesc),
+                                  Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFF2E7D32)
+                                          .withOpacity(0.08),
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(
+                                        color: const Color(0xFF2E7D32)
+                                            .withOpacity(0.3),
                                       ),
                                     ),
-                                  ],
-                                ),
-                              )),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Icon(
+                                          Icons.qr_code_scanner,
+                                          color: Color(0xFF2E7D32),
+                                          size: 22,
+                                        ),
+                                        const SizedBox(width: 10),
+                                        Expanded(
+                                          child: Text(
+                                            l10n.onboardingUseScanQrHint,
+                                            style: kTextStyle.copyWith(
+                                              color: kSubTitleColor,
+                                              fontSize: 13,
+                                              height: 1.35,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )),
                               const SizedBox(height: 16),
                             ],
                             if (_visibleSections.isEmpty)
                               Text(
                                 l10n.noSectionDetails,
-                                style: kTextStyle.copyWith(color: kSubTitleColor),
+                                style:
+                                    kTextStyle.copyWith(color: kSubTitleColor),
                               )
                             else
                               ...(_visibleSections.indexed).map((e) {
@@ -253,44 +258,45 @@ class _HireOnboardingReaderScreenState
                                 return Padding(
                                   padding: const EdgeInsets.only(bottom: 14),
                                   child: GuideAnchor.wrap(
-                                    i == 0
-                                        ? _anchor(
-                                            _guideSectionKey,
-                                            l10n.guideHireReaderCardTitle,
-                                            l10n.guideHireReaderCardDesc)
-                                        : null,
-                                    Container(
-                                    width: context.width(),
-                                    padding: const EdgeInsets.all(12),
-                                    decoration: BoxDecoration(
-                                      color: kWhite,
-                                      borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(
-                                        color: kBorderColorTextField,
-                                      ),
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          s.title,
-                                          style: kTextStyle.copyWith(
-                                            color: kNeutralColor,
-                                            fontWeight: FontWeight.bold,
+                                      i == 0
+                                          ? _anchor(
+                                              _guideSectionKey,
+                                              l10n.guideHireReaderCardTitle,
+                                              l10n.guideHireReaderCardDesc)
+                                          : null,
+                                      Container(
+                                        width: context.width(),
+                                        padding: const EdgeInsets.all(12),
+                                        decoration: BoxDecoration(
+                                          color: kWhite,
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          border: Border.all(
+                                            color: kBorderColorTextField,
                                           ),
                                         ),
-                                        const SizedBox(height: 8),
-                                        Text(
-                                          s.body,
-                                          style: kTextStyle.copyWith(
-                                            color: kSubTitleColor,
-                                            height: 1.4,
-                                          ),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              s.localizedTitle(context.l10n),
+                                              style: kTextStyle.copyWith(
+                                                color: kNeutralColor,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Text(
+                                              s.body,
+                                              style: kTextStyle.copyWith(
+                                                color: kSubTitleColor,
+                                                height: 1.4,
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                      ],
-                                    ),
-                                  )),
+                                      )),
                                 );
                               }),
                           ],
@@ -312,7 +318,7 @@ class _HireOnboardingReaderScreenState
                                 ? l10n.pleaseWaitEllipsis
                                 : l10n.onboardingReadUnderstood,
                             buttonDecoration: kButtonDecoration.copyWith(
-                              color: kPrimaryColor,
+                              color: kPrimaryFill,
                             ),
                             onPressed: _acking ? () {} : _acknowledge,
                             buttonTextColor: kWhite,

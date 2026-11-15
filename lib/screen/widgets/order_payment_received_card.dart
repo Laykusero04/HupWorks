@@ -171,9 +171,8 @@ class _OrderPaymentReceivedCardState extends State<OrderPaymentReceivedCard> {
           const SizedBox(height: 12),
           if (!received)
             ButtonGlobalWithoutIcon(
-              buttontext: _busy
-                  ? l10n.pleaseWaitEllipsis
-                  : l10n.markPaymentPaid,
+              buttontext:
+                  _busy ? l10n.pleaseWaitEllipsis : l10n.markPaymentPaid,
               buttonDecoration: kButtonDecoration.copyWith(
                 color: StatusColors.success,
               ),

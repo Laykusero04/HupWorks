@@ -37,13 +37,17 @@ class _SaveProfilePopUpState extends State<SaveProfilePopUp> {
               width: 209,
               decoration: const BoxDecoration(
                 shape: BoxShape.rectangle,
-                image: DecorationImage(image: AssetImage('images/success.png'), fit: BoxFit.cover),
+                image: DecorationImage(
+                    image: AssetImage('images/success.png'), fit: BoxFit.cover),
               ),
             ),
             const SizedBox(height: 15.0),
             Text(
               l10n.congratulations,
-              style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 18.0),
+              style: kTextStyle.copyWith(
+                  color: kNeutralColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18.0),
             ),
             const SizedBox(height: 10.0),
             Text(
@@ -53,7 +57,7 @@ class _SaveProfilePopUpState extends State<SaveProfilePopUp> {
             ),
             const SizedBox(height: 10.0),
             Button(
-              containerBg: kPrimaryColor,
+              containerBg: kPrimaryFill,
               borderColor: Colors.transparent,
               buttonText: l10n.done,
               textColor: kWhite,
@@ -255,7 +259,7 @@ class _BlockingReasonPopUpState extends State<BlockingReasonPopUp> {
                 ),
                 Expanded(
                   child: Button(
-                    containerBg: kPrimaryColor,
+                    containerBg: kPrimaryFill,
                     borderColor: Colors.transparent,
                     buttonText: _submitting ? '…' : l10n.block,
                     textColor: kWhite,
@@ -312,7 +316,10 @@ class _ReviewSubmittedPopUpState extends State<ReviewSubmittedPopUp> {
               l10n.reviewSuccessTitle,
               maxLines: 1,
               textAlign: TextAlign.center,
-              style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 18.0),
+              style: kTextStyle.copyWith(
+                  color: kNeutralColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18.0),
             ),
             const SizedBox(height: 10.0),
             Text(
@@ -325,7 +332,7 @@ class _ReviewSubmittedPopUpState extends State<ReviewSubmittedPopUp> {
             ButtonGlobalWithoutIcon(
                 buttontext: l10n.gotIt,
                 buttonDecoration: kButtonDecoration.copyWith(
-                  color: kPrimaryColor,
+                  color: kPrimaryFill,
                   borderRadius: BorderRadius.circular(30.0),
                 ),
                 onPressed: () {

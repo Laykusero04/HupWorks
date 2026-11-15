@@ -129,7 +129,8 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
           l10n.myProfile,
-          style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold),
+          style: kTextStyle.copyWith(
+              color: kPrimaryText, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         actions: [
@@ -143,7 +144,8 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
       body: RubikRefreshIndicator(
         onRefresh: _load,
         child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+          physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics()),
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -177,7 +179,8 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.location_on_outlined, size: 14, color: kSecondaryColor),
+                    const Icon(Icons.location_on_outlined,
+                        size: 14, color: kSecondaryColor),
                     const SizedBox(width: 3),
                     Flexible(
                       child: Text(
@@ -204,11 +207,10 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
                   ),
                 ),
               ],
-
               const SizedBox(height: 12),
-
               Container(
-                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
                 decoration: ProfileDetailTheme.statsPanel(),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -222,26 +224,24 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
                   ],
                 ),
               ),
-
               if (bio != null && bio.trim().isNotEmpty) ...[
                 const SizedBox(height: 12),
                 Text(
                   bio.trim(),
                   textAlign: TextAlign.start,
-                  style: kTextStyle.copyWith(color: kSubTitleColor, height: 1.35),
+                  style:
+                      kTextStyle.copyWith(color: kSubTitleColor, height: 1.35),
                 ),
               ],
-
               const SizedBox(height: 14),
-
               ProfileDetailTheme.sectionDivider(),
               const SizedBox(height: 10),
-
               Row(
                 children: [
                   Text(
                     l10n.myJobPosts,
-                    style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold),
+                    style: kTextStyle.copyWith(
+                        color: kPrimaryText, fontWeight: FontWeight.bold),
                   ),
                   const Spacer(),
                   Text(
@@ -251,13 +251,15 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
                 ],
               ),
               const SizedBox(height: 8),
-
               if (_jobs.isEmpty)
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
                   child: Column(
                     children: [
-                      Icon(IconlyLight.paper, size: 36, color: kPrimaryColor.withValues(alpha: 0.45)),
+                      Icon(IconlyLight.paper,
+                          size: 36,
+                          color: kPrimaryColor.withValues(alpha: 0.45)),
                       const SizedBox(height: 6),
                       Text(
                         l10n.noJobsPostedYet,
@@ -270,11 +272,12 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
                           _load();
                         },
                         style: ProfileDetailTheme.editProfileOutlinedStyle(),
-                        icon: const Icon(Icons.add, size: 18, color: kPrimaryColor),
+                        icon: const Icon(Icons.add,
+                            size: 18, color: kPrimaryColor),
                         label: Text(
                           l10n.postAJob,
                           style: kTextStyle.copyWith(
-                            color: kPrimaryColor,
+                            color: kPrimaryText,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -299,10 +302,12 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
         children: [
           Text(
             value,
-            style: kTextStyle.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold, fontSize: 16),
+            style: kTextStyle.copyWith(
+                color: kPrimaryText, fontWeight: FontWeight.bold, fontSize: 16),
           ),
           const SizedBox(height: 1),
-          Text(label, style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 11)),
+          Text(label,
+              style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 11)),
         ],
       ),
     );
@@ -319,7 +324,8 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
     final l10n = context.l10n;
     final category = job['categories'] as Map<String, dynamic>?;
     final isOpen = job['status'] == 'open';
-    final (jobStatusFg, jobStatusBg) = StatusColors.jobPost(job['status'] as String?);
+    final (jobStatusFg, jobStatusBg) =
+        StatusColors.jobPost(job['status'] as String?);
     final location = job['location'] as String?;
 
     return Padding(
@@ -342,19 +348,22 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
                       job['title'] ?? l10n.untitled,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+                      style: kTextStyle.copyWith(
+                          color: kNeutralColor, fontWeight: FontWeight.bold),
                     ),
                   ),
                   const SizedBox(width: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 8),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 3, horizontal: 8),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
                       color: kPrimaryColor.withValues(alpha: 0.1),
                     ),
                     child: Text(
                       _jobTypeLabel(l10n, job['job_type'] as String?),
-                      style: kTextStyle.copyWith(color: kPrimaryColor, fontSize: 12),
+                      style: kTextStyle.copyWith(
+                          color: kPrimaryText, fontSize: 12),
                     ),
                   ),
                 ],
@@ -363,14 +372,16 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
                 const SizedBox(height: 6),
                 Row(
                   children: [
-                    const Icon(Icons.location_on_outlined, size: 14, color: kSecondaryColor),
+                    const Icon(Icons.location_on_outlined,
+                        size: 14, color: kSecondaryColor),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
                         location,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12),
+                        style: kTextStyle.copyWith(
+                            color: kSubTitleColor, fontSize: 12),
                       ),
                     ),
                   ],
@@ -380,7 +391,8 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
                       color: jobStatusBg,
@@ -400,7 +412,8 @@ class _ClientProfileDetailsState extends State<ClientProfileDetails> {
                       LocalizedCategory.languageCodeOf(context),
                       fallback: l10n.categoryGeneral,
                     ),
-                    style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
+                    style: kTextStyle.copyWith(
+                        color: kLightNeutralColor, fontSize: 12),
                   ),
                 ],
               ),

@@ -109,8 +109,7 @@ class ShiftSchedule {
 
   /// e.g. `28 Aug 2026 · 06:00–15:00` or just the time window / date.
   String? get displayLabel {
-    final datePart =
-        workDate == null ? null : AppDateFormat.dMmmY(workDate!);
+    final datePart = workDate == null ? null : AppDateFormat.dMmmY(workDate!);
     final timePart = timeWindowLabel;
     if (datePart != null && timePart != null) return '$datePart · $timePart';
     return datePart ?? timePart;

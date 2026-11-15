@@ -105,118 +105,119 @@ class _UnifiedLogInState extends State<UnifiedLogIn> {
       onBack: () => Navigator.of(context).maybePop(),
       child: AutofillGroup(
         child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          AuthTextField(
-            controller: _emailController,
-            label: l10n.authEmail,
-            hint: l10n.authEmailHint,
-            keyboardType: TextInputType.emailAddress,
-            textInputAction: TextInputAction.next,
-            autofillHints: const [AutofillHints.email],
-            focusedBorderColor: accent,
-          ),
-          const SizedBox(height: 16),
-          AuthTextField(
-            controller: _passwordController,
-            label: l10n.authPassword,
-            hint: l10n.authPasswordHint,
-            obscureText: _hidePassword,
-            textInputAction: TextInputAction.done,
-            autofillHints: const [AutofillHints.password],
-            focusedBorderColor: accent,
-            onFieldSubmitted: (_) => _handleLogin(),
-            suffixIcon: IconButton(
-              onPressed: () => setState(() => _hidePassword = !_hidePassword),
-              icon: Icon(
-                _hidePassword
-                    ? Icons.visibility_off_outlined
-                    : Icons.visibility_outlined,
-                color: kLightNeutralColor,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            AuthTextField(
+              controller: _emailController,
+              label: l10n.authEmail,
+              hint: l10n.authEmailHint,
+              keyboardType: TextInputType.emailAddress,
+              textInputAction: TextInputAction.next,
+              autofillHints: const [AutofillHints.email],
+              focusedBorderColor: accent,
+            ),
+            const SizedBox(height: 16),
+            AuthTextField(
+              controller: _passwordController,
+              label: l10n.authPassword,
+              hint: l10n.authPasswordHint,
+              obscureText: _hidePassword,
+              textInputAction: TextInputAction.done,
+              autofillHints: const [AutofillHints.password],
+              focusedBorderColor: accent,
+              onFieldSubmitted: (_) => _handleLogin(),
+              suffixIcon: IconButton(
+                onPressed: () => setState(() => _hidePassword = !_hidePassword),
+                icon: Icon(
+                  _hidePassword
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
+                  color: kLightNeutralColor,
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 8),
-          SizedBox(
-            height: 44,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(
-                  child: InkWell(
-                    onTap: () => setState(() => _savePassword = !_savePassword),
-                    child: Row(
-                      children: [
-                        Checkbox(
-                          value: _savePassword,
-                          onChanged: (v) =>
-                              setState(() => _savePassword = v ?? false),
-                          activeColor: accent,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(3),
+            const SizedBox(height: 8),
+            SizedBox(
+              height: 44,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    child: InkWell(
+                      onTap: () =>
+                          setState(() => _savePassword = !_savePassword),
+                      child: Row(
+                        children: [
+                          Checkbox(
+                            value: _savePassword,
+                            onChanged: (v) =>
+                                setState(() => _savePassword = v ?? false),
+                            activeColor: accent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(3),
+                            ),
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                            visualDensity: VisualDensity.compact,
                           ),
-                          materialTapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
-                          visualDensity: VisualDensity.compact,
-                        ),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: Text(
-                            l10n.authSavePassword,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: kTextStyle.copyWith(
-                              color: kSubTitleColor,
-                              fontSize: 13,
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              l10n.authSavePassword,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: kTextStyle.copyWith(
+                                color: kSubTitleColor,
+                                fontSize: 13,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Flexible(
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () =>
-                          const ClientForgotPassword().launch(context),
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        minimumSize: const Size(44, 44),
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      child: Text(
-                        l10n.authForgotPassword,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: kTextStyle.copyWith(
-                          color: accent,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 11,
-                        ),
+                        ],
                       ),
                     ),
                   ),
-                ),
-              ],
+                  Flexible(
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: () =>
+                            const ClientForgotPassword().launch(context),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          minimumSize: const Size(44, 44),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        child: Text(
+                          l10n.authForgotPassword,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: kTextStyle.copyWith(
+                            color: authAccentText(accent),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 16),
-          AuthPrimaryButton(
-            label: l10n.authLogIn,
-            accentColor: accent,
-            isLoading: _isLoading,
-            onPressed: _handleLogin,
-          ),
-          const SizedBox(height: 24),
-          AuthFooterLink(
-            prefix: '${l10n.authDontHaveAccount} ',
-            action: l10n.authSignUp,
-            accentColor: accent,
-            onTap: () => const WelcomeScreen().launch(context),
-          ),
-        ],
+            const SizedBox(height: 16),
+            AuthPrimaryButton(
+              label: l10n.authLogIn,
+              accentColor: accent,
+              isLoading: _isLoading,
+              onPressed: _handleLogin,
+            ),
+            const SizedBox(height: 24),
+            AuthFooterLink(
+              prefix: '${l10n.authDontHaveAccount} ',
+              action: l10n.authSignUp,
+              accentColor: accent,
+              onTap: () => const WelcomeScreen().launch(context),
+            ),
+          ],
         ),
       ),
     );

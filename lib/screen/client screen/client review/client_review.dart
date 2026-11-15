@@ -92,7 +92,8 @@ class _ClientOrderReviewState extends State<ClientOrderReview> {
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
           l10n.writeReview,
-          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+          style: kTextStyle.copyWith(
+              color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),
@@ -106,7 +107,7 @@ class _ClientOrderReviewState extends State<ClientOrderReview> {
             child: ButtonGlobalWithoutIcon(
               buttontext: _isSubmitting ? l10n.publishing : l10n.publishReview,
               buttonDecoration: kButtonDecoration.copyWith(
-                color: _isSubmitting ? kLightNeutralColor : kPrimaryColor,
+                color: _isSubmitting ? kLightNeutralColor : kPrimaryFill,
                 borderRadius: BorderRadius.circular(30.0),
               ),
               onPressed: _isSubmitting
@@ -114,7 +115,9 @@ class _ClientOrderReviewState extends State<ClientOrderReview> {
                   : () async {
                       if (_stars <= 0) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(context.l10n.pleaseChooseStarRating)),
+                          SnackBar(
+                              content:
+                                  Text(context.l10n.pleaseChooseStarRating)),
                         );
                         return;
                       }
@@ -246,7 +249,8 @@ class _ClientOrderReviewState extends State<ClientOrderReview> {
                         labelText: l10n.yourFeedback,
                         labelStyle: kTextStyle.copyWith(color: kNeutralColor),
                         hintText: l10n.feedbackHint,
-                        hintStyle: kTextStyle.copyWith(color: kLightNeutralColor),
+                        hintStyle:
+                            kTextStyle.copyWith(color: kLightNeutralColor),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                     ),

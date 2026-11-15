@@ -21,7 +21,9 @@ class ServiceRequirement extends Equatable {
       serviceId: json['service_id'] as String,
       question: json['question'] as String,
       isRequired: (json['is_required'] as bool?) ?? true,
-      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'] as String)
+          : null,
     );
   }
 

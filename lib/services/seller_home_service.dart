@@ -70,8 +70,8 @@ class SellerHomeService {
         completedThisMonth++;
       }
 
-      final completedInScope = range == null ||
-          (completedAt != null && range.contains(completedAt));
+      final completedInScope =
+          range == null || (completedAt != null && range.contains(completedAt));
       if (!completedInScope) continue;
 
       jobsCompleted++;
@@ -128,10 +128,8 @@ class SellerHomeService {
       if (st == 'accepted') acceptedApplications++;
     }
 
-    final openJobs = await _client
-        .from('job_posts')
-        .select('id')
-        .eq('status', 'open');
+    final openJobs =
+        await _client.from('job_posts').select('id').eq('status', 'open');
     final openJobsCount = (openJobs as List).length;
 
     final reviews = await _client
@@ -177,7 +175,8 @@ class SellerHomeService {
   }
 
   /// Fetch performance metrics for a given period
-  static Future<Map<String, dynamic>> getPerformance({required bool isLastMonth}) async {
+  static Future<Map<String, dynamic>> getPerformance(
+      {required bool isLastMonth}) async {
     final user = _client.auth.currentUser;
     if (user == null) return {};
 
@@ -203,13 +202,12 @@ class SellerHomeService {
 
     final orderList = List<Map<String, dynamic>>.from(orders);
     final totalOrders = orderList.length;
-    final completedOrders = orderList.where((o) => o['status'] == 'completed').length;
+    final completedOrders =
+        orderList.where((o) => o['status'] == 'completed').length;
 
     // Fetch services count
-    final services = await _client
-        .from('services')
-        .select('id')
-        .eq('seller_id', user.id);
+    final services =
+        await _client.from('services').select('id').eq('seller_id', user.id);
 
     final activeServices = List.from(services).length;
 
@@ -222,7 +220,9 @@ class SellerHomeService {
     final reviewList = List<Map<String, dynamic>>.from(reviews);
     double avgRating = 0;
     if (reviewList.isNotEmpty) {
-      avgRating = reviewList.fold<double>(0, (sum, r) => sum + (r['rating'] as num).toDouble()) / reviewList.length;
+      avgRating = reviewList.fold<double>(
+              0, (sum, r) => sum + (r['rating'] as num).toDouble()) /
+          reviewList.length;
     }
 
     return {
@@ -252,7 +252,8 @@ class SellerHomeService {
   }
 
   /// Fetch seller's services
-  static Future<List<Map<String, dynamic>>> getMyServices({int limit = 10}) async {
+  static Future<List<Map<String, dynamic>>> getMyServices(
+      {int limit = 10}) async {
     final user = _client.auth.currentUser;
     if (user == null) return [];
 

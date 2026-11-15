@@ -66,7 +66,8 @@ class ChatRepository {
     );
   }
 
-  RealtimeChannel subscribeToConversations({required void Function() onUpdate}) {
+  RealtimeChannel subscribeToConversations(
+      {required void Function() onUpdate}) {
     return ChatService.subscribeToConversations(onUpdate: onUpdate);
   }
 

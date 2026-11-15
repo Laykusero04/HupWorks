@@ -9,9 +9,9 @@ import 'package:freelancer/core/guide/guide_info_button.dart';
 import 'package:freelancer/core/guide/guide_step.dart';
 import 'package:freelancer/core/utils/profile_avatar_picker.dart';
 import 'package:freelancer/l10n/l10n.dart';
-import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
 import 'package:freelancer/screen/widgets/verification_score_card.dart';
+import 'package:freelancer/screen/widgets/verification_submit_bar.dart';
 import 'package:freelancer/screen/widgets/verification_status_badge.dart';
 import 'package:freelancer/services/profile_service.dart';
 import 'package:freelancer/services/verification_service.dart';
@@ -112,6 +112,7 @@ class _SellerIdentityVerificationScreenState
           targetNearBottom: true),
     ];
   }
+
   String _status = 'unverified';
   String? _rejectionReason;
   String? _submittedSelfieUrl;
@@ -143,8 +144,9 @@ class _SellerIdentityVerificationScreenState
       if (!mounted) return;
       setState(() {
         _status = VerificationService.identityStatusFromProfile(profile);
-        _rejectionReason = profile?['verification_rejection_reason'] as String? ??
-            row?['rejection_reason'] as String?;
+        _rejectionReason =
+            profile?['verification_rejection_reason'] as String? ??
+                row?['rejection_reason'] as String?;
         _profile = profile;
         _submittedSelfieUrl = signedUrl;
         _loading = false;
@@ -301,42 +303,48 @@ class _SellerIdentityVerificationScreenState
               children: [
                 VerificationScoreCard(
                   score: score,
-                  accent: kPrimaryColor,
-                  guideAnchor: _anchor(_guideScoreKey,
-                      l10n.guideIdentityScoreTitle, l10n.guideIdentityScoreDesc),
+                  accent: kSellerPrimary,
+                  guideAnchor: _anchor(
+                      _guideScoreKey,
+                      l10n.guideIdentityScoreTitle,
+                      l10n.guideIdentityScoreDesc),
                 ),
                 const SizedBox(height: 16),
                 GuideAnchor.wrap(
-                  _anchor(_guideStatusKey, l10n.guideIdentityStatusTitle,
-                      l10n.guideIdentityStatusDesc),
-                  Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                Center(child: VerificationStatusBadge(status: badgeStatus)),
-                if (_status == 'rejected' &&
-                    (_rejectionReason?.trim().isNotEmpty ?? false)) ...[
-                  const SizedBox(height: 12),
-                  Text(
-                    _rejectionReason!,
-                    style: kTextStyle.copyWith(color: kSubTitleColor),
-                  ),
-                ],
-                if (_status == 'pending') ...[
-                  const SizedBox(height: 12),
-                  Text(
-                    l10n.faceIdPendingHint,
-                    style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13),
-                  ),
-                ],
-                if (_status == 'verified') ...[
-                  const SizedBox(height: 12),
-                  Text(
-                    l10n.faceIdVerifiedHint,
-                    style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13),
-                  ),
-                ],
-                  ],
-                )),
+                    _anchor(_guideStatusKey, l10n.guideIdentityStatusTitle,
+                        l10n.guideIdentityStatusDesc),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Center(
+                            child:
+                                VerificationStatusBadge(status: badgeStatus)),
+                        if (_status == 'rejected' &&
+                            (_rejectionReason?.trim().isNotEmpty ?? false)) ...[
+                          const SizedBox(height: 12),
+                          Text(
+                            _rejectionReason!,
+                            style: kTextStyle.copyWith(color: kSubTitleColor),
+                          ),
+                        ],
+                        if (_status == 'pending') ...[
+                          const SizedBox(height: 12),
+                          Text(
+                            l10n.faceIdPendingHint,
+                            style: kTextStyle.copyWith(
+                                color: kSubTitleColor, fontSize: 13),
+                          ),
+                        ],
+                        if (_status == 'verified') ...[
+                          const SizedBox(height: 12),
+                          Text(
+                            l10n.faceIdVerifiedHint,
+                            style: kTextStyle.copyWith(
+                                color: kSubTitleColor, fontSize: 13),
+                          ),
+                        ],
+                      ],
+                    )),
                 const SizedBox(height: 20),
                 Text(
                   l10n.selfieWithId,
@@ -349,11 +357,14 @@ class _SellerIdentityVerificationScreenState
                 const SizedBox(height: 8),
                 Text(
                   l10n.selfieWithIdHint,
-                  style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13),
+                  style:
+                      kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13),
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  hasSubmitted ? l10n.yourSubmittedPhoto : l10n.uploadIdFaceSelfie,
+                  hasSubmitted
+                      ? l10n.yourSubmittedPhoto
+                      : l10n.uploadIdFaceSelfie,
                   style: kTextStyle.copyWith(
                     color: kNeutralColor,
                     fontWeight: FontWeight.w600,
@@ -361,74 +372,77 @@ class _SellerIdentityVerificationScreenState
                 ),
                 const SizedBox(height: 10),
                 GuideAnchor.wrap(
-                  _anchor(_guideSelfieKey, l10n.guideIdentitySelfieTitle,
-                      l10n.guideIdentitySelfieDesc),
-                  GestureDetector(
-                  onTap: (_submitting || _picking) ? null : _pickSelfie,
-                  child: Container(
-                    height: 220,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: kBorderColorTextField, width: 2),
-                      color: kDarkWhite,
-                      image: preview != null
-                          ? DecorationImage(image: preview, fit: BoxFit.cover)
-                          : null,
-                    ),
-                    child: preview == null
-                        ? Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(Icons.add_a_photo_outlined,
-                                  size: 40, color: kPrimaryColor),
-                              const SizedBox(height: 8),
-                              Text(
-                                l10n.uploadIdFaceSelfie,
-                                style: kTextStyle.copyWith(color: kPrimaryColor),
-                              ),
-                            ],
-                          )
-                        : Align(
-                            alignment: Alignment.bottomCenter,
-                            child: Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.symmetric(vertical: 10),
-                              decoration: BoxDecoration(
-                                color: Colors.black.withValues(alpha: 0.55),
-                                borderRadius: const BorderRadius.vertical(
-                                  bottom: Radius.circular(10),
+                    _anchor(_guideSelfieKey, l10n.guideIdentitySelfieTitle,
+                        l10n.guideIdentitySelfieDesc),
+                    GestureDetector(
+                      onTap: (_submitting || _picking) ? null : _pickSelfie,
+                      child: Container(
+                        height: 220,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                              color: kBorderColorTextField, width: 2),
+                          color: kDarkWhite,
+                          image: preview != null
+                              ? DecorationImage(
+                                  image: preview, fit: BoxFit.cover)
+                              : null,
+                        ),
+                        child: preview == null
+                            ? Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.add_a_photo_outlined,
+                                      size: 40, color: kSellerPrimary),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    l10n.uploadIdFaceSelfie,
+                                    style: kTextStyle.copyWith(
+                                        color: kSecondaryText),
+                                  ),
+                                ],
+                              )
+                            : Align(
+                                alignment: Alignment.bottomCenter,
+                                child: Container(
+                                  width: double.infinity,
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 10),
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withValues(alpha: 0.55),
+                                    borderRadius: const BorderRadius.vertical(
+                                      bottom: Radius.circular(10),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    hasNewPick
+                                        ? l10n.newPhotoSelectedTapToChange
+                                        : l10n.tapToChangePhoto,
+                                    textAlign: TextAlign.center,
+                                    style: kTextStyle.copyWith(
+                                      color: kWhite,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
                                 ),
                               ),
-                              child: Text(
-                                hasNewPick
-                                    ? l10n.newPhotoSelectedTapToChange
-                                    : l10n.tapToChangePhoto,
-                                textAlign: TextAlign.center,
-                                style: kTextStyle.copyWith(
-                                  color: kWhite,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ),
-                  ),
-                )),
+                      ),
+                    )),
               ],
             ),
           ),
         ),
       ),
-      bottomNavigationBar: ButtonGlobalWithoutIcon(
-        guideAnchor: _anchor(_guideSubmitKey, l10n.guideIdentitySubmitTitle,
+      bottomNavigationBar: GuideAnchor.wrap(
+        _anchor(_guideSubmitKey, l10n.guideIdentitySubmitTitle,
             l10n.guideIdentitySubmitDesc),
-        buttontext: submitLabel,
-        buttonDecoration: kButtonDecoration.copyWith(
-          color: (_submitting || !hasNewPick) ? kLightNeutralColor : kPrimaryColor,
-          borderRadius: BorderRadius.circular(30),
+        VerificationSubmitBar(
+          label: submitLabel,
+          enabled: !_submitting && hasNewPick,
+          onPressed: _submit,
+          enabledColor: kSecondaryFill,
         ),
-        onPressed: (_submitting || !hasNewPick) ? null : _submit,
-        buttonTextColor: kWhite,
       ),
     ));
   }

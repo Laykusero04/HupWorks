@@ -24,7 +24,8 @@ class LegalDocumentScreen extends StatelessWidget {
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
           appBarTitle,
-          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+          style: kTextStyle.copyWith(
+              color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),

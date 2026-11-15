@@ -76,7 +76,11 @@ class _ClientFavListState extends State<ClientFavList> {
     return [
       seller['city'] as String?,
       seller['country'] as String?,
-    ].whereType<String>().map((s) => s.trim()).where((s) => s.isNotEmpty).join(', ');
+    ]
+        .whereType<String>()
+        .map((s) => s.trim())
+        .where((s) => s.isNotEmpty)
+        .join(', ');
   }
 
   @override
@@ -90,7 +94,8 @@ class _ClientFavListState extends State<ClientFavList> {
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
           l10n.savedTalentList,
-          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+          style: kTextStyle.copyWith(
+              color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),
@@ -132,126 +137,141 @@ class _ClientFavListState extends State<ClientFavList> {
                           ],
                         )
                       : ListView.builder(
-                        physics: const AlwaysScrollableScrollPhysics(
-                          parent: BouncingScrollPhysics(),
-                        ),
-                        padding: const EdgeInsets.only(top: 15.0, bottom: 15.0),
-                        itemCount: _saved.length,
-                        itemBuilder: (_, i) {
-                          final row = _saved[i];
-                          final sellerRaw = row['seller'];
-                          final seller = sellerRaw is Map<String, dynamic>
-                              ? sellerRaw
-                              : sellerRaw is Map
-                                  ? Map<String, dynamic>.from(sellerRaw)
-                                  : null;
-                          if (seller == null) return const SizedBox.shrink();
+                          physics: const AlwaysScrollableScrollPhysics(
+                            parent: BouncingScrollPhysics(),
+                          ),
+                          padding:
+                              const EdgeInsets.only(top: 15.0, bottom: 15.0),
+                          itemCount: _saved.length,
+                          itemBuilder: (_, i) {
+                            final row = _saved[i];
+                            final sellerRaw = row['seller'];
+                            final seller = sellerRaw is Map<String, dynamic>
+                                ? sellerRaw
+                                : sellerRaw is Map
+                                    ? Map<String, dynamic>.from(sellerRaw)
+                                    : null;
+                            if (seller == null) return const SizedBox.shrink();
 
-                          final sellerId =
-                              seller['id'] as String? ?? row['seller_id'] as String?;
-                          final name = (seller['name'] as String?)?.trim().isNotEmpty == true
-                              ? seller['name'] as String
-                              : l10n.talent;
-                          final imageUrl = seller['profile_image_url'] as String?;
-                          final rating = (seller['rating'] as num?)?.toDouble() ?? 0;
-                          final reviewCount = (seller['review_count'] as num?)?.toInt() ?? 0;
-                          final jobTitle = _jobTitle(seller);
-                          final location = _location(seller);
-                          final savedId = row['id'] as String?;
+                            final sellerId = seller['id'] as String? ??
+                                row['seller_id'] as String?;
+                            final name = (seller['name'] as String?)
+                                        ?.trim()
+                                        .isNotEmpty ==
+                                    true
+                                ? seller['name'] as String
+                                : l10n.talent;
+                            final imageUrl =
+                                seller['profile_image_url'] as String?;
+                            final rating =
+                                (seller['rating'] as num?)?.toDouble() ?? 0;
+                            final reviewCount =
+                                (seller['review_count'] as num?)?.toInt() ?? 0;
+                            final jobTitle = _jobTitle(seller);
+                            final location = _location(seller);
+                            final savedId = row['id'] as String?;
 
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 10.0),
-                            child: Material(
-                              color: kWhite,
-                              borderRadius: BorderRadius.circular(8.0),
-                              child: InkWell(
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 10.0),
+                              child: Material(
+                                color: kWhite,
                                 borderRadius: BorderRadius.circular(8.0),
-                                onTap: sellerId == null
-                                    ? null
-                                    : () async {
-                                        await FreelancerPublicProfile(
-                                          sellerId: sellerId,
-                                          initialName: name,
-                                        ).launch(context);
-                                        if (mounted) _load();
-                                      },
-                                child: Container(
-                                  padding: const EdgeInsets.all(12.0),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    border: Border.all(color: kBorderColorTextField),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      CircleAvatar(
-                                        radius: 28,
-                                        backgroundColor: kDarkWhite,
-                                        backgroundImage: ProfileImage.provider(imageUrl),
-                                      ),
-                                      const SizedBox(width: 12),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              name,
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: kTextStyle.copyWith(
-                                                color: kNeutralColor,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            if (jobTitle != null) ...[
-                                              const SizedBox(height: 2),
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  onTap: sellerId == null
+                                      ? null
+                                      : () async {
+                                          await FreelancerPublicProfile(
+                                            sellerId: sellerId,
+                                            initialName: name,
+                                          ).launch(context);
+                                          if (mounted) _load();
+                                        },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(12.0),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8.0),
+                                      border: Border.all(
+                                          color: kBorderColorTextField),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        CircleAvatar(
+                                          radius: 28,
+                                          backgroundColor: kDarkWhite,
+                                          backgroundImage:
+                                              ProfileImage.provider(imageUrl),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
                                               Text(
-                                                jobTitle,
+                                                name,
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,
                                                 style: kTextStyle.copyWith(
-                                                  color: kSubTitleColor,
-                                                  fontSize: 13,
+                                                  color: kNeutralColor,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              if (jobTitle != null) ...[
+                                                const SizedBox(height: 2),
+                                                Text(
+                                                  jobTitle,
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: kTextStyle.copyWith(
+                                                    color: kSubTitleColor,
+                                                    fontSize: 13,
+                                                  ),
+                                                ),
+                                              ],
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                [
+                                                  if (reviewCount > 0 ||
+                                                      rating > 0)
+                                                    '★ ${rating.toStringAsFixed(1)}'
+                                                        '${reviewCount > 0 ? ' ($reviewCount)' : ''}',
+                                                  if (location.isNotEmpty)
+                                                    location,
+                                                ].join(' · '),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: kTextStyle.copyWith(
+                                                  color: kLightNeutralColor,
+                                                  fontSize: 12,
                                                 ),
                                               ),
                                             ],
-                                            const SizedBox(height: 4),
-                                            Text(
-                                              [
-                                                if (reviewCount > 0 || rating > 0)
-                                                  '★ ${rating.toStringAsFixed(1)}'
-                                                      '${reviewCount > 0 ? ' ($reviewCount)' : ''}',
-                                                if (location.isNotEmpty) location,
-                                              ].join(' · '),
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: kTextStyle.copyWith(
-                                                color: kLightNeutralColor,
-                                                fontSize: 12,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      if (savedId != null)
-                                        IconButton(
-                                          tooltip: l10n.removeSavedTalent,
-                                          onPressed: () => _handleRemove(savedId, i),
-                                          icon: const Icon(
-                                            Icons.bookmark,
-                                            color: kPrimaryColor,
-                                            size: 22,
                                           ),
-                                          visualDensity: VisualDensity.compact,
                                         ),
-                                    ],
+                                        if (savedId != null)
+                                          IconButton(
+                                            tooltip: l10n.removeSavedTalent,
+                                            onPressed: () =>
+                                                _handleRemove(savedId, i),
+                                            icon: const Icon(
+                                              Icons.bookmark,
+                                              color: kPrimaryColor,
+                                              size: 22,
+                                            ),
+                                            visualDensity:
+                                                VisualDensity.compact,
+                                          ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
+                            );
+                          },
+                        ),
+                ),
         ),
       ),
     );

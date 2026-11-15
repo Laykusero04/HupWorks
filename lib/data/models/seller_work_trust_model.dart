@@ -9,6 +9,7 @@ class WorkTrustHighlight extends Equatable {
   });
 
   final String jobTitle;
+
   /// ISO year-month from server (`YYYY-MM`).
   final String completedMonth;
   final bool hadAttendance;
@@ -24,7 +25,8 @@ class WorkTrustHighlight extends Equatable {
   }
 
   @override
-  List<Object?> get props => [jobTitle, completedMonth, hadAttendance, categoryName];
+  List<Object?> get props =>
+      [jobTitle, completedMonth, hadAttendance, categoryName];
 }
 
 class SellerWorkTrust extends Equatable {
@@ -44,20 +46,21 @@ class SellerWorkTrust extends Equatable {
   final int jobsWithAttendance;
   final List<WorkTrustHighlight> highlights;
 
-  bool get shouldShowSection =>
-      completedOnsiteJobs > 0 || verifiedCheckins > 0;
+  bool get shouldShowSection => completedOnsiteJobs > 0 || verifiedCheckins > 0;
 
   factory SellerWorkTrust.fromJson(Map<String, dynamic> json) {
     final rawHighlights = json['highlights'];
     final highlights = rawHighlights is List
         ? rawHighlights
             .whereType<Map>()
-            .map((e) => WorkTrustHighlight.fromJson(Map<String, dynamic>.from(e)))
+            .map((e) =>
+                WorkTrustHighlight.fromJson(Map<String, dynamic>.from(e)))
             .toList()
         : <WorkTrustHighlight>[];
 
     return SellerWorkTrust(
-      completedOnsiteJobs: (json['completed_onsite_jobs'] as num?)?.toInt() ?? 0,
+      completedOnsiteJobs:
+          (json['completed_onsite_jobs'] as num?)?.toInt() ?? 0,
       verifiedCheckins: (json['verified_checkins'] as num?)?.toInt() ?? 0,
       verifiedShiftDays: (json['verified_shift_days'] as num?)?.toInt() ?? 0,
       jobsWithAttendance: (json['jobs_with_attendance'] as num?)?.toInt() ?? 0,

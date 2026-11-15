@@ -1,3 +1,4 @@
+import 'package:freelancer/core/guide/guide_config.dart';
 import 'package:flutter/widgets.dart';
 import 'package:showcaseview/showcaseview.dart';
 
@@ -44,6 +45,11 @@ class GuideAnchor {
       scope: anchor.scope,
       title: anchor.title,
       description: anchor.description,
+      tooltipPadding: GuideConfig.tooltipPadding,
+      titleAlignment: GuideConfig.tooltipTextAlignment,
+      descriptionAlignment: GuideConfig.tooltipTextAlignment,
+      titleTextStyle: GuideConfig.titleStyle(),
+      descTextStyle: GuideConfig.descStyle(),
       targetBorderRadius: anchor.borderRadius ?? BorderRadius.zero,
       child: child,
     );

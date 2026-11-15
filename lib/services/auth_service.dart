@@ -216,8 +216,8 @@ class AuthService {
     }
 
     final role = data['role'] as String?;
-    final completed = data['seller_onboarding_completed'] as bool? ??
-        (role != 'seller');
+    final completed =
+        data['seller_onboarding_completed'] as bool? ?? (role != 'seller');
     setCachedRole(role, sellerOnboardingCompleted: completed);
     return cachedRole;
   }
@@ -274,7 +274,9 @@ class AuthService {
         await _client.from('seller_profiles').insert({'user_id': user.id});
       } catch (_) {}
       try {
-        await _client.from('seller_private_details').insert({'user_id': user.id});
+        await _client
+            .from('seller_private_details')
+            .insert({'user_id': user.id});
       } catch (_) {}
     }
   }

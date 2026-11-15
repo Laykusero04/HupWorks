@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:freelancer/l10n/l10n.dart';
 
 import '../../services/auth_service.dart';
+import '../constants/colors.dart';
 import 'guide_info_button.dart';
 import 'guide_config.dart';
 import 'guide_service.dart';
@@ -340,6 +341,8 @@ mixin GuideHost<T extends StatefulWidget> on State<T> {
     } else {
       if (_guideWasHidden) {
         _guideWasHidden = false;
+        // Landing on Home again lets the shell "Your tabs" guide show later.
+        if (guideLeadsChain) _session.clearShellSuppression();
         _guideRetried = false; // fresh retry budget when visible again
       }
       scheduleGuide();
@@ -440,6 +443,8 @@ mixin GuideHost<T extends StatefulWidget> on State<T> {
         skipLabel: guideSkipLabel,
         nextLabel: guideNextLabel,
         doneLabel: guideDoneLabel,
+        actionColor: guideRole == 'seller' ? kSecondaryFill : kPrimaryFill,
+        suppressShellOnTabTap: guideLeadsChain,
         onEnd: (_) async {
           // Core: finish and skip both mark seen. Sections never do.
           if (section == null) _guideResolved = true;

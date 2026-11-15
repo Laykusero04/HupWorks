@@ -27,6 +27,7 @@ class MapLocationPickerResult {
   final double longitude;
   final String? city;
   final String? country;
+
   /// Filled for [MapLocationPickerPurpose.job] (display + `job_posts.location`).
   final String? locationLabel;
 }
@@ -47,6 +48,7 @@ class MapLocationPickerScreen extends StatefulWidget {
   final MapLocationPickerPurpose purpose;
   final String? initialCity;
   final String? initialCountry;
+
   /// Job: existing location text to geocode for initial camera.
   final String? initialLocation;
   final LatLng? initialPosition;
@@ -54,7 +56,8 @@ class MapLocationPickerScreen extends StatefulWidget {
   final String? title;
 
   @override
-  State<MapLocationPickerScreen> createState() => _MapLocationPickerScreenState();
+  State<MapLocationPickerScreen> createState() =>
+      _MapLocationPickerScreenState();
 }
 
 class _MapLocationPickerScreenState extends State<MapLocationPickerScreen> {
@@ -82,9 +85,7 @@ class _MapLocationPickerScreenState extends State<MapLocationPickerScreen> {
   Future<void> _moveToInitial() async {
     final serviceOn = await Geolocator.isLocationServiceEnabled();
     // Prefer GPS when opening the picker (request permission if needed).
-    final gps = serviceOn
-        ? await _currentGpsLatLng(showErrors: false)
-        : null;
+    final gps = serviceOn ? await _currentGpsLatLng(showErrors: false) : null;
     if (!mounted) return;
     if (gps != null) {
       _goTo(gps, zoom: 16);
@@ -227,7 +228,8 @@ class _MapLocationPickerScreenState extends State<MapLocationPickerScreen> {
       _previewLine = null;
     });
     try {
-      final marks = await placemarkFromCoordinates(_center.latitude, _center.longitude);
+      final marks =
+          await placemarkFromCoordinates(_center.latitude, _center.longitude);
       if (!mounted) return;
       if (marks.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -247,7 +249,8 @@ class _MapLocationPickerScreenState extends State<MapLocationPickerScreen> {
           );
           return;
         }
-        setState(() => _previewLine = [city, country].where((e) => e.isNotEmpty).join(', '));
+        setState(() => _previewLine =
+            [city, country].where((e) => e.isNotEmpty).join(', '));
       } else {
         final display = label.isNotEmpty
             ? label
@@ -298,7 +301,8 @@ class _MapLocationPickerScreenState extends State<MapLocationPickerScreen> {
       appBar: AppBar(
         title: Text(
           widget.title ?? context.l10n.mapPickLocation,
-          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+          style: kTextStyle.copyWith(
+              color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
         backgroundColor: kDarkWhite,
         elevation: 0,
@@ -312,7 +316,8 @@ class _MapLocationPickerScreenState extends State<MapLocationPickerScreen> {
               widget.purpose == MapLocationPickerPurpose.job
                   ? context.l10n.mapMovePinJob
                   : context.l10n.mapMovePinProfile,
-              style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13, height: 1.35),
+              style: kTextStyle.copyWith(
+                  color: kSubTitleColor, fontSize: 13, height: 1.35),
             ),
           ),
           Expanded(
@@ -390,7 +395,8 @@ class _MapLocationPickerScreenState extends State<MapLocationPickerScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
             child: Text(
               '${_center.latitude.toStringAsFixed(5)}, ${_center.longitude.toStringAsFixed(5)}',
-              style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
+              style:
+                  kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
             ),
           ),
           if (_previewLine != null)

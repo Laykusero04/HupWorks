@@ -11,6 +11,7 @@ class SignUpScreen extends StatefulWidget {
   final String heroImage;
   final String Function(AppLocalizations) subtitle;
   final String Function(AppLocalizations) roleLabel;
+
   /// Called after successful signup. Prefer GoRouter navigation for sellers.
   final Future<void> Function(BuildContext context, String email) onSignedUp;
 
@@ -54,7 +55,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final email = _emailController.text.trim();
     final password = _passwordController.text;
 
-    if (firstName.isEmpty || lastName.isEmpty || email.isEmpty || password.isEmpty) {
+    if (firstName.isEmpty ||
+        lastName.isEmpty ||
+        email.isEmpty ||
+        password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.pleaseFillAllFields)),
       );
@@ -138,7 +142,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
             suffixIcon: IconButton(
               onPressed: () => setState(() => _hidePassword = !_hidePassword),
               icon: Icon(
-                _hidePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                _hidePassword
+                    ? Icons.visibility_off_outlined
+                    : Icons.visibility_outlined,
                 color: kLightNeutralColor,
               ),
             ),

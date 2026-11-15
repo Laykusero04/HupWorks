@@ -38,7 +38,6 @@ class DashboardPeriodSelector extends StatelessWidget {
         selected: {value},
         onSelectionChanged: (s) => onChanged(s.first),
         style: ButtonStyle(
-          visualDensity: VisualDensity.compact,
           textStyle: WidgetStatePropertyAll(
             kTextStyle.copyWith(fontSize: 13, fontWeight: FontWeight.w600),
           ),

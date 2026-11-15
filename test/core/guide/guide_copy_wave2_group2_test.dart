@@ -40,8 +40,8 @@ void main() {
         as Map<String, dynamic>;
     final nl = jsonDecode(File('lib/l10n/app_nl.arb').readAsStringSync())
         as Map<String, dynamic>;
-    final titles = en.keys
-        .where((k) => prefixes.any(k.startsWith) && k.endsWith('Title'));
+    final titles =
+        en.keys.where((k) => prefixes.any(k.startsWith) && k.endsWith('Title'));
     expect(titles.length, greaterThanOrEqualTo(17));
     for (final k in titles) {
       expect(en.containsKey('${k.substring(0, k.length - 5)}Desc'), true,

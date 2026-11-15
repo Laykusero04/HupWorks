@@ -1,3 +1,4 @@
+import 'package:freelancer/core/guide/guide_config.dart';
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/widgets/empty_state_widget.dart';
 import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
@@ -203,6 +204,11 @@ class _SellerHomeScreenState extends State<SellerHomeScreen>
       scope: guideScope,
       title: title,
       description: description,
+      tooltipPadding: GuideConfig.tooltipPadding,
+      titleAlignment: GuideConfig.tooltipTextAlignment,
+      descriptionAlignment: GuideConfig.tooltipTextAlignment,
+      titleTextStyle: GuideConfig.titleStyle(),
+      descTextStyle: GuideConfig.descStyle(),
       targetBorderRadius: BorderRadius.circular(radius),
       child: child,
     );
@@ -325,6 +331,12 @@ class _SellerHomeScreenState extends State<SellerHomeScreen>
                               scope: guideScope,
                               title: l10n.guideSellerHomeBannerTitle,
                               description: l10n.guideSellerHomeBannerDesc,
+                              tooltipPadding: GuideConfig.tooltipPadding,
+                              titleAlignment: GuideConfig.tooltipTextAlignment,
+                              descriptionAlignment:
+                                  GuideConfig.tooltipTextAlignment,
+                              titleTextStyle: GuideConfig.titleStyle(),
+                              descTextStyle: GuideConfig.descStyle(),
                               targetBorderRadius: BorderRadius.circular(18),
                               child: GestureDetector(
                                 onTap: () =>
@@ -418,7 +430,12 @@ class _SellerHomeScreenState extends State<SellerHomeScreen>
                                         .push(AppRoutes.sellerApplications);
                                     if (mounted) _loadData();
                                   },
-                                  child: Row(
+                                  child: Wrap(
+                                    crossAxisAlignment:
+                                        WrapCrossAlignment.center,
+                                    alignment: WrapAlignment.spaceBetween,
+                                    spacing: 8,
+                                    runSpacing: 4,
                                     children: [
                                       Text(
                                         l10n.myApplications,
@@ -426,17 +443,23 @@ class _SellerHomeScreenState extends State<SellerHomeScreen>
                                             color: kNeutralColor,
                                             fontWeight: FontWeight.bold),
                                       ),
-                                      const Spacer(),
-                                      Text(
-                                        l10n.viewAll,
-                                        style: kTextStyle.copyWith(
-                                          color: kPrimaryColor,
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 13,
-                                        ),
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            l10n.viewAll,
+                                            style: kTextStyle.copyWith(
+                                              color: kSecondaryText,
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 13,
+                                            ),
+                                          ),
+                                          const Icon(
+                                              Icons.chevron_right_rounded,
+                                              size: 20,
+                                              color: kSecondaryText),
+                                        ],
                                       ),
-                                      const Icon(Icons.chevron_right_rounded,
-                                          size: 20, color: kPrimaryColor),
                                     ],
                                   ),
                                 )),
@@ -485,7 +508,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen>
                                             radius: 24,
                                             FilledButton(
                                               style: FilledButton.styleFrom(
-                                                backgroundColor: kPrimaryColor,
+                                                backgroundColor: kSecondaryFill,
                                                 foregroundColor: Colors.white,
                                                 padding:
                                                     const EdgeInsets.symmetric(
@@ -698,7 +721,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen>
                             child: _WorkStatPrimary(
                               value: _formatHours(context),
                               label: l10n.hoursWorked,
-                              color: kSecondaryColor,
+                              color: kSecondaryText,
                               onTap: () async {
                                 await context.push(AppRoutes.sellerAttendance);
                                 if (mounted) _loadData();
@@ -790,7 +813,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen>
                               value: '${_ov('active_contracts')}',
                               label: l10n.activeContracts,
                               icon: Icons.work_outline_rounded,
-                              color: kSecondaryColor,
+                              color: kSecondaryText,
                               onTap: () =>
                                   context.go('/seller/orders?status=active'),
                             ),
@@ -926,6 +949,11 @@ class _SellerHomeScreenState extends State<SellerHomeScreen>
       scope: guideScope,
       title: guideTitle,
       description: guideDescription,
+      tooltipPadding: GuideConfig.tooltipPadding,
+      titleAlignment: GuideConfig.tooltipTextAlignment,
+      descriptionAlignment: GuideConfig.tooltipTextAlignment,
+      titleTextStyle: GuideConfig.titleStyle(),
+      descTextStyle: GuideConfig.descStyle(),
       targetBorderRadius: BorderRadius.circular(16),
       child: card,
     );
@@ -938,52 +966,62 @@ class _SellerHomeScreenState extends State<SellerHomeScreen>
     VoidCallback? onHeaderTap,
     bool showChild = true,
   }) {
-    final header = Row(
-      children: [
-        Text(title,
-            style: kTextStyle.copyWith(
-                color: kNeutralColor, fontWeight: FontWeight.bold)),
-        const Spacer(),
-        dropdown,
-      ],
-    );
-    return Container(
-      padding: const EdgeInsets.all(10.0),
-      decoration: BoxDecoration(
-        color: kWhite,
-        borderRadius: BorderRadius.circular(16.0),
-        border: Border.all(color: kBorderColorTextField),
-        boxShadow: const [
-          BoxShadow(
-              color: kDarkWhite,
-              blurRadius: 5.0,
-              spreadRadius: 2.0,
-              offset: Offset(0, 5))
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+    // Wrap (not Row): the count/dropdown drops below the title at large text
+    // instead of overflowing (T-0158 B2).
+    final header = SizedBox(
+      width: double.infinity,
+      child: Wrap(
+        alignment: WrapAlignment.spaceBetween,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: 8,
+        runSpacing: 4,
         children: [
-          if (onHeaderTap == null)
-            header
-          else
-            InkWell(
-              onTap: onHeaderTap,
-              borderRadius: BorderRadius.circular(8),
-              child: Semantics(
-                button: true,
-                expanded: showChild,
-                child: header,
-              ),
-            ),
-          if (showChild) ...[
-            const SizedBox(height: 15.0),
-            child,
-          ],
+          Text(title,
+              style: kTextStyle.copyWith(
+                  color: kNeutralColor, fontWeight: FontWeight.bold)),
+          dropdown,
         ],
       ),
     );
+    return MediaQuery.withClampedTextScaling(
+        maxScaleFactor: 1.3,
+        child: Container(
+          padding: const EdgeInsets.all(10.0),
+          decoration: BoxDecoration(
+            color: kWhite,
+            borderRadius: BorderRadius.circular(16.0),
+            border: Border.all(color: kBorderColorTextField),
+            boxShadow: const [
+              BoxShadow(
+                  color: kDarkWhite,
+                  blurRadius: 5.0,
+                  spreadRadius: 2.0,
+                  offset: Offset(0, 5))
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (onHeaderTap == null)
+                header
+              else
+                InkWell(
+                  onTap: onHeaderTap,
+                  borderRadius: BorderRadius.circular(8),
+                  child: Semantics(
+                    button: true,
+                    expanded: showChild,
+                    child: header,
+                  ),
+                ),
+              if (showChild) ...[
+                const SizedBox(height: 15.0),
+                child,
+              ],
+            ],
+          ),
+        ));
   }
 }
 
@@ -1092,7 +1130,7 @@ class _ShortcutTile extends StatelessWidget {
               const SizedBox(height: 10),
               Text(
                 title,
-                maxLines: 1,
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
                 style: kTextStyle.copyWith(

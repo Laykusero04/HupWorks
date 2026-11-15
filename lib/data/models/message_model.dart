@@ -36,7 +36,9 @@ class Message extends Equatable {
       attachmentUrl: json['attachment_url'] as String?,
       isRead: (json['read'] as bool?) ?? false,
       createdAt: DateTime.parse(json['created_at'] as String),
-      sender: senderData is Map<String, dynamic> ? Profile.fromJson(senderData) : null,
+      sender: senderData is Map<String, dynamic>
+          ? Profile.fromJson(senderData)
+          : null,
     );
   }
 
@@ -62,5 +64,14 @@ class Message extends Equatable {
   }
 
   @override
-  List<Object?> get props => [id, conversationId, senderId, content, attachmentUrl, isRead, createdAt, sender];
+  List<Object?> get props => [
+        id,
+        conversationId,
+        senderId,
+        content,
+        attachmentUrl,
+        isRead,
+        createdAt,
+        sender
+      ];
 }

@@ -100,7 +100,8 @@ class _SellerDashBoardState extends State<SellerDashBoard> {
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
           l10n.dashboard,
-          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+          style: kTextStyle.copyWith(
+              color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),

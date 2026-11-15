@@ -78,7 +78,8 @@ class SavedTalentService {
 
     if (sellers.isEmpty) return rows;
 
-    final enriched = await ProfileService.enrichProfilesWithReviewStats(sellers);
+    final enriched =
+        await ProfileService.enrichProfilesWithReviewStats(sellers);
     final byId = <String, Map<String, dynamic>>{
       for (final s in enriched)
         if (s['id'] is String) s['id'] as String: s,

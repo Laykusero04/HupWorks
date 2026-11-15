@@ -27,7 +27,8 @@ class Favourite extends Equatable {
       userId: json['user_id'] as String? ?? '',
       jobPostId: json['job_post_id'] as String,
       createdAt: DateTime.parse(json['created_at'] as String),
-      jobPost: jobData is Map<String, dynamic> ? JobPost.fromJson(jobData) : null,
+      jobPost:
+          jobData is Map<String, dynamic> ? JobPost.fromJson(jobData) : null,
     );
   }
 

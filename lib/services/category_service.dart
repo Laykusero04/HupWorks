@@ -11,7 +11,8 @@ abstract final class CategoryService {
   static Future<List<Map<String, dynamic>>> listForPicker() async {
     final data = await _client
         .from('categories')
-        .select('id, name, name_i18n, description, description_i18n, is_custom, icon')
+        .select(
+            'id, name, name_i18n, description, description_i18n, is_custom, icon')
         .order('is_custom')
         .order('name');
     return List<Map<String, dynamic>>.from(data);

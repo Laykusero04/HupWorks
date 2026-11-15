@@ -142,7 +142,8 @@ class _OrderCancellationSheetState extends State<OrderCancellationSheet> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: selected ? kPrimaryColor : kBorderColorTextField,
+                          color:
+                              selected ? kPrimaryColor : kBorderColorTextField,
                           width: selected ? 1.5 : 1,
                         ),
                         color: selected
@@ -203,16 +204,20 @@ class _OrderCancellationSheetState extends State<OrderCancellationSheet> {
                         color: kWhite,
                         border: Border.all(color: kBorderColorTextField),
                       ),
-                      onPressed: _submitting ? null : () => Navigator.pop(context),
+                      onPressed:
+                          _submitting ? null : () => Navigator.pop(context),
                     ),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
                     child: ButtonGlobalWithoutIcon(
-                      buttontext: _submitting ? l10n.sending : l10n.cancellationSubmit,
+                      buttontext:
+                          _submitting ? l10n.sending : l10n.cancellationSubmit,
                       buttonTextColor: kWhite,
                       buttonDecoration: kButtonDecoration.copyWith(
-                        color: canSubmit ? Colors.red.shade700 : kLightNeutralColor,
+                        color: canSubmit
+                            ? Colors.red.shade700
+                            : kLightNeutralColor,
                       ),
                       onPressed: canSubmit ? _submit : null,
                     ),

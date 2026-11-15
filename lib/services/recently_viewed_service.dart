@@ -30,7 +30,8 @@ class RecentlyViewedService {
   }
 
   /// Fetch recently viewed services with full data from Supabase
-  static Future<List<Map<String, dynamic>>> getRecentlyViewedServices({int limit = 10}) async {
+  static Future<List<Map<String, dynamic>>> getRecentlyViewedServices(
+      {int limit = 10}) async {
     final ids = await getServiceIds();
     if (ids.isEmpty) return [];
 

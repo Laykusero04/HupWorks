@@ -408,8 +408,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final localeController = LocaleScope.of(context);
-    final currentLanguage =
-        LocaleController.displayName(l10n, localeController.locale.languageCode);
+    final currentLanguage = LocaleController.displayName(
+        l10n, localeController.locale.languageCode);
     final isSeller = (_role ?? AuthService.cachedRole) == 'seller';
     final verificationTitle =
         isSeller ? l10n.identityVerification : l10n.employerVerification;
@@ -422,7 +422,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
           l10n.settings,
-          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+          style: kTextStyle.copyWith(
+              color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),
@@ -456,7 +457,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       CircleAvatar(
                         radius: 26,
                         backgroundColor: kDarkWhite,
-                        backgroundImage: ProfileImage.provider(_profileImageUrl),
+                        backgroundImage:
+                            ProfileImage.provider(_profileImageUrl),
                       ),
                       if (_uploadingPhoto)
                         const SizedBox(
@@ -469,7 +471,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   title: Text(
                     l10n.selectProfileImage,
                     overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
+                    maxLines: 2,
                     style: kTextStyle.copyWith(
                       color: kNeutralColor,
                       fontWeight: FontWeight.w600,
@@ -479,10 +481,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     '${l10n.settingsProfilePhotoHint}\n${_photoStatusLabel(l10n)}',
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,
-                    style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12),
+                    style: kTextStyle.copyWith(
+                        color: kSubTitleColor, fontSize: 12),
                   ),
                   isThreeLine: true,
-                  trailing: const Icon(Icons.chevron_right, color: kLightNeutralColor),
+                  trailing: const Icon(Icons.chevron_right,
+                      color: kLightNeutralColor),
                 ),
                 ListTile(
                   onTap: _openVerification,
@@ -503,7 +507,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   title: Text(
                     verificationTitle,
                     overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
+                    maxLines: 2,
                     style: kTextStyle.copyWith(
                       color: kNeutralColor,
                       fontWeight: FontWeight.w600,
@@ -513,10 +517,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     '${l10n.settingsVerificationSubtitle}\n${_verificationStatusLabel(l10n)}',
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,
-                    style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12),
+                    style: kTextStyle.copyWith(
+                        color: kSubTitleColor, fontSize: 12),
                   ),
                   isThreeLine: true,
-                  trailing: const Icon(Icons.chevron_right, color: kLightNeutralColor),
+                  trailing: const Icon(Icons.chevron_right,
+                      color: kLightNeutralColor),
                 ),
                 const Divider(height: 1),
                 const SizedBox(height: 8),
@@ -538,7 +544,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   title: Text(
                     l10n.pushNotifications,
                     overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
+                    maxLines: 2,
                     style: kTextStyle.copyWith(color: kNeutralColor),
                   ),
                   trailing: CupertinoSwitch(
@@ -565,16 +571,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   title: Text(
                     l10n.chatPrivacyTitle,
                     overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
+                    maxLines: 2,
                     style: kTextStyle.copyWith(color: kNeutralColor),
                   ),
                   subtitle: Text(
                     ChatContactPolicy.label(l10n, _chatContactPolicy),
                     overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                    style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12),
+                    maxLines: 2,
+                    style: kTextStyle.copyWith(
+                        color: kSubTitleColor, fontSize: 12),
                   ),
-                  trailing: const Icon(Icons.chevron_right, color: kLightNeutralColor),
+                  trailing: const Icon(Icons.chevron_right,
+                      color: kLightNeutralColor),
                 ),
                 ListTile(
                   onTap: () => widget.languagePage.launch(context),
@@ -595,13 +603,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   title: Text(
                     l10n.language,
                     overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
+                    maxLines: 2,
                     style: kTextStyle.copyWith(color: kNeutralColor),
                   ),
                   trailing: Text(
                     currentLanguage,
                     overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
+                    maxLines: 2,
                     style: kTextStyle.copyWith(color: kSubTitleColor),
                   ),
                 ),
@@ -624,14 +632,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   title: Text(
                     l10n.guideReplayTitle,
                     overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
+                    maxLines: 2,
                     style: kTextStyle.copyWith(color: kNeutralColor),
                   ),
                   subtitle: Text(
                     l10n.guideReplaySubtitle,
                     overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                    style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12),
+                    maxLines: 2,
+                    style: kTextStyle.copyWith(
+                        color: kSubTitleColor, fontSize: 12),
                   ),
                 ),
                 ListTile(
@@ -653,7 +662,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   title: Text(
                     l10n.privacyPolicy,
                     overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
+                    maxLines: 2,
                     style: kTextStyle.copyWith(color: kNeutralColor),
                   ),
                 ),
@@ -676,7 +685,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   title: Text(
                     l10n.aboutUs,
                     overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
+                    maxLines: 2,
                     style: kTextStyle.copyWith(color: kNeutralColor),
                   ),
                 ),
@@ -699,14 +708,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   title: Text(
                     l10n.platformRulesTitle,
                     overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
+                    maxLines: 2,
                     style: kTextStyle.copyWith(color: kNeutralColor),
                   ),
                   subtitle: Text(
                     l10n.platformRulesSubtitle,
                     overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                    style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12),
+                    maxLines: 2,
+                    style: kTextStyle.copyWith(
+                        color: kSubTitleColor, fontSize: 12),
                   ),
                 ),
                 ListTile(
@@ -728,7 +738,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   title: Text(
                     l10n.helpSupport,
                     overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
+                    maxLines: 2,
                     style: kTextStyle.copyWith(color: kNeutralColor),
                   ),
                 ),
@@ -751,14 +761,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   title: Text(
                     l10n.supportEmail,
                     overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
+                    maxLines: 2,
                     style: kTextStyle.copyWith(color: kNeutralColor),
                   ),
                   subtitle: Text(
                     SupportContact.email,
                     overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                    style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12),
+                    maxLines: 2,
+                    style: kTextStyle.copyWith(
+                        color: kSubTitleColor, fontSize: 12),
                   ),
                 ),
                 const Divider(height: 24),
@@ -787,7 +798,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   title: Text(
                     l10n.deleteAccount,
                     overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
+                    maxLines: 2,
                     style: kTextStyle.copyWith(
                       color: Colors.red,
                       fontWeight: FontWeight.w600,
@@ -797,7 +808,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     l10n.deleteAccountSubtitle,
                     overflow: TextOverflow.ellipsis,
                     maxLines: 2,
-                    style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12),
+                    style: kTextStyle.copyWith(
+                        color: kSubTitleColor, fontSize: 12),
                   ),
                 ),
               ],

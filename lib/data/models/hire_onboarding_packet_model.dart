@@ -33,17 +33,18 @@ class HireOnboardingSection extends Equatable {
     );
   }
 
+  /// Default section keys. English default titles ARE persisted (other consumers of
+  /// saved packets still get a title); the UI resolves the display title from
+  /// ARB via the section key (see
+  /// `hire_onboarding_section_titles.dart`), so they follow the app language.
   static List<HireOnboardingSection> defaultSections() => const [
         HireOnboardingSection(key: 'where', title: 'Where to go', body: ''),
         HireOnboardingSection(key: 'when', title: 'When to arrive', body: ''),
         HireOnboardingSection(key: 'who', title: 'Who to contact', body: ''),
-        HireOnboardingSection(key: 'access', title: 'Building access', body: ''),
-        HireOnboardingSection(key: 'rules', title: 'Site rules', body: ''),
         HireOnboardingSection(
-          key: 'attendance',
-          title: 'Attendance',
-          body: '',
-        ),
+            key: 'access', title: 'Building access', body: ''),
+        HireOnboardingSection(key: 'rules', title: 'Site rules', body: ''),
+        HireOnboardingSection(key: 'attendance', title: 'Attendance', body: ''),
         HireOnboardingSection(key: 'emergency', title: 'Emergency', body: ''),
       ];
 
@@ -90,7 +91,8 @@ class HireOnboardingPacket extends Equatable {
     if (rawSections is List) {
       sections = rawSections
           .whereType<Map>()
-          .map((e) => HireOnboardingSection.fromJson(Map<String, dynamic>.from(e)))
+          .map((e) =>
+              HireOnboardingSection.fromJson(Map<String, dynamic>.from(e)))
           .toList();
     } else {
       sections = HireOnboardingSection.defaultSections();
@@ -103,7 +105,8 @@ class HireOnboardingPacket extends Equatable {
       sellerId: json['seller_id'] as String,
       status: json['status'] as String? ?? 'draft',
       requiredAck: json['required_ack'] as bool? ?? true,
-      sections: sections.isEmpty ? HireOnboardingSection.defaultSections() : sections,
+      sections:
+          sections.isEmpty ? HireOnboardingSection.defaultSections() : sections,
       publishedAt: json['published_at'] != null
           ? DateTime.tryParse(json['published_at'] as String)
           : null,

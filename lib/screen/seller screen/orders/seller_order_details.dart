@@ -1,3 +1,5 @@
+import 'package:freelancer/screen/widgets/label_value_row.dart';
+import 'package:freelancer/core/utils/contract_text.dart';
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/guide/guide_anchor.dart';
 import 'package:freelancer/core/guide/guide_host.dart';
@@ -460,7 +462,7 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails>
     if (isCancelled) {
       return ButtonGlobalWithoutIcon(
         buttontext: l10n.closeAction,
-        buttonDecoration: kButtonDecoration.copyWith(color: kPrimaryColor),
+        buttonDecoration: kButtonDecoration.copyWith(color: kSecondaryFill),
         onPressed: () => Navigator.pop(context),
         buttonTextColor: kWhite,
       );
@@ -483,6 +485,7 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails>
       if (_sellerHasReviewed) {
         return ButtonGlobalWithoutIcon(
           buttontext: l10n.reviewSubmittedForOrder,
+          disabledLook: true,
           buttonTextColor: kWhite,
           buttonDecoration:
               kButtonDecoration.copyWith(color: kLightNeutralColor),
@@ -492,7 +495,7 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails>
       return ButtonGlobalWithoutIcon(
         buttontext: l10n.writeReviewAction,
         buttonTextColor: kWhite,
-        buttonDecoration: kButtonDecoration.copyWith(color: kPrimaryColor),
+        buttonDecoration: kButtonDecoration.copyWith(color: kSecondaryFill),
         onPressed: _openSellerReviewScreen,
       );
     }
@@ -500,6 +503,7 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails>
     if (isDelivered) {
       return ButtonGlobalWithoutIcon(
         buttontext: l10n.waitingForClientApproval,
+        disabledLook: true,
         buttonTextColor: kWhite,
         buttonDecoration: kButtonDecoration.copyWith(color: kLightNeutralColor),
         onPressed: () {},
@@ -536,7 +540,7 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails>
             buttontext: l10n.deliverWork,
             buttonTextColor: kWhite,
             buttonDecoration: kButtonDecoration.copyWith(
-              color: _actionBusy ? kLightNeutralColor : kPrimaryColor,
+              color: _actionBusy ? kLightNeutralColor : kSecondaryFill,
             ),
             onPressed: _actionBusy
                 ? null
@@ -725,9 +729,12 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails>
 
     final title = OrderContractDisplay.title(_order, _service);
     final description = OrderContractDisplay.serviceInfo(_order, _service);
-    final durationText = OrderContractDisplay.durationLabel(_order, _service);
-    final revisionText = OrderContractDisplay.revisionsLabel(_order, _service);
-    final price = _order?['price'] ?? 0;
+    final durationText = ContractText.localizeLegacy(
+        l10n, OrderContractDisplay.durationLabel(_order, _service));
+    final revisionText = ContractText.localizeLegacy(
+        l10n, OrderContractDisplay.revisionsLabel(_order, _service));
+    final price = ContractText.money(
+        _order?['price'], Localizations.localeOf(context).toString());
     final clientName = _client?['name'] ?? l10n.roleClient;
     final orderId = widget.orderId.substring(0, 8).toUpperCase();
     final bottomInset = MediaQuery.paddingOf(context).bottom + 12;
@@ -766,7 +773,7 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails>
               IconButton(
                 tooltip: l10n.message,
                 onPressed: _handleMessageClient,
-                icon: const Icon(IconlyBold.chat, color: kPrimaryColor),
+                icon: const Icon(IconlyBold.chat, color: kSellerPrimary),
               ),
             ),
           if ((_client?['id'] ?? _order?['client_id']) != null)
@@ -795,6 +802,10 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails>
       bottomNavigationBar: Material(
         color: kWhite,
         elevation: 12,
+        // 1px divider so the scroll area does not look cut by the bar.
+        shape: const Border(
+          top: BorderSide(color: kBorderColorTextField),
+        ),
         shadowColor: Colors.black26,
         child: Padding(
           padding: EdgeInsets.only(
@@ -902,11 +913,18 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails>
                             children: [
                               Row(
                                 children: [
-                                  Text(
-                                    l10n.orderIdHash(orderId),
-                                    style: kTextStyle.copyWith(
-                                      color: kNeutralColor,
-                                      fontWeight: FontWeight.bold,
+                                  Flexible(
+                                    child: FittedBox(
+                                      fit: BoxFit.scaleDown,
+                                      alignment:
+                                          AlignmentDirectional.centerStart,
+                                      child: Text(
+                                        l10n.orderIdHash(orderId),
+                                        maxLines: 1,
+                                        style: kTextStyle.copyWith(
+                                            color: kNeutralColor,
+                                            fontWeight: FontWeight.bold),
+                                      ),
                                     ),
                                   ),
                                   const Spacer(),
@@ -919,7 +937,7 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails>
                                       decoration: BoxDecoration(
                                         color: isCompleted
                                             ? const Color(0xFFBFBFBF)
-                                            : kPrimaryColor,
+                                            : kSellerPrimary,
                                         borderRadius:
                                             BorderRadius.circular(3.0),
                                       ),
@@ -961,11 +979,13 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails>
                               _row(l10n.labelTitle, title,
                                   emphasizeValue: true),
                               const SizedBox(height: 8.0),
-                              _rowExpand(l10n.labelServiceInfo, description),
-                              const SizedBox(height: 8.0),
+                              if (description.isNotEmpty) ...[
+                                _rowExpand(l10n.labelServiceInfo, description),
+                                const SizedBox(height: 8.0),
+                              ],
                               _row(l10n.labelDuration, durationText),
                               const SizedBox(height: 8.0),
-                              _row(l10n.amount, '$currencySign$price'),
+                              _row(l10n.amount, price),
                               const SizedBox(height: 8.0),
                               _row(
                                 l10n.labelStatus,
@@ -991,12 +1011,16 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails>
                                 ),
                               ),
                               const SizedBox(height: 8.0),
-                              _row(l10n.labelTotal, '$currencySign$price'),
-                              const SizedBox(height: 8.0),
-                              _row(
-                                l10n.deliveryDate,
-                                _formatDate(_order?['delivery_deadline']),
-                              ),
+                              _row(l10n.labelTotal, price),
+                              if (_formatDate(_order?['delivery_deadline'])
+                                  .trim()
+                                  .isNotEmpty) ...[
+                                const SizedBox(height: 8.0),
+                                _row(
+                                  l10n.deliveryDate,
+                                  _formatDate(_order?['delivery_deadline']),
+                                ),
+                              ],
                               if (ShiftSchedule.fromOrderMap(_order)
                                       .displayLabel !=
                                   null) ...[
@@ -1095,12 +1119,12 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails>
           icon: const Icon(
             Icons.menu_book_outlined,
             size: 18,
-            color: kPrimaryColor,
+            color: kSellerPrimary,
           ),
           label: Text(
             l10n.viewFirstDayInstructions,
             style: kTextStyle.copyWith(
-              color: kPrimaryColor,
+              color: kSecondaryText,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -1169,73 +1193,40 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails>
     );
   }
 
-  Widget _row(String l, String v, {bool emphasizeValue = false}) => Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            flex: 2,
-            child: Text(l, style: kTextStyle.copyWith(color: kSubTitleColor)),
-          ),
-          Expanded(
-            flex: 4,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(context.l10n.labelColon,
-                    style: kTextStyle.copyWith(color: kSubTitleColor)),
-                const SizedBox(width: 10.0),
-                Flexible(
-                  child: Text(
-                    v,
-                    style: emphasizeValue
-                        ? kTextStyle.copyWith(
-                            color: kNeutralColor,
-                            fontWeight: FontWeight.w700,
-                            height: 1.35,
-                          )
-                        : kTextStyle.copyWith(
-                            color: kSubTitleColor,
-                            height: 1.35,
-                          ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: emphasizeValue ? 8 : 2,
-                  ),
+  Widget _row(String l, String v, {bool emphasizeValue = false}) =>
+      LabelValueRow(
+        label: l,
+        labelStyle: kTextStyle.copyWith(color: kSubTitleColor),
+        colon: context.l10n.labelColon,
+        value: Text(
+          v,
+          style: emphasizeValue
+              ? kTextStyle.copyWith(
+                  color: kNeutralColor,
+                  fontWeight: FontWeight.w700,
+                  height: 1.35,
+                )
+              : kTextStyle.copyWith(
+                  color: kSubTitleColor,
+                  height: 1.35,
                 ),
-              ],
-            ),
-          ),
-        ],
+          overflow: TextOverflow.ellipsis,
+          maxLines: emphasizeValue ? 8 : 2,
+        ),
       );
 
-  Widget _rowExpand(String l, String v) => Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            flex: 2,
-            child: Text(l, style: kTextStyle.copyWith(color: kSubTitleColor)),
-          ),
-          Expanded(
-            flex: 4,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(context.l10n.labelColon,
-                    style: kTextStyle.copyWith(color: kSubTitleColor)),
-                const SizedBox(width: 10.0),
-                Flexible(
-                  child: ReadMoreText(
-                    v,
-                    style: kTextStyle.copyWith(color: kLightNeutralColor),
-                    trimLines: 3,
-                    colorClickableText: kPrimaryColor,
-                    trimMode: TrimMode.Line,
-                    trimCollapsedText: context.l10n.readMoreSuffix,
-                    trimExpandedText: context.l10n.readLessSuffix,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+  Widget _rowExpand(String l, String v) => LabelValueRow(
+        label: l,
+        labelStyle: kTextStyle.copyWith(color: kSubTitleColor),
+        colon: context.l10n.labelColon,
+        value: ReadMoreText(
+          v,
+          style: kTextStyle.copyWith(color: kLightNeutralColor),
+          trimLines: 3,
+          colorClickableText: kSecondaryText,
+          trimMode: TrimMode.Line,
+          trimCollapsedText: context.l10n.readMoreSuffix,
+          trimExpandedText: context.l10n.readLessSuffix,
+        ),
       );
 }

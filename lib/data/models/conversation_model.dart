@@ -33,8 +33,12 @@ class Conversation extends Equatable {
       sellerId: json['seller_id'] as String,
       lastMessage: json['last_message'] as String?,
       lastMessageAt: DateTime.parse(json['last_message_at'] as String),
-      client: clientData is Map<String, dynamic> ? Profile.fromJson(clientData) : null,
-      seller: sellerData is Map<String, dynamic> ? Profile.fromJson(sellerData) : null,
+      client: clientData is Map<String, dynamic>
+          ? Profile.fromJson(clientData)
+          : null,
+      seller: sellerData is Map<String, dynamic>
+          ? Profile.fromJson(sellerData)
+          : null,
     );
   }
 
@@ -57,5 +61,6 @@ class Conversation extends Equatable {
   }
 
   @override
-  List<Object?> get props => [id, clientId, sellerId, lastMessage, lastMessageAt, client, seller];
+  List<Object?> get props =>
+      [id, clientId, sellerId, lastMessage, lastMessageAt, client, seller];
 }

@@ -72,11 +72,6 @@ class _OnBoardState extends State<OnBoard> {
     ];
   }
 
-  Color _accentForIndex(List<_OnboardPageData> pages) {
-    if (_index == 0) return kPrimaryColor;
-    return pages[_index - 1].accent;
-  }
-
   Widget _buildLanguagePage(LocaleController localeController) {
     return ListenableBuilder(
       listenable: localeController,
@@ -153,7 +148,7 @@ class _OnBoardState extends State<OnBoard> {
             child: Text(
               l10n.platformRulesStepLabel(page.step),
               style: kTextStyle.copyWith(
-                color: page.accent,
+                color: kPrimaryOnTint,
                 fontWeight: FontWeight.w700,
                 fontSize: 13,
               ),
@@ -193,7 +188,6 @@ class _OnBoardState extends State<OnBoard> {
     final pages = _contentPages(l10n);
     final bottom = MediaQuery.paddingOf(context).bottom;
     final isLast = _index >= _pageCount - 1;
-    final accent = _accentForIndex(pages);
 
     return Scaffold(
       backgroundColor: kDarkWhite,
@@ -240,7 +234,7 @@ class _OnBoardState extends State<OnBoard> {
                   Text(
                     '${_index + 1} / $_pageCount',
                     style: kTextStyle.copyWith(
-                      color: accent,
+                      color: kPrimaryText,
                       fontWeight: FontWeight.w700,
                       fontSize: 14,
                     ),
@@ -251,7 +245,7 @@ class _OnBoardState extends State<OnBoard> {
                         ? l10n.appOnboardGetStarted
                         : l10n.appOnboardNext,
                     onPressed: _next,
-                    accentColor: accent,
+                    accentColor: kPrimaryFill,
                   ),
                 ],
               ),

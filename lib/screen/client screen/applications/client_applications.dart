@@ -38,7 +38,7 @@ class _ClientApplicationsState extends State<ClientApplications>
   bool _isLoading = true;
 
   /// `null` = all; otherwise `pending` / `accepted` / `rejected`.
-  String? _statusFilter = 'pending';
+  String? _statusFilter;
 
   // Guide targets (long-lived). Card keys sit on ONE card each.
   final GlobalKey _guideFilterKey = GlobalKey();
@@ -502,7 +502,7 @@ class _ClientApplicationsState extends State<ClientApplications>
                                 app['price_basis'],
                               ),
                               style: kTextStyle.copyWith(
-                                color: kPrimaryColor,
+                                color: kPrimaryText,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -560,7 +560,7 @@ class _ClientApplicationsState extends State<ClientApplications>
                           child: ButtonGlobalWithoutIcon(
                             buttontext: l10n.hireAction,
                             buttonDecoration: kButtonDecoration.copyWith(
-                              color: kPrimaryColor,
+                              color: kPrimaryFill,
                             ),
                             onPressed: () => JobOfferChatActions.acceptOffer(
                               context,
@@ -615,8 +615,9 @@ class _FilterChips extends StatelessWidget {
                 selected: selected == value,
                 onSelected: (_) => onChanged(value),
                 selectedColor: kPrimaryColor.withValues(alpha: 0.15),
+                checkmarkColor: kPrimaryOnTint,
                 labelStyle: kTextStyle.copyWith(
-                  color: selected == value ? kPrimaryColor : kNeutralColor,
+                  color: selected == value ? kPrimaryOnTint : kNeutralColor,
                   fontWeight:
                       selected == value ? FontWeight.w600 : FontWeight.w500,
                   fontSize: 13,

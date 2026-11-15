@@ -4,6 +4,7 @@ import 'package:freelancer/core/widgets/loading_widget.dart';
 import 'package:freelancer/core/utils/localized_category.dart';
 import 'package:freelancer/core/widgets/empty_state_widget.dart';
 import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/services/job_posts_service.dart';
 import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/router/route_names.dart';
 import 'package:freelancer/services/favourite_service.dart';
@@ -54,8 +55,8 @@ class _SellerFavListState extends State<SellerFavList> {
     if (index < 0) return;
     final removed = Map<String, dynamic>.from(_favourites[index]);
     final job = removed['job_posts'] as Map<String, dynamic>?;
-    final jobPostId = (removed['job_post_id'] as String?) ??
-        (job?['id'] as String?);
+    final jobPostId =
+        (removed['job_post_id'] as String?) ?? (job?['id'] as String?);
     setState(() => _favourites.removeWhere((f) => f['id'] == favId));
     try {
       await FavouriteService.removeFavourite(favId);
@@ -134,7 +135,8 @@ class _SellerFavListState extends State<SellerFavList> {
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
           l10n.favouriteList,
-          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+          style: kTextStyle.copyWith(
+              color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),
@@ -168,186 +170,230 @@ class _SellerFavListState extends State<SellerFavList> {
                               hint: l10n.noFavouritesYetHint,
                               icon: Icons.bookmark_border,
                               actionLabel: l10n.browseJobs,
-                              onAction: () => context.go(AppRoutes.sellerFindJobs),
+                              onAction: () =>
+                                  context.go(AppRoutes.sellerFindJobs),
                             ),
                           ],
                         )
                       : ListView.builder(
-                        physics: const AlwaysScrollableScrollPhysics(
-                          parent: BouncingScrollPhysics(),
-                        ),
-                        padding: const EdgeInsets.only(top: 15.0, bottom: 15.0),
-                        itemCount: _favourites.length,
-                        itemBuilder: (_, i) {
-                          final fav = _favourites[i];
-                          final job = fav['job_posts'] as Map<String, dynamic>?;
-                          if (job == null) return const SizedBox.shrink();
+                          physics: const AlwaysScrollableScrollPhysics(
+                            parent: BouncingScrollPhysics(),
+                          ),
+                          padding:
+                              const EdgeInsets.only(top: 15.0, bottom: 15.0),
+                          itemCount: _favourites.length,
+                          itemBuilder: (_, i) {
+                            final fav = _favourites[i];
+                            final job =
+                                fav['job_posts'] as Map<String, dynamic>?;
+                            if (job == null) return const SizedBox.shrink();
 
-                          final category = job['categories'] as Map<String, dynamic>?;
-                          final client = (job['client'] ?? job['profiles']) as Map<String, dynamic>?;
-                          final jobId = job['id'] as String? ?? fav['job_post_id'] as String?;
-                          final status = (job['status'] as String?) ?? 'open';
-                          final (statusFg, statusBg) = StatusColors.jobPost(status);
+                            final category =
+                                job['categories'] as Map<String, dynamic>?;
+                            final client = (job['client'] ?? job['profiles'])
+                                as Map<String, dynamic>?;
+                            final jobId = job['id'] as String? ??
+                                fav['job_post_id'] as String?;
+                            final status = (job['status'] as String?) ?? 'open';
+                            final (statusFg, statusBg) =
+                                StatusColors.jobPost(status);
 
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 10.0),
-                            child: Material(
-                              color: kWhite,
-                              borderRadius: BorderRadius.circular(8.0),
-                              child: InkWell(
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 10.0),
+                              child: Material(
+                                color: kWhite,
                                 borderRadius: BorderRadius.circular(8.0),
-                                onTap: jobId == null
-                                    ? null
-                                    : () => BuyerRequestDetails(jobPostId: jobId).launch(context),
-                                child: Container(
-                                  padding: const EdgeInsets.all(12.0),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    border: Border.all(color: kBorderColorTextField),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Expanded(
-                                            child: Text(
-                                              job['title'] ?? 'Job',
-                                              style: kTextStyle.copyWith(
-                                                color: kNeutralColor,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
-                                          IconButton(
-                                            tooltip: l10n.removeFavourite,
-                                            onPressed: () {
-                                              final favId = fav['id'] as String?;
-                                              if (favId == null) return;
-                                              _handleRemoveFavourite(favId);
-                                            },
-                                            icon: Icon(
-                                              Icons.bookmark,
-                                              color: kPrimaryColor,
-                                              size: 22,
-                                            ),
-                                            visualDensity: VisualDensity.compact,
-                                          ),
-                                        ],
-                                      ),
-                                      if ((job['description'] as String?)?.isNotEmpty ?? false) ...[
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          job['description'] as String,
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: kTextStyle.copyWith(color: kSubTitleColor),
-                                        ),
-                                      ],
-                                      const SizedBox(height: 10),
-                                      Row(
-                                        children: [
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(20),
-                                              color: kDarkWhite,
-                                            ),
-                                            child: Text(
-                                              LocalizedCategory.name(
-                                                category,
-                                                LocalizedCategory.languageCodeOf(context),
-                                                fallback: 'General',
-                                              ),
-                                              style: kTextStyle.copyWith(color: kNeutralColor, fontSize: 12),
-                                            ),
-                                          ),
-                                          const SizedBox(width: 6),
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(20),
-                                              color: kPrimaryColor.withValues(alpha: 0.08),
-                                            ),
-                                            child: Text(
-                                              _jobTypeLabel(job['job_type'] as String?),
-                                              style: kTextStyle.copyWith(
-                                                color: kPrimaryColor,
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 12,
-                                              ),
-                                            ),
-                                          ),
-                                          const SizedBox(width: 6),
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(20),
-                                              color: statusBg,
-                                            ),
-                                            child: Text(
-                                              status,
-                                              style: kTextStyle.copyWith(
-                                                color: statusFg,
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 12,
-                                              ),
-                                            ),
-                                          ),
-                                          const Spacer(),
-                                          if (job['budget_min'] != null || job['budget_max'] != null)
-                                            Text(
-                                              L10nLabels.budgetRangeShort(
-                                                context.l10n,
-                                                job['budget_min'],
-                                                job['budget_max'],
-                                                job['budget_basis'],
-                                              ),
-                                              style: kTextStyle.copyWith(
-                                                color: kPrimaryColor,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                        ],
-                                      ),
-                                      if (client != null) ...[
-                                        const SizedBox(height: 10),
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  onTap: jobId == null
+                                      ? null
+                                      : () =>
+                                          BuyerRequestDetails(jobPostId: jobId)
+                                              .launch(context),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(12.0),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8.0),
+                                      border: Border.all(
+                                          color: kBorderColorTextField),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
                                         Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
-                                            CircleAvatar(
-                                              radius: 14,
-                                              backgroundImage: client['profile_image_url'] != null
-                                                  ? NetworkImage(client['profile_image_url'] as String)
-                                                  : const AssetImage('images/profilepic2.png')
-                                                      as ImageProvider,
-                                            ),
-                                            const SizedBox(width: 8),
                                             Expanded(
                                               child: Text(
-                                                client['name'] as String? ?? l10n.authRoleClient,
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
+                                                job['title'] ?? 'Job',
                                                 style: kTextStyle.copyWith(
                                                   color: kNeutralColor,
-                                                  fontWeight: FontWeight.w600,
+                                                  fontWeight: FontWeight.bold,
                                                 ),
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
                                               ),
+                                            ),
+                                            IconButton(
+                                              tooltip: l10n.removeFavourite,
+                                              onPressed: () {
+                                                final favId =
+                                                    fav['id'] as String?;
+                                                if (favId == null) return;
+                                                _handleRemoveFavourite(favId);
+                                              },
+                                              icon: Icon(
+                                                Icons.bookmark,
+                                                color: kSellerPrimary,
+                                                size: 22,
+                                              ),
+                                              visualDensity:
+                                                  VisualDensity.compact,
                                             ),
                                           ],
                                         ),
+                                        if (JobPostsService.visibleDescription(
+                                                job['description']) !=
+                                            null) ...[
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            JobPostsService.visibleDescription(
+                                                job['description'])!,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: kTextStyle.copyWith(
+                                                color: kSubTitleColor),
+                                          ),
+                                        ],
+                                        const SizedBox(height: 10),
+                                        Wrap(
+                                          spacing: 6,
+                                          runSpacing: 6,
+                                          crossAxisAlignment:
+                                              WrapCrossAlignment.center,
+                                          children: [
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 10,
+                                                      vertical: 4),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                                color: kDarkWhite,
+                                              ),
+                                              child: Text(
+                                                LocalizedCategory.name(
+                                                  category,
+                                                  LocalizedCategory
+                                                      .languageCodeOf(context),
+                                                  fallback: 'General',
+                                                ),
+                                                style: kTextStyle.copyWith(
+                                                    color: kNeutralColor,
+                                                    fontSize: 12),
+                                              ),
+                                            ),
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 10,
+                                                      vertical: 4),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                                color: kPrimaryColor.withValues(
+                                                    alpha: 0.08),
+                                              ),
+                                              child: Text(
+                                                _jobTypeLabel(
+                                                    job['job_type'] as String?),
+                                                style: kTextStyle.copyWith(
+                                                  color: kPrimaryText,
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ),
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 10,
+                                                      vertical: 4),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                                color: statusBg,
+                                              ),
+                                              child: Text(
+                                                status,
+                                                style: kTextStyle.copyWith(
+                                                  color: statusFg,
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ),
+                                            if (job['budget_min'] != null ||
+                                                job['budget_max'] != null)
+                                              Text(
+                                                L10nLabels.budgetRangeShort(
+                                                  context.l10n,
+                                                  job['budget_min'],
+                                                  job['budget_max'],
+                                                  job['budget_basis'],
+                                                ),
+                                                style: kTextStyle.copyWith(
+                                                  color: kPrimaryText,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                          ],
+                                        ),
+                                        if (client != null) ...[
+                                          const SizedBox(height: 10),
+                                          Row(
+                                            children: [
+                                              CircleAvatar(
+                                                radius: 14,
+                                                backgroundImage: client[
+                                                            'profile_image_url'] !=
+                                                        null
+                                                    ? NetworkImage(client[
+                                                            'profile_image_url']
+                                                        as String)
+                                                    : const AssetImage(
+                                                            'images/profilepic2.png')
+                                                        as ImageProvider,
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Expanded(
+                                                child: Text(
+                                                  client['name'] as String? ??
+                                                      l10n.authRoleClient,
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: kTextStyle.copyWith(
+                                                    color: kNeutralColor,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
                                       ],
-                                    ],
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
+                            );
+                          },
+                        ),
+                ),
         ),
       ),
     );

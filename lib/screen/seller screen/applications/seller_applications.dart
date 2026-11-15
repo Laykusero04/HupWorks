@@ -117,7 +117,8 @@ class _SellerApplicationsState extends State<SellerApplications>
   }
 
   GuideAnchor? _a(bool on, GlobalKey key, String title, String desc) => on
-      ? GuideAnchor(key: key, scope: guideScope, title: title, description: desc)
+      ? GuideAnchor(
+          key: key, scope: guideScope, title: title, description: desc)
       : null;
 
   Map<String, int> _computeGuideIdx(List<Map<String, dynamic>> visible) {
@@ -140,6 +141,7 @@ class _SellerApplicationsState extends State<SellerApplications>
     }
     return m;
   }
+
   static const _statusTabs = [
     'all',
     'pending',
@@ -184,7 +186,8 @@ class _SellerApplicationsState extends State<SellerApplications>
         if ((app['status'] as String?)?.toLowerCase() != 'accepted') continue;
         final offerId = app['id'] as String?;
         if (offerId == null) continue;
-        final orderId = await HireOnboardingService.getOrderIdForJobOffer(offerId);
+        final orderId =
+            await HireOnboardingService.getOrderIdForJobOffer(offerId);
         if (orderId == null) continue;
         app['order_id'] = orderId;
         final packet = await HireOnboardingService.getPacketForOrder(
@@ -214,7 +217,8 @@ class _SellerApplicationsState extends State<SellerApplications>
         scheduleGuide();
         if (keepList) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(context.l10n.errorLoadingApplications('$e'))),
+            SnackBar(
+                content: Text(context.l10n.errorLoadingApplications('$e'))),
           );
         }
       }
@@ -348,80 +352,84 @@ class _SellerApplicationsState extends State<SellerApplications>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         GuideAnchor.wrap(
-          _a(true, _guideSearchKey, l10n.guideSellerAppsSearchTitle,
-              l10n.guideSellerAppsSearchDesc),
-          TextField(
-          controller: _searchController,
-          onChanged: _onSearchChanged,
-          style: kTextStyle.copyWith(color: kNeutralColor, fontSize: 14),
-          decoration: InputDecoration(
-            hintText: l10n.searchApplicationsHint,
-            hintStyle: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 14),
-            prefixIcon: const Icon(Icons.search, color: kLightNeutralColor),
-            suffixIcon: _searchQuery.isNotEmpty
-                ? IconButton(
-                    icon: const Icon(Icons.close, color: kLightNeutralColor, size: 20),
-                    onPressed: () {
-                      _searchDebounce?.cancel();
-                      _searchController.clear();
-                      setState(() => _searchQuery = '');
-                    },
-                  )
-                : null,
-            filled: true,
-            fillColor: kDarkWhite,
-            contentPadding: const EdgeInsets.symmetric(vertical: 12),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: kBorderColorTextField),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: kBorderColorTextField),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: primary),
-            ),
-          ),
-        )),
+            _a(true, _guideSearchKey, l10n.guideSellerAppsSearchTitle,
+                l10n.guideSellerAppsSearchDesc),
+            TextField(
+              controller: _searchController,
+              onChanged: _onSearchChanged,
+              style: kTextStyle.copyWith(color: kNeutralColor, fontSize: 14),
+              decoration: InputDecoration(
+                hintText: l10n.searchApplicationsHint,
+                hintStyle: kTextStyle.copyWith(
+                    color: kLightNeutralColor, fontSize: 14),
+                prefixIcon: const Icon(Icons.search, color: kLightNeutralColor),
+                suffixIcon: _searchQuery.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.close,
+                            color: kLightNeutralColor, size: 20),
+                        onPressed: () {
+                          _searchDebounce?.cancel();
+                          _searchController.clear();
+                          setState(() => _searchQuery = '');
+                        },
+                      )
+                    : null,
+                filled: true,
+                fillColor: kDarkWhite,
+                contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: kBorderColorTextField),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: kBorderColorTextField),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: primary),
+                ),
+              ),
+            )),
         const SizedBox(height: 12),
         GuideAnchor.wrap(
-          _a(true, _guideTabsKey, l10n.guideSellerAppsTabsTitle,
-              l10n.guideSellerAppsTabsDesc),
-          SizedBox(
-          height: 40,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemCount: _statusTabs.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 8),
-            itemBuilder: (_, i) {
-              final tab = _statusTabs[i];
-              final selected = _selectedStatus == tab;
-              return GestureDetector(
-                onTap: () => setState(() => _selectedStatus = tab),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30),
-                    color: selected ? primary : kDarkWhite,
-                    border: Border.all(
-                      color: selected ? primary : kBorderColorTextField,
+            _a(true, _guideTabsKey, l10n.guideSellerAppsTabsTitle,
+                l10n.guideSellerAppsTabsDesc),
+            SizedBox(
+              height: 40,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: _statusTabs.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 8),
+                itemBuilder: (_, i) {
+                  final tab = _statusTabs[i];
+                  final selected = _selectedStatus == tab;
+                  return GestureDetector(
+                    onTap: () => setState(() => _selectedStatus = tab),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 9),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30),
+                        color: selected ? primary : kDarkWhite,
+                        border: Border.all(
+                          color: selected ? primary : kBorderColorTextField,
+                        ),
+                      ),
+                      child: Text(
+                        L10nLabels.applicationFilterTabLabel(l10n, tab),
+                        style: kTextStyle.copyWith(
+                          color: selected ? kWhite : kNeutralColor,
+                          fontWeight:
+                              selected ? FontWeight.w600 : FontWeight.normal,
+                          fontSize: 13,
+                        ),
+                      ),
                     ),
-                  ),
-                  child: Text(
-                    L10nLabels.applicationFilterTabLabel(l10n, tab),
-                    style: kTextStyle.copyWith(
-                      color: selected ? kWhite : kNeutralColor,
-                      fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
-                      fontSize: 13,
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-        )),
+                  );
+                },
+              ),
+            )),
       ],
     );
   }
@@ -479,215 +487,228 @@ class _SellerApplicationsState extends State<SellerApplications>
             if (mounted) _load(showLoader: false);
           },
           child: GuideAnchor.wrap(
-            _a(own('card'), _guideCardKey, l10n.guideSellerAppsCardTitle,
-                l10n.guideSellerAppsCardDesc),
-            Container(
-            padding: const EdgeInsets.all(12.0),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10.0),
-              border: Border.all(color: kBorderColorTextField),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
+              _a(own('card'), _guideCardKey, l10n.guideSellerAppsCardTitle,
+                  l10n.guideSellerAppsCardDesc),
+              Container(
+                padding: const EdgeInsets.all(12.0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
+                  border: Border.all(color: kBorderColorTextField),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Text(
-                        jobPost?['title'] ?? l10n.untitledJob,
-                        maxLines: 1,
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            jobPost?['title'] ?? l10n.untitledJob,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: kTextStyle.copyWith(
+                              color: kNeutralColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8.0),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 3.0,
+                            horizontal: 8.0,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20.0),
+                            color: status.bg,
+                          ),
+                          child: Text(
+                            status.label,
+                            style: kTextStyle.copyWith(
+                              color: status.fg,
+                              fontSize: 12.0,
+                            ),
+                          ),
+                        ),
+                        if (statusRaw == 'pending' || statusRaw == 'accepted')
+                          GuideAnchor.wrap(
+                              _a(
+                                  own('message'),
+                                  _guideMessageKey,
+                                  l10n.guideSellerAppsMessageTitle,
+                                  l10n.guideSellerAppsMessageDesc),
+                              IconButton(
+                                visualDensity: VisualDensity.compact,
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(
+                                  minWidth: 36,
+                                  minHeight: 36,
+                                ),
+                                tooltip: l10n.messageClientTooltip,
+                                icon: Icon(
+                                  Icons.chat_bubble_outline,
+                                  size: 20,
+                                  color: primary,
+                                ),
+                                onPressed: () => _openChatWithClient(app),
+                              )),
+                      ],
+                    ),
+                    const SizedBox(height: 8.0),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 2.0,
+                            horizontal: 8.0,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20.0),
+                            color: kDarkWhite,
+                          ),
+                          child: Text(
+                            _jobTypeLabel(jobPost?['job_type'] as String?),
+                            style: kTextStyle.copyWith(
+                              color: kNeutralColor,
+                              fontSize: 12.0,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10.0),
+                        Text(
+                          L10nLabels.offerAmountShort(
+                            l10n,
+                            app['price'],
+                            app['price_basis'],
+                          ),
+                          style: kTextStyle.copyWith(
+                            color: primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const Spacer(),
+                        Text(
+                          _formatDate(app['created_at'] as String?),
+                          style: kTextStyle.copyWith(color: kLightNeutralColor),
+                        ),
+                      ],
+                    ),
+                    if ((app['cover_letter'] as String?)?.isNotEmpty ??
+                        false) ...[
+                      const SizedBox(height: 8.0),
+                      Text(
+                        app['cover_letter'] as String,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: kTextStyle.copyWith(
-                          color: kNeutralColor,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: kTextStyle.copyWith(color: kSubTitleColor),
                       ),
-                    ),
-                    const SizedBox(width: 8.0),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 3.0,
-                        horizontal: 8.0,
+                    ],
+                    if (statusRaw == 'pending') ...[
+                      const SizedBox(height: 10),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GuideAnchor.wrap(
+                            _a(
+                                own('withdraw'),
+                                _guideWithdrawKey,
+                                l10n.guideSellerAppsWithdrawTitle,
+                                l10n.guideSellerAppsWithdrawDesc),
+                            OutlinedButton(
+                              onPressed:
+                                  withdrawing ? null : () => _withdraw(app),
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: StatusColors.danger,
+                                side: BorderSide(
+                                  color: StatusColors.danger
+                                      .withValues(alpha: 0.5),
+                                ),
+                                visualDensity: VisualDensity.compact,
+                              ),
+                              child: withdrawing
+                                  ? const SizedBox(
+                                      width: 16,
+                                      height: 16,
+                                      child: CircularProgressIndicator(
+                                          strokeWidth: 2),
+                                    )
+                                  : Text(l10n.withdrawApplication),
+                            )),
                       ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20.0),
-                        color: status.bg,
-                      ),
-                      child: Text(
-                        status.label,
-                        style: kTextStyle.copyWith(
-                          color: status.fg,
-                          fontSize: 12.0,
-                        ),
-                      ),
-                    ),
-                    if (statusRaw == 'pending' || statusRaw == 'accepted')
+                    ],
+                    if (statusRaw == 'accepted' &&
+                        AttendanceService.isOnsiteJob(jobPost)) ...[
+                      const SizedBox(height: 8),
                       GuideAnchor.wrap(
-                        _a(own('message'), _guideMessageKey,
-                            l10n.guideSellerAppsMessageTitle,
-                            l10n.guideSellerAppsMessageDesc),
-                        IconButton(
-                        visualDensity: VisualDensity.compact,
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(
-                          minWidth: 36,
-                          minHeight: 36,
-                        ),
-                        tooltip: l10n.messageClientTooltip,
-                        icon: Icon(
-                          Icons.chat_bubble_outline,
-                          size: 20,
-                          color: primary,
-                        ),
-                        onPressed: () => _openChatWithClient(app),
-                      )),
+                          _a(
+                              own('attendance'),
+                              _guideAttendanceKey,
+                              l10n.guideSellerAppsAttendanceTitle,
+                              l10n.guideSellerAppsAttendanceDesc),
+                          InkWell(
+                            onTap: () => context.push(
+                              '/seller/attendance?jobPostId=${jobPost?['id']}',
+                            ),
+                            child: Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                color: kDarkWhite,
+                                borderRadius: BorderRadius.circular(8),
+                                border:
+                                    Border.all(color: kBorderColorTextField),
+                              ),
+                              child: Text(
+                                l10n.openAttendance,
+                                style: kTextStyle.copyWith(
+                                  color: primary,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          )),
+                    ],
+                    if (app['instructions_pending'] == true) ...[
+                      const SizedBox(height: 8.0),
+                      GuideAnchor.wrap(
+                          _a(
+                              own('instructions'),
+                              _guideInstructionsKey,
+                              l10n.guideSellerAppsInstructionsTitle,
+                              l10n.guideSellerAppsInstructionsDesc),
+                          InkWell(
+                            onTap: () async {
+                              final orderId = app['order_id'] as String?;
+                              if (orderId == null) return;
+                              context.push('/seller/orders/$orderId');
+                              if (mounted) _load(showLoader: false);
+                            },
+                            child: Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFE8F5E9),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                l10n.instructionsReadyTap,
+                                style: kTextStyle.copyWith(
+                                  color: const Color(0xFF2E7D32),
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          )),
+                    ],
                   ],
                 ),
-                const SizedBox(height: 8.0),
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 2.0,
-                        horizontal: 8.0,
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20.0),
-                        color: kDarkWhite,
-                      ),
-                      child: Text(
-                        _jobTypeLabel(jobPost?['job_type'] as String?),
-                        style: kTextStyle.copyWith(
-                          color: kNeutralColor,
-                          fontSize: 12.0,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10.0),
-                    Text(
-                      L10nLabels.offerAmountShort(
-                        l10n,
-                        app['price'],
-                        app['price_basis'],
-                      ),
-                      style: kTextStyle.copyWith(
-                        color: primary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const Spacer(),
-                    Text(
-                      _formatDate(app['created_at'] as String?),
-                      style: kTextStyle.copyWith(color: kLightNeutralColor),
-                    ),
-                  ],
-                ),
-                if ((app['cover_letter'] as String?)?.isNotEmpty ?? false) ...[
-                  const SizedBox(height: 8.0),
-                  Text(
-                    app['cover_letter'] as String,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: kTextStyle.copyWith(color: kSubTitleColor),
-                  ),
-                ],
-                if (statusRaw == 'pending') ...[
-                  const SizedBox(height: 10),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: GuideAnchor.wrap(
-                      _a(own('withdraw'), _guideWithdrawKey,
-                          l10n.guideSellerAppsWithdrawTitle,
-                          l10n.guideSellerAppsWithdrawDesc),
-                      OutlinedButton(
-                      onPressed: withdrawing ? null : () => _withdraw(app),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: StatusColors.danger,
-                        side: BorderSide(
-                          color: StatusColors.danger.withValues(alpha: 0.5),
-                        ),
-                        visualDensity: VisualDensity.compact,
-                      ),
-                      child: withdrawing
-                          ? const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : Text(l10n.withdrawApplication),
-                    )),
-                  ),
-                ],
-                if (statusRaw == 'accepted' &&
-                    AttendanceService.isOnsiteJob(jobPost)) ...[
-                  const SizedBox(height: 8),
-                  GuideAnchor.wrap(
-                    _a(own('attendance'), _guideAttendanceKey,
-                        l10n.guideSellerAppsAttendanceTitle,
-                        l10n.guideSellerAppsAttendanceDesc),
-                    InkWell(
-                    onTap: () => context.push(
-                      '/seller/attendance?jobPostId=${jobPost?['id']}',
-                    ),
-                    child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: kDarkWhite,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: kBorderColorTextField),
-                      ),
-                      child: Text(
-                        l10n.openAttendance,
-                        style: kTextStyle.copyWith(
-                          color: primary,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  )),
-                ],
-                if (app['instructions_pending'] == true) ...[
-                  const SizedBox(height: 8.0),
-                  GuideAnchor.wrap(
-                    _a(own('instructions'), _guideInstructionsKey,
-                        l10n.guideSellerAppsInstructionsTitle,
-                        l10n.guideSellerAppsInstructionsDesc),
-                    InkWell(
-                    onTap: () async {
-                      final orderId = app['order_id'] as String?;
-                      if (orderId == null) return;
-                      context.push('/seller/orders/$orderId');
-                      if (mounted) _load(showLoader: false);
-                    },
-                    child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE8F5E9),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        l10n.instructionsReadyTap,
-                        style: kTextStyle.copyWith(
-                          color: const Color(0xFF2E7D32),
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  )),
-                ],
-              ],
-            ),
-          )),
+              )),
         ),
       ),
     );
@@ -745,7 +766,8 @@ class _SellerApplicationsState extends State<SellerApplications>
                                 ),
                                 children: [
                                   SizedBox(
-                                    height: MediaQuery.sizeOf(context).height * 0.15,
+                                    height: MediaQuery.sizeOf(context).height *
+                                        0.15,
                                   ),
                                   _buildEmptyState(),
                                 ],
@@ -757,9 +779,11 @@ class _SellerApplicationsState extends State<SellerApplications>
                                 physics: const AlwaysScrollableScrollPhysics(
                                   parent: BouncingScrollPhysics(),
                                 ),
-                                padding: const EdgeInsets.only(top: 8, bottom: 15),
+                                padding:
+                                    const EdgeInsets.only(top: 8, bottom: 15),
                                 itemCount: visible.length,
-                                itemBuilder: (_, i) => _buildCard(visible[i], i),
+                                itemBuilder: (_, i) =>
+                                    _buildCard(visible[i], i),
                               ),
                             ),
                     ),

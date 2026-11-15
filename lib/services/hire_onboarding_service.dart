@@ -53,7 +53,8 @@ class HireOnboardingService {
     return row?['id'] as String?;
   }
 
-  static Future<HireOnboardingPacket?> getPacketForJobOffer(String jobOfferId) async {
+  static Future<HireOnboardingPacket?> getPacketForJobOffer(
+      String jobOfferId) async {
     final orderId = await getOrderIdForJobOffer(jobOfferId);
     if (orderId == null) return null;
     return getPacketForOrder(orderId);

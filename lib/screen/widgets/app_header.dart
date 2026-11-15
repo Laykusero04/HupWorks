@@ -37,14 +37,18 @@ class AppHeader extends StatelessWidget {
                 Text(
                   title,
                   style: kTextStyle.copyWith(
-                      color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 22, height: 1.1),
+                      color: kNeutralColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 22,
+                      height: 1.1),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
                 if (subtitle != null) ...[
                   2.height,
                   DefaultTextStyle.merge(
-                    style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
+                    style: kTextStyle.copyWith(
+                        color: kLightNeutralColor, fontSize: 12),
                     child: subtitle!,
                   ),
                 ],
@@ -65,7 +69,8 @@ class AppHeader extends StatelessWidget {
 class AppHeaderIcon extends StatelessWidget {
   final IconData icon;
   final Color color;
-  const AppHeaderIcon({super.key, required this.icon, this.color = kPrimaryColor});
+  const AppHeaderIcon(
+      {super.key, required this.icon, this.color = kPrimaryColor});
 
   @override
   Widget build(BuildContext context) {
@@ -85,6 +90,7 @@ class AppHeaderAvatar extends StatelessWidget {
   final String? imageUrl;
   final String fallbackAsset;
   final double size;
+
   /// White ring for avatars on green/blue shell gradients (e.g. drawer profile).
   final bool onBrandGradient;
   const AppHeaderAvatar({
@@ -108,7 +114,9 @@ class AppHeaderAvatar extends StatelessWidget {
         color: kDarkWhite,
         border: Border.all(color: ring, width: 2),
         image: DecorationImage(
-          image: imageUrl != null ? NetworkImage(imageUrl!) as ImageProvider : AssetImage(fallbackAsset),
+          image: imageUrl != null
+              ? NetworkImage(imageUrl!) as ImageProvider
+              : AssetImage(fallbackAsset),
           fit: BoxFit.cover,
         ),
       ),
@@ -121,7 +129,8 @@ class AppHeaderAction extends StatelessWidget {
   final IconData icon;
   final VoidCallback? onPressed;
   final String? tooltip;
-  const AppHeaderAction({super.key, required this.icon, this.onPressed, this.tooltip});
+  const AppHeaderAction(
+      {super.key, required this.icon, this.onPressed, this.tooltip});
 
   @override
   Widget build(BuildContext context) {
@@ -134,7 +143,8 @@ class AppHeaderAction extends StatelessWidget {
       ),
       child: IconButton(
         onPressed: onPressed,
-        icon: Icon(icon, color: enabled ? kNeutralColor : kLightNeutralColor, size: 20),
+        icon: Icon(icon,
+            color: enabled ? kNeutralColor : kLightNeutralColor, size: 20),
         tooltip: tooltip,
         splashRadius: 22,
       ),

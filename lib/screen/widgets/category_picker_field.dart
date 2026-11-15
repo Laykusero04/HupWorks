@@ -67,7 +67,8 @@ class _CategoryPickerFieldState extends State<CategoryPickerField> {
       children: [
         Text(
           '${l10n.categoryLabel} *',
-          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+          style: kTextStyle.copyWith(
+              color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
         if (selectedName != null) ...[
           const SizedBox(height: 8),
@@ -80,7 +81,8 @@ class _CategoryPickerFieldState extends State<CategoryPickerField> {
             ),
             child: Row(
               children: [
-                const Icon(Icons.check_circle_outline, size: 18, color: kPrimaryColor),
+                const Icon(Icons.check_circle_outline,
+                    size: 18, color: kPrimaryColor),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -114,7 +116,8 @@ class _CategoryPickerFieldState extends State<CategoryPickerField> {
                     },
                   ),
             border: const OutlineInputBorder(),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
           ),
         ),
         const SizedBox(height: 8),
@@ -125,102 +128,105 @@ class _CategoryPickerFieldState extends State<CategoryPickerField> {
             border: Border.all(color: kBorderColorTextField, width: 2),
           ),
           child: ListView(
-                  shrinkWrap: true,
-                  children: [
-                    if (filtered.isEmpty && _query.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Text(
-                          l10n.noCategoriesMatch,
-                          style: kTextStyle.copyWith(
-                            color: kSubTitleColor,
-                            fontSize: 13,
+            shrinkWrap: true,
+            children: [
+              if (filtered.isEmpty && _query.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text(
+                    l10n.noCategoriesMatch,
+                    style: kTextStyle.copyWith(
+                      color: kSubTitleColor,
+                      fontSize: 13,
+                    ),
+                  ),
+                ),
+              ...filtered.map((cat) {
+                final id = cat['id'] as String?;
+                final name = LocalizedCategory.name(
+                  cat,
+                  LocalizedCategory.languageCodeOf(context),
+                );
+                final selected = widget.selectedCategoryId == id;
+                return InkWell(
+                  onTap: () => widget.onSelected(id),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 11),
+                    color:
+                        selected ? kPrimaryColor.withValues(alpha: 0.07) : null,
+                    child: Row(
+                      children: [
+                        Icon(
+                          selected
+                              ? Icons.radio_button_checked
+                              : Icons.radio_button_unchecked,
+                          size: 20,
+                          color: selected ? kPrimaryColor : kLightNeutralColor,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            name,
+                            style: kTextStyle.copyWith(
+                              color: kNeutralColor,
+                              fontWeight: selected
+                                  ? FontWeight.w600
+                                  : FontWeight.normal,
+                            ),
                           ),
                         ),
-                      ),
-                    ...filtered.map((cat) {
-                      final id = cat['id'] as String?;
-                      final name = LocalizedCategory.name(
-                        cat,
-                        LocalizedCategory.languageCodeOf(context),
-                      );
-                      final selected = widget.selectedCategoryId == id;
-                      return InkWell(
-                        onTap: () => widget.onSelected(id),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
-                          color: selected
-                              ? kPrimaryColor.withValues(alpha: 0.07)
-                              : null,
-                          child: Row(
-                            children: [
-                              Icon(
-                                selected
-                                    ? Icons.radio_button_checked
-                                    : Icons.radio_button_unchecked,
-                                size: 20,
-                                color: selected ? kPrimaryColor : kLightNeutralColor,
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Text(
-                                  name,
-                                  style: kTextStyle.copyWith(
-                                    color: kNeutralColor,
-                                    fontWeight:
-                                        selected ? FontWeight.w600 : FontWeight.normal,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    }),
-                    InkWell(
-                      onTap: () =>
-                          widget.onSelected(CategoryService.otherCategoryOptionId),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
-                        decoration: const BoxDecoration(
-                          border: Border(top: BorderSide(color: kBorderColorTextField)),
-                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }),
+              InkWell(
+                onTap: () =>
+                    widget.onSelected(CategoryService.otherCategoryOptionId),
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+                  decoration: const BoxDecoration(
+                    border:
+                        Border(top: BorderSide(color: kBorderColorTextField)),
+                  ),
+                  color: widget.selectedCategoryId ==
+                          CategoryService.otherCategoryOptionId
+                      ? kPrimaryColor.withValues(alpha: 0.07)
+                      : null,
+                  child: Row(
+                    children: [
+                      Icon(
+                        widget.selectedCategoryId ==
+                                CategoryService.otherCategoryOptionId
+                            ? Icons.radio_button_checked
+                            : Icons.radio_button_unchecked,
+                        size: 20,
                         color: widget.selectedCategoryId ==
                                 CategoryService.otherCategoryOptionId
-                            ? kPrimaryColor.withValues(alpha: 0.07)
-                            : null,
-                        child: Row(
-                          children: [
-                            Icon(
-                              widget.selectedCategoryId ==
-                                      CategoryService.otherCategoryOptionId
-                                  ? Icons.radio_button_checked
-                                  : Icons.radio_button_unchecked,
-                              size: 20,
-                              color: widget.selectedCategoryId ==
-                                      CategoryService.otherCategoryOptionId
-                                  ? kPrimaryColor
-                                  : kLightNeutralColor,
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Text(
-                                l10n.addCategoryNotListed,
-                                style: kTextStyle.copyWith(
-                                  color: kNeutralColor,
-                                  fontWeight: widget.selectedCategoryId ==
-                                          CategoryService.otherCategoryOptionId
-                                      ? FontWeight.w600
-                                      : FontWeight.normal,
-                                ),
-                              ),
-                            ),
-                          ],
+                            ? kPrimaryColor
+                            : kLightNeutralColor,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          l10n.addCategoryNotListed,
+                          style: kTextStyle.copyWith(
+                            color: kNeutralColor,
+                            fontWeight: widget.selectedCategoryId ==
+                                    CategoryService.otherCategoryOptionId
+                                ? FontWeight.w600
+                                : FontWeight.normal,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
+              ),
+            ],
+          ),
         ),
       ],
     );

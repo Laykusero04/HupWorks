@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
 import 'package:go_router/go_router.dart';
@@ -28,6 +30,8 @@ class _ChatScreenState extends State<ChatScreen> {
   Map<String, ConversationInboxMeta> _inboxMeta = const {};
   ChatInboxFilter _filter = ChatInboxFilter.all;
   bool _isLoading = true;
+  bool _loadFailed = false; // timeout or error with nothing to show (B7)
+  static const _loadTimeout = Duration(seconds: 15);
   RealtimeChannel? _conversationChannel;
   String _searchQuery = '';
 
@@ -53,11 +57,30 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
+  int _loadGen = 0;
+  bool _loading = false;
+
+  /// Debug-only: `--dart-define=CHAT_DEBUG_STATE=empty|error` forces the
+  /// Messages list into its empty / error(+Retry) state without a network call
+  /// (T-0157). Ignored unless [kDebugMode]; no effect in profile/release.
+  static const _debugState = String.fromEnvironment('CHAT_DEBUG_STATE');
+
   Future<void> _loadConversations() async {
+    if (kDebugMode && (_debugState == 'empty' || _debugState == 'error')) {
+      if (!mounted) return;
+      setState(() {
+        _conversations = [];
+        _inboxMeta = const {};
+        _isLoading = false;
+        _loadFailed = _debugState == 'error';
+      });
+      return;
+    }
+    final gen = ++_loadGen;
+    _loading = true;
     try {
-      final data = await ChatService.getConversations();
-      final conversations =
-          data.map((e) => Conversation.fromMap(e)).toList();
+      final data = await ChatService.getConversations().timeout(_loadTimeout);
+      final conversations = data.map((e) => Conversation.fromMap(e)).toList();
       Map<String, ConversationInboxMeta> meta = const {};
       if (conversations.isNotEmpty) {
         meta = await ChatService.getInboxMetaByConversation(
@@ -70,23 +93,37 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
               )
               .toList(),
-        );
+        ).timeout(_loadTimeout);
       }
-      if (mounted) {
+      if (mounted && gen == _loadGen) {
         setState(() {
           _conversations = conversations;
           _inboxMeta = meta;
           _isLoading = false;
+          _loadFailed = false;
         });
         ChatUnreadScope.refreshGlobal();
       }
     } catch (e) {
-      if (mounted) {
-        setState(() => _isLoading = false);
+      if (mounted && gen == _loadGen) {
+        // Never leave the skeleton up: timeout/error ends loading; with
+        // nothing to show the body offers a retry.
+        setState(() {
+          _isLoading = false;
+          _loadFailed = _conversations.isEmpty;
+        });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+          SnackBar(
+            content: Text(
+              e is TimeoutException
+                  ? context.l10n.chatLoadTimeout
+                  : context.l10n.errorWithDetail('$e'),
+            ),
+          ),
         );
       }
+    } finally {
+      if (gen == _loadGen) _loading = false;
     }
   }
 
@@ -182,8 +219,11 @@ class _ChatScreenState extends State<ChatScreen> {
       (ChatInboxFilter.past, l10n.chatFilterPast),
     ];
 
+    // Height follows the (capped) text scale so chips never clip.
+    final chipScale =
+        MediaQuery.textScalerOf(context).clamp(maxScaleFactor: 1.15);
     return SizedBox(
-      height: 44,
+      height: 20 + chipScale.scale(12) * 2.2,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
@@ -195,12 +235,16 @@ class _ChatScreenState extends State<ChatScreen> {
           final count = _countFor(filter);
           return ChoiceChip(
             selected: selected,
-            label: Text(
-              count > 0 ? '$label ($count)' : label,
-              style: kTextStyle.copyWith(
-                color: selected ? kWhite : kNeutralColor,
-                fontWeight: FontWeight.w600,
-                fontSize: 12,
+            label: MediaQuery.withClampedTextScaling(
+              maxScaleFactor: 1.15,
+              child: Text(
+                count > 0 ? '$label ($count)' : label,
+                maxLines: 1,
+                style: kTextStyle.copyWith(
+                  color: selected ? kWhite : kNeutralColor,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
+                ),
               ),
             ),
             selectedColor: primary,
@@ -271,7 +315,8 @@ class _ChatScreenState extends State<ChatScreen> {
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide(
-              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.35),
+              color:
+                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.35),
             ),
           ),
         ),
@@ -283,9 +328,25 @@ class _ChatScreenState extends State<ChatScreen> {
     final l10n = context.l10n;
     final filtered = _filteredConversations;
 
+    if (_conversations.isEmpty && _loadFailed) {
+      return _emptyState(
+        icon: Icons.cloud_off_rounded,
+        title: l10n.somethingWentWrong,
+        subtitle: l10n.chatLoadFailedHint,
+        actionLabel: l10n.retry,
+        onAction: () {
+          if (_loading) return; // a load is already in progress
+          setState(() {
+            _isLoading = true;
+            _loadFailed = false;
+          });
+          _loadConversations();
+        },
+      );
+    }
+
     if (_conversations.isEmpty) {
-      final isSeller =
-          GoRouterState.of(context).uri.path.startsWith('/seller');
+      final isSeller = GoRouterState.of(context).uri.path.startsWith('/seller');
       return _emptyState(
         icon: Icons.chat_bubble_outline_rounded,
         title: l10n.noConversationsYet,
@@ -309,8 +370,8 @@ class _ChatScreenState extends State<ChatScreen> {
     }
 
     return ListView.builder(
-      physics: const AlwaysScrollableScrollPhysics(
-          parent: BouncingScrollPhysics()),
+      physics:
+          const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
       padding: const EdgeInsets.fromLTRB(14, 4, 14, 28),
       itemCount: filtered.length,
       itemBuilder: (context, index) {
@@ -455,12 +516,9 @@ class _ChatScreenState extends State<ChatScreen> {
             }
           },
           child: Container(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 14, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             decoration: BoxDecoration(
-              color: hasUnread
-                  ? kPrimaryColor.withValues(alpha: 0.04)
-                  : kWhite,
+              color: hasUnread ? kPrimaryColor.withValues(alpha: 0.04) : kWhite,
               borderRadius: BorderRadius.circular(18),
               border: hasUnread
                   ? Border.all(color: kPrimaryColor.withValues(alpha: 0.18))
@@ -540,15 +598,12 @@ class _ChatScreenState extends State<ChatScreen> {
                         style: kTextStyle.copyWith(
                           color: hasUnread
                               ? kNeutralColor
-                              : (hasLast
-                                  ? kSubTitleColor
-                                  : kLightNeutralColor),
+                              : (hasLast ? kSubTitleColor : kLightNeutralColor),
                           fontSize: 13,
                           fontWeight:
                               hasUnread ? FontWeight.w600 : FontWeight.normal,
-                          fontStyle: hasLast
-                              ? FontStyle.normal
-                              : FontStyle.italic,
+                          fontStyle:
+                              hasLast ? FontStyle.normal : FontStyle.italic,
                         ),
                       ),
                       if (hasUnread) ...[
@@ -573,8 +628,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _avatar(String name, String imageUrl, {int unread = 0}) {
-    final initial =
-        name.isNotEmpty ? name.trim()[0].toUpperCase() : '?';
+    final initial = name.isNotEmpty ? name.trim()[0].toUpperCase() : '?';
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -594,7 +648,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ? Text(
                   initial,
                   style: kTextStyle.copyWith(
-                    color: kPrimaryColor,
+                    color: kPrimaryText,
                     fontWeight: FontWeight.w700,
                     fontSize: 20,
                   ),
@@ -628,8 +682,7 @@ class _ChatScreenState extends State<ChatScreen> {
         itemBuilder: (_, __) => Padding(
           padding: const EdgeInsets.symmetric(vertical: 5),
           child: Container(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 14, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             decoration: BoxDecoration(
               color: kWhite,
               borderRadius: BorderRadius.circular(18),

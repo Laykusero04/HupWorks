@@ -76,7 +76,9 @@ class Message {
       createdAt: DateTime.parse(map['created_at'] as String),
       messageType: (map['message_type'] as String?) ?? 'text',
       jobOfferId: map['job_offer_id'] as String?,
-      sender: map['sender'] != null ? Map<String, dynamic>.from(map['sender']) : null,
+      sender: map['sender'] != null
+          ? Map<String, dynamic>.from(map['sender'])
+          : null,
     );
   }
 

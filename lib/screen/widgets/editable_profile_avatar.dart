@@ -60,46 +60,46 @@ class EditableProfileAvatar extends StatelessWidget {
               ),
             ),
           ),
-            if (uploading)
-              Container(
-                width: size,
-                height: size,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.black.withValues(alpha: 0.35),
+          if (uploading)
+            Container(
+              width: size,
+              height: size,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.black.withValues(alpha: 0.35),
+              ),
+              alignment: Alignment.center,
+              child: const SizedBox(
+                width: 28,
+                height: 28,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.5,
+                  color: kWhite,
                 ),
-                alignment: Alignment.center,
-                child: const SizedBox(
-                  width: 28,
-                  height: 28,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.5,
+              ),
+            )
+          else if (showCameraBadge && onTap != null)
+            Positioned(
+              right: 0,
+              bottom: 0,
+              child: GestureDetector(
+                onTap: uploading ? null : onTap,
+                child: Container(
+                  width: badgeSize,
+                  height: badgeSize,
+                  decoration: BoxDecoration(
+                    color: accent,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: kWhite, width: 2),
+                  ),
+                  child: Icon(
+                    Icons.camera_alt,
+                    size: badgeSize * 0.5,
                     color: kWhite,
                   ),
                 ),
-              )
-            else if (showCameraBadge && onTap != null)
-              Positioned(
-                right: 0,
-                bottom: 0,
-                child: GestureDetector(
-                  onTap: uploading ? null : onTap,
-                  child: Container(
-                    width: badgeSize,
-                    height: badgeSize,
-                    decoration: BoxDecoration(
-                      color: accent,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: kWhite, width: 2),
-                    ),
-                    child: Icon(
-                      Icons.camera_alt,
-                      size: badgeSize * 0.5,
-                      color: kWhite,
-                    ),
-                  ),
-                ),
               ),
+            ),
         ],
       ),
     );

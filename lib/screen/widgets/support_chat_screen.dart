@@ -68,7 +68,8 @@ class _SupportChatScreenState extends State<SupportChatScreen>
 
     String? displayName;
     if (rawName != null && rawName.isNotEmpty) {
-      displayName = role != null && role.isNotEmpty ? '$rawName ($role)' : rawName;
+      displayName =
+          role != null && role.isNotEmpty ? '$rawName ($role)' : rawName;
     } else if (role != null && role.isNotEmpty) {
       displayName = role;
     }
@@ -128,7 +129,7 @@ class _SupportChatScreenState extends State<SupportChatScreen>
         ],
         bottom: TabBar(
           controller: _tabController,
-          labelColor: kPrimaryColor,
+          labelColor: kPrimaryText,
           unselectedLabelColor: kSubTitleColor,
           indicatorColor: kPrimaryColor,
           tabs: [
@@ -142,7 +143,8 @@ class _SupportChatScreenState extends State<SupportChatScreen>
         children: [
           _SupportFaqTab(
             presets: SupportPresets.forRole(l10n, _userRole()),
-            onChatTap: chatConfigured ? () => _tabController.animateTo(1) : null,
+            onChatTap:
+                chatConfigured ? () => _tabController.animateTo(1) : null,
           ),
           chatConfigured ? _buildChat(link, lang) : _buildMissingConfig(),
         ],
@@ -157,7 +159,8 @@ class _SupportChatScreenState extends State<SupportChatScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.support_agent_outlined, size: 48, color: kSubTitleColor),
+            const Icon(Icons.support_agent_outlined,
+                size: 48, color: kSubTitleColor),
             const SizedBox(height: 16),
             Text(
               context.l10n.supportLiveChatNotConfigured,
@@ -239,7 +242,8 @@ class _SupportFaqTab extends StatelessWidget {
                 l10n.supportEmailSubtitle(SupportContact.email),
                 style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13),
               ),
-              trailing: const Icon(Icons.open_in_new, size: 18, color: kLightNeutralColor),
+              trailing: const Icon(Icons.open_in_new,
+                  size: 18, color: kLightNeutralColor),
             ),
           ),
         ),
@@ -279,7 +283,7 @@ class _SupportFaqTab extends StatelessWidget {
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: kPrimaryColor,
+                    backgroundColor: kPrimaryFill,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(40),

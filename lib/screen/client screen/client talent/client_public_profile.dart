@@ -95,7 +95,9 @@ class _ClientPublicProfileState extends State<ClientPublicProfile> {
       );
     }
 
-    final name = _profile!['name'] as String? ?? widget.initialName ?? context.l10n.roleClient;
+    final name = _profile!['name'] as String? ??
+        widget.initialName ??
+        context.l10n.roleClient;
     final bio = (_profile!['bio'] as String?)?.trim();
     final city = (_profile!['city'] as String?)?.trim() ?? '';
     final country = (_profile!['country'] as String?)?.trim() ?? '';
@@ -130,7 +132,7 @@ class _ClientPublicProfileState extends State<ClientPublicProfile> {
         title: Text(
           'Client profile',
           style: kTextStyle.copyWith(
-            color: kPrimaryColor,
+            color: kPrimaryText,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -249,7 +251,8 @@ class _ClientPublicProfileState extends State<ClientPublicProfile> {
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  decoration: ProfileDetailTheme.statsPanel(accent: kPrimaryColor),
+                  decoration:
+                      ProfileDetailTheme.statsPanel(accent: kPrimaryColor),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -269,14 +272,15 @@ class _ClientPublicProfileState extends State<ClientPublicProfile> {
                   child: Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(14),
-                    decoration: ProfileDetailTheme.cardOnPage(accent: kPrimaryColor),
+                    decoration:
+                        ProfileDetailTheme.cardOnPage(accent: kPrimaryColor),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           'About',
                           style: kTextStyle.copyWith(
-                            color: kPrimaryColor,
+                            color: kPrimaryText,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -313,10 +317,9 @@ class _ClientPublicProfileState extends State<ClientPublicProfile> {
                     ),
                     const Spacer(),
                     Text(
-                      reviewCount == 0
-                          ? 'None yet'
-                          : '$reviewCount total',
-                      style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
+                      reviewCount == 0 ? 'None yet' : '$reviewCount total',
+                      style: kTextStyle.copyWith(
+                          color: kLightNeutralColor, fontSize: 12),
                     ),
                   ],
                 ),

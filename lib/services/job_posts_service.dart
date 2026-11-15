@@ -239,7 +239,8 @@ class JobPostsService {
   }
 
   /// Whether hiring this applicant reaches the finite cap (server closes the job only; no auto-reject).
-  static bool acceptingFillsAllSlots(Object? workersNeededRaw, int currentAcceptedCount) {
+  static bool acceptingFillsAllSlots(
+      Object? workersNeededRaw, int currentAcceptedCount) {
     if (workersNeededIsUnlimited(workersNeededRaw)) return false;
     final cap = parseWorkersNeeded(workersNeededRaw);
     return currentAcceptedCount + 1 >= cap;
@@ -252,10 +253,22 @@ class JobPostsService {
 
     final data = await _client
         .from('job_posts')
-        .select('*, categories(name, name_i18n, description, description_i18n), $jobPostSkillsSelect')
+        .select(
+            '*, categories(name, name_i18n, description, description_i18n), $jobPostSkillsSelect')
         .eq('client_id', user.id)
         .order('created_at', ascending: false);
     return List<Map<String, dynamic>>.from(data);
+  }
+
+  /// Description text to show on a card, or null when it is empty or a legacy
+  /// placeholder ("No caption"; case-insensitive). Display guard only:
+  /// stored data is never changed (T-0158).
+  static String? visibleDescription(Object? raw) {
+    final t = (raw is String ? raw : '').trim();
+    if (t.isEmpty) return null;
+    final l = t.toLowerCase();
+    if (l == 'no caption') return null;
+    return t;
   }
 
   /// Create a new job post
@@ -282,27 +295,31 @@ class JobPostsService {
     final user = _client.auth.currentUser;
     if (user == null) throw Exception('Not logged in');
 
-    final data = await _client.from('job_posts').insert({
-      'client_id': user.id,
-      'title': title,
-      'description': description,
-      'category_id': categoryId,
-      'budget_min': budgetMin,
-      'budget_max': budgetMax,
-      'budget_basis': normalizeBudgetBasis(budgetBasis),
-      'deadline': deadline?.toIso8601String(),
-      'status': 'open',
-      'job_type': jobType,
-      'location': location,
-      if (locationType != null) 'location_type': locationType,
-      if (latitude != null) 'latitude': latitude,
-      if (longitude != null) 'longitude': longitude,
-      'workers_needed': workersNeeded,
-      if (attendanceMode != null) 'attendance_mode': attendanceMode,
-      if (workDate != null) 'work_date': ShiftSchedule.dateToDb(workDate),
-      if (shiftStart != null) 'shift_start': shiftStart,
-      if (shiftEnd != null) 'shift_end': shiftEnd,
-    }).select().single();
+    final data = await _client
+        .from('job_posts')
+        .insert({
+          'client_id': user.id,
+          'title': title,
+          'description': description,
+          'category_id': categoryId,
+          'budget_min': budgetMin,
+          'budget_max': budgetMax,
+          'budget_basis': normalizeBudgetBasis(budgetBasis),
+          'deadline': deadline?.toIso8601String(),
+          'status': 'open',
+          'job_type': jobType,
+          'location': location,
+          if (locationType != null) 'location_type': locationType,
+          if (latitude != null) 'latitude': latitude,
+          if (longitude != null) 'longitude': longitude,
+          'workers_needed': workersNeeded,
+          if (attendanceMode != null) 'attendance_mode': attendanceMode,
+          if (workDate != null) 'work_date': ShiftSchedule.dateToDb(workDate),
+          if (shiftStart != null) 'shift_start': shiftStart,
+          if (shiftEnd != null) 'shift_end': shiftEnd,
+        })
+        .select()
+        .single();
 
     final jobId = data['id'] as String?;
     if (jobId != null && skills.isNotEmpty) {
@@ -328,10 +345,12 @@ class JobPostsService {
   }
 
   /// Fetch single job post details
-  static Future<Map<String, dynamic>> getJobPostDetails(String jobPostId) async {
+  static Future<Map<String, dynamic>> getJobPostDetails(
+      String jobPostId) async {
     final data = await _client
         .from('job_posts')
-        .select('*, categories(name, name_i18n, description, description_i18n), $jobPostSkillsSelect')
+        .select(
+            '*, categories(name, name_i18n, description, description_i18n), $jobPostSkillsSelect')
         .eq('id', jobPostId)
         .single();
     return data;
@@ -367,7 +386,8 @@ class JobPostsService {
   }
 
   /// Fetch seller offers on a job post
-  static Future<List<Map<String, dynamic>>> getJobOffers(String jobPostId) async {
+  static Future<List<Map<String, dynamic>>> getJobOffers(
+      String jobPostId) async {
     final data = await _client
         .from('job_offers')
         .select('*, profiles:seller_id(name, profile_image_url, rating)')
@@ -399,7 +419,9 @@ class JobPostsService {
   /// For "accepted" prefer [acceptJobOffer], which atomically also creates
   /// the contract and closes the job post.
   static Future<void> updateOfferStatus(String offerId, String status) async {
-    await _client.from('job_offers').update({'status': status}).eq('id', offerId);
+    await _client
+        .from('job_offers')
+        .update({'status': status}).eq('id', offerId);
   }
 
   /// Accept an application atomically: marks the offer accepted, rejects
@@ -429,14 +451,17 @@ class JobPostsService {
 
   /// Close a job post
   static Future<void> closeJobPost(String jobPostId) async {
-    await _client.from('job_posts').update({'status': 'closed'}).eq('id', jobPostId);
+    await _client
+        .from('job_posts')
+        .update({'status': 'closed'}).eq('id', jobPostId);
   }
 
   /// Fetch categories for dropdown
   static Future<List<Map<String, dynamic>>> getCategories() async {
     final data = await _client
         .from('categories')
-        .select('id, name, name_i18n, description, description_i18n, icon, is_custom')
+        .select(
+            'id, name, name_i18n, description, description_i18n, icon, is_custom')
         .order('name');
     return List<Map<String, dynamic>>.from(data);
   }

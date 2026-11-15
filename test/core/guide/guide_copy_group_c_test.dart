@@ -6,7 +6,12 @@ import 'package:flutter_test/flutter_test.dart';
 /// Copy caps (T-0033 section 5.2) for the group C guides: Find Jobs, seller
 /// job details, apply form and the setup wizard.
 void main() {
-  const prefixes = ['guideFindJobs', 'guideSellerJob', 'guideApply', 'guideSetup'];
+  const prefixes = [
+    'guideFindJobs',
+    'guideSellerJob',
+    'guideApply',
+    'guideSetup'
+  ];
 
   for (final lang in ['en', 'nl']) {
     test('group C guide copy fits the caps ($lang)', () {
@@ -35,8 +40,8 @@ void main() {
         as Map<String, dynamic>;
     final nl = jsonDecode(File('lib/l10n/app_nl.arb').readAsStringSync())
         as Map<String, dynamic>;
-    for (final k in en.keys.where((k) =>
-        prefixes.any(k.startsWith) && k.endsWith('Title'))) {
+    for (final k in en.keys
+        .where((k) => prefixes.any(k.startsWith) && k.endsWith('Title'))) {
       expect(en.containsKey('${k.substring(0, k.length - 5)}Desc'), true,
           reason: k);
       expect(nl.containsKey(k), true, reason: k);

@@ -107,7 +107,7 @@ class ChatOrderContextBanner extends StatelessWidget {
                 child: Text(
                   l10n.openContract,
                   style: kTextStyle.copyWith(
-                    color: kPrimaryColor,
+                    color: kPrimaryText,
                     fontWeight: FontWeight.w600,
                     fontSize: 12,
                   ),

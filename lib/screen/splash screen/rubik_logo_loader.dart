@@ -27,7 +27,8 @@ class RubikTiles {
     '$folder/tile_2_2.png',
   ];
 
-  static String assetFor(int index) => assets[index.clamp(0, assets.length - 1)];
+  static String assetFor(int index) =>
+      assets[index.clamp(0, assets.length - 1)];
 }
 
 class _RubikMove {

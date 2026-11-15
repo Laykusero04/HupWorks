@@ -43,11 +43,15 @@ class JobOffer extends Equatable {
       price: (json['price'] as num).toDouble(),
       priceBasis: JobPostsService.normalizeBudgetBasis(json['price_basis']),
       deliveryTime: json['delivery_time'] as int?,
-      deliveryTimeUnit: json['delivery_time'] == null ? null : JobOfferDelivery.normalizeUnit(json['delivery_time_unit']),
+      deliveryTimeUnit: json['delivery_time'] == null
+          ? null
+          : JobOfferDelivery.normalizeUnit(json['delivery_time_unit']),
       coverLetter: json['cover_letter'] as String?,
       status: (json['status'] as String?) ?? 'pending',
       createdAt: DateTime.parse(json['created_at'] as String),
-      seller: sellerData is Map<String, dynamic> ? Profile.fromJson(sellerData) : null,
+      seller: sellerData is Map<String, dynamic>
+          ? Profile.fromJson(sellerData)
+          : null,
     );
   }
 
@@ -65,5 +69,17 @@ class JobOffer extends Equatable {
       };
 
   @override
-  List<Object?> get props => [id, jobPostId, sellerId, price, priceBasis, deliveryTime, deliveryTimeUnit, coverLetter, status, createdAt, seller];
+  List<Object?> get props => [
+        id,
+        jobPostId,
+        sellerId,
+        price,
+        priceBasis,
+        deliveryTime,
+        deliveryTimeUnit,
+        coverLetter,
+        status,
+        createdAt,
+        seller
+      ];
 }

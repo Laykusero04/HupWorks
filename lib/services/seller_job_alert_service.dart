@@ -15,7 +15,8 @@ abstract final class SellerJobAlertService {
         .order('created_at', ascending: false);
 
     return (data as List<dynamic>)
-        .map((e) => SellerJobAlertRule.fromJson(Map<String, dynamic>.from(e as Map)))
+        .map((e) =>
+            SellerJobAlertRule.fromJson(Map<String, dynamic>.from(e as Map)))
         .toList();
   }
 

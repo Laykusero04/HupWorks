@@ -56,7 +56,8 @@ class ProfileService {
   }
 
   static bool hasProfileCoordinates(Map<String, dynamic> profile) {
-    return latitudeFromProfile(profile) != null && longitudeFromProfile(profile) != null;
+    return latitudeFromProfile(profile) != null &&
+        longitudeFromProfile(profile) != null;
   }
 
   /// Average rating from review rows (e.g. [getReviewsReceived]).
@@ -105,7 +106,10 @@ class ProfileService {
         .toList();
     if (ids.isEmpty) return profiles;
 
-    final rows = await _client.from('reviews').select('reviewed_id, rating').inFilter('reviewed_id', ids);
+    final rows = await _client
+        .from('reviews')
+        .select('reviewed_id, rating')
+        .inFilter('reviewed_id', ids);
 
     final stats = <String, ({double sum, int count})>{};
     for (final raw in rows as List<dynamic>) {
@@ -114,7 +118,9 @@ class ProfileService {
       final v = parseRatingValue(r['rating']);
       if (id == null || v == null) continue;
       final prev = stats[id];
-      stats[id] = prev == null ? (sum: v, count: 1) : (sum: prev.sum + v, count: prev.count + 1);
+      stats[id] = prev == null
+          ? (sum: v, count: 1)
+          : (sum: prev.sum + v, count: prev.count + 1);
     }
 
     final enriched = profiles.map((p) {
@@ -145,7 +151,9 @@ class ProfileService {
         : 0.0;
 
     try {
-      await _client.from('profiles').update({'rating': rating}).eq('id', profileId);
+      await _client
+          .from('profiles')
+          .update({'rating': rating}).eq('id', profileId);
     } catch (e, st) {
       // Client often cannot update another user's profile; enrichment still works in UI.
       AppLogger.error('ProfileService.syncReviewStatsToProfile', e, st);
@@ -159,9 +167,15 @@ class ProfileService {
   }
 
   /// Loads `rating` values where this user is the person being reviewed.
-  static Future<({double sum, int count})> _reviewStatsForProfile(String profileId) async {
-    final rows = await _client.from('reviews').select('rating').eq('reviewed_id', profileId);
-    final list = (rows as List<dynamic>).map((e) => Map<String, dynamic>.from(e as Map)).toList();
+  static Future<({double sum, int count})> _reviewStatsForProfile(
+      String profileId) async {
+    final rows = await _client
+        .from('reviews')
+        .select('rating')
+        .eq('reviewed_id', profileId);
+    final list = (rows as List<dynamic>)
+        .map((e) => Map<String, dynamic>.from(e as Map))
+        .toList();
     if (list.isEmpty) return (sum: 0.0, count: 0);
     var sum = 0.0;
     var n = 0;
@@ -184,7 +198,8 @@ class ProfileService {
   ///
   /// When [forceRefresh] is false and a cache exists for the current user,
   /// returns the cache without hitting the network.
-  static Future<Map<String, dynamic>?> getProfile({bool forceRefresh = false}) async {
+  static Future<Map<String, dynamic>?> getProfile(
+      {bool forceRefresh = false}) async {
     final user = _client.auth.currentUser;
     if (user == null) return null;
 
@@ -192,7 +207,8 @@ class ProfileService {
     if (!forceRefresh && _cacheUserId == user.id && _profileCache != null) {
       profile = Map<String, dynamic>.from(_profileCache!);
     } else {
-      final data = await _client.from('profiles').select().eq('id', user.id).single();
+      final data =
+          await _client.from('profiles').select().eq('id', user.id).single();
       profile = Map<String, dynamic>.from(data);
     }
 
@@ -204,8 +220,7 @@ class ProfileService {
       try {
         await _client
             .from('profiles')
-            .update({'rating': profile['rating']})
-            .eq('id', user.id);
+            .update({'rating': profile['rating']}).eq('id', user.id);
       } catch (e, st) {
         AppLogger.error('ProfileService.syncOwnRating', e, st);
       }
@@ -269,10 +284,8 @@ class ProfileService {
         ? reviewStats.rating
         : (parseRatingValue(profile['rating']) ?? 0.0);
 
-    final jobs = await _client
-        .from('job_posts')
-        .select('id')
-        .eq('client_id', clientId);
+    final jobs =
+        await _client.from('job_posts').select('id').eq('client_id', clientId);
     profile['job_posts_count'] = (jobs as List).length;
 
     return profile;
@@ -282,7 +295,8 @@ class ProfileService {
   ///
   /// Applicants whose `profiles.role` is still `client` are included so an
   /// employer can open the photo and name from a job application.
-  static Future<Map<String, dynamic>?> getPublicSellerProfile(String sellerId) async {
+  static Future<Map<String, dynamic>?> getPublicSellerProfile(
+      String sellerId) async {
     const columns =
         'id, name, profile_image_url, bio, rating, created_at, verification_status, '
         'profile_photo_status, profile_photo_rejection_reason, '
@@ -305,7 +319,8 @@ class ProfileService {
     final stats = await _reviewStatsForProfile(sellerId);
     profile['review_count'] = stats.count;
     if (stats.count > 0) {
-      profile['rating'] = double.parse((stats.sum / stats.count).toStringAsFixed(1));
+      profile['rating'] =
+          double.parse((stats.sum / stats.count).toStringAsFixed(1));
     } else {
       profile['rating'] = parseRatingValue(profile['rating']) ?? 0.0;
     }
@@ -321,11 +336,13 @@ class ProfileService {
     return null;
   }
 
-  static Map<String, dynamic>? sellerPrivateDetailsFromProfile(Map<String, dynamic> profile) {
+  static Map<String, dynamic>? sellerPrivateDetailsFromProfile(
+      Map<String, dynamic> profile) {
     return _privateDetailsRow(profile);
   }
 
-  static Map<String, dynamic>? _privateDetailsRow(Map<String, dynamic> profile) {
+  static Map<String, dynamic>? _privateDetailsRow(
+      Map<String, dynamic> profile) {
     final pd = profile['seller_private_details'];
     if (pd is Map<String, dynamic>) return pd;
     if (pd is List && pd.isNotEmpty && pd.first is Map<String, dynamic>) {
@@ -383,13 +400,14 @@ class ProfileService {
       'birth_day': dateOfBirth?.day,
     };
     if (languages != null) {
-      sellerUpdates['languages'] = languages
-          .map((l) => l.trim())
-          .where((l) => l.isNotEmpty)
-          .toList();
+      sellerUpdates['languages'] =
+          languages.map((l) => l.trim()).where((l) => l.isNotEmpty).toList();
     }
 
-    await _client.from('seller_profiles').update(sellerUpdates).eq('user_id', user.id);
+    await _client
+        .from('seller_profiles')
+        .update(sellerUpdates)
+        .eq('user_id', user.id);
 
     await _client.from('seller_private_details').upsert({
       'user_id': user.id,
@@ -401,7 +419,8 @@ class ProfileService {
       'street_address':
           streetAddress?.trim().isEmpty == true ? null : streetAddress?.trim(),
       'state': state?.trim().isEmpty == true ? null : state?.trim(),
-      'postal_code': postalCode?.trim().isEmpty == true ? null : postalCode?.trim(),
+      'postal_code':
+          postalCode?.trim().isEmpty == true ? null : postalCode?.trim(),
       'updated_at': DateTime.now().toUtc().toIso8601String(),
     });
 
@@ -430,7 +449,8 @@ class ProfileService {
     return a?.trim().isEmpty == true ? null : a?.trim();
   }
 
-  static List<SellerSkill> sellerSkillsFromProfile(Map<String, dynamic> profile) {
+  static List<SellerSkill> sellerSkillsFromProfile(
+      Map<String, dynamic> profile) {
     final row = _sellerProfileRow(profile);
     if (row == null) return const [];
     final skills = row['skills'];
@@ -451,7 +471,8 @@ class ProfileService {
     return result;
   }
 
-  static Map<int, List<SellerSkill>> sellerSkillsByTier(Map<String, dynamic> profile) {
+  static Map<int, List<SellerSkill>> sellerSkillsByTier(
+      Map<String, dynamic> profile) {
     final skills = sellerSkillsFromProfile(profile);
     return {
       5: skills.where((s) => s.stars == 5).toList(),
@@ -466,7 +487,8 @@ class ProfileService {
     if (dob == null) return null;
     final now = DateTime.now();
     var age = now.year - dob.year;
-    if (now.month < dob.month || (now.month == dob.month && now.day < dob.day)) {
+    if (now.month < dob.month ||
+        (now.month == dob.month && now.day < dob.day)) {
       age--;
     }
     return age >= 0 ? age : null;
@@ -528,7 +550,8 @@ class ProfileService {
   }
 
   /// Reviews written about [profileId], newest first (includes reviewer display name).
-  static Future<List<Map<String, dynamic>>> getReviewsReceived(String profileId) async {
+  static Future<List<Map<String, dynamic>>> getReviewsReceived(
+      String profileId) async {
     final rows = await _client
         .from('reviews')
         .select(
@@ -538,7 +561,9 @@ class ProfileService {
         .eq('reviewed_id', profileId)
         .order('created_at', ascending: false)
         .limit(50);
-    return (rows as List<dynamic>).map((e) => Map<String, dynamic>.from(e as Map)).toList();
+    return (rows as List<dynamic>)
+        .map((e) => Map<String, dynamic>.from(e as Map))
+        .toList();
   }
 
   /// Update profile fields
@@ -563,13 +588,13 @@ class ProfileService {
 
     try {
       await _client.storage.from('avatars').upload(
-        storagePath,
-        imageFile,
-        fileOptions: const FileOptions(
-          upsert: true,
-          contentType: 'image/jpeg',
-        ),
-      );
+            storagePath,
+            imageFile,
+            fileOptions: const FileOptions(
+              upsert: true,
+              contentType: 'image/jpeg',
+            ),
+          );
     } catch (e) {
       final msg = e.toString();
       if (msg.contains('row-level security') ||

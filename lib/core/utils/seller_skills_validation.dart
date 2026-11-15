@@ -16,7 +16,8 @@ class SellerSkillsValidation {
 
     if (cleaned.isEmpty) return null;
 
-    if (cleaned.length != skills.where((s) => s.name.trim().isNotEmpty).length) {
+    if (cleaned.length !=
+        skills.where((s) => s.name.trim().isNotEmpty).length) {
       return l10n.skillErrNameRequired;
     }
 
@@ -51,7 +52,8 @@ class SellerSkillsValidation {
     return null;
   }
 
-  static List<SellerSkill> skillsForTier(List<SellerSkill> skills, int tierStars) {
+  static List<SellerSkill> skillsForTier(
+      List<SellerSkill> skills, int tierStars) {
     if (tierStars == 5) {
       return skills.where((s) => s.stars == 5).toList();
     }

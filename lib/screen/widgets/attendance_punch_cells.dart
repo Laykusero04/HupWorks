@@ -25,8 +25,8 @@ class AttendancePunchCellItem {
     }
     return AttendancePunchCellItem(
       punchType: row['punch_type'] as String? ?? '',
-      punchedAt:
-          DateTime.tryParse(row['punched_at'] as String? ?? '') ?? DateTime.now(),
+      punchedAt: DateTime.tryParse(row['punched_at'] as String? ?? '') ??
+          DateTime.now(),
       sellerName: name,
     );
   }
@@ -56,7 +56,8 @@ class AttendancePunchCells extends StatelessWidget {
   static ({DateTime? timeIn, DateTime? timeOut, double minutes}) summarizeToday(
     List<AttendancePunchCellItem> items,
   ) {
-    final sorted = [...items]..sort((a, b) => a.punchedAt.compareTo(b.punchedAt));
+    final sorted = [...items]
+      ..sort((a, b) => a.punchedAt.compareTo(b.punchedAt));
     DateTime? timeIn;
     DateTime? lastOut;
     double minutes = 0;
@@ -157,7 +158,8 @@ class AttendancePunchCells extends StatelessWidget {
               padding: const EdgeInsets.all(12),
               child: Text(
                 emptyMessage,
-                style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
+                style: kTextStyle.copyWith(
+                    color: kLightNeutralColor, fontSize: 12),
               ),
             )
           else ...[
@@ -272,7 +274,8 @@ class _PunchRowCell extends StatelessWidget {
                 ),
                 Text(
                   AttendanceFormat.timeOfDay(punchedAt, locale),
-                  style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12),
+                  style:
+                      kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12),
                 ),
               ],
             ),

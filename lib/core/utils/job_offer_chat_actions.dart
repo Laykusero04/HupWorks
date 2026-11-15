@@ -122,7 +122,7 @@ class JobOfferChatActions {
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(l10n.hireAction,
                 style: kTextStyle.copyWith(
-                    color: kPrimaryColor, fontWeight: FontWeight.bold)),
+                    color: kPrimaryText, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -224,7 +224,7 @@ class JobOfferChatActions {
                 ButtonGlobalWithoutIcon(
                   buttontext: l10n.addInstructionsNow,
                   buttonDecoration:
-                      kButtonDecoration.copyWith(color: kPrimaryColor),
+                      kButtonDecoration.copyWith(color: kPrimaryFill),
                   onPressed: () {
                     Navigator.pop(ctx);
                     if (!context.mounted) return;
@@ -330,8 +330,7 @@ class JobOfferChatActions {
     final title = jobPost['title'] as String? ?? 'this job';
     final basis =
         offer['price_basis'] as String? ?? JobPostsService.budgetBasisFixed;
-    final formatted =
-        JobPostsService.formatOfferAmountLine(amount, basis);
+    final formatted = JobPostsService.formatOfferAmountLine(amount, basis);
 
     final body = StringBuffer()
       ..writeln('💬 Counter offer for "$title"')

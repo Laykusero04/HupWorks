@@ -9,11 +9,8 @@ class ClientHomeService {
     final user = _client.auth.currentUser;
     if (user == null) return null;
 
-    final data = await _client
-        .from('profiles')
-        .select()
-        .eq('id', user.id)
-        .single();
+    final data =
+        await _client.from('profiles').select().eq('id', user.id).single();
     return data;
   }
 

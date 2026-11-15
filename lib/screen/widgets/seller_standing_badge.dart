@@ -85,13 +85,9 @@ class TalentCardStandingChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.fromLTRB(4, 3, 8, 3),
         decoration: BoxDecoration(
-          color: onPhoto
-              ? Colors.black.withValues(alpha: 0.5)
-              : kDarkWhite,
+          color: onPhoto ? Colors.black.withValues(alpha: 0.5) : kDarkWhite,
           borderRadius: BorderRadius.circular(20),
-          border: onPhoto
-              ? null
-              : Border.all(color: kBorderColorTextField),
+          border: onPhoto ? null : Border.all(color: kBorderColorTextField),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -109,12 +105,19 @@ class TalentCardStandingChip extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 4),
-            Text(
-              label,
-              style: kTextStyle.copyWith(
-                color: onPhoto ? Colors.white : kNeutralColor,
-                fontSize: 10,
-                fontWeight: FontWeight.w700,
+            Flexible(
+              child: MediaQuery.withClampedTextScaling(
+                maxScaleFactor: 1.15,
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: kTextStyle.copyWith(
+                    color: onPhoto ? Colors.white : kNeutralColor,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
               ),
             ),
           ],

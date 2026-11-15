@@ -39,7 +39,9 @@ class Review extends Equatable {
       rating: json['rating'] as int,
       comment: json['comment'] as String?,
       createdAt: DateTime.parse(json['created_at'] as String),
-      reviewer: reviewerData is Map<String, dynamic> ? Profile.fromJson(reviewerData) : null,
+      reviewer: reviewerData is Map<String, dynamic>
+          ? Profile.fromJson(reviewerData)
+          : null,
     );
   }
 
@@ -55,5 +57,15 @@ class Review extends Equatable {
       };
 
   @override
-  List<Object?> get props => [id, orderId, reviewerId, reviewedId, serviceId, rating, comment, createdAt, reviewer];
+  List<Object?> get props => [
+        id,
+        orderId,
+        reviewerId,
+        reviewedId,
+        serviceId,
+        rating,
+        comment,
+        createdAt,
+        reviewer
+      ];
 }

@@ -5,7 +5,8 @@ import '../../app_config/app_config.dart';
 class PurchaseModel {
   Future<bool> isActiveBuyer() async {
     final response = await http.get(
-      Uri.parse('https://api.envato.com/v3/market/author/sale?code=$purchaseCode'),
+      Uri.parse(
+          'https://api.envato.com/v3/market/author/sale?code=$purchaseCode'),
       headers: {'Authorization': 'Bearer orZoxiU81Ok7kxsE0FvfraaO0vDW5tiz'},
     );
     if (response.statusCode == 200) {

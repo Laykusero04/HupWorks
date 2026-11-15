@@ -56,7 +56,8 @@ class ChatPrivacyException implements Exception {
 String messageForChatStartFailure(AppLocalizations l10n, Object error) {
   final text = '$error';
   if (text.contains('Contact blocked')) return l10n.contactBlocked;
-  if (text.contains('Chat privacy: nobody')) return l10n.chatPrivacyDeniedNobody;
+  if (text.contains('Chat privacy: nobody'))
+    return l10n.chatPrivacyDeniedNobody;
   if (text.contains('Chat privacy: verified')) {
     return l10n.chatPrivacyDeniedVerified;
   }

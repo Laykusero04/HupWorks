@@ -232,7 +232,8 @@ class _ReportUserScreenState extends State<ReportUserScreen> {
                     borderRadius: BorderRadius.circular(30.0),
                     border: Border.all(color: redColor),
                   ),
-                  onPressed: _isSubmitting ? null : () => Navigator.pop(context),
+                  onPressed:
+                      _isSubmitting ? null : () => Navigator.pop(context),
                   buttonTextColor: redColor,
                 ),
               ),
@@ -240,7 +241,7 @@ class _ReportUserScreenState extends State<ReportUserScreen> {
                 child: ButtonGlobalWithoutIcon(
                   buttontext: _isSubmitting ? l10n.sending : l10n.submitReport,
                   buttonDecoration: kButtonDecoration.copyWith(
-                    color: _isSubmitting ? kLightNeutralColor : kPrimaryColor,
+                    color: _isSubmitting ? kLightNeutralColor : kPrimaryFill,
                     borderRadius: BorderRadius.circular(30.0),
                   ),
                   onPressed: _isSubmitting ? null : _handleSend,

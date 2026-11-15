@@ -51,9 +51,7 @@ class ChatPreferredContactBanner extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.fromLTRB(14, 8, 14, 10),
         decoration: BoxDecoration(
-          color: inWindow
-              ? Colors.green.withValues(alpha: 0.06)
-              : kDarkWhite,
+          color: inWindow ? Colors.green.withValues(alpha: 0.06) : kDarkWhite,
           border: Border(
             bottom: BorderSide(
               color: inWindow

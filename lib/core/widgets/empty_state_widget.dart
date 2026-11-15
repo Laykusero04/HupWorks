@@ -48,7 +48,8 @@ class EmptyStateWidget extends StatelessWidget {
                 ),
               )
             else
-              Icon(icon, size: 56, color: kLightNeutralColor.withValues(alpha: 0.9)),
+              Icon(icon,
+                  size: 56, color: kLightNeutralColor.withValues(alpha: 0.9)),
             const SizedBox(height: 16),
             Text(
               message,

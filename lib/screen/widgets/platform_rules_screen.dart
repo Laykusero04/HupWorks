@@ -64,8 +64,7 @@ class PlatformRulesScreen extends StatelessWidget {
               final stepIndex = index - 1;
               final step = steps[stepIndex];
               final number = stepIndex + 1;
-              final accent =
-                  number.isOdd ? kPrimaryColor : kSecondaryColor;
+              final accent = number.isOdd ? kPrimaryColor : kSecondaryColor;
 
               return Material(
                 color: kDarkWhite,

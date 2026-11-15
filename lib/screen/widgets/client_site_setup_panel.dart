@@ -14,6 +14,7 @@ class ClientSiteSetupPanel extends StatelessWidget {
   final String? onboardingStatus;
   final VoidCallback? onOnboarding;
   final Map<String, dynamic>? jobPost;
+
   /// Called after the client sets a missing map pin so parent can refresh.
   final VoidCallback? onJobLocationUpdated;
 
@@ -29,7 +30,8 @@ class ClientSiteSetupPanel extends StatelessWidget {
   /// Optional guide target around this widget; see [GuideAnchor].
   final GuideAnchor? guideAnchor;
 
-  static bool showOnboarding(VoidCallback? onOnboarding) => onOnboarding != null;
+  static bool showOnboarding(VoidCallback? onOnboarding) =>
+      onOnboarding != null;
 
   static bool showQr(Map<String, dynamic>? jobPost) {
     if (!AttendanceService.isOnsiteJob(jobPost)) return false;
@@ -108,7 +110,9 @@ class ClientSiteSetupPanel extends StatelessWidget {
           if (showInstructions && showQrRow)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Divider(height: 1, color: kBorderColorTextField.withValues(alpha: 0.8)),
+              child: Divider(
+                  height: 1,
+                  color: kBorderColorTextField.withValues(alpha: 0.8)),
             ),
           if (showQrRow) ...[
             if (!showInstructions) const SizedBox(height: 6),
@@ -179,7 +183,7 @@ class _SetupRow extends StatelessWidget {
             Text(
               actionLabel,
               style: kTextStyle.copyWith(
-                color: kPrimaryColor,
+                color: kPrimaryText,
                 fontWeight: FontWeight.w600,
                 fontSize: 13,
               ),

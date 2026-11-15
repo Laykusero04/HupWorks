@@ -32,7 +32,8 @@ class ChatPrivacyService {
       rethrow;
     }
 
-    final map = raw is Map ? Map<String, dynamic>.from(raw) : <String, dynamic>{};
+    final map =
+        raw is Map ? Map<String, dynamic>.from(raw) : <String, dynamic>{};
     if (map['allowed'] == true) return;
 
     final reason = (map['reason'] as String?)?.trim() ?? 'denied';

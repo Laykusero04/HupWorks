@@ -8,7 +8,7 @@ ThemeData appTheme() {
     primaryColor: kPrimaryColor,
     scaffoldBackgroundColor: kDarkWhite,
     colorScheme: ColorScheme.light(
-      primary: kPrimaryColor,
+      primary: kPrimaryDark,
       secondary: kSecondaryColor,
       tertiary: kAccentColor,
       surface: kWhite,
@@ -30,7 +30,7 @@ ThemeData appTheme() {
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: kPrimaryColor,
+        backgroundColor: kPrimaryDark,
         foregroundColor: kWhite,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30.0),
@@ -39,7 +39,32 @@ ThemeData appTheme() {
     ),
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
-        foregroundColor: kSecondaryColor,
+        foregroundColor: kPrimaryDark,
+      ),
+    ),
+    segmentedButtonTheme: SegmentedButtonThemeData(
+      style: ButtonStyle(
+        minimumSize: const WidgetStatePropertyAll(Size(48, 48)),
+        backgroundColor: WidgetStateProperty.resolveWith(
+          (s) {
+            if (s.contains(WidgetState.disabled)) {
+              return s.contains(WidgetState.selected)
+                  ? kNeutralColor.withValues(alpha: 0.12)
+                  : kWhite;
+            }
+            return s.contains(WidgetState.selected) ? kPrimaryTint : kWhite;
+          },
+        ),
+        foregroundColor: WidgetStateProperty.resolveWith(
+          (s) {
+            if (s.contains(WidgetState.disabled)) {
+              return kNeutralColor.withValues(alpha: 0.38);
+            }
+            return s.contains(WidgetState.selected)
+                ? kPrimaryOnTint
+                : kNeutralColor;
+          },
+        ),
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(

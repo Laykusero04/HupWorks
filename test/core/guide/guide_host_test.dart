@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:freelancer/core/guide/guide_host.dart';
 import 'package:freelancer/core/guide/guide_info_button.dart';
+import 'package:freelancer/core/guide/guide_nav_bridge.dart';
 import 'package:freelancer/l10n/app_localizations.dart';
 import 'package:freelancer/core/guide/guide_service.dart';
 import 'package:freelancer/core/guide/guide_session.dart';
@@ -58,12 +59,14 @@ class _Screen extends StatefulWidget {
       this.bottomTarget = false,
       this.screenId = 'test_screen',
       this.withBar = false,
+      this.leads = false,
       this.openLabel,
       this.onOpen});
   final String? openLabel;
   final VoidCallback? onOpen;
   final String screenId;
   final bool withBar;
+  final bool leads;
   final bool enabled;
   final bool ready;
   final bool bottomTarget;
@@ -75,6 +78,8 @@ class _ScreenState extends State<_Screen> with GuideHost<_Screen> {
   final _a = GlobalKey(), _b = GlobalKey();
   @override
   String get guideScreenId => widget.screenId;
+  @override
+  bool get guideLeadsChain => widget.leads;
   @override
   String get guideRole => 'client';
   @override
@@ -248,20 +253,159 @@ void main() {
     expect(find.text('Skip'), findsOneWidget);
   });
 
-  testWidgets('Skip pill: bottom by default, top for bottom targets',
-      (t) async {
+  testWidgets(
+      'Skip pill: bottom for a top target, top for a bottom-flagged target; '
+      'always >= 48dp', (t) async {
     await _pump(t, const _Screen(bottomTarget: true));
     final h = t.view.physicalSize.height / t.view.devicePixelRatio;
-    // Step A (not bottom): pill at the bottom.
+    final pill = find.byKey(const ValueKey('guide_skip_pill'));
     expect(t.getCenter(find.text('Skip')).dy, greaterThan(h / 2));
+    expect(t.getSize(pill).height, greaterThanOrEqualTo(48));
     await t.tap(find.text('Next'));
     await t.pump(const Duration(milliseconds: 100));
     await t.pump(const Duration(milliseconds: 700));
     for (var i = 0; i < 20; i++) {
       await t.pump(const Duration(milliseconds: 100));
     }
-    // Step B (bottom target): pill moves to the top.
+    // Step B is flagged near-bottom: the pill moves to the top.
     expect(t.getCenter(find.text('Skip')).dy, lessThan(h / 2));
+    expect(t.getSize(pill).height, greaterThanOrEqualTo(48));
+  });
+
+  testWidgets('outside tap does not advance or end the tour', (t) async {
+    await _pump(t, const _Screen());
+    expect(find.text('a desc'), findsOneWidget);
+    // Far corner of the dimmed area, away from tooltip / pill.
+    await t.tapAt(const Offset(780, 300));
+    await t.pump(const Duration(milliseconds: 700));
+    expect(find.text('a desc'), findsOneWidget);
+    expect(find.text('b desc'), findsNothing);
+    expect(find.text('Skip'), findsOneWidget);
+    expect(await _seen(), false);
+  });
+
+  testWidgets(
+      'tab tap during a tour ends it (marks seen, like Skip) and switches '
+      'tab in one tap; pill sits above the measured nav', (t) async {
+    final navKey = GlobalKey();
+    final tapped = <int>[];
+    final handle = GuideNavHandle(
+      barKey: navKey,
+      tabCount: () => 3,
+      onTab: tapped.add,
+      isVisible: () => true,
+    );
+    GuideNavBridge.register(handle);
+    addTearDown(() => GuideNavBridge.unregister(handle));
+
+    await _pump(
+        t,
+        Scaffold(
+          body: const _Screen(),
+          bottomNavigationBar: SizedBox(
+            key: navKey,
+            height: 70,
+            child: Row(children: [
+              for (var i = 0; i < 3; i++)
+                Expanded(child: Center(child: Text('tab$i'))),
+            ]),
+          ),
+        ));
+    expect(find.text('Skip'), findsOneWidget);
+    final h = t.view.physicalSize.height / t.view.devicePixelRatio;
+    final navTop = h - 70;
+    expect(t.getBottomLeft(find.byKey(const ValueKey('guide_skip_pill'))).dy,
+        lessThanOrEqualTo(navTop));
+
+    await t.tapAt(t.getCenter(find.text('tab1')));
+    await t.pump(const Duration(milliseconds: 600));
+    await t.pump(const Duration(milliseconds: 400));
+    expect(tapped, [1]);
+    expect(find.text('Skip'), findsNothing);
+    expect(await _seen(), true);
+  });
+
+  testWidgets(
+      'tab tap during the HOME tour suppresses the chained shell guide for the '
+      'session (seller shell no longer restarts a tour, T-0156 B4)', (t) async {
+    GuideSession.instance.resetForTest();
+    final navKey = GlobalKey();
+    final handle = GuideNavHandle(
+      barKey: navKey,
+      tabCount: () => 3,
+      onTab: (_) {},
+      isVisible: () => true,
+    );
+    GuideNavBridge.register(handle);
+    addTearDown(() {
+      GuideNavBridge.unregister(handle);
+      GuideSession.instance.resetForTest();
+    });
+    expect(GuideSession.instance.shellSuppressed, false);
+
+    await _pump(
+        t,
+        Scaffold(
+          body: const _Screen(leads: true),
+          bottomNavigationBar: SizedBox(
+            key: navKey,
+            height: 70,
+            child: Row(children: [
+              for (var i = 0; i < 3; i++)
+                Expanded(child: Center(child: Text('tab$i'))),
+            ]),
+          ),
+        ));
+    await t.tapAt(t.getCenter(find.text('tab2')));
+    await t.pump(const Duration(milliseconds: 600));
+    await t.pump(const Duration(milliseconds: 400));
+    expect(find.text('Skip'), findsNothing);
+    expect(GuideSession.instance.shellSuppressed, true);
+    // Landing on Home again, or a new chain / replay, re-enables it.
+    GuideSession.instance.clearShellSuppression();
+    expect(GuideSession.instance.shellSuppressed, false);
+    GuideSession.instance.suppressShellGuide();
+    GuideSession.instance.resetHome();
+    expect(GuideSession.instance.shellSuppressed, false);
+  });
+
+  testWidgets(
+      'tab tap during a non-Home tour does NOT suppress the '
+      'shell guide (seller shell no longer restarts a tour, T-0156 B4)',
+      (t) async {
+    GuideSession.instance.resetForTest();
+    final navKey = GlobalKey();
+    final handle = GuideNavHandle(
+      barKey: navKey,
+      tabCount: () => 3,
+      onTab: (_) {},
+      isVisible: () => true,
+    );
+    GuideNavBridge.register(handle);
+    addTearDown(() {
+      GuideNavBridge.unregister(handle);
+      GuideSession.instance.resetForTest();
+    });
+    expect(GuideSession.instance.shellSuppressed, false);
+
+    await _pump(
+        t,
+        Scaffold(
+          body: const _Screen(),
+          bottomNavigationBar: SizedBox(
+            key: navKey,
+            height: 70,
+            child: Row(children: [
+              for (var i = 0; i < 3; i++)
+                Expanded(child: Center(child: Text('tab$i'))),
+            ]),
+          ),
+        ));
+    await t.tapAt(t.getCenter(find.text('tab2')));
+    await t.pump(const Duration(milliseconds: 600));
+    await t.pump(const Duration(milliseconds: 400));
+    expect(find.text('Skip'), findsNothing);
+    expect(GuideSession.instance.shellSuppressed, false);
   });
 
   testWidgets('drawer open: guide does not start; starts after close',

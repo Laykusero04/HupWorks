@@ -14,7 +14,9 @@ class InviteService {
 
   static String inviteCodeFromUserId(String userId) {
     final compact = userId.replaceAll('-', '').toUpperCase();
-    final short = compact.length >= 8 ? compact.substring(0, 8) : compact.padRight(8, '0');
+    final short = compact.length >= 8
+        ? compact.substring(0, 8)
+        : compact.padRight(8, '0');
     return 'HW-$short';
   }
 

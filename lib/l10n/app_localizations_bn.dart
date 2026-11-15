@@ -962,7 +962,12 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String attentionItems(int count) {
-    return '$countটি আইটেমে মনোযোগ প্রয়োজন';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countটি আইটেমে মনোযোগ প্রয়োজন',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -2250,7 +2255,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get openContractCalloutBody =>
-      'Your freelancer must submit delivery before you can complete this contract. You can message the seller from the ⋮ menu at the top.';
+      'Your freelancer must submit delivery before you can complete this contract. Use the Message button below to chat with your freelancer.';
 
   @override
   String cancellationRequestBannerBody(String seller) {
@@ -2465,6 +2470,19 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get workersNeeded => 'Workers needed';
+
+  @override
+  String workersNeededCardCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count জন ফ্রিল্যান্সার প্রয়োজন',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get openHiringNoLimit => 'উন্মুক্ত নিয়োগ — কোনো নির্দিষ্ট সীমা নেই';
 
   @override
   String get limitHiresToCount => 'Limit hires to this count';
@@ -2767,6 +2785,14 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get somethingWentWrong => 'Something went wrong';
+
+  @override
+  String get chatLoadTimeout =>
+      'লোড হতে বেশি সময় লাগছে। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।';
+
+  @override
+  String get chatLoadFailedHint =>
+      'আপনার কথোপকথন লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।';
 
   @override
   String get headsUp => 'Heads up';
@@ -3961,7 +3987,7 @@ class AppLocalizationsBn extends AppLocalizations {
       'ক্যামেরা বা ছবির অনুমতি বন্ধ আছে। অ্যাপ সেটিংস থেকে চালু করুন।';
 
   @override
-  String get guideSkip => 'Skip';
+  String get guideSkip => 'Skip tour';
 
   @override
   String get guideNext => 'Next';
@@ -4578,7 +4604,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get guideFindJobsTagsDesc =>
-      'The category and the job type, for example gig or part-time.';
+      'The category and the job type, for example shift or part-time.';
 
   @override
   String get guideFindJobsBudgetTitle => 'Budget';
@@ -5046,7 +5072,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get guideMyJobsFilterDesc =>
-      'Show Gig, Full time or Part time jobs only.';
+      'Show Shift, Full-time or Part-time jobs only.';
 
   @override
   String get guideMyJobsCardTitle => 'Your job post';
@@ -5065,7 +5091,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get guideApplicationsFilterDesc =>
-      'Opens on Pending. Switch to Accepted, Rejected or All to see the rest.';
+      'Filter your applications by status: Pending, Accepted, Rejected or All.';
 
   @override
   String get guideApplicationsApplicantTitle => 'Applicant';
@@ -5408,4 +5434,79 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get guideNothingToShow => 'Nothing to explain here yet';
+
+  @override
+  String get clientStatRating => 'Rating';
+
+  @override
+  String get onboardingSectionWhere => 'Where to go';
+
+  @override
+  String get onboardingSectionWhen => 'When to arrive';
+
+  @override
+  String get onboardingSectionWho => 'Who to contact';
+
+  @override
+  String get onboardingSectionAccess => 'Building access';
+
+  @override
+  String get onboardingSectionRules => 'Site rules';
+
+  @override
+  String get onboardingSectionEmergency => 'Emergency';
+
+  @override
+  String get onboardingSectionGeneric => 'Section';
+
+  @override
+  String get clientTapToViewProfile => 'Tap to view full client profile';
+
+  @override
+  String get inviteCopyCodeLabel => 'আমন্ত্রণ কোড কপি করুন';
+
+  @override
+  String get jobNoDescription => 'কোনো বিবরণ নেই';
+
+  @override
+  String get contractAgreedInChat => 'চ্যাটে সম্মত';
+
+  @override
+  String get contractPerJobAgreement => 'কাজের চুক্তি অনুযায়ী';
+
+  @override
+  String get contractUnlimitedRevisions => 'সীমাহীন রিভিশন';
+
+  @override
+  String contractDurationDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count দিন',
+      one: '১ দিন',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String contractDurationHours(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ঘণ্টা',
+      one: '১ ঘণ্টা',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String contractRevisionsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countটি রিভিশন',
+      one: '১টি রিভিশন',
+    );
+    return '$_temp0';
+  }
 }

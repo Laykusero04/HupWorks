@@ -46,9 +46,8 @@ class TalentCardVerificationMark extends StatelessWidget {
       child: CustomPaint(
         painter: _TrustRingPainter(
           progress: progress,
-          trackColor: onPhoto
-              ? Colors.white.withValues(alpha: 0.35)
-              : colors.track,
+          trackColor:
+              onPhoto ? Colors.white.withValues(alpha: 0.35) : colors.track,
           progressColor: colors.accent,
           strokeWidth: size * 0.1,
         ),
@@ -58,9 +57,8 @@ class TalentCardVerificationMark extends StatelessWidget {
             height: size * 0.68,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: onPhoto
-                  ? Colors.black.withValues(alpha: 0.45)
-                  : colors.fill,
+              color:
+                  onPhoto ? Colors.black.withValues(alpha: 0.45) : colors.fill,
               border: onPhoto
                   ? null
                   : Border.all(color: colors.accent.withValues(alpha: 0.25)),

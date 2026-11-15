@@ -5,5 +5,6 @@ class SellerInvite extends StatelessWidget {
   const SellerInvite({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => const InviteFriendsScreen();
+  Widget build(BuildContext context) =>
+      const InviteFriendsScreen(isSeller: true);
 }

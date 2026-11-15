@@ -103,6 +103,7 @@ class _SetupSellerProfileState extends State<SetupSellerProfile>
     setState(() => _routeSettled = true);
     scheduleGuide();
   }
+
   @override
   String get guideSkipLabel => context.l10n.guideSkip;
   @override
@@ -596,7 +597,7 @@ class _SetupSellerProfileState extends State<SetupSellerProfile>
                 ? l10n.continueLabel
                 : l10n.saveProfile,
         buttonDecoration: kButtonDecoration.copyWith(
-          color: _isSaving ? kLightNeutralColor : kPrimaryColor,
+          color: _isSaving ? kLightNeutralColor : kPrimaryFill,
           borderRadius: BorderRadius.circular(30.0),
         ),
         onPressed: _isSaving ? null : _onContinue,
@@ -980,8 +981,7 @@ class _SetupSellerProfileState extends State<SetupSellerProfile>
                         Text(
                           l10n.uploadIdFaceSelfie,
                           style: kTextStyle.copyWith(
-                              color: kPrimaryColor,
-                              fontWeight: FontWeight.w600),
+                              color: kPrimaryText, fontWeight: FontWeight.w600),
                         ),
                         const SizedBox(height: 4),
                         Text(

@@ -15,7 +15,8 @@ class LocalNotificationService {
 
   static final LocalNotificationService instance = LocalNotificationService._();
 
-  final FlutterLocalNotificationsPlugin _plugin = FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _plugin =
+      FlutterLocalNotificationsPlugin();
   bool _initialized = false;
   bool _attempted = false;
   NotificationTapHandler? _onTap;
@@ -50,7 +51,8 @@ class LocalNotificationService {
     }
 
     try {
-      const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+      const androidSettings =
+          AndroidInitializationSettings('@mipmap/ic_launcher');
       const darwinSettings = DarwinInitializationSettings(
         requestAlertPermission: false,
         requestBadgePermission: false,
@@ -64,16 +66,18 @@ class LocalNotificationService {
           macOS: darwinSettings,
         ),
         onDidReceiveNotificationResponse: _onNotificationResponse,
-        onDidReceiveBackgroundNotificationResponse: _onBackgroundNotificationResponse,
+        onDidReceiveBackgroundNotificationResponse:
+            _onBackgroundNotificationResponse,
       );
 
       if (ok != true) {
-        AppLogger.error('LocalNotificationService.initialize', 'Plugin returned false', null);
+        AppLogger.error('LocalNotificationService.initialize',
+            'Plugin returned false', null);
         return;
       }
 
-      final android =
-          _plugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+      final android = _plugin.resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>();
       await android?.createNotificationChannel(_androidChannel);
 
       _initialized = true;
@@ -97,16 +101,17 @@ class LocalNotificationService {
     if (!_initialized) await initialize(onTap: _onTap);
 
     try {
-      final android =
-          _plugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+      final android = _plugin.resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>();
       if (defaultTargetPlatform == TargetPlatform.android) {
         final granted = await android?.requestNotificationsPermission();
         return granted ?? false;
       }
 
-      final ios =
-          _plugin.resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>();
-      final result = await ios?.requestPermissions(alert: true, badge: true, sound: true);
+      final ios = _plugin.resolvePlatformSpecificImplementation<
+          IOSFlutterLocalNotificationsPlugin>();
+      final result =
+          await ios?.requestPermissions(alert: true, badge: true, sound: true);
       return result ?? false;
     } catch (e, st) {
       AppLogger.error('LocalNotificationService.requestPermissions', e, st);

@@ -61,10 +61,13 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
         setState(() {
           _nameController.text = profile['name'] ?? '';
           _phoneController.text = profile['phone'] ?? '';
-          _addressController.text = ProfileService.sellerAddressFromProfile(profile) ?? '';
+          _addressController.text =
+              ProfileService.sellerAddressFromProfile(profile) ?? '';
           _selectedGender = profile['gender'] ?? L10nLabels.genderMale;
-          _jobTitleController.text = ProfileService.sellerJobTitleFromProfile(profile) ?? '';
-          _aboutController.text = ProfileService.sellerAboutFromProfile(profile) ?? '';
+          _jobTitleController.text =
+              ProfileService.sellerJobTitleFromProfile(profile) ?? '';
+          _aboutController.text =
+              ProfileService.sellerAboutFromProfile(profile) ?? '';
           _skills = ProfileService.sellerSkillsFromProfile(profile);
           _dateOfBirth = ProfileService.sellerDateOfBirthFromProfile(profile);
           _profileImageUrl =
@@ -137,7 +140,8 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
     }
     final skillError = SellerSkillsValidation.validate(_skills, context.l10n);
     if (skillError != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(skillError)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(skillError)));
       return;
     }
 
@@ -157,11 +161,14 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
         clearPublicCountryCity: false,
       );
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.profileUpdatedShort)));
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(context.l10n.profileUpdatedShort)));
         Navigator.pop(context);
       }
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.errorWithDetail('$e'))));
+      if (mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(context.l10n.errorWithDetail('$e'))));
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
@@ -172,7 +179,8 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
       padding: const EdgeInsets.only(bottom: 12),
       child: Text(
         title,
-        style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 16),
+        style: kTextStyle.copyWith(
+            color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 16),
       ),
     );
   }
@@ -197,7 +205,8 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
           l10n.editProfile,
-          style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold),
+          style: kTextStyle.copyWith(
+              color: kNeutralColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),
@@ -210,7 +219,7 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
             buttontext: _isSaving ? l10n.updating : l10n.updateProfile,
             buttonTextColor: kWhite,
             buttonDecoration: kButtonDecoration.copyWith(
-              color: _isSaving ? kLightNeutralColor : kPrimaryColor,
+              color: _isSaving ? kLightNeutralColor : kPrimaryFill,
               borderRadius: BorderRadius.circular(30.0),
             ),
             onPressed: _isSaving ? null : _handleSave,
@@ -226,7 +235,9 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
             width: context.width(),
             decoration: const BoxDecoration(
               color: kWhite,
-              borderRadius: BorderRadius.only(topLeft: Radius.circular(30.0), topRight: Radius.circular(30.0)),
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(30.0),
+                  topRight: Radius.circular(30.0)),
             ),
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
@@ -246,14 +257,16 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
                   Center(
                     child: Text(
                       l10n.selectProfileImage,
-                      style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 13),
+                      style: kTextStyle.copyWith(
+                          color: kSubTitleColor, fontSize: 13),
                     ),
                   ),
                   const SizedBox(height: 24.0),
                   _sectionTitle(l10n.basicInfo),
                   _field(_nameController, l10n.fullName, l10n.enterYourName),
                   const SizedBox(height: 20.0),
-                  _field(_phoneController, l10n.phoneNo, l10n.enterPhoneNo, type: TextInputType.phone),
+                  _field(_phoneController, l10n.phoneNo, l10n.enterPhoneNo,
+                      type: TextInputType.phone),
                   const SizedBox(height: 20.0),
                   TextFormField(
                     controller: _addressController,
@@ -274,7 +287,8 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
                       decoration: InputDecoration(
                         enabledBorder: const OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                          borderSide: BorderSide(color: kBorderColorTextField, width: 2),
+                          borderSide: BorderSide(
+                              color: kBorderColorTextField, width: 2),
                         ),
                         contentPadding: const EdgeInsets.all(7.0),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -284,9 +298,10 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton<String>(
                           icon: const Icon(FeatherIcons.chevronDown),
-                          value: L10nLabels.genderValues.contains(_selectedGender)
-                              ? _selectedGender
-                              : L10nLabels.genderMale,
+                          value:
+                              L10nLabels.genderValues.contains(_selectedGender)
+                                  ? _selectedGender
+                                  : L10nLabels.genderMale,
                           style: kTextStyle.copyWith(color: kSubTitleColor),
                           items: L10nLabels.genderValues
                               .map((g) => DropdownMenuItem(
@@ -294,7 +309,8 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
                                     child: Text(L10nLabels.gender(l10n, g)),
                                   ))
                               .toList(),
-                          onChanged: (v) => setState(() => _selectedGender = v!),
+                          onChanged: (v) =>
+                              setState(() => _selectedGender = v!),
                         ),
                       ),
                     ),
@@ -302,12 +318,16 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
                   const SizedBox(height: 20.0),
                   Text(
                     l10n.ageLabel,
-                    style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 14),
+                    style: kTextStyle.copyWith(
+                        color: kNeutralColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     l10n.agePrivacyHint,
-                    style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
+                    style: kTextStyle.copyWith(
+                        color: kLightNeutralColor, fontSize: 12),
                   ),
                   const SizedBox(height: 8),
                   InkWell(
@@ -342,12 +362,16 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
                   const SizedBox(height: 32.0),
                   Text(
                     l10n.yourSkills,
-                    style: kTextStyle.copyWith(color: kNeutralColor, fontWeight: FontWeight.bold, fontSize: 16),
+                    style: kTextStyle.copyWith(
+                        color: kNeutralColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     l10n.skillsOptionalHint,
-                    style: kTextStyle.copyWith(color: kLightNeutralColor, fontSize: 12),
+                    style: kTextStyle.copyWith(
+                        color: kLightNeutralColor, fontSize: 12),
                   ),
                   const SizedBox(height: 12),
                   SellerSkillsEditor(
@@ -364,7 +388,8 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
     );
   }
 
-  Widget _field(TextEditingController c, String label, String hint, {TextInputType type = TextInputType.name}) {
+  Widget _field(TextEditingController c, String label, String hint,
+      {TextInputType type = TextInputType.name}) {
     return TextFormField(
       controller: c,
       keyboardType: type,

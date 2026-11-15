@@ -63,20 +63,33 @@ class Order extends Equatable {
       sellerId: json['seller_id'] as String,
       status: (json['status'] as String?) ?? 'pending',
       price: (json['price'] as num).toDouble(),
-      requirementsResponse: json['requirements_response'] as Map<String, dynamic>?,
-      deliveryDeadline: json['delivery_deadline'] != null ? DateTime.parse(json['delivery_deadline'] as String) : null,
+      requirementsResponse:
+          json['requirements_response'] as Map<String, dynamic>?,
+      deliveryDeadline: json['delivery_deadline'] != null
+          ? DateTime.parse(json['delivery_deadline'] as String)
+          : null,
       workDate: ShiftSchedule.parseDate(json['work_date']),
-      shiftStart: ShiftSchedule.timeToDb(ShiftSchedule.parseTime(json['shift_start'])),
-      shiftEnd: ShiftSchedule.timeToDb(ShiftSchedule.parseTime(json['shift_end'])),
+      shiftStart:
+          ShiftSchedule.timeToDb(ShiftSchedule.parseTime(json['shift_start'])),
+      shiftEnd:
+          ShiftSchedule.timeToDb(ShiftSchedule.parseTime(json['shift_end'])),
       createdAt: DateTime.parse(json['created_at'] as String),
-      completedAt: json['completed_at'] != null ? DateTime.parse(json['completed_at'] as String) : null,
+      completedAt: json['completed_at'] != null
+          ? DateTime.parse(json['completed_at'] as String)
+          : null,
       paymentReceivedAt: json['payment_received_at'] != null
           ? DateTime.parse(json['payment_received_at'] as String)
           : null,
       paymentReceivedBy: json['payment_received_by'] as String?,
-      service: serviceData is Map<String, dynamic> ? ServiceModel.fromJson(serviceData) : null,
-      seller: sellerData is Map<String, dynamic> ? Profile.fromJson(sellerData) : null,
-      client: clientData is Map<String, dynamic> ? Profile.fromJson(clientData) : null,
+      service: serviceData is Map<String, dynamic>
+          ? ServiceModel.fromJson(serviceData)
+          : null,
+      seller: sellerData is Map<String, dynamic>
+          ? Profile.fromJson(sellerData)
+          : null,
+      client: clientData is Map<String, dynamic>
+          ? Profile.fromJson(clientData)
+          : null,
     );
   }
 
@@ -88,7 +101,8 @@ class Order extends Equatable {
         'status': status,
         'price': price,
         'requirements_response': requirementsResponse,
-        if (deliveryDeadline != null) 'delivery_deadline': deliveryDeadline!.toIso8601String(),
+        if (deliveryDeadline != null)
+          'delivery_deadline': deliveryDeadline!.toIso8601String(),
         if (workDate != null) 'work_date': ShiftSchedule.dateToDb(workDate),
         if (shiftStart != null) 'shift_start': shiftStart,
         if (shiftEnd != null) 'shift_end': shiftEnd,

@@ -1,7 +1,9 @@
+import 'package:freelancer/screen/widgets/word_safe_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:freelancer/core/guide/guide_config.dart';
 import 'package:freelancer/core/guide/guide_host.dart';
 import 'package:freelancer/core/guide/guide_info_button.dart';
 import 'package:freelancer/core/guide/guide_step.dart';
@@ -162,6 +164,11 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
       scope: guideScope,
       title: title,
       description: description,
+      tooltipPadding: GuideConfig.tooltipPadding,
+      titleAlignment: GuideConfig.tooltipTextAlignment,
+      descriptionAlignment: GuideConfig.tooltipTextAlignment,
+      titleTextStyle: GuideConfig.titleStyle(),
+      descTextStyle: GuideConfig.descStyle(),
       targetBorderRadius: BorderRadius.circular(radius),
       child: child,
     );
@@ -347,9 +354,8 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
                     parent: BouncingScrollPhysics()),
                 // Build the whole (short) page so below-the-fold guide
                 // targets exist and can be scrolled to.
-                scrollCacheExtent: _exploreCache
-                    ? const ScrollCacheExtent.pixels(4000)
-                    : null,
+                scrollCacheExtent:
+                    _exploreCache ? const ScrollCacheExtent.pixels(4000) : null,
                 slivers: [
                   SliverToBoxAdapter(child: _buildSearchBar()),
                   if (_showProfileNudge) ...[
@@ -424,6 +430,11 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
         scope: guideScope,
         title: l10n.guideClientHomeNudgeTitle,
         description: l10n.guideClientHomeNudgeDesc,
+        tooltipPadding: GuideConfig.tooltipPadding,
+        titleAlignment: GuideConfig.tooltipTextAlignment,
+        descriptionAlignment: GuideConfig.tooltipTextAlignment,
+        titleTextStyle: GuideConfig.titleStyle(),
+        descTextStyle: GuideConfig.descStyle(),
         targetBorderRadius: BorderRadius.circular(16),
         child: Material(
           color: kWhite,
@@ -452,36 +463,41 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          l10n.completeYourProfileTitle,
-                          style: kTextStyle.copyWith(
-                            color: kNeutralColor,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 14,
+                    // Text scale capped at 1.3 so long Dutch words wrap at
+                    // word boundaries instead of mid-word (T-0157).
+                    child: MediaQuery.withClampedTextScaling(
+                      maxScaleFactor: 1.3,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.completeYourProfileTitle,
+                            style: kTextStyle.copyWith(
+                              color: kNeutralColor,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          l10n.completeYourProfileBody,
-                          style: kTextStyle.copyWith(
-                            color: kSubTitleColor,
-                            fontSize: 12.5,
-                            height: 1.35,
+                          const SizedBox(height: 4),
+                          Text(
+                            l10n.completeYourProfileBody,
+                            style: kTextStyle.copyWith(
+                              color: kSubTitleColor,
+                              fontSize: 12.5,
+                              height: 1.35,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          l10n.completeProfileAction,
-                          style: kTextStyle.copyWith(
-                            color: kPrimaryColor,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 13,
+                          const SizedBox(height: 8),
+                          Text(
+                            l10n.completeProfileAction,
+                            style: kTextStyle.copyWith(
+                              color: kPrimaryText,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 13,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                   IconButton(
@@ -507,6 +523,11 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
         scope: guideScope,
         title: context.l10n.guideClientHomeSearchTitle,
         description: context.l10n.guideClientHomeSearchDesc,
+        tooltipPadding: GuideConfig.tooltipPadding,
+        titleAlignment: GuideConfig.tooltipTextAlignment,
+        descriptionAlignment: GuideConfig.tooltipTextAlignment,
+        titleTextStyle: GuideConfig.titleStyle(),
+        descTextStyle: GuideConfig.descStyle(),
         targetBorderRadius: BorderRadius.circular(12),
         child: GestureDetector(
           onTap: () {
@@ -527,10 +548,15 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
                 const Icon(Icons.search, color: kLightNeutralColor, size: 22),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: Text(
-                    context.l10n.searchHint,
-                    style: kTextStyle.copyWith(
-                        color: kLightNeutralColor, fontSize: 14),
+                  child: MediaQuery.withClampedTextScaling(
+                    maxScaleFactor: 1.15,
+                    child: Text(
+                      context.l10n.searchHint,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: kTextStyle.copyWith(
+                          color: kLightNeutralColor, fontSize: 14),
+                    ),
                   ),
                 ),
               ],
@@ -550,6 +576,11 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
       scope: guideScope,
       title: title,
       description: description,
+      tooltipPadding: GuideConfig.tooltipPadding,
+      titleAlignment: GuideConfig.tooltipTextAlignment,
+      descriptionAlignment: GuideConfig.tooltipTextAlignment,
+      titleTextStyle: GuideConfig.titleStyle(),
+      descTextStyle: GuideConfig.descStyle(),
       targetBorderRadius: BorderRadius.circular(14),
       child: child,
     );
@@ -609,9 +640,11 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
               ),
             ],
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: actions
+          child: Builder(builder: (context) {
+            // Large text: 2x2 grid instead of 4 narrow columns, labels capped
+            // at 1.3x and allowed 2 lines (T-0158).
+            final large = MediaQuery.textScalerOf(context).scale(1.0) > 1.15;
+            final tiles = actions
                 .map(
                   (a) => Expanded(
                     child: _guideWrap(
@@ -635,15 +668,17 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
                                 child: Icon(a.icon, color: a.color, size: 22),
                               ),
                               const SizedBox(height: 6),
-                              Text(
-                                a.label,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.center,
-                                style: kTextStyle.copyWith(
-                                  fontSize: 11.5,
-                                  fontWeight: FontWeight.w600,
-                                  color: kNeutralColor,
+                              MediaQuery.withClampedTextScaling(
+                                maxScaleFactor: 1.3,
+                                child: WordSafeText(
+                                  a.label,
+                                  maxLines: 2,
+                                  textAlign: TextAlign.center,
+                                  style: kTextStyle.copyWith(
+                                    fontSize: 11.5,
+                                    fontWeight: FontWeight.w600,
+                                    color: kNeutralColor,
+                                  ),
                                 ),
                               ),
                             ],
@@ -653,8 +688,21 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
                     ),
                   ),
                 )
-                .toList(),
-          ),
+                .toList();
+            if (!large) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: tiles,
+              );
+            }
+            return Column(
+              children: [
+                Row(children: tiles.take(2).toList()),
+                const SizedBox(height: 8),
+                Row(children: tiles.skip(2).toList()),
+              ],
+            );
+          }),
         ),
       ),
     );
@@ -878,7 +926,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
                   Text(
                     context.l10n.seeAll,
                     style: kTextStyle.copyWith(
-                      color: kPrimaryColor,
+                      color: kPrimaryText,
                       fontWeight: FontWeight.w600,
                       fontSize: 12,
                     ),

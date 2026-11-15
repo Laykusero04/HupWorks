@@ -77,7 +77,15 @@ class _GuideInfoButtonState extends State<GuideInfoButton> {
     return ValueListenableBuilder<bool>(
       valueListenable: host.guideRunning,
       builder: (context, running, _) => IconButton(
-        icon: const Icon(Icons.help_outline),
+        // Explicit colour from the AppBar icon theme (white on the orange /
+        // cyan shell headers): the disabled IconButton colour used to render
+        // a dim orange glyph on the orange header (T-0150 F7).
+        icon: Icon(
+          Icons.help_outline,
+          color: (IconTheme.of(context).color ?? Colors.white).withValues(
+            alpha: (running || !host.guideDataReady) ? 0.6 : 1.0,
+          ),
+        ),
         tooltip: context.l10n.guideReplayThisScreen,
         onPressed: (running || !host.guideDataReady) ? null : _onTap,
       ),

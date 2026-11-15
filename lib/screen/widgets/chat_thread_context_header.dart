@@ -29,7 +29,8 @@ class ChatThreadContextHeader extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           decoration: BoxDecoration(
             border: Border(
-              bottom: BorderSide(color: kBorderColorTextField.withValues(alpha: 0.8)),
+              bottom: BorderSide(
+                  color: kBorderColorTextField.withValues(alpha: 0.8)),
             ),
           ),
           child: Row(
@@ -61,9 +62,8 @@ class ChatThreadContextHeader extends StatelessWidget {
     final l10n = context.l10n;
     final focus = _focusItem();
     final count = items.length;
-    final subtitle = count == 1
-        ? focus.statusLabel
-        : l10n.threadContextRelatedCount(count);
+    final subtitle =
+        count == 1 ? focus.statusLabel : l10n.threadContextRelatedCount(count);
 
     return Material(
       color: kWhite,
@@ -268,8 +268,7 @@ class _ThreadContextTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final kindLabel =
-        item.isOrder ? l10n.contracts : l10n.bidOfferLabel;
+    final kindLabel = item.isOrder ? l10n.contracts : l10n.bidOfferLabel;
 
     return Material(
       color: highlighted
@@ -377,7 +376,8 @@ class _ThreadContextTile extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right_rounded, color: kLightNeutralColor),
+              const Icon(Icons.chevron_right_rounded,
+                  color: kLightNeutralColor),
             ],
           ),
         ),

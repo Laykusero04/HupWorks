@@ -333,7 +333,7 @@ class _AttendanceQrDisplayScreenState extends State<AttendanceQrDisplayScreen>
                           l10n.guideQrDispShareDesc),
                       buttontext: l10n.attendanceSharePrintInstructions,
                       buttonDecoration:
-                          kButtonDecoration.copyWith(color: kPrimaryColor),
+                          kButtonDecoration.copyWith(color: kPrimaryFill),
                       buttonTextColor: kWhite,
                       onPressed:
                           _qrPayload == null || _isSharing ? null : _share,
@@ -347,9 +347,9 @@ class _AttendanceQrDisplayScreenState extends State<AttendanceQrDisplayScreen>
                       buttontext: l10n.regenerateQr,
                       buttonDecoration: kButtonDecoration.copyWith(
                         color: kWhite,
-                        border: Border.all(color: kPrimaryColor),
+                        border: Border.all(color: kPrimaryText),
                       ),
-                      buttonTextColor: kPrimaryColor,
+                      buttonTextColor: kPrimaryText,
                       onPressed: _regenerate,
                     ),
                   ],

@@ -1,6 +1,5 @@
 import 'package:freelancer/screen/widgets/word_safe_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:freelancer/core/guide/guide_config.dart';
@@ -354,8 +353,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
                     parent: BouncingScrollPhysics()),
                 // Build the whole (short) page so below-the-fold guide
                 // targets exist and can be scrolled to.
-                scrollCacheExtent:
-                    _exploreCache ? const ScrollCacheExtent.pixels(4000) : null,
+                cacheExtent: _exploreCache ? 4000 : null,
                 slivers: [
                   SliverToBoxAdapter(child: _buildSearchBar()),
                   if (_showProfileNudge) ...[

@@ -8,7 +8,7 @@ plugins {
 android {
     namespace = "com.hupworks.app"
     compileSdk = 36
-    ndkVersion = "28.2.13676358"
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
@@ -54,16 +54,4 @@ flutter {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
-}
-
-// 16 KB page-size fix: older DataStore ships libdatastore_shared_counter.so built with NDK < r28.
-configurations.all {
-    resolutionStrategy {
-        force("androidx.datastore:datastore-core:1.1.7")
-        force("androidx.datastore:datastore-core-android:1.1.7")
-        force("androidx.datastore:datastore-preferences:1.1.7")
-        force("androidx.datastore:datastore-preferences-core:1.1.7")
-        force("androidx.datastore:datastore:1.1.7")
-        force("androidx.datastore:datastore-android:1.1.7")
-    }
 }

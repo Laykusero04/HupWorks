@@ -310,7 +310,7 @@ mixin GuideHost<T extends StatefulWidget> on State<T> {
     }
   }
 
-  bool get _isVisibleTab => TickerMode.valuesOf(context).enabled;
+  bool get _isVisibleTab => TickerMode.of(context);
   bool get _isTopRoute => ModalRoute.of(context)?.isCurrent ?? true;
 
   @override
@@ -569,7 +569,7 @@ class _GuideBackScopeState extends State<_GuideBackScope> {
       if (below != null) return;
       if (e is StatefulElement &&
           e.state is NavigatorState &&
-          TickerMode.valuesOf(e).enabled) {
+          TickerMode.of(e)) {
         // Skips hidden shell branches (IndexedStack turns their tickers off).
         below = e.state as NavigatorState;
         return;

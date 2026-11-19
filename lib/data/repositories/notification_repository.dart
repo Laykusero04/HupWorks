@@ -57,4 +57,21 @@ class NotificationRepository {
       throw ServerFailure(e.toString());
     }
   }
+
+  Future<void> deleteNotification(String notificationId) async {
+    try {
+      await NotificationService.deleteNotification(notificationId);
+    } catch (e) {
+      throw ServerFailure(e.toString());
+    }
+  }
+
+  /// Number of rows actually deleted.
+  Future<int> deleteAllNotifications() async {
+    try {
+      return await NotificationService.deleteAllNotifications();
+    } catch (e) {
+      throw ServerFailure(e.toString());
+    }
+  }
 }

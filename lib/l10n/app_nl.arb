@@ -2042,5 +2042,13 @@
   "authPasswordStrengthMedium": "Sterkte: gemiddeld",
   "authPasswordStrengthStrong": "Sterkte: sterk",
   "authPasswordStrengthHint": "Tip: gebruik 8+ tekens met een cijfer en een symbool.",
-  "recentJobPostedOn": "Geplaatst op {date}"
+  "recentJobPostedOn": "Geplaatst op {date}",
+  "notificationDeleteAction": "Verwijderen",
+  "notificationDeleteConfirmTitle": "Deze melding verwijderen?",
+  "notificationDeleteConfirmBody": "Dit kan niet ongedaan worden gemaakt.",
+  "notificationDeleted": "Melding verwijderd",
+  "deleteAllNotifications": "Alles verwijderen",
+  "deleteAllNotificationsTitle": "Alle meldingen verwijderen?",
+  "deleteAllNotificationsBody": "Weet je zeker dat je alle meldingen wilt verwijderen? Dit kan niet ongedaan worden gemaakt.",
+  "allNotificationsDeleted": "Alle meldingen verwijderd"
 }

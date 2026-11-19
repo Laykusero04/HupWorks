@@ -1860,5 +1860,13 @@
   "authPasswordStrengthMedium": "শক্তি: মাঝারি",
   "authPasswordStrengthStrong": "শক্তি: শক্তিশালী",
   "authPasswordStrengthHint": "পরামর্শ: ৮+ অক্ষর, একটি সংখ্যা ও একটি চিহ্ন ব্যবহার করুন।",
-  "recentJobPostedOn": "পোস্ট করা হয়েছে {date}"
+  "recentJobPostedOn": "পোস্ট করা হয়েছে {date}",
+  "notificationDeleteAction": "মুছুন",
+  "notificationDeleteConfirmTitle": "এই বিজ্ঞপ্তিটি মুছবেন?",
+  "notificationDeleteConfirmBody": "এটি পূর্বাবস্থায় ফেরানো যাবে না।",
+  "notificationDeleted": "বিজ্ঞপ্তি মুছে ফেলা হয়েছে",
+  "deleteAllNotifications": "সব মুছুন",
+  "deleteAllNotificationsTitle": "সব বিজ্ঞপ্তি মুছবেন?",
+  "deleteAllNotificationsBody": "আপনি কি নিশ্চিত যে সব বিজ্ঞপ্তি মুছে ফেলতে চান? এটি পূর্বাবস্থায় ফেরানো যাবে না।",
+  "allNotificationsDeleted": "সব বিজ্ঞপ্তি মুছে ফেলা হয়েছে"
 }

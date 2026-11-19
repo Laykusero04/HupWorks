@@ -66,6 +66,40 @@ class NotificationService {
         .eq('read', false);
   }
 
+  /// Delete one notification of the current user. Filters by user_id as well
+  /// as id (RLS policy from migration 0059 also enforces ownership).
+  static Future<void> deleteNotification(String notificationId) async {
+    final user = _client.auth.currentUser;
+    if (user == null) return;
+
+    // select() makes PostgREST return the deleted rows. RLS filtering a row
+    // out returns 204 with no error, so an empty result means nothing was
+    // deleted (policy missing or row already gone) and must not look like success.
+    final deleted = await _client
+        .from('notifications')
+        .delete()
+        .eq('id', notificationId)
+        .eq('user_id', user.id)
+        .select('id');
+    if (deleted.isEmpty) {
+      throw Exception('Notification was not deleted');
+    }
+  }
+
+  /// Delete every notification of the current user (never other users' rows).
+  /// Returns how many rows were actually deleted (0 may mean RLS blocked it).
+  static Future<int> deleteAllNotifications() async {
+    final user = _client.auth.currentUser;
+    if (user == null) return 0;
+
+    final deleted = await _client
+        .from('notifications')
+        .delete()
+        .eq('user_id', user.id)
+        .select('id');
+    return deleted.length;
+  }
+
   /// Subscribe to notification inserts/updates for badge refresh and live alerts.
   static RealtimeChannel subscribeToNotifications({
     void Function()? onChange,

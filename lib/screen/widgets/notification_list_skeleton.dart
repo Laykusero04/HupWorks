@@ -13,6 +13,9 @@ class NotificationListSkeleton extends StatelessWidget {
     return ProfileSkeletonHost(
       child: (context, shimmer) {
         return ListView.builder(
+          // shrinkWrap: also used inside another scrolling list (load-more),
+          // where the height would otherwise be unbounded.
+          shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           padding: const EdgeInsets.only(top: 15, bottom: 15),
           itemCount: itemCount,

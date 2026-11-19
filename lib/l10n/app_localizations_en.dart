@@ -5592,4 +5592,29 @@ class AppLocalizationsEn extends AppLocalizations {
   String recentJobPostedOn(String date) {
     return 'Posted $date';
   }
+
+  @override
+  String get notificationDeleteAction => 'Delete';
+
+  @override
+  String get notificationDeleteConfirmTitle => 'Delete this notification?';
+
+  @override
+  String get notificationDeleteConfirmBody => 'This cannot be undone.';
+
+  @override
+  String get notificationDeleted => 'Notification deleted';
+
+  @override
+  String get deleteAllNotifications => 'Delete all';
+
+  @override
+  String get deleteAllNotificationsTitle => 'Delete all notifications?';
+
+  @override
+  String get deleteAllNotificationsBody =>
+      'Are you sure you want to delete all notifications? This cannot be undone.';
+
+  @override
+  String get allNotificationsDeleted => 'All notifications deleted';
 }

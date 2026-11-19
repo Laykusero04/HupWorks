@@ -10000,6 +10000,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Posted {date}'**
   String recentJobPostedOn(String date);
+
+  /// No description provided for @notificationDeleteAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get notificationDeleteAction;
+
+  /// No description provided for @notificationDeleteConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this notification?'**
+  String get notificationDeleteConfirmTitle;
+
+  /// No description provided for @notificationDeleteConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This cannot be undone.'**
+  String get notificationDeleteConfirmBody;
+
+  /// No description provided for @notificationDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification deleted'**
+  String get notificationDeleted;
+
+  /// No description provided for @deleteAllNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete all'**
+  String get deleteAllNotifications;
+
+  /// No description provided for @deleteAllNotificationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete all notifications?'**
+  String get deleteAllNotificationsTitle;
+
+  /// No description provided for @deleteAllNotificationsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete all notifications? This cannot be undone.'**
+  String get deleteAllNotificationsBody;
+
+  /// No description provided for @allNotificationsDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'All notifications deleted'**
+  String get allNotificationsDeleted;
 }
 
 class _AppLocalizationsDelegate

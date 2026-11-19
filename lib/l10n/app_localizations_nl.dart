@@ -5645,4 +5645,30 @@ class AppLocalizationsNl extends AppLocalizations {
   String recentJobPostedOn(String date) {
     return 'Geplaatst op $date';
   }
+
+  @override
+  String get notificationDeleteAction => 'Verwijderen';
+
+  @override
+  String get notificationDeleteConfirmTitle => 'Deze melding verwijderen?';
+
+  @override
+  String get notificationDeleteConfirmBody =>
+      'Dit kan niet ongedaan worden gemaakt.';
+
+  @override
+  String get notificationDeleted => 'Melding verwijderd';
+
+  @override
+  String get deleteAllNotifications => 'Alles verwijderen';
+
+  @override
+  String get deleteAllNotificationsTitle => 'Alle meldingen verwijderen?';
+
+  @override
+  String get deleteAllNotificationsBody =>
+      'Weet je zeker dat je alle meldingen wilt verwijderen? Dit kan niet ongedaan worden gemaakt.';
+
+  @override
+  String get allNotificationsDeleted => 'Alle meldingen verwijderd';
 }

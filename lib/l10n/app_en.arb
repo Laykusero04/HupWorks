@@ -2410,5 +2410,13 @@
   "authPasswordStrengthStrong": "Strength: Strong",
   "authPasswordStrengthHint": "Tip: use 8+ characters with a number and a symbol.",
   "recentJobPostedOn": "Posted {date}",
-  "@recentJobPostedOn": {"placeholders": {"date": {"type": "String"}}}
+  "@recentJobPostedOn": {"placeholders": {"date": {"type": "String"}}},
+  "notificationDeleteAction": "Delete",
+  "notificationDeleteConfirmTitle": "Delete this notification?",
+  "notificationDeleteConfirmBody": "This cannot be undone.",
+  "notificationDeleted": "Notification deleted",
+  "deleteAllNotifications": "Delete all",
+  "deleteAllNotificationsTitle": "Delete all notifications?",
+  "deleteAllNotificationsBody": "Are you sure you want to delete all notifications? This cannot be undone.",
+  "allNotificationsDeleted": "All notifications deleted"
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart' show CustomSemanticsAction;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:freelancer/core/notifications/notification_scope.dart';
@@ -14,6 +15,8 @@ import 'package:freelancer/services/notification_service.dart';
 
 import 'constant.dart';
 import 'notification_list_skeleton.dart';
+
+enum _NotifMenuAction { readAll, deleteAll }
 
 class NotificationListScreen extends StatefulWidget {
   final NotificationUserRole role;
@@ -31,6 +34,16 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
   bool _isLoading = true;
   bool _isLoadingMore = false;
   bool _markingAll = false;
+  bool _deletingAll = false;
+  bool _rowDeleteBusy = false;
+
+  /// Ids confirmed deleted on the server. Any list response (refresh or
+  /// load-more) that was requested before the delete is filtered by this, so a
+  /// stale snapshot can never bring a deleted row back.
+  final Set<String> _deletedIds = <String>{};
+
+  /// Bumped when "Delete all" succeeds; responses requested earlier are dropped.
+  int _deleteAllEpoch = 0;
   bool _hasMore = true;
   int _nextOffset = 0;
   late final NotificationRepository _repository;
@@ -65,18 +78,25 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
       _hasMore = true;
       _nextOffset = 0;
     });
+    final epoch = _deleteAllEpoch;
     try {
-      final notifs = await _repository.getNotifications(
+      final fetched = await _repository.getNotifications(
         limit: NotificationService.pageSize,
         offset: 0,
       );
       if (!mounted) return;
+      if (epoch != _deleteAllEpoch) {
+        // "Delete all" finished while this was in flight: the snapshot is stale.
+        setState(() => _isLoading = false);
+        return;
+      }
+      final notifs = fetched.where((n) => !_deletedIds.contains(n.id)).toList();
       setState(() {
         _notifications
           ..clear()
           ..addAll(notifs);
-        _nextOffset = notifs.length;
-        _hasMore = notifs.length >= NotificationService.pageSize;
+        _nextOffset = fetched.length;
+        _hasMore = fetched.length >= NotificationService.pageSize;
         _isLoading = false;
       });
     } catch (e) {
@@ -92,16 +112,26 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
   Future<void> _loadMore() async {
     if (!_hasMore || _isLoadingMore) return;
     setState(() => _isLoadingMore = true);
+    final epoch = _deleteAllEpoch;
     try {
-      final notifs = await _repository.getNotifications(
+      final fetched = await _repository.getNotifications(
         limit: NotificationService.pageSize,
         offset: _nextOffset,
       );
       if (!mounted) return;
+      if (epoch != _deleteAllEpoch) {
+        setState(() => _isLoadingMore = false);
+        return;
+      }
+      final notifs = fetched
+          .where((n) =>
+              !_deletedIds.contains(n.id) &&
+              !_notifications.any((e) => e.id == n.id))
+          .toList();
       setState(() {
         _notifications.addAll(notifs);
-        _nextOffset += notifs.length;
-        _hasMore = notifs.length >= NotificationService.pageSize;
+        _nextOffset += fetched.length;
+        _hasMore = fetched.length >= NotificationService.pageSize;
         _isLoadingMore = false;
       });
     } catch (e) {
@@ -124,12 +154,14 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
     return '${date.day}/${date.month}/${date.year}';
   }
 
-  Future<void> _onTapNotification(int index) async {
-    final notif = _notifications[index];
+  Future<void> _onTapNotification(AppNotification notif) async {
     if (!notif.read) {
       await _repository.markAsRead(notif.id);
       if (mounted) {
         setState(() {
+          // The list may have changed during the await: look the row up by id.
+          final index = _notifications.indexWhere((n) => n.id == notif.id);
+          if (index < 0) return;
           _notifications[index] = AppNotification(
             id: notif.id,
             userId: notif.userId,
@@ -190,6 +222,127 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
     }
   }
 
+  Future<bool> _confirmDialog({
+    required String title,
+    required String body,
+    required String confirmLabel,
+  }) async {
+    final l10n = context.l10n;
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(title),
+        content: Text(body),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel,
+                style: kTextStyle.copyWith(color: kSubTitleColor)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(confirmLabel,
+                style: kTextStyle.copyWith(
+                    color: Colors.red, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+    return result == true;
+  }
+
+  /// Swipe-to-delete: confirm, delete on the server, then let Dismissible
+  /// animate the row away. Returns false (row snaps back) on cancel or error.
+  Future<bool> _confirmAndDeleteOne(AppNotification notif) async {
+    final l10n = context.l10n;
+    final ok = await _confirmDialog(
+      title: l10n.notificationDeleteConfirmTitle,
+      body: l10n.notificationDeleteConfirmBody,
+      confirmLabel: l10n.notificationDeleteAction,
+    );
+    if (!ok || !mounted) return false;
+    try {
+      await _repository.deleteNotification(notif.id);
+      _deletedIds.add(notif.id);
+      if (mounted) _afterSingleDelete();
+      return true;
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+        );
+      }
+      return false;
+    }
+  }
+
+  void _removeLocal(AppNotification notif) {
+    if (!mounted) return;
+    final before = _notifications.length;
+    setState(() => _notifications.removeWhere((n) => n.id == notif.id));
+    if (_notifications.length < before && _nextOffset > 0) _nextOffset--;
+  }
+
+  /// Non-swipe delete (screen-reader action / long press).
+  Future<void> _deleteViaAction(AppNotification notif) async {
+    if (_rowDeleteBusy) return;
+    _rowDeleteBusy = true;
+    try {
+      final ok = await _confirmAndDeleteOne(notif);
+      if (ok) _removeLocal(notif);
+    } finally {
+      _rowDeleteBusy = false;
+    }
+  }
+
+  void _afterSingleDelete() {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(context.l10n.notificationDeleted)));
+    // Realtime only listens to insert/update, so refresh the badge manually.
+    unawaited(NotificationScope.of(context).refreshUnreadCount());
+  }
+
+  Future<void> _deleteAll() async {
+    if (_deletingAll) return;
+    final l10n = context.l10n;
+    final ok = await _confirmDialog(
+      title: l10n.deleteAllNotificationsTitle,
+      body: l10n.deleteAllNotificationsBody,
+      confirmLabel: l10n.deleteAllNotifications,
+    );
+    if (!ok || !mounted) return;
+    setState(() => _deletingAll = true);
+    try {
+      final hadRows = _notifications.isNotEmpty;
+      final deleted = await _repository.deleteAllNotifications();
+      if (deleted == 0 && hadRows) {
+        // RLS filters silently (204, no rows): do not pretend it worked.
+        throw Exception('Notifications were not deleted');
+      }
+      if (!mounted) return;
+      _deleteAllEpoch++;
+      setState(() {
+        _notifications.clear();
+        _nextOffset = 0;
+        _hasMore = false;
+      });
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+            SnackBar(content: Text(context.l10n.allNotificationsDeleted)));
+      await NotificationScope.of(context).refreshUnreadCount();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _deletingAll = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -208,19 +361,37 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
         ),
         centerTitle: true,
         actions: [
-          if (hasUnread)
-            TextButton(
-              onPressed: _markingAll ? null : _markAllRead,
-              child: _markingAll
+          if (_notifications.isNotEmpty)
+            PopupMenuButton<_NotifMenuAction>(
+              enabled: !_markingAll && !_deletingAll,
+              icon: _markingAll || _deletingAll
                   ? const SizedBox(
                       width: 18,
                       height: 18,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : Text(
-                      l10n.readAll,
-                      style: kTextStyle.copyWith(color: kPrimaryText),
-                    ),
+                  : const Icon(Icons.more_vert),
+              onSelected: (action) {
+                switch (action) {
+                  case _NotifMenuAction.readAll:
+                    _markAllRead();
+                  case _NotifMenuAction.deleteAll:
+                    _deleteAll();
+                }
+              },
+              itemBuilder: (_) => [
+                if (hasUnread)
+                  PopupMenuItem(
+                    value: _NotifMenuAction.readAll,
+                    child: Text(l10n.readAll,
+                        style: kTextStyle.copyWith(color: kNeutralColor)),
+                  ),
+                PopupMenuItem(
+                  value: _NotifMenuAction.deleteAll,
+                  child: Text(l10n.deleteAllNotifications,
+                      style: kTextStyle.copyWith(color: Colors.red)),
+                ),
+              ],
             ),
         ],
       ),
@@ -275,8 +446,9 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
                               final notif = _notifications[i];
                               final isRead = notif.read;
 
-                              return ListTile(
-                                onTap: () => _onTapNotification(i),
+                              final tile = ListTile(
+                                onTap: () => _onTapNotification(notif),
+                                onLongPress: () => _deleteViaAction(notif),
                                 contentPadding: EdgeInsets.zero,
                                 leading: Container(
                                   padding: const EdgeInsets.all(10.0),
@@ -322,6 +494,33 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
                                           color: kLightNeutralColor),
                                     ),
                                   ],
+                                ),
+                              );
+
+                              return Dismissible(
+                                key: ValueKey(notif.id),
+                                direction: DismissDirection.endToStart,
+                                confirmDismiss: (_) =>
+                                    _confirmAndDeleteOne(notif),
+                                onDismissed: (_) => _removeLocal(notif),
+                                background: Container(
+                                  color: Colors.red,
+                                  alignment: Alignment.centerRight,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20),
+                                  child: Semantics(
+                                    label: l10n.notificationDeleteAction,
+                                    child: const Icon(Icons.delete_outline,
+                                        color: Colors.white),
+                                  ),
+                                ),
+                                child: Semantics(
+                                  customSemanticsActions: {
+                                    CustomSemanticsAction(
+                                      label: l10n.notificationDeleteAction,
+                                    ): () => _deleteViaAction(notif),
+                                  },
+                                  child: tile,
                                 ),
                               );
                             },

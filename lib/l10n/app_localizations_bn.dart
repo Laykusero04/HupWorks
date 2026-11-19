@@ -5597,4 +5597,30 @@ class AppLocalizationsBn extends AppLocalizations {
   String recentJobPostedOn(String date) {
     return 'পোস্ট করা হয়েছে $date';
   }
+
+  @override
+  String get notificationDeleteAction => 'মুছুন';
+
+  @override
+  String get notificationDeleteConfirmTitle => 'এই বিজ্ঞপ্তিটি মুছবেন?';
+
+  @override
+  String get notificationDeleteConfirmBody =>
+      'এটি পূর্বাবস্থায় ফেরানো যাবে না।';
+
+  @override
+  String get notificationDeleted => 'বিজ্ঞপ্তি মুছে ফেলা হয়েছে';
+
+  @override
+  String get deleteAllNotifications => 'সব মুছুন';
+
+  @override
+  String get deleteAllNotificationsTitle => 'সব বিজ্ঞপ্তি মুছবেন?';
+
+  @override
+  String get deleteAllNotificationsBody =>
+      'আপনি কি নিশ্চিত যে সব বিজ্ঞপ্তি মুছে ফেলতে চান? এটি পূর্বাবস্থায় ফেরানো যাবে না।';
+
+  @override
+  String get allNotificationsDeleted => 'সব বিজ্ঞপ্তি মুছে ফেলা হয়েছে';
 }

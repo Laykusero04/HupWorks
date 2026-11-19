@@ -5627,4 +5627,22 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get authErrorUserBanned =>
       'Dit account is geblokkeerd. Neem contact op met support als je denkt dat dit een vergissing is.';
+
+  @override
+  String get authPasswordStrengthWeak => 'Sterkte: zwak';
+
+  @override
+  String get authPasswordStrengthMedium => 'Sterkte: gemiddeld';
+
+  @override
+  String get authPasswordStrengthStrong => 'Sterkte: sterk';
+
+  @override
+  String get authPasswordStrengthHint =>
+      'Tip: gebruik 8+ tekens met een cijfer en een symbool.';
+
+  @override
+  String recentJobPostedOn(String date) {
+    return 'Geplaatst op $date';
+  }
 }

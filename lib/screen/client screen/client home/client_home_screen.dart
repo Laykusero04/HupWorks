@@ -8,8 +8,8 @@ import 'package:freelancer/core/guide/guide_info_button.dart';
 import 'package:freelancer/core/guide/guide_step.dart';
 import 'package:freelancer/core/utils/client_profile_completeness.dart';
 import 'package:freelancer/core/utils/profile_image.dart';
+import 'package:freelancer/core/utils/recent_jobs.dart';
 import 'package:freelancer/l10n/l10n.dart';
-import 'package:freelancer/screen/client%20screen/client%20job%20post/client_job_post.dart';
 import 'package:freelancer/screen/client%20screen/client%20job%20post/create_new_job_post.dart';
 import 'package:freelancer/screen/client%20screen/client%20job%20post/job_details.dart';
 import 'package:freelancer/screen/client%20screen/client%20profile/client_edit_profile_details.dart';
@@ -253,7 +253,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
         }
         setState(() {
           _categories = results[0] as List<Map<String, dynamic>>;
-          _myRecentJobs = myJobs.take(3).toList();
+          _myRecentJobs = newestJobsFirst(myJobs);
           _topSellers = results[2] as List<Map<String, dynamic>>;
           _showProfileNudge = incomplete && !dismissed;
           _isLoading = false;
@@ -387,10 +387,7 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
                   SliverToBoxAdapter(
                     child: _buildSectionHeader(
                       l10n.yourRecentJobs,
-                      onViewAll: () async {
-                        await const JobPost().launch(context);
-                        if (mounted) _loadData();
-                      },
+                      onViewAll: () => context.go(AppRoutes.clientJobs),
                     ),
                   ),
                   SliverToBoxAdapter(
@@ -1122,79 +1119,85 @@ class _ClientHomeScreenState extends State<ClientHomeScreen>
                     ),
                   ],
                 ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 4,
-                      height: 56,
-                      decoration: BoxDecoration(
-                        color: isOpen
-                            ? StatusColors.success
-                            : StatusColors.neutral,
-                        borderRadius: BorderRadius.circular(4),
+                child: IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Container(
+                        width: 4,
+                        decoration: BoxDecoration(
+                          color: isOpen
+                              ? StatusColors.success
+                              : StatusColors.neutral,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            job['title'] ?? l10n.untitled,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: kTextStyle.copyWith(
-                              color: kNeutralColor,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 14,
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              job['title'] ?? l10n.untitled,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: kTextStyle.copyWith(
+                                color: kNeutralColor,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 6),
-                          Row(
-                            children: [
-                              _miniChip(
-                                _jobTypeLabel(job['job_type'] as String?),
-                                kPrimaryColor,
-                              ),
-                              const SizedBox(width: 6),
-                              _miniChip(
-                                isOpen
-                                    ? context.l10n.open
-                                    : context.l10n.closed,
-                                jobStatusFg,
-                              ),
-                              const SizedBox(width: 6),
-                              Expanded(
-                                child: Text(
-                                  LocalizedCategory.name(
-                                    category,
-                                    LocalizedCategory.languageCodeOf(context),
-                                    fallback: l10n.categoryGeneral,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: kTextStyle.copyWith(
-                                    color: kLightNeutralColor,
-                                    fontSize: 11,
+                            const SizedBox(height: 6),
+                            Row(
+                              children: [
+                                _miniChip(
+                                  _jobTypeLabel(job['job_type'] as String?),
+                                  kPrimaryColor,
+                                ),
+                                const SizedBox(width: 6),
+                                _miniChip(
+                                  isOpen
+                                      ? context.l10n.open
+                                      : context.l10n.closed,
+                                  jobStatusFg,
+                                ),
+                                const SizedBox(width: 6),
+                                Expanded(
+                                  child: Text(
+                                    LocalizedCategory.name(
+                                      category,
+                                      LocalizedCategory.languageCodeOf(context),
+                                      fallback: l10n.categoryGeneral,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: kTextStyle.copyWith(
+                                      color: kLightNeutralColor,
+                                      fontSize: 11,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
+                            const SizedBox(height: 6),
+                            RecentJobPostedDate(createdAt: job['created_at']),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Center(
+                        child: Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: kDarkWhite,
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: kDarkWhite,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Icon(Icons.arrow_forward_ios_rounded,
-                          size: 12, color: kNeutralColor),
-                    ),
-                  ],
+                          child: const Icon(Icons.arrow_forward_ios_rounded,
+                              size: 12, color: kNeutralColor),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),

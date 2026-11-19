@@ -9970,6 +9970,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This account has been blocked. Contact support if you think this is a mistake.'**
   String get authErrorUserBanned;
+
+  /// No description provided for @authPasswordStrengthWeak.
+  ///
+  /// In en, this message translates to:
+  /// **'Strength: Weak'**
+  String get authPasswordStrengthWeak;
+
+  /// No description provided for @authPasswordStrengthMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Strength: Medium'**
+  String get authPasswordStrengthMedium;
+
+  /// No description provided for @authPasswordStrengthStrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Strength: Strong'**
+  String get authPasswordStrengthStrong;
+
+  /// No description provided for @authPasswordStrengthHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tip: use 8+ characters with a number and a symbol.'**
+  String get authPasswordStrengthHint;
+
+  /// No description provided for @recentJobPostedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Posted {date}'**
+  String recentJobPostedOn(String date);
 }
 
 class _AppLocalizationsDelegate

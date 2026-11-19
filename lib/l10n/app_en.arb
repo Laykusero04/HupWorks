@@ -2404,5 +2404,11 @@
   "authErrorSamePassword": "The new password must be different from your current one.",
   "authErrorLinkExpired": "This link or code has expired. Please request a new one.",
   "authErrorSignupDisabled": "Sign-ups are currently unavailable. Please try again later.",
-  "authErrorUserBanned": "This account has been blocked. Contact support if you think this is a mistake."
+  "authErrorUserBanned": "This account has been blocked. Contact support if you think this is a mistake.",
+  "authPasswordStrengthWeak": "Strength: Weak",
+  "authPasswordStrengthMedium": "Strength: Medium",
+  "authPasswordStrengthStrong": "Strength: Strong",
+  "authPasswordStrengthHint": "Tip: use 8+ characters with a number and a symbol.",
+  "recentJobPostedOn": "Posted {date}",
+  "@recentJobPostedOn": {"placeholders": {"date": {"type": "String"}}}
 }

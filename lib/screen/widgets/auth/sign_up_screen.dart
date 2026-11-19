@@ -1,4 +1,5 @@
 import 'package:freelancer/core/utils/auth_error_message.dart';
+import 'package:freelancer/core/utils/password_strength.dart';
 import 'package:flutter/material.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/widgets/auth/auth_ui.dart';
@@ -32,6 +33,7 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   bool _hidePassword = true;
+  bool _hideConfirm = true;
   bool _isCheck = false;
   bool _isLoading = false;
 
@@ -39,6 +41,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _lastNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmController = TextEditingController();
 
   @override
   void dispose() {
@@ -46,6 +49,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _lastNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmController.dispose();
     super.dispose();
   }
 
@@ -69,6 +73,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (password.length < 6) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.authPasswordMinLength)),
+      );
+      return;
+    }
+
+    if (password != _confirmController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.authPasswordsDoNotMatch)),
       );
       return;
     }
@@ -138,12 +149,37 @@ class _SignUpScreenState extends State<SignUpScreen> {
             label: l10n.authPassword,
             hint: l10n.authPasswordHint,
             obscureText: _hidePassword,
-            textInputAction: TextInputAction.done,
+            textInputAction: TextInputAction.next,
             focusedBorderColor: accent,
+            onChanged: (_) => setState(() {}),
             suffixIcon: IconButton(
               onPressed: () => setState(() => _hidePassword = !_hidePassword),
               icon: Icon(
                 _hidePassword
+                    ? Icons.visibility_off_outlined
+                    : Icons.visibility_outlined,
+                color: kLightNeutralColor,
+              ),
+            ),
+          ),
+          _PasswordStrengthHint(password: _passwordController.text),
+          const SizedBox(height: 16),
+          AuthTextField(
+            controller: _confirmController,
+            label: l10n.authConfirmPassword,
+            hint: l10n.authPasswordHint,
+            obscureText: _hideConfirm,
+            textInputAction: TextInputAction.done,
+            focusedBorderColor: accent,
+            onChanged: (_) => setState(() {}),
+            errorText: _confirmController.text.isNotEmpty &&
+                    _confirmController.text != _passwordController.text
+                ? l10n.authPasswordsDoNotMatch
+                : null,
+            suffixIcon: IconButton(
+              onPressed: () => setState(() => _hideConfirm = !_hideConfirm),
+              icon: Icon(
+                _hideConfirm
                     ? Icons.visibility_off_outlined
                     : Icons.visibility_outlined,
                 color: kLightNeutralColor,
@@ -173,6 +209,78 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ? '/auth/seller/login'
                   : '/auth/client/login',
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PasswordStrengthHint extends StatelessWidget {
+  const _PasswordStrengthHint({required this.password});
+
+  final String password;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final strength = passwordStrength(password);
+    final (label, color, filled) = switch (strength) {
+      PasswordStrength.empty => (null, kLightNeutralColor, 0),
+      PasswordStrength.weak => (
+          l10n.authPasswordStrengthWeak,
+          const Color(0xFFD32F2F),
+          1
+        ),
+      PasswordStrength.medium => (
+          l10n.authPasswordStrengthMedium,
+          const Color(0xFFF9A825),
+          2
+        ),
+      PasswordStrength.strong => (
+          l10n.authPasswordStrengthStrong,
+          const Color(0xFF2E7D32),
+          3
+        ),
+    };
+    // Bars may use the bright amber; label text needs WCAG AA (4.5:1) on white,
+    // so Medium text uses a darker amber (#8A6100, ~7:1).
+    final labelColor = strength == PasswordStrength.medium
+        ? const Color(0xFF8A6100)
+        : color;
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (label != null) ...[
+            Row(
+              children: [
+                for (var i = 0; i < 3; i++)
+                  Expanded(
+                    child: Container(
+                      key: ValueKey('strength-bar-$i'),
+                      height: 4,
+                      margin: EdgeInsets.only(right: i < 2 ? 4 : 0),
+                      decoration: BoxDecoration(
+                        color: i < filled ? color : kBorderColorTextField,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Text(
+              label,
+              style: kTextStyle.copyWith(
+                  color: labelColor, fontSize: 12, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 2),
+          ],
+          Text(
+            l10n.authPasswordStrengthHint,
+            style: kTextStyle.copyWith(color: kNeutralColor, fontSize: 12),
           ),
         ],
       ),

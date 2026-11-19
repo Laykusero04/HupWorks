@@ -2037,5 +2037,10 @@
   "authErrorSamePassword": "Het nieuwe wachtwoord moet anders zijn dan je huidige wachtwoord.",
   "authErrorLinkExpired": "Deze link of code is verlopen. Vraag een nieuwe aan.",
   "authErrorSignupDisabled": "Registreren is momenteel niet mogelijk. Probeer het later opnieuw.",
-  "authErrorUserBanned": "Dit account is geblokkeerd. Neem contact op met support als je denkt dat dit een vergissing is."
+  "authErrorUserBanned": "Dit account is geblokkeerd. Neem contact op met support als je denkt dat dit een vergissing is.",
+  "authPasswordStrengthWeak": "Sterkte: zwak",
+  "authPasswordStrengthMedium": "Sterkte: gemiddeld",
+  "authPasswordStrengthStrong": "Sterkte: sterk",
+  "authPasswordStrengthHint": "Tip: gebruik 8+ tekens met een cijfer en een symbool.",
+  "recentJobPostedOn": "Geplaatst op {date}"
 }

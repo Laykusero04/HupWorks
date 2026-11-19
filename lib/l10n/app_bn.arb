@@ -1855,5 +1855,10 @@
   "authErrorSamePassword": "নতুন পাসওয়ার্ড আপনার বর্তমান পাসওয়ার্ড থেকে আলাদা হতে হবে।",
   "authErrorLinkExpired": "এই লিংক বা কোডের মেয়াদ শেষ হয়েছে। নতুন একটি অনুরোধ করুন।",
   "authErrorSignupDisabled": "সাইন-আপ এখন বন্ধ আছে। পরে আবার চেষ্টা করুন।",
-  "authErrorUserBanned": "এই অ্যাকাউন্টটি ব্লক করা হয়েছে। ভুল মনে হলে সাপোর্টের সাথে যোগাযোগ করুন।"
+  "authErrorUserBanned": "এই অ্যাকাউন্টটি ব্লক করা হয়েছে। ভুল মনে হলে সাপোর্টের সাথে যোগাযোগ করুন।",
+  "authPasswordStrengthWeak": "শক্তি: দুর্বল",
+  "authPasswordStrengthMedium": "শক্তি: মাঝারি",
+  "authPasswordStrengthStrong": "শক্তি: শক্তিশালী",
+  "authPasswordStrengthHint": "পরামর্শ: ৮+ অক্ষর, একটি সংখ্যা ও একটি চিহ্ন ব্যবহার করুন।",
+  "recentJobPostedOn": "পোস্ট করা হয়েছে {date}"
 }

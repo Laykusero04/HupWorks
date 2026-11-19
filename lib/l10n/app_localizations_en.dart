@@ -5574,4 +5574,22 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get authErrorUserBanned =>
       'This account has been blocked. Contact support if you think this is a mistake.';
+
+  @override
+  String get authPasswordStrengthWeak => 'Strength: Weak';
+
+  @override
+  String get authPasswordStrengthMedium => 'Strength: Medium';
+
+  @override
+  String get authPasswordStrengthStrong => 'Strength: Strong';
+
+  @override
+  String get authPasswordStrengthHint =>
+      'Tip: use 8+ characters with a number and a symbol.';
+
+  @override
+  String recentJobPostedOn(String date) {
+    return 'Posted $date';
+  }
 }

@@ -122,11 +122,12 @@ void main() {
   /// the real async Supabase call finish and the snackbar appear.
   Future<void> submitSignUp(WidgetTester tester, AppLocalizations l10n) async {
     final fields = find.byType(TextField);
-    expect(fields, findsNWidgets(4));
+    expect(fields, findsNWidgets(5));
     await tester.enterText(fields.at(0), 'QA');
     await tester.enterText(fields.at(1), 'Tester');
     await tester.enterText(fields.at(2), 'qa.tester@example.invalid');
     await tester.enterText(fields.at(3), 'not-a-real-pass');
+    await tester.enterText(fields.at(4), 'not-a-real-pass');
     await tester.ensureVisible(find.byType(Checkbox));
     await tester.tap(find.byType(Checkbox));
     await tester.pump();

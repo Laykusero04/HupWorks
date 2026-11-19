@@ -5579,4 +5579,22 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get authErrorUserBanned =>
       'এই অ্যাকাউন্টটি ব্লক করা হয়েছে। ভুল মনে হলে সাপোর্টের সাথে যোগাযোগ করুন।';
+
+  @override
+  String get authPasswordStrengthWeak => 'শক্তি: দুর্বল';
+
+  @override
+  String get authPasswordStrengthMedium => 'শক্তি: মাঝারি';
+
+  @override
+  String get authPasswordStrengthStrong => 'শক্তি: শক্তিশালী';
+
+  @override
+  String get authPasswordStrengthHint =>
+      'পরামর্শ: ৮+ অক্ষর, একটি সংখ্যা ও একটি চিহ্ন ব্যবহার করুন।';
+
+  @override
+  String recentJobPostedOn(String date) {
+    return 'পোস্ট করা হয়েছে $date';
+  }
 }

@@ -1,6 +1,9 @@
+import 'package:freelancer/core/version/app_build.dart';
+
 class AppInfo {
   ///------------------------app_version--------------------------
-  static const String appVersion = '1.0.3';
+  /// Comes from kAppVersionName, which a test keeps equal to pubspec.yaml.
+  static const String appVersion = kAppVersionName;
 
   ///------------------------Splash_screen_logo-------------------
   static const String splashLogo = 'images/HupWorks.png';

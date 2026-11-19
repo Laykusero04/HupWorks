@@ -22,6 +22,14 @@ void main() {
     expect(kAppBuildNumber, int.parse(m!.group(1)!));
   });
 
+  test('kAppVersionName matches the version name in pubspec.yaml', () {
+    final pubspec = File('pubspec.yaml').readAsStringSync();
+    final m = RegExp(r'^version:\s*([^+\s]+)\+\d+\s*$', multiLine: true)
+        .firstMatch(pubspec);
+    expect(m, isNotNull, reason: 'pubspec version: x.y.z+N not found');
+    expect(kAppVersionName, m!.group(1));
+  });
+
   group('AppUpdateRequirement', () {
     test('parses the RPC payload', () {
       final r = AppUpdateRequirement.fromRpc(

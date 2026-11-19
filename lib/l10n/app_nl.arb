@@ -368,7 +368,7 @@
   "editProfile": "Profiel bewerken",
   "profileDetails": "Profielgegevens",
   "favourites": "Opgeslagen",
-  "reviews": "Reviews",
+  "reviews": "Beoordelingen",
   "noFavouritesYet": "Nog geen opgeslagen jobs",
   "savedTalentList": "Opgeslagen freelancers",
   "noSavedTalentYet": "Nog geen opgeslagen freelancers",
@@ -442,7 +442,7 @@
   "yourRating": "Jouw beoordeling",
   "reviewCount": "{count, plural, =1{1 beoordeling} other{{count} beoordelingen}}",
   "openJobsToBrowse": "{count} open jobs om te bekijken",
-  "periodLive": "Live",
+  "periodLive": "Actueel",
   "periodThisMonth": "Deze maand",
   "shortcuts": "Snelkoppelingen",
   "attentionContractDeliveredOne": "1 overeenkomst geleverd â€” wacht op goedkeuring werkgever",
@@ -2064,5 +2064,8 @@
   "budgetLongPerDay": "per dag",
   "budgetLongPerMonth": "per maand",
   "budgetLongFixedProject": "(vast project)",
-  "budgetLongFixedTotal": "(vast totaal)"
+  "budgetLongFixedTotal": "(vast totaal)",
+  "skillsTierTop": "Topvaardigheden (5★)",
+  "skillsTierFour": "4★-vaardigheden",
+  "skillsTierLow": "1–3★-vaardigheden"
 }

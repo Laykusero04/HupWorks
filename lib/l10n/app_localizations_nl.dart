@@ -1141,7 +1141,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get favourites => 'Opgeslagen';
 
   @override
-  String get reviews => 'Reviews';
+  String get reviews => 'Beoordelingen';
 
   @override
   String get noFavouritesYet => 'Nog geen opgeslagen jobs';
@@ -1365,7 +1365,7 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
-  String get periodLive => 'Live';
+  String get periodLive => 'Actueel';
 
   @override
   String get periodThisMonth => 'Deze maand';
@@ -5729,4 +5729,13 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get budgetLongFixedTotal => '(vast totaal)';
+
+  @override
+  String get skillsTierTop => 'Topvaardigheden (5★)';
+
+  @override
+  String get skillsTierFour => '4★-vaardigheden';
+
+  @override
+  String get skillsTierLow => '1–3★-vaardigheden';
 }

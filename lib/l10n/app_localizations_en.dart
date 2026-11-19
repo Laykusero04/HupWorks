@@ -5675,4 +5675,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get budgetLongFixedTotal => '(fixed total)';
+
+  @override
+  String get skillsTierTop => 'Top skills (5★)';
+
+  @override
+  String get skillsTierFour => '4★ skills';
+
+  @override
+  String get skillsTierLow => '1–3★ skills';
 }

@@ -2449,5 +2449,8 @@
   "budgetLongPerDay": "per day",
   "budgetLongPerMonth": "per month",
   "budgetLongFixedProject": "(fixed project)",
-  "budgetLongFixedTotal": "(fixed total)"
+  "budgetLongFixedTotal": "(fixed total)",
+  "skillsTierTop": "Top skills (5★)",
+  "skillsTierFour": "4★ skills",
+  "skillsTierLow": "1–3★ skills"
 }

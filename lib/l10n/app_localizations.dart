@@ -10132,6 +10132,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'(fixed total)'**
   String get budgetLongFixedTotal;
+
+  /// No description provided for @skillsTierTop.
+  ///
+  /// In en, this message translates to:
+  /// **'Top skills (5★)'**
+  String get skillsTierTop;
+
+  /// No description provided for @skillsTierFour.
+  ///
+  /// In en, this message translates to:
+  /// **'4★ skills'**
+  String get skillsTierFour;
+
+  /// No description provided for @skillsTierLow.
+  ///
+  /// In en, this message translates to:
+  /// **'1–3★ skills'**
+  String get skillsTierLow;
 }
 
 class _AppLocalizationsDelegate

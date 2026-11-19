@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/data/models/seller_skill_model.dart';
+import 'package:freelancer/l10n/l10n.dart';
 
 import 'constant.dart';
 
@@ -22,17 +23,18 @@ class SellerSkillsDisplay extends StatelessWidget {
     final four = skills.where((s) => s.stars == 4).toList();
     final low = skills.where((s) => s.stars >= 1 && s.stars <= 3).toList();
 
+    final l10n = context.l10n;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (five.isNotEmpty) _tierGroup('Top skills (5★)', five, 5),
+        if (five.isNotEmpty) _tierGroup(l10n.skillsTierTop, five, 5),
         if (four.isNotEmpty) ...[
           if (five.isNotEmpty) const SizedBox(height: 12),
-          _tierGroup('4★ skills', four, 4),
+          _tierGroup(l10n.skillsTierFour, four, 4),
         ],
         if (low.isNotEmpty) ...[
           if (five.isNotEmpty || four.isNotEmpty) const SizedBox(height: 12),
-          _tierGroup('1–3★ skills', low, null),
+          _tierGroup(l10n.skillsTierLow, low, null),
         ],
       ],
     );

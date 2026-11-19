@@ -308,7 +308,7 @@ class _ClientPublicProfileState extends State<ClientPublicProfile> {
                 child: Row(
                   children: [
                     Text(
-                      'Reviews',
+                      context.l10n.reviews,
                       style: kTextStyle.copyWith(
                         color: kNeutralColor,
                         fontWeight: FontWeight.bold,

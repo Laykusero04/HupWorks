@@ -574,7 +574,7 @@ class _ClientServiceDetailsState extends State<ClientServiceDetails>
 
                                     // Reviews section
                                     Text(
-                                      'Reviews',
+                                      context.l10n.reviews,
                                       maxLines: 1,
                                       style: kTextStyle.copyWith(
                                           color: kNeutralColor,

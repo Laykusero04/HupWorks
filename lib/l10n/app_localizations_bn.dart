@@ -5681,4 +5681,13 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get budgetLongFixedTotal => '(নির্দিষ্ট মোট)';
+
+  @override
+  String get skillsTierTop => 'শীর্ষ দক্ষতা (5★)';
+
+  @override
+  String get skillsTierFour => '4★ দক্ষতা';
+
+  @override
+  String get skillsTierLow => '1–3★ দক্ষতা';
 }

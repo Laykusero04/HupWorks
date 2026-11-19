@@ -1882,5 +1882,8 @@
   "budgetLongPerDay": "প্রতি দিন",
   "budgetLongPerMonth": "প্রতি মাস",
   "budgetLongFixedProject": "(নির্দিষ্ট প্রজেক্ট)",
-  "budgetLongFixedTotal": "(নির্দিষ্ট মোট)"
+  "budgetLongFixedTotal": "(নির্দিষ্ট মোট)",
+  "skillsTierTop": "শীর্ষ দক্ষতা (5★)",
+  "skillsTierFour": "4★ দক্ষতা",
+  "skillsTierLow": "1–3★ দক্ষতা"
 }

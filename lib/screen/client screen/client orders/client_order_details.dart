@@ -517,6 +517,7 @@ class _ClientOrderDetailsState extends State<ClientOrderDetails>
     return ChatOrderContext(
       orderId: widget.orderId,
       title: OrderContractDisplay.title(_order, _service),
+      statusKey: _statusKey(),
       statusLabel: _statusLabelForUi(_statusKey()),
       deadlineLabel: _formatDate(_order?['delivery_deadline']),
       preferredContactLabel: preferred.label,

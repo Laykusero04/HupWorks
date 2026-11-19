@@ -546,14 +546,14 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get appOnboardPage9Body =>
-      'Lever sterk werk, huur eerlijk in en doe mee aan goede doelen — jouw bijdrage helpt je ranking en groeit op onze roadmap toe naar ownership in het platformverhaal. Nog geen live aandelen — een visie die we samen opbouwen.';
+      'Lever sterk werk, huur eerlijk in en doe mee aan goede doelen — jouw bijdrage helpt je ranking en groeit op onze roadmap toe naar eigenaarschap in het platformverhaal. Nog geen live aandelen — een visie die we samen opbouwen.';
 
   @override
   String get platformRulesTitle => 'Spelregels van het platform';
 
   @override
   String get platformRulesSubtitle =>
-      'Van aanmelden tot ownership in 9 stappen';
+      'Van aanmelden tot eigenaarschap in 9 stappen';
 
   @override
   String platformRulesStepLabel(int step) {
@@ -1350,7 +1350,13 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String reviewCount(int count) {
-    return '$count beoordelingen';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count beoordelingen',
+      one: '1 beoordeling',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -5671,4 +5677,56 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get allNotificationsDeleted => 'Alle meldingen verwijderd';
+
+  @override
+  String get attendanceStatusCheckedInShift => 'Ingecheckt voor deze dienst';
+
+  @override
+  String get attendanceStatusNotCheckedIn => 'Nog niet ingecheckt';
+
+  @override
+  String get attendanceStatusClockedIn => 'Ingeklokt';
+
+  @override
+  String get attendanceStatusClockedOut => 'Uitgeklokt';
+
+  @override
+  String get attendanceStatusNotClockedIn => 'Niet ingeklokt';
+
+  @override
+  String drawerRatingReviews(String rating, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count beoordelingen',
+      one: '1 beoordeling',
+    );
+    return '$rating · $_temp0';
+  }
+
+  @override
+  String get notificationNewMessage => 'Je hebt een nieuw bericht.';
+
+  @override
+  String notificationNewMessageAbout(String context) {
+    return 'Je hebt een nieuw bericht over \"$context\".';
+  }
+
+  @override
+  String get notificationSentAttachment => 'Bijlage verstuurd';
+
+  @override
+  String get budgetLongPerHour => 'per uur';
+
+  @override
+  String get budgetLongPerDay => 'per dag';
+
+  @override
+  String get budgetLongPerMonth => 'per maand';
+
+  @override
+  String get budgetLongFixedProject => '(vast project)';
+
+  @override
+  String get budgetLongFixedTotal => '(vast totaal)';
 }

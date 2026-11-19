@@ -66,6 +66,20 @@ Future<List<ChatThreadContextItem>> loadThreadContext({
   return items;
 }
 
+/// Status text for [item] in the current locale. Derived from
+/// [ChatThreadContextItem.statusKey] at build time so a locale switch while
+/// the chat is open does not leave a stale (e.g. English) label.
+String localizedThreadStatusLabel(
+  AppLocalizations l10n,
+  ChatThreadContextItem item, {
+  required bool isClientViewer,
+}) {
+  if (!item.isOrder) return _offerStatusLabel(l10n, item.statusKey);
+  return isClientViewer
+      ? L10nLabels.clientOrderStatusForUi(l10n, item.statusKey)
+      : L10nLabels.orderFilterTabLabel(l10n, item.statusKey);
+}
+
 String _offerStatusLabel(AppLocalizations l10n, String status) {
   switch (status) {
     case 'accepted':
@@ -93,6 +107,7 @@ Future<void> openThreadContextItem(
         orderId: item.id,
         title: item.title,
         statusLabel: item.statusLabel,
+        statusKey: item.statusKey,
         deadlineLabel: item.deadlineLabel,
         preferredContactLabel: item.preferredContactLabel,
         isWithinPreferredWindow: item.isWithinPreferredWindow,

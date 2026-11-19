@@ -429,6 +429,7 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails>
     return ChatOrderContext(
       orderId: widget.orderId,
       title: OrderContractDisplay.title(_order, _service),
+      statusKey: status,
       statusLabel: OrderCancellationReason.statusLabel(status, context.l10n),
       deadlineLabel: _formatDate(_order?['delivery_deadline']),
       preferredContactLabel: preferred.label,
@@ -1069,7 +1070,7 @@ class _SellerOrderDetailsState extends State<SellerOrderDetails>
                             isClockedIn: _attendanceJob?.isClockedIn ?? false,
                             checkedInToday:
                                 _attendanceJob?.checkedInToday ?? false,
-                            statusLabel: _attendanceJob?.statusLabel,
+                            statusLabel: _attendanceJob?.statusText(context.l10n),
                             onChanged: _loadOrder,
                           ),
                         ],

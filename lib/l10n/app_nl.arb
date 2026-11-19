@@ -175,9 +175,9 @@
   "appOnboardPage8Title": "En weer door naar de volgende shift!",
   "appOnboardPage8Body": "Dat was hem, ging snel he? Op naar de volgende!",
   "appOnboardPage9Title": "Word aandeelhouder van het platform",
-  "appOnboardPage9Body": "Lever sterk werk, huur eerlijk in en doe mee aan goede doelen — jouw bijdrage helpt je ranking en groeit op onze roadmap toe naar ownership in het platformverhaal. Nog geen live aandelen — een visie die we samen opbouwen.",
+  "appOnboardPage9Body": "Lever sterk werk, huur eerlijk in en doe mee aan goede doelen — jouw bijdrage helpt je ranking en groeit op onze roadmap toe naar eigenaarschap in het platformverhaal. Nog geen live aandelen — een visie die we samen opbouwen.",
   "platformRulesTitle": "Spelregels van het platform",
-  "platformRulesSubtitle": "Van aanmelden tot ownership in 9 stappen",
+  "platformRulesSubtitle": "Van aanmelden tot eigenaarschap in 9 stappen",
   "platformRulesStepLabel": "Stap {step}",
   "@platformRulesStepLabel": {
     "placeholders": {
@@ -440,7 +440,7 @@
   "pendingApplications": "Openstaande aanmeldingen",
   "completedThisMonth": "Deze maand afgerond",
   "yourRating": "Jouw beoordeling",
-  "reviewCount": "{count} beoordelingen",
+  "reviewCount": "{count, plural, =1{1 beoordeling} other{{count} beoordelingen}}",
   "openJobsToBrowse": "{count} open jobs om te bekijken",
   "periodLive": "Live",
   "periodThisMonth": "Deze maand",
@@ -2050,5 +2050,19 @@
   "deleteAllNotifications": "Alles verwijderen",
   "deleteAllNotificationsTitle": "Alle meldingen verwijderen?",
   "deleteAllNotificationsBody": "Weet je zeker dat je alle meldingen wilt verwijderen? Dit kan niet ongedaan worden gemaakt.",
-  "allNotificationsDeleted": "Alle meldingen verwijderd"
+  "allNotificationsDeleted": "Alle meldingen verwijderd",
+  "attendanceStatusCheckedInShift": "Ingecheckt voor deze dienst",
+  "attendanceStatusNotCheckedIn": "Nog niet ingecheckt",
+  "attendanceStatusClockedIn": "Ingeklokt",
+  "attendanceStatusClockedOut": "Uitgeklokt",
+  "attendanceStatusNotClockedIn": "Niet ingeklokt",
+  "drawerRatingReviews": "{rating} · {count, plural, =1{1 beoordeling} other{{count} beoordelingen}}",
+  "notificationNewMessage": "Je hebt een nieuw bericht.",
+  "notificationNewMessageAbout": "Je hebt een nieuw bericht over \"{context}\".",
+  "notificationSentAttachment": "Bijlage verstuurd",
+  "budgetLongPerHour": "per uur",
+  "budgetLongPerDay": "per dag",
+  "budgetLongPerMonth": "per maand",
+  "budgetLongFixedProject": "(vast project)",
+  "budgetLongFixedTotal": "(vast totaal)"
 }

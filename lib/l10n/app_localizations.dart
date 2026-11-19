@@ -2575,7 +2575,7 @@ abstract class AppLocalizations {
   /// No description provided for @reviewCount.
   ///
   /// In en, this message translates to:
-  /// **'{count} reviews'**
+  /// **'{count, plural, =1{1 review} other{{count} reviews}}'**
   String reviewCount(int count);
 
   /// No description provided for @openJobsToBrowse.
@@ -10048,6 +10048,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All notifications deleted'**
   String get allNotificationsDeleted;
+
+  /// No description provided for @attendanceStatusCheckedInShift.
+  ///
+  /// In en, this message translates to:
+  /// **'Checked in this shift'**
+  String get attendanceStatusCheckedInShift;
+
+  /// No description provided for @attendanceStatusNotCheckedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Not checked in yet'**
+  String get attendanceStatusNotCheckedIn;
+
+  /// No description provided for @attendanceStatusClockedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Clocked in'**
+  String get attendanceStatusClockedIn;
+
+  /// No description provided for @attendanceStatusClockedOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Clocked out'**
+  String get attendanceStatusClockedOut;
+
+  /// No description provided for @attendanceStatusNotClockedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Not clocked in'**
+  String get attendanceStatusNotClockedIn;
+
+  /// No description provided for @drawerRatingReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'{rating} · {count, plural, =1{1 review} other{{count} reviews}}'**
+  String drawerRatingReviews(String rating, int count);
+
+  /// No description provided for @notificationNewMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You have a new message.'**
+  String get notificationNewMessage;
+
+  /// No description provided for @notificationNewMessageAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'You have a new message about \"{context}\".'**
+  String notificationNewMessageAbout(String context);
+
+  /// No description provided for @notificationSentAttachment.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent an attachment'**
+  String get notificationSentAttachment;
+
+  /// No description provided for @budgetLongPerHour.
+  ///
+  /// In en, this message translates to:
+  /// **'per hour'**
+  String get budgetLongPerHour;
+
+  /// No description provided for @budgetLongPerDay.
+  ///
+  /// In en, this message translates to:
+  /// **'per day'**
+  String get budgetLongPerDay;
+
+  /// No description provided for @budgetLongPerMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'per month'**
+  String get budgetLongPerMonth;
+
+  /// No description provided for @budgetLongFixedProject.
+  ///
+  /// In en, this message translates to:
+  /// **'(fixed project)'**
+  String get budgetLongFixedProject;
+
+  /// No description provided for @budgetLongFixedTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'(fixed total)'**
+  String get budgetLongFixedTotal;
 }
 
 class _AppLocalizationsDelegate

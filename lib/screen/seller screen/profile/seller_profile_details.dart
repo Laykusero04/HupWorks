@@ -423,8 +423,16 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                 color: accent, fontWeight: FontWeight.bold, fontSize: 16),
           ),
           const SizedBox(height: 1),
-          Text(label,
-              style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 11)),
+          // One line, scaled down if needed: a long word (NL
+          // "Betrouwbaarheidsscore") must never break mid-word.
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(label,
+                maxLines: 1,
+                softWrap: false,
+                style:
+                    kTextStyle.copyWith(color: kSubTitleColor, fontSize: 11)),
+          ),
         ],
       ),
     );

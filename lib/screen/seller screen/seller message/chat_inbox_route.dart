@@ -66,6 +66,7 @@ class _ChatInboxRouteState extends State<ChatInboxRoute> {
           orderContext = ChatOrderContext(
             orderId: order['id'] as String,
             title: OrderContractDisplay.title(order, service),
+            statusKey: status,
             statusLabel: isClientViewer
                 ? L10nLabels.clientOrderStatusForUi(l10n, status)
                 : L10nLabels.orderFilterTabLabel(l10n, status),

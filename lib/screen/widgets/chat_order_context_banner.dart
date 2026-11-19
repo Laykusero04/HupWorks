@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/data/models/chat_order_context.dart';
 import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
 
 /// Compact order summary pinned above chat messages.
@@ -17,6 +18,12 @@ class ChatOrderContextBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final key = orderContext.statusKey;
+    final statusLabel = key == null
+        ? orderContext.statusLabel
+        : (orderContext.isClientViewer
+            ? L10nLabels.clientOrderStatusForUi(l10n, key)
+            : L10nLabels.orderFilterTabLabel(l10n, key));
     final deadline = orderContext.deadlineLabel;
     final preferred = orderContext.preferredContactLabel;
     final inWindow = orderContext.isWithinPreferredWindow;
@@ -53,7 +60,7 @@ class ChatOrderContextBanner extends StatelessWidget {
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 Text(
-                  '${l10n.labelStatus}${l10n.labelColon} ${orderContext.statusLabel}',
+                  '${l10n.labelStatus}${l10n.labelColon} $statusLabel',
                   style: kTextStyle.copyWith(
                     color: kSubTitleColor,
                     fontSize: 12,

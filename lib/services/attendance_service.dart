@@ -31,14 +31,17 @@ class OnsiteAttendanceJob {
 
   bool get attendanceEnabled => AttendanceMode.isEnabled(attendanceMode);
 
-  String get statusLabel {
-    if (!attendanceEnabled) return 'Attendance off';
+  /// Localized one-line status; the model itself holds no UI text.
+  String statusText(AppLocalizations l10n) {
+    if (!attendanceEnabled) return l10n.attendanceModeDisabled;
     if (attendanceMode == AttendanceMode.qrOnce) {
-      return checkedInToday ? 'Checked in this shift' : 'Not checked in yet';
+      return checkedInToday
+          ? l10n.attendanceStatusCheckedInShift
+          : l10n.attendanceStatusNotCheckedIn;
     }
-    if (isClockedIn) return 'Clocked in';
-    if (checkedInToday) return 'Clocked out';
-    return 'Not clocked in';
+    if (isClockedIn) return l10n.attendanceStatusClockedIn;
+    if (checkedInToday) return l10n.attendanceStatusClockedOut;
+    return l10n.attendanceStatusNotClockedIn;
   }
 }
 

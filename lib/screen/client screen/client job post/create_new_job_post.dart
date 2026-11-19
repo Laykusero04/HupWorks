@@ -1248,7 +1248,8 @@ class _CreateNewJobPostState extends State<CreateNewJobPost>
               ).displayLabel ??
               '—',
           budget: () {
-            final label = JobPostsService.formatBudgetRange(
+            final label = L10nLabels.budgetRange(
+              context.l10n,
               double.tryParse(_budgetMinController.text.trim()),
               double.tryParse(_budgetMaxController.text.trim()),
               _budgetBasis,

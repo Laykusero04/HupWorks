@@ -5,6 +5,7 @@ import 'package:freelancer/core/guide/guide_host.dart';
 import 'package:freelancer/core/guide/guide_info_button.dart';
 import 'package:freelancer/core/guide/guide_step.dart';
 import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/services/job_posts_service.dart';
 import 'package:freelancer/services/seller_orders_service.dart';
@@ -341,7 +342,8 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer>
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final bottomLift = MediaQuery.paddingOf(context).bottom + 16;
-    final postedLabel = JobPostsService.formatBudgetRange(
+    final postedLabel = L10nLabels.budgetRange(
+      l10n,
       widget.budgetMin,
       widget.budgetMax,
       widget.budgetBasis,
@@ -496,7 +498,8 @@ class _CreateCustomerOfferState extends State<CreateCustomerOffer>
                             const SizedBox(height: 6),
                             Text(
                               l10n.yourApplicationAmount(
-                                JobPostsService.formatOfferAmountLine(
+                                L10nLabels.offerAmountLine(
+                                  l10n,
                                   agreed.price,
                                   agreed.basis,
                                 ),

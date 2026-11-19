@@ -15,6 +15,7 @@ import 'package:freelancer/services/favourite_service.dart';
 import 'package:freelancer/services/job_posts_service.dart';
 import 'package:freelancer/services/seller_orders_service.dart';
 import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/screen/seller%20screen/report/seller_report.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -27,8 +28,14 @@ import 'create_customer_offer.dart';
 class BuyerRequestDetails extends StatefulWidget {
   final String jobPostId;
 
-  const BuyerRequestDetails({Key? key, required this.jobPostId})
-      : super(key: key);
+  const BuyerRequestDetails({
+    Key? key,
+    required this.jobPostId,
+    @visibleForTesting this.debugJobPost,
+  }) : super(key: key);
+
+  /// Tests only: show this job instead of loading it from the backend.
+  final Map<String, dynamic>? debugJobPost;
 
   /// Parent seller shell uses a floating capsule nav; inner [Scaffold.bottomNavigationBar]
   /// sits under it unless we add this lift (see client Job Post FAB pattern).
@@ -191,6 +198,11 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) => _awaitRouteSettled());
+    if (widget.debugJobPost != null) {
+      _jobPost = widget.debugJobPost;
+      _isLoading = false;
+      return;
+    }
     _loadDetails();
   }
 
@@ -355,18 +367,6 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails>
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (!canApply)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Text(
-                    applyBlock,
-                    textAlign: TextAlign.center,
-                    style: kTextStyle.copyWith(
-                        color: const Color(0xFF92400E),
-                        fontSize: 13,
-                        height: 1.35),
-                  ),
-                ),
               ButtonGlobalWithoutIcon(
                 guideAnchor: canApply
                     ? _anchor(_guideApplyKey, l10n.guideSellerJobApplyTitle,
@@ -421,6 +421,21 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 15.0),
+                  // The "cannot apply" reason lives in the scrolling content,
+                  // not the bottom bar, so the bar stays one button high and
+                  // the map keeps its full height (the page scrolls).
+                  if (!canApply) ...[
+                    Text(
+                      applyBlock,
+                      key: const Key('applyBlockedMessage'),
+                      textAlign: TextAlign.center,
+                      style: kTextStyle.copyWith(
+                          color: const Color(0xFF92400E),
+                          fontSize: 13,
+                          height: 1.35),
+                    ),
+                    const SizedBox(height: 12.0),
+                  ],
                   JobClientInfoCard.fromJobPost(
                     _jobPost,
                     guideAnchor: _anchor(
@@ -473,8 +488,8 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails>
                   if (budgetMin != null || budgetMax != null) ...[
                     _row(
                         l10n.budgetLabel,
-                        JobPostsService.formatBudgetRange(
-                            budgetMin, budgetMax, _jobPost?['budget_basis']),
+                        L10nLabels.budgetRange(l10n, budgetMin, budgetMax,
+                            _jobPost?['budget_basis']),
                         anchor: _anchor(
                             _guideBudgetKey,
                             l10n.guideSellerJobBudgetTitle,
@@ -544,15 +559,18 @@ class _BuyerRequestDetailsState extends State<BuyerRequestDetails>
           GuideAnchor.wrap(
             _anchor(_guideWhereKey, l10n.guideSellerJobWhereTitle,
                 l10n.guideSellerJobWhereDesc),
-            Row(children: [
-              Text(l10n.locationLabel,
-                  style: kTextStyle.copyWith(color: kSubTitleColor)),
-              const SizedBox(width: 8),
-              Text(l10n.labelColon,
-                  style: kTextStyle.copyWith(color: kSubTitleColor)),
-              const SizedBox(width: 10),
-              _locationTypeBadge(locationType),
-            ]),
+            // Wrap, not Row: at large text the badge drops to its own line
+            // instead of overflowing.
+            Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 8,
+              runSpacing: 6,
+              children: [
+                Text('${l10n.locationLabel}  ${l10n.labelColon}',
+                    style: kTextStyle.copyWith(color: kSubTitleColor)),
+                _locationTypeBadge(locationType),
+              ],
+            ),
           ),
           const SizedBox(height: 8),
         ],

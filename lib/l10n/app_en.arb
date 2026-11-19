@@ -537,7 +537,7 @@
   "pendingApplications": "Pending applications",
   "completedThisMonth": "Completed this month",
   "yourRating": "Your rating",
-  "reviewCount": "{count} reviews",
+  "reviewCount": "{count, plural, =1{1 review} other{{count} reviews}}",
   "@reviewCount": {
     "placeholders": {
       "count": {
@@ -2418,5 +2418,36 @@
   "deleteAllNotifications": "Delete all",
   "deleteAllNotificationsTitle": "Delete all notifications?",
   "deleteAllNotificationsBody": "Are you sure you want to delete all notifications? This cannot be undone.",
-  "allNotificationsDeleted": "All notifications deleted"
+  "allNotificationsDeleted": "All notifications deleted",
+  "attendanceStatusCheckedInShift": "Checked in this shift",
+  "attendanceStatusNotCheckedIn": "Not checked in yet",
+  "attendanceStatusClockedIn": "Clocked in",
+  "attendanceStatusClockedOut": "Clocked out",
+  "attendanceStatusNotClockedIn": "Not clocked in",
+  "drawerRatingReviews": "{rating} · {count, plural, =1{1 review} other{{count} reviews}}",
+  "notificationNewMessage": "You have a new message.",
+  "notificationNewMessageAbout": "You have a new message about \"{context}\".",
+  "notificationSentAttachment": "Sent an attachment",
+  "@drawerRatingReviews": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@notificationNewMessageAbout": {
+    "placeholders": {
+      "context": {
+        "type": "String"
+      }
+    }
+  },
+  "budgetLongPerHour": "per hour",
+  "budgetLongPerDay": "per day",
+  "budgetLongPerMonth": "per month",
+  "budgetLongFixedProject": "(fixed project)",
+  "budgetLongFixedTotal": "(fixed total)"
 }

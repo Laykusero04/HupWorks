@@ -560,9 +560,14 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
             ),
           ),
           const SizedBox(height: 1),
-          Text(
-            label,
-            style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 11),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              label,
+              maxLines: 1,
+              softWrap: false,
+              style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 11),
+            ),
           ),
         ],
       ),

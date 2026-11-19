@@ -1017,6 +1017,10 @@ class _ShellBottomNavTile extends StatelessWidget {
       height: 1.1,
     );
 
+    // The pill is as wide as the bold label when that is wider than the icon
+    // (IntrinsicWidth + stretch), so a long NL label such as "Overeenkomsten"
+    // never sticks out past the selected pill. The parent's tile width caps
+    // the pill; the FittedBox below then scales the label to the pill.
     final icon = AnimatedContainer(
       duration: const Duration(milliseconds: 180),
       curve: Curves.easeOut,
@@ -1025,9 +1029,27 @@ class _ShellBottomNavTile extends StatelessWidget {
         color: selected ? accent.withValues(alpha: 0.12) : Colors.transparent,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: IconTheme(
-        data: IconThemeData(color: color, size: 22),
-        child: selected ? item.activeIcon : item.icon,
+      // heightFactor: 1 centres the icon horizontally without letting the pill
+      // grow to the full height on offer (a Container `alignment` would, and
+      // that ballooned the whole bottom bar).
+      child: Align(
+        heightFactor: 1,
+        child: IconTheme(
+          data: IconThemeData(color: color, size: 22),
+          child: selected ? item.activeIcon : item.icon,
+        ),
+      ),
+    );
+
+    final label = FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Text(
+        item.label,
+        maxLines: 1,
+        softWrap: false,
+        textAlign: TextAlign.center,
+        textScaler: TextScaler.linear(labelScale),
+        style: labelStyle,
       ),
     );
 
@@ -1036,25 +1058,21 @@ class _ShellBottomNavTile extends StatelessWidget {
       borderRadius: BorderRadius.circular(14),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            icon,
-            const SizedBox(height: 2),
-            // Same scaler for every tab; the FittedBox only acts when even the
-            // 0.8 floor does not fit (very narrow bars): never ellipsis/hidden.
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text(
-                item.label,
-                maxLines: 1,
-                softWrap: false,
-                textAlign: TextAlign.center,
-                textScaler: TextScaler.linear(labelScale),
-                style: labelStyle,
-              ),
+        // heightFactor: 1 — a plain Center takes all the height the bottom-nav
+        // slot offers and hid the page body (T-0170 round 2 device check).
+        child: Align(
+          heightFactor: 1,
+          child: IntrinsicWidth(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                icon,
+                const SizedBox(height: 2),
+                label,
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

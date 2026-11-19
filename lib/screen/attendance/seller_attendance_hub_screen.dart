@@ -282,7 +282,7 @@ class _SellerAttendanceHubScreenState extends State<SellerAttendanceHubScreen>
                                     attendanceMode: job.attendanceMode,
                                     isClockedIn: job.isClockedIn,
                                     checkedInToday: job.checkedInToday,
-                                    statusLabel: job.statusLabel,
+                                    statusLabel: job.statusText(l10n),
                                     onChanged: _load,
                                     compact: true,
                                   ),

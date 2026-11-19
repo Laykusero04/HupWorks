@@ -1344,7 +1344,13 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String reviewCount(int count) {
-    return '$countটি রিভিউ';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countটি রিভিউ',
+      one: '১টি রিভিউ',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -5623,4 +5629,56 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get allNotificationsDeleted => 'সব বিজ্ঞপ্তি মুছে ফেলা হয়েছে';
+
+  @override
+  String get attendanceStatusCheckedInShift => 'এই শিফটে চেক ইন করা হয়েছে';
+
+  @override
+  String get attendanceStatusNotCheckedIn => 'এখনও চেক ইন করা হয়নি';
+
+  @override
+  String get attendanceStatusClockedIn => 'ক্লক ইন করা হয়েছে';
+
+  @override
+  String get attendanceStatusClockedOut => 'ক্লক আউট করা হয়েছে';
+
+  @override
+  String get attendanceStatusNotClockedIn => 'ক্লক ইন করা হয়নি';
+
+  @override
+  String drawerRatingReviews(String rating, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countটি রিভিউ',
+      one: '১টি রিভিউ',
+    );
+    return '$rating · $_temp0';
+  }
+
+  @override
+  String get notificationNewMessage => 'আপনার একটি নতুন বার্তা এসেছে।';
+
+  @override
+  String notificationNewMessageAbout(String context) {
+    return '\"$context\" সম্পর্কে আপনার একটি নতুন বার্তা এসেছে।';
+  }
+
+  @override
+  String get notificationSentAttachment => 'একটি সংযুক্তি পাঠানো হয়েছে';
+
+  @override
+  String get budgetLongPerHour => 'প্রতি ঘণ্টা';
+
+  @override
+  String get budgetLongPerDay => 'প্রতি দিন';
+
+  @override
+  String get budgetLongPerMonth => 'প্রতি মাস';
+
+  @override
+  String get budgetLongFixedProject => '(নির্দিষ্ট প্রজেক্ট)';
+
+  @override
+  String get budgetLongFixedTotal => '(নির্দিষ্ট মোট)';
 }

@@ -85,15 +85,22 @@ class _InviteFriendsScreenState extends State<InviteFriendsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       const SizedBox(height: 20.0),
+                      // Drawn in code: the old images/refer.png has its lower
+                      // part cut off inside the art itself (hard flat edge).
                       Container(
+                        key: const Key('inviteIllustration'),
                         height: 120,
                         width: 120,
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          image: DecorationImage(
-                            image: AssetImage('images/refer.png'),
-                            fit: BoxFit.cover,
-                          ),
+                          color: (widget.isSeller ? kSecondaryFill : kPrimaryFill)
+                              .withValues(alpha: 0.12),
+                        ),
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.card_giftcard_rounded,
+                          size: 56,
+                          color: widget.isSeller ? kSecondaryFill : kPrimaryFill,
                         ),
                       ),
                       const SizedBox(height: 30.0),

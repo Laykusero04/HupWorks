@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/constants/colors.dart';
+import 'package:freelancer/core/notifications/notification_text.dart';
 import 'package:freelancer/data/models/notification_model.dart';
+import 'package:freelancer/l10n/l10n.dart';
 
 /// Slide-down banner for new notifications while the app is in the foreground.
 class NotificationInAppBanner extends StatefulWidget {
@@ -112,7 +114,11 @@ class _NotificationInAppBannerState extends State<NotificationInAppBanner>
                               widget.notification.body!.trim().isNotEmpty) ...[
                             const SizedBox(height: 4),
                             Text(
-                              widget.notification.body!,
+                              localizedNotificationBody(
+                                    context.l10n,
+                                    widget.notification,
+                                  ) ??
+                                  widget.notification.body!,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(

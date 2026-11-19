@@ -1341,7 +1341,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String reviewCount(int count) {
-    return '$count reviews';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reviews',
+      one: '1 review',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -5617,4 +5623,56 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get allNotificationsDeleted => 'All notifications deleted';
+
+  @override
+  String get attendanceStatusCheckedInShift => 'Checked in this shift';
+
+  @override
+  String get attendanceStatusNotCheckedIn => 'Not checked in yet';
+
+  @override
+  String get attendanceStatusClockedIn => 'Clocked in';
+
+  @override
+  String get attendanceStatusClockedOut => 'Clocked out';
+
+  @override
+  String get attendanceStatusNotClockedIn => 'Not clocked in';
+
+  @override
+  String drawerRatingReviews(String rating, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reviews',
+      one: '1 review',
+    );
+    return '$rating · $_temp0';
+  }
+
+  @override
+  String get notificationNewMessage => 'You have a new message.';
+
+  @override
+  String notificationNewMessageAbout(String context) {
+    return 'You have a new message about \"$context\".';
+  }
+
+  @override
+  String get notificationSentAttachment => 'Sent an attachment';
+
+  @override
+  String get budgetLongPerHour => 'per hour';
+
+  @override
+  String get budgetLongPerDay => 'per day';
+
+  @override
+  String get budgetLongPerMonth => 'per month';
+
+  @override
+  String get budgetLongFixedProject => '(fixed project)';
+
+  @override
+  String get budgetLongFixedTotal => '(fixed total)';
 }

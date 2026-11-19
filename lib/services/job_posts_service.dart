@@ -34,7 +34,15 @@ class JobPostsService {
   }
 
   /// Detail / row text, e.g. "€10 – €50 per hour" or "€500 (fixed project)".
-  static String formatBudgetRange(Object? min, Object? max, Object? basis) {
+  static String formatBudgetRange(
+    Object? min,
+    Object? max,
+    Object? basis, {
+    String perHour = 'per hour',
+    String perDay = 'per day',
+    String perMonth = 'per month',
+    String fixed = '(fixed project)',
+  }) {
     final mn = _parseMoney(min);
     final mx = _parseMoney(max);
     if (mn == null && mx == null) return '';
@@ -45,13 +53,13 @@ class JobPostsService {
     final range = (lo - hi).abs() < 0.0001 ? a : '$a – $b';
     switch (normalizeBudgetBasis(basis)) {
       case budgetBasisPerHour:
-        return '$range per hour';
+        return '$range $perHour';
       case budgetBasisPerDay:
-        return '$range per day';
+        return '$range $perDay';
       case budgetBasisPerMonth:
-        return '$range per month';
+        return '$range $perMonth';
       default:
-        return '$range (fixed project)';
+        return '$range $fixed';
     }
   }
 
@@ -107,18 +115,25 @@ class JobPostsService {
   }
 
   /// Single seller offer amount (`job_offers.price` + `price_basis`).
-  static String formatOfferAmountLine(Object? priceRaw, Object? basis) {
+  static String formatOfferAmountLine(
+    Object? priceRaw,
+    Object? basis, {
+    String perHour = 'per hour',
+    String perDay = 'per day',
+    String perMonth = 'per month',
+    String fixed = '(fixed total)',
+  }) {
     final p = _parseMoney(priceRaw) ?? 0;
     final s = _formatMoneyAmount(p);
     switch (normalizeBudgetBasis(basis)) {
       case budgetBasisPerHour:
-        return '$s per hour';
+        return '$s $perHour';
       case budgetBasisPerDay:
-        return '$s per day';
+        return '$s $perDay';
       case budgetBasisPerMonth:
-        return '$s per month';
+        return '$s $perMonth';
       default:
-        return '$s (fixed total)';
+        return '$s $fixed';
     }
   }
 

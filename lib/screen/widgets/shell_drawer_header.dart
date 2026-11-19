@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/l10n/l10n.dart';
 
 import '../../core/constants/colors.dart';
 import '../../core/utils/profile_image.dart';
@@ -92,7 +93,8 @@ class ShellDrawerHeader extends StatelessWidget {
                   if (rating != null && (reviewCount ?? 0) > 0) ...[
                     const SizedBox(height: 4),
                     Text(
-                      '${rating!.toStringAsFixed(1)} · $reviewCount reviews',
+                      context.l10n.drawerRatingReviews(
+                          rating!.toStringAsFixed(1), reviewCount!),
                       style: kTextStyle.copyWith(
                         color: kWhite.withValues(alpha: 0.85),
                         fontSize: 12,

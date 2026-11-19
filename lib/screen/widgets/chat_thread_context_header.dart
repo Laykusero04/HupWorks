@@ -63,7 +63,10 @@ class ChatThreadContextHeader extends StatelessWidget {
     final focus = _focusItem();
     final count = items.length;
     final subtitle =
-        count == 1 ? focus.statusLabel : l10n.threadContextRelatedCount(count);
+        count == 1
+            ? localizedThreadStatusLabel(l10n, focus,
+                isClientViewer: isClientViewer)
+            : l10n.threadContextRelatedCount(count);
 
     return Material(
       color: kWhite,
@@ -242,6 +245,7 @@ Future<void> showChatThreadContextSheet(
                           isClientViewer: isClientViewer,
                         );
                       },
+                      isClientViewer: isClientViewer,
                     );
                   },
                 ),
@@ -258,12 +262,14 @@ class _ThreadContextTile extends StatelessWidget {
   const _ThreadContextTile({
     required this.item,
     required this.onTap,
+    required this.isClientViewer,
     this.highlighted = false,
   });
 
   final ChatThreadContextItem item;
   final VoidCallback onTap;
   final bool highlighted;
+  final bool isClientViewer;
 
   @override
   Widget build(BuildContext context) {
@@ -337,7 +343,8 @@ class _ThreadContextTile extends StatelessWidget {
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
                         Text(
-                          item.statusLabel,
+                          localizedThreadStatusLabel(l10n, item,
+                              isClientViewer: isClientViewer),
                           style: kTextStyle.copyWith(
                             color: kSubTitleColor,
                             fontSize: 12,

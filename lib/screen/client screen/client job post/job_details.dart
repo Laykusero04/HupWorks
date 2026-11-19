@@ -5,6 +5,7 @@ import 'package:freelancer/core/guide/guide_host.dart';
 import 'package:freelancer/core/guide/guide_info_button.dart';
 import 'package:freelancer/core/guide/guide_step.dart';
 import 'package:freelancer/l10n/l10n.dart';
+import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/core/widgets/empty_state_widget.dart';
 import 'package:freelancer/core/widgets/rubik_refresh_indicator.dart';
 import 'package:freelancer/core/widgets/loading_widget.dart';
@@ -752,7 +753,7 @@ class _JobDetailsState extends State<JobDetails> with GuideHost<JobDetails> {
                         if (budgetMin != null || budgetMax != null) ...[
                           _buildRow(
                               l10n.budgetLabel,
-                              JobPostsService.formatBudgetRange(budgetMin,
+                              L10nLabels.budgetRange(l10n, budgetMin,
                                   budgetMax, _jobPost?['budget_basis'])),
                           const SizedBox(height: 8.0),
                         ],

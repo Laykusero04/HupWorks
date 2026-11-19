@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:freelancer/core/notifications/notification_scope.dart';
 import 'package:freelancer/core/notification_navigation.dart';
+import 'package:freelancer/core/notifications/notification_text.dart';
 import 'package:freelancer/core/widgets/empty_state_widget.dart';
 import 'package:freelancer/data/models/notification_model.dart';
 import 'package:freelancer/data/repositories/notification_repository.dart';
@@ -482,7 +483,9 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
                                     if (notif.body != null &&
                                         notif.body!.isNotEmpty)
                                       Text(
-                                        notif.body!,
+                                        localizedNotificationBody(
+                                                l10n, notif) ??
+                                            notif.body!,
                                         overflow: TextOverflow.ellipsis,
                                         maxLines: 2,
                                         style: kTextStyle.copyWith(

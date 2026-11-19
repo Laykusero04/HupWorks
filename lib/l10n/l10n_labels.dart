@@ -92,6 +92,40 @@ class L10nLabels {
     );
   }
 
+  /// Long budget text ("€10 – €15 per hour") in the app language.
+  static String budgetRange(
+    AppLocalizations l10n,
+    Object? min,
+    Object? max,
+    Object? basis,
+  ) {
+    return JobPostsService.formatBudgetRange(
+      min,
+      max,
+      basis,
+      perHour: l10n.budgetLongPerHour,
+      perDay: l10n.budgetLongPerDay,
+      perMonth: l10n.budgetLongPerMonth,
+      fixed: l10n.budgetLongFixedProject,
+    );
+  }
+
+  /// Single offer amount ("€40 per hour") in the app language.
+  static String offerAmountLine(
+    AppLocalizations l10n,
+    Object? price,
+    Object? basis,
+  ) {
+    return JobPostsService.formatOfferAmountLine(
+      price,
+      basis,
+      perHour: l10n.budgetLongPerHour,
+      perDay: l10n.budgetLongPerDay,
+      perMonth: l10n.budgetLongPerMonth,
+      fixed: l10n.budgetLongFixedTotal,
+    );
+  }
+
   static String budgetRangeShort(
     AppLocalizations l10n,
     Object? min,

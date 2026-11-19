@@ -1,3 +1,4 @@
+import 'package:freelancer/core/utils/auth_error_message.dart';
 import 'package:flutter/material.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/app_config/app_config.dart';
@@ -60,7 +61,7 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.errorWithDetail(e.toString()))),
+        SnackBar(content: Text(authErrorMessage(l10n, e))),
       );
     } finally {
       if (mounted) setState(() => _isLoading = false);

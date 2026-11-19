@@ -1,3 +1,4 @@
+import 'package:freelancer/core/utils/auth_error_message.dart';
 import 'package:flutter/material.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
@@ -56,7 +57,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.errorWithDetail(e.toString()))),
+          SnackBar(content: Text(authErrorMessage(l10n, e))),
         );
       }
     } finally {

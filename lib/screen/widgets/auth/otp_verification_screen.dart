@@ -1,3 +1,4 @@
+import 'package:freelancer/core/utils/auth_error_message.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -67,7 +68,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.errorWithDetail(e.toString()))),
+        SnackBar(content: Text(authErrorMessage(l10n, e))),
       );
     } finally {
       if (mounted) setState(() => _isResending = false);

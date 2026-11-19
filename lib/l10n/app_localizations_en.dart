@@ -5504,4 +5504,57 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get authErrorServer =>
+      'Something went wrong on our side while creating your account. Please try again in a few minutes.';
+
+  @override
+  String get authErrorRateLimit =>
+      'Too many emails were requested. Please wait a few minutes and try again.';
+
+  @override
+  String get authErrorEmailSend =>
+      'We could not send the confirmation email. Please check the address and try again later.';
+
+  @override
+  String get authErrorAlreadyRegistered =>
+      'An account with this email already exists. Try logging in instead.';
+
+  @override
+  String get authErrorWeakPassword =>
+      'This password is too weak. Choose a longer, less common password.';
+
+  @override
+  String get authErrorInvalidEmail => 'Please enter a valid email address.';
+
+  @override
+  String get authErrorNetwork =>
+      'No internet connection. Check your network and try again.';
+
+  @override
+  String get authErrorInvalidCredentials => 'Incorrect email or password.';
+
+  @override
+  String get authErrorEmailNotConfirmed =>
+      'Please confirm your email first. Check your inbox for the link.';
+
+  @override
+  String get authErrorGeneric => 'Something went wrong. Please try again.';
+
+  @override
+  String get authErrorSamePassword =>
+      'The new password must be different from your current one.';
+
+  @override
+  String get authErrorLinkExpired =>
+      'This link or code has expired. Please request a new one.';
+
+  @override
+  String get authErrorSignupDisabled =>
+      'Sign-ups are currently unavailable. Please try again later.';
+
+  @override
+  String get authErrorUserBanned =>
+      'This account has been blocked. Contact support if you think this is a mistake.';
 }

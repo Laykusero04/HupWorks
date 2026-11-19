@@ -1,3 +1,4 @@
+import 'package:freelancer/core/utils/auth_error_message.dart';
 import 'package:flutter/material.dart';
 import 'package:freelancer/core/auth/login_credentials_prefs.dart';
 import 'package:freelancer/core/auth_navigation.dart';
@@ -81,7 +82,7 @@ class _UnifiedLogInState extends State<UnifiedLogIn> {
       if (mounted) {
         final message = AuthService.isAccountBlockedError(e)
             ? l10n.accountBlocked
-            : l10n.errorWithDetail(e.toString());
+            : authErrorMessage(l10n, e);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(message)),
         );

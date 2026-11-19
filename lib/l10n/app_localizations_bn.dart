@@ -5509,4 +5509,57 @@ class AppLocalizationsBn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get authErrorServer =>
+      'আপনার অ্যাকাউন্ট তৈরি করার সময় আমাদের দিকে একটি সমস্যা হয়েছে। কয়েক মিনিট পরে আবার চেষ্টা করুন।';
+
+  @override
+  String get authErrorRateLimit =>
+      'অনেকগুলো ইমেইল অনুরোধ করা হয়েছে। কয়েক মিনিট অপেক্ষা করে আবার চেষ্টা করুন।';
+
+  @override
+  String get authErrorEmailSend =>
+      'নিশ্চিতকরণ ইমেইল পাঠানো যায়নি। ঠিকানাটি যাচাই করুন এবং পরে আবার চেষ্টা করুন।';
+
+  @override
+  String get authErrorAlreadyRegistered =>
+      'এই ইমেইল দিয়ে আগে থেকেই একটি অ্যাকাউন্ট আছে। লগ ইন করার চেষ্টা করুন।';
+
+  @override
+  String get authErrorWeakPassword =>
+      'এই পাসওয়ার্ডটি খুব দুর্বল। আরও লম্বা ও কম প্রচলিত পাসওয়ার্ড বেছে নিন।';
+
+  @override
+  String get authErrorInvalidEmail => 'একটি সঠিক ইমেইল ঠিকানা লিখুন।';
+
+  @override
+  String get authErrorNetwork =>
+      'ইন্টারনেট সংযোগ নেই। নেটওয়ার্ক পরীক্ষা করে আবার চেষ্টা করুন।';
+
+  @override
+  String get authErrorInvalidCredentials => 'ইমেইল বা পাসওয়ার্ড ভুল।';
+
+  @override
+  String get authErrorEmailNotConfirmed =>
+      'আগে আপনার ইমেইল নিশ্চিত করুন। লিংকের জন্য ইনবক্স দেখুন।';
+
+  @override
+  String get authErrorGeneric => 'কিছু ভুল হয়েছে। আবার চেষ্টা করুন।';
+
+  @override
+  String get authErrorSamePassword =>
+      'নতুন পাসওয়ার্ড আপনার বর্তমান পাসওয়ার্ড থেকে আলাদা হতে হবে।';
+
+  @override
+  String get authErrorLinkExpired =>
+      'এই লিংক বা কোডের মেয়াদ শেষ হয়েছে। নতুন একটি অনুরোধ করুন।';
+
+  @override
+  String get authErrorSignupDisabled =>
+      'সাইন-আপ এখন বন্ধ আছে। পরে আবার চেষ্টা করুন।';
+
+  @override
+  String get authErrorUserBanned =>
+      'এই অ্যাকাউন্টটি ব্লক করা হয়েছে। ভুল মনে হলে সাপোর্টের সাথে যোগাযোগ করুন।';
 }

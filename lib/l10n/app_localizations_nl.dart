@@ -5556,4 +5556,58 @@ class AppLocalizationsNl extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get authErrorServer =>
+      'Er is aan onze kant iets misgegaan bij het aanmaken van je account. Probeer het over een paar minuten opnieuw.';
+
+  @override
+  String get authErrorRateLimit =>
+      'Er zijn te veel e-mails aangevraagd. Wacht een paar minuten en probeer het opnieuw.';
+
+  @override
+  String get authErrorEmailSend =>
+      'We konden de bevestigingsmail niet versturen. Controleer het adres en probeer het later opnieuw.';
+
+  @override
+  String get authErrorAlreadyRegistered =>
+      'Er bestaat al een account met dit e-mailadres. Probeer in te loggen.';
+
+  @override
+  String get authErrorWeakPassword =>
+      'Dit wachtwoord is te zwak. Kies een langer, minder gebruikelijk wachtwoord.';
+
+  @override
+  String get authErrorInvalidEmail => 'Voer een geldig e-mailadres in.';
+
+  @override
+  String get authErrorNetwork =>
+      'Geen internetverbinding. Controleer je netwerk en probeer het opnieuw.';
+
+  @override
+  String get authErrorInvalidCredentials =>
+      'Onjuist e-mailadres of wachtwoord.';
+
+  @override
+  String get authErrorEmailNotConfirmed =>
+      'Bevestig eerst je e-mailadres. Kijk in je inbox voor de link.';
+
+  @override
+  String get authErrorGeneric => 'Er is iets misgegaan. Probeer het opnieuw.';
+
+  @override
+  String get authErrorSamePassword =>
+      'Het nieuwe wachtwoord moet anders zijn dan je huidige wachtwoord.';
+
+  @override
+  String get authErrorLinkExpired =>
+      'Deze link of code is verlopen. Vraag een nieuwe aan.';
+
+  @override
+  String get authErrorSignupDisabled =>
+      'Registreren is momenteel niet mogelijk. Probeer het later opnieuw.';
+
+  @override
+  String get authErrorUserBanned =>
+      'Dit account is geblokkeerd. Neem contact op met support als je denkt dat dit een vergissing is.';
 }

@@ -2018,5 +2018,19 @@
   "contractUnlimitedRevisions": "Onbeperkt aantal revisies",
   "contractDurationDays": "{count, plural, =1{1 dag} other{{count} dagen}}",
   "contractDurationHours": "{count, plural, =1{1 uur} other{{count} uur}}",
-  "contractRevisionsCount": "{count, plural, =1{1 revisie} other{{count} revisies}}"
+  "contractRevisionsCount": "{count, plural, =1{1 revisie} other{{count} revisies}}",
+  "authErrorServer": "Er is aan onze kant iets misgegaan bij het aanmaken van je account. Probeer het over een paar minuten opnieuw.",
+  "authErrorRateLimit": "Er zijn te veel e-mails aangevraagd. Wacht een paar minuten en probeer het opnieuw.",
+  "authErrorEmailSend": "We konden de bevestigingsmail niet versturen. Controleer het adres en probeer het later opnieuw.",
+  "authErrorAlreadyRegistered": "Er bestaat al een account met dit e-mailadres. Probeer in te loggen.",
+  "authErrorWeakPassword": "Dit wachtwoord is te zwak. Kies een langer, minder gebruikelijk wachtwoord.",
+  "authErrorInvalidEmail": "Voer een geldig e-mailadres in.",
+  "authErrorNetwork": "Geen internetverbinding. Controleer je netwerk en probeer het opnieuw.",
+  "authErrorInvalidCredentials": "Onjuist e-mailadres of wachtwoord.",
+  "authErrorEmailNotConfirmed": "Bevestig eerst je e-mailadres. Kijk in je inbox voor de link.",
+  "authErrorGeneric": "Er is iets misgegaan. Probeer het opnieuw.",
+  "authErrorSamePassword": "Het nieuwe wachtwoord moet anders zijn dan je huidige wachtwoord.",
+  "authErrorLinkExpired": "Deze link of code is verlopen. Vraag een nieuwe aan.",
+  "authErrorSignupDisabled": "Registreren is momenteel niet mogelijk. Probeer het later opnieuw.",
+  "authErrorUserBanned": "Dit account is geblokkeerd. Neem contact op met support als je denkt dat dit een vergissing is."
 }

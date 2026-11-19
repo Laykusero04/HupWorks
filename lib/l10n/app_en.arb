@@ -2385,5 +2385,19 @@
         "type": "int"
       }
     }
-  }
+  },
+  "authErrorServer": "Something went wrong on our side while creating your account. Please try again in a few minutes.",
+  "authErrorRateLimit": "Too many emails were requested. Please wait a few minutes and try again.",
+  "authErrorEmailSend": "We could not send the confirmation email. Please check the address and try again later.",
+  "authErrorAlreadyRegistered": "An account with this email already exists. Try logging in instead.",
+  "authErrorWeakPassword": "This password is too weak. Choose a longer, less common password.",
+  "authErrorInvalidEmail": "Please enter a valid email address.",
+  "authErrorNetwork": "No internet connection. Check your network and try again.",
+  "authErrorInvalidCredentials": "Incorrect email or password.",
+  "authErrorEmailNotConfirmed": "Please confirm your email first. Check your inbox for the link.",
+  "authErrorGeneric": "Something went wrong. Please try again.",
+  "authErrorSamePassword": "The new password must be different from your current one.",
+  "authErrorLinkExpired": "This link or code has expired. Please request a new one.",
+  "authErrorSignupDisabled": "Sign-ups are currently unavailable. Please try again later.",
+  "authErrorUserBanned": "This account has been blocked. Contact support if you think this is a mistake."
 }

@@ -9856,6 +9856,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 revision} other{{count} revisions}}'**
   String contractRevisionsCount(int count);
+
+  /// No description provided for @authErrorServer.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong on our side while creating your account. Please try again in a few minutes.'**
+  String get authErrorServer;
+
+  /// No description provided for @authErrorRateLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many emails were requested. Please wait a few minutes and try again.'**
+  String get authErrorRateLimit;
+
+  /// No description provided for @authErrorEmailSend.
+  ///
+  /// In en, this message translates to:
+  /// **'We could not send the confirmation email. Please check the address and try again later.'**
+  String get authErrorEmailSend;
+
+  /// No description provided for @authErrorAlreadyRegistered.
+  ///
+  /// In en, this message translates to:
+  /// **'An account with this email already exists. Try logging in instead.'**
+  String get authErrorAlreadyRegistered;
+
+  /// No description provided for @authErrorWeakPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'This password is too weak. Choose a longer, less common password.'**
+  String get authErrorWeakPassword;
+
+  /// No description provided for @authErrorInvalidEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid email address.'**
+  String get authErrorInvalidEmail;
+
+  /// No description provided for @authErrorNetwork.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection. Check your network and try again.'**
+  String get authErrorNetwork;
+
+  /// No description provided for @authErrorInvalidCredentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect email or password.'**
+  String get authErrorInvalidCredentials;
+
+  /// No description provided for @authErrorEmailNotConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Please confirm your email first. Check your inbox for the link.'**
+  String get authErrorEmailNotConfirmed;
+
+  /// No description provided for @authErrorGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get authErrorGeneric;
+
+  /// No description provided for @authErrorSamePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'The new password must be different from your current one.'**
+  String get authErrorSamePassword;
+
+  /// No description provided for @authErrorLinkExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'This link or code has expired. Please request a new one.'**
+  String get authErrorLinkExpired;
+
+  /// No description provided for @authErrorSignupDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign-ups are currently unavailable. Please try again later.'**
+  String get authErrorSignupDisabled;
+
+  /// No description provided for @authErrorUserBanned.
+  ///
+  /// In en, this message translates to:
+  /// **'This account has been blocked. Contact support if you think this is a mistake.'**
+  String get authErrorUserBanned;
 }
 
 class _AppLocalizationsDelegate

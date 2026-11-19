@@ -964,7 +964,7 @@
   "address": "Adres",
   "enterFullAddress": "Voer je volledige adres in",
   "tapSetBirthDate": "Tik om je geboortedatum in te stellen",
-  "ageHiddenOnProfile": "Leeftijd {age} (geboortedatum verborgen op profiel)",
+  "ageHiddenOnProfile": "Leeftijd {age}",
   "@ageHiddenOnProfile": {
     "placeholders": {
       "age": {
@@ -974,7 +974,12 @@
   },
   "birthDateSaved": "Geboortedatum opgeslagen",
   "ageLabel": "Leeftijd",
-  "agePrivacyHint": "Je leeftijd wordt op je profiel getoond. Je geboortedatum wordt nooit weergegeven.",
+  "agePrivacyHint": "Je geboortedatum wordt nooit weergegeven. Je leeftijd staat alleen op je openbare profiel als je de schakelaar hieronder aanzet.",
+  "showAgeOnProfile": "Toon mijn leeftijd op mijn profiel",
+  "showAgeOnProfileHint": "Standaard uit. Werkgevers zien je leeftijd in hele jaren alleen als dit aan staat.",
+  "updateRequiredTitle": "Update vereist",
+  "updateRequiredBody": "Deze versie van HupWorks wordt niet meer ondersteund. Werk de app bij om verder te gaan.",
+  "updateRequiredButton": "App bijwerken",
   "dateOfBirth": "Geboortedatum",
   "profileDescription": "Profielbeschrijving",
   "profileDescriptionHint": "Schrijf een korte beschrijving over jezelf…",

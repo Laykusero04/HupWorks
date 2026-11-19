@@ -5,6 +5,11 @@ import 'package:freelancer/services/chat_privacy_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ChatService {
+  /// Public columns of the other conversation participant. Never `*`: after
+  /// FIX B the profiles table refuses select * to API roles (email, phone, ... are private).
+  static const participantColumns =
+      'id, name, role, profile_image_url, country, city, rating, bio, gender, '
+      'created_at, chat_contact_policy, verification_status';
   static final _client = Supabase.instance.client;
 
   /// Get or create a conversation between the current user and another user.
@@ -105,7 +110,8 @@ class ChatService {
     final data = await _client
         .from('conversations')
         .select(
-            '*, client:profiles!conversations_client_id_fkey(*), seller:profiles!conversations_seller_id_fkey(*)')
+            '*, client:profiles!conversations_client_id_fkey($participantColumns), '
+            'seller:profiles!conversations_seller_id_fkey($participantColumns)')
         .or('client_id.eq.${user.id},seller_id.eq.${user.id}')
         .order('last_message_at', ascending: false);
 
@@ -394,8 +400,8 @@ class ChatService {
     return await _client
         .from('conversations')
         .select(
-          '*, client:profiles!conversations_client_id_fkey(*), '
-          'seller:profiles!conversations_seller_id_fkey(*)',
+          '*, client:profiles!conversations_client_id_fkey($participantColumns), '
+          'seller:profiles!conversations_seller_id_fkey($participantColumns)',
         )
         .eq('id', conversationId)
         .maybeSingle();

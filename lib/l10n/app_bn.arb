@@ -735,7 +735,7 @@
   "address": "ঠিকানা",
   "enterFullAddress": "আপনার পূর্ণ ঠিকানা লিখুন",
   "tapSetBirthDate": "জন্ম তারিখ সেট করতে ট্যাপ করুন",
-  "ageHiddenOnProfile": "বয়স {age} (প্রোফাইলে জন্ম তারিখ দেখানো হয় না)",
+  "ageHiddenOnProfile": "বয়স {age}",
   "@ageHiddenOnProfile": {
     "placeholders": {
       "age": {
@@ -745,7 +745,12 @@
   },
   "birthDateSaved": "জন্ম তারিখ সংরক্ষিত",
   "ageLabel": "বয়স",
-  "agePrivacyHint": "আপনার বয়স প্রোফাইলে দেখানো হয়। জন্ম তারিখ কখনো দেখানো হয় না।",
+  "agePrivacyHint": "আপনার জন্ম তারিখ কখনো দেখানো হয় না। নিচের সুইচটি চালু করলেই কেবল আপনার বয়স পাবলিক প্রোফাইলে দেখানো হবে।",
+  "showAgeOnProfile": "আমার প্রোফাইলে আমার বয়স দেখান",
+  "showAgeOnProfileHint": "ডিফল্টভাবে বন্ধ। এটি চালু থাকলেই নিয়োগকর্তারা আপনার বয়স (পূর্ণ বছরে) দেখতে পাবেন।",
+  "updateRequiredTitle": "আপডেট প্রয়োজন",
+  "updateRequiredBody": "HupWorks-এর এই সংস্করণ আর সমর্থিত নয়। চালিয়ে যেতে অ্যাপটি আপডেট করুন।",
+  "updateRequiredButton": "অ্যাপ আপডেট করুন",
   "dateOfBirth": "জন্ম তারিখ",
   "profileDescription": "প্রোফাইল বিবরণ",
   "profileDescriptionHint": "নিজের সম্পর্কে সংক্ষিপ্ত বিবরণ লিখুন…",

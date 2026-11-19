@@ -71,7 +71,7 @@ class AuthRepository {
       if (user == null) return null;
 
       final data = await Supabase.instance.client
-          .from('profiles')
+          .from('my_profile')
           .select()
           .eq('id', user.id)
           .single();

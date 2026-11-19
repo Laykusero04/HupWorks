@@ -143,21 +143,16 @@ class ProfileService {
     return enriched;
   }
 
-  /// Persists computed rating on `profiles` (seller only — RLS allows self-update).
+  /// Refreshes the in-memory profile cache with live review stats.
+  ///
+  /// The stored `profiles.rating` is calculated by the database from `reviews`
+  /// (migration 0053) and cannot be written from the app, so this method never
+  /// writes to the server (T-0121). Name kept for existing callers.
   static Future<void> syncReviewStatsToProfile(String profileId) async {
     final stats = await _reviewStatsForProfile(profileId);
     final rating = stats.count > 0
         ? double.parse((stats.sum / stats.count).toStringAsFixed(1))
         : 0.0;
-
-    try {
-      await _client
-          .from('profiles')
-          .update({'rating': rating}).eq('id', profileId);
-    } catch (e, st) {
-      // Client often cannot update another user's profile; enrichment still works in UI.
-      AppLogger.error('ProfileService.syncReviewStatsToProfile', e, st);
-    }
 
     final user = _client.auth.currentUser;
     if (user != null && user.id == profileId && _profileCache != null) {
@@ -207,8 +202,10 @@ class ProfileService {
     if (!forceRefresh && _cacheUserId == user.id && _profileCache != null) {
       profile = Map<String, dynamic>.from(_profileCache!);
     } else {
+      // Own row through the owner-only view (FIX B, R1): the base table no
+      // longer exposes private columns to API roles after migration 0055.
       final data =
-          await _client.from('profiles').select().eq('id', user.id).single();
+          await _client.from('my_profile').select().eq('id', user.id).single();
       profile = Map<String, dynamic>.from(data);
     }
 
@@ -217,13 +214,6 @@ class ProfileService {
     if (stats.count > 0) {
       final avg = stats.sum / stats.count;
       profile['rating'] = double.parse(avg.toStringAsFixed(1));
-      try {
-        await _client
-            .from('profiles')
-            .update({'rating': profile['rating']}).eq('id', user.id);
-      } catch (e, st) {
-        AppLogger.error('ProfileService.syncOwnRating', e, st);
-      }
     } else {
       profile['rating'] = parseRatingValue(profile['rating']) ?? 0.0;
     }
@@ -267,7 +257,7 @@ class ProfileService {
     final data = await _client
         .from('profiles')
         .select(
-          'id, role, name, email, phone, country, city, gender, '
+          'id, role, name, country, city, gender, '
           'profile_image_url, bio, rating, created_at, '
           'verification_status, profile_photo_status, '
           'company_name, company_website',
@@ -297,10 +287,13 @@ class ProfileService {
   /// employer can open the photo and name from a job application.
   static Future<Map<String, dynamic>?> getPublicSellerProfile(
       String sellerId) async {
+    // Public columns only (FIX B): no date of birth, street address or
+    // rejection reasons. Age comes from the `seller_public_age` view and is
+    // only non-null when the freelancer turned "show my age" on.
     const columns =
-        'id, name, profile_image_url, bio, rating, created_at, verification_status, '
-        'profile_photo_status, profile_photo_rejection_reason, '
-        'seller_profiles(job_title, about, skills, address, birth_year, birth_month, birth_day, languages, education, experience)';
+        'id, name, profile_image_url, bio, rating, created_at, country, city, '
+        'verification_status, profile_photo_status, '
+        'seller_profiles(job_title, about, skills, languages, education, experience, show_age)';
     final seller = await _client
         .from('profiles')
         .select(columns)
@@ -316,6 +309,7 @@ class ProfileService {
     if (data == null) return null;
 
     final profile = Map<String, dynamic>.from(data);
+    profile['age_years'] = await _publicAgeYears(sellerId);
     final stats = await _reviewStatsForProfile(sellerId);
     profile['review_count'] = stats.count;
     if (stats.count > 0) {
@@ -325,6 +319,40 @@ class ProfileService {
       profile['rating'] = parseRatingValue(profile['rating']) ?? 0.0;
     }
     return profile;
+  }
+
+  /// Whole-year age from the `seller_public_age` view; null unless the
+  /// freelancer opted in (or the view is not available yet).
+  static Future<int?> _publicAgeYears(String sellerId) async {
+    try {
+      final row = await _client
+          .from('seller_public_age')
+          .select('age_years')
+          .eq('user_id', sellerId)
+          .maybeSingle();
+      final v = row?['age_years'];
+      return v is num ? v.toInt() : null;
+    } catch (e, st) {
+      AppLogger.error('ProfileService.publicAgeYears', e, st);
+      return null;
+    }
+  }
+
+  /// Public location line for another user's profile: "city, country".
+  /// Never a street address.
+  static String? publicLocationFromProfile(Map<String, dynamic> profile) {
+    final parts = [profile['city'], profile['country']]
+        .map((v) => v is String ? v.trim() : '')
+        .where((s) => s.isNotEmpty)
+        .toList();
+    return parts.isEmpty ? null : parts.join(', ');
+  }
+
+  /// Age to show on a PUBLIC seller profile: only the server-provided
+  /// `age_years` (consent-gated). Never derived from a date of birth.
+  static int? publicAgeFromProfile(Map<String, dynamic> profile) {
+    final v = profile['age_years'];
+    return v is num ? v.toInt() : null;
   }
 
   static Map<String, dynamic>? _sellerProfileRow(Map<String, dynamic> profile) {
@@ -356,25 +384,43 @@ class ProfileService {
     final user = _client.auth.currentUser;
     if (user == null) return null;
 
-    final data = await _client
-        .from('profiles')
-        .select(
-          'id, role, name, email, phone, gender, '
-          'profile_image_url, bio, rating, balance, created_at, '
-          'verification_status, verification_rejection_reason, '
-          'profile_photo_status, profile_photo_rejection_reason, '
-          'seller_profiles(id, job_title, about, skills, address, birth_year, birth_month, birth_day, languages, education, experience), '
-          'seller_private_details(date_of_birth, street_address, state, postal_code)',
-        )
+    // Own rows only: my_profile / my_seller_profile are owner-only views and
+    // seller_private_details has an own-row RLS policy.
+    final profileRow = await _client
+        .from('my_profile')
+        .select()
         .eq('id', user.id)
         .eq('role', 'seller')
         .maybeSingle();
+    if (profileRow == null) return null;
 
-    if (data == null) return null;
-    return Map<String, dynamic>.from(data);
+    final sellerRow = await _client
+        .from('my_seller_profile')
+        .select()
+        .eq('user_id', user.id)
+        .maybeSingle();
+    final privateRow = await _client
+        .from('seller_private_details')
+        .select('date_of_birth, street_address, state, postal_code')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+    return {
+      ...Map<String, dynamic>.from(profileRow),
+      'seller_profiles':
+          sellerRow == null ? null : Map<String, dynamic>.from(sellerRow),
+      'seller_private_details':
+          privateRow == null ? null : Map<String, dynamic>.from(privateRow),
+    };
   }
 
   /// Persist seller extended + private profile fields.
+  ///
+  /// Date of birth and street address are written ONLY to the owner-only
+  /// `seller_private_details` table (FIX B). They are no longer copied to the
+  /// public `seller_profiles` row. [address] is the legacy single-field form
+  /// value and is stored as the private street address when [streetAddress]
+  /// is not given. [showAge] is the age-consent switch (off by default).
   static Future<void> updateSellerProfile({
     required String? jobTitle,
     required String? about,
@@ -385,6 +431,7 @@ class ProfileService {
     String? streetAddress,
     String? state,
     String? postalCode,
+    bool? showAge,
     bool clearPublicCountryCity = true,
   }) async {
     final user = _client.auth.currentUser;
@@ -394,10 +441,7 @@ class ProfileService {
       'job_title': jobTitle?.trim().isEmpty == true ? null : jobTitle?.trim(),
       'about': about?.trim().isEmpty == true ? null : about?.trim(),
       'skills': skills.map((s) => s.toJson()).toList(),
-      'address': address?.trim().isEmpty == true ? null : address?.trim(),
-      'birth_year': dateOfBirth?.year,
-      'birth_month': dateOfBirth?.month,
-      'birth_day': dateOfBirth?.day,
+      if (showAge != null) 'show_age': showAge,
     };
     if (languages != null) {
       sellerUpdates['languages'] =
@@ -409,6 +453,7 @@ class ProfileService {
         .update(sellerUpdates)
         .eq('user_id', user.id);
 
+    final street = streetAddress ?? address;
     await _client.from('seller_private_details').upsert({
       'user_id': user.id,
       'date_of_birth': dateOfBirth != null
@@ -416,11 +461,11 @@ class ProfileService {
               '${dateOfBirth.month.toString().padLeft(2, '0')}-'
               '${dateOfBirth.day.toString().padLeft(2, '0')}'
           : null,
-      'street_address':
-          streetAddress?.trim().isEmpty == true ? null : streetAddress?.trim(),
-      'state': state?.trim().isEmpty == true ? null : state?.trim(),
-      'postal_code':
-          postalCode?.trim().isEmpty == true ? null : postalCode?.trim(),
+      if (street != null)
+        'street_address': street.trim().isEmpty ? null : street.trim(),
+      if (state != null) 'state': state.trim().isEmpty ? null : state.trim(),
+      if (postalCode != null)
+        'postal_code': postalCode.trim().isEmpty ? null : postalCode.trim(),
       'updated_at': DateTime.now().toUtc().toIso8601String(),
     });
 
@@ -494,7 +539,8 @@ class ProfileService {
     return age >= 0 ? age : null;
   }
 
-  /// Public address on seller_profiles.address.
+  /// Address line for the signed-in seller's OWN screens: private street address,
+  /// else city/country. For other users' profiles use [publicLocationFromProfile].
   static String? sellerAddressFromProfile(Map<String, dynamic> profile) {
     final sp = _sellerProfileRow(profile);
     final publicAddress = (sp?['address'] as String?)?.trim();
@@ -516,7 +562,13 @@ class ProfileService {
     return legacyParts.join(', ');
   }
 
-  /// Age from birth parts on seller_profiles (public) or private DOB for edit load.
+  /// Age-consent switch from the signed-in seller's own `my_seller_profile` row.
+  static bool sellerShowAgeFromProfile(Map<String, dynamic> profile) {
+    return _sellerProfileRow(profile)?['show_age'] == true;
+  }
+
+  /// Age of the SIGNED-IN seller from their own private DOB (own profile screens
+  /// only). For other users' profiles use [publicAgeFromProfile].
   static int? sellerAgeFromProfile(Map<String, dynamic> profile) {
     final dob = sellerDateOfBirthFromProfile(profile);
     if (dob == null) return null;

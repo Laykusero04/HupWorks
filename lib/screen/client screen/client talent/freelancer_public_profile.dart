@@ -204,8 +204,10 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
     final verificationStatus = VerificationService.statusFromProfile(_profile);
     final verificationScore = VerificationService.scoreFromProfile(_profile);
     final about = ProfileService.sellerAboutFromProfile(_profile!);
-    final address = ProfileService.sellerAddressFromProfile(_profile!);
-    final age = ProfileService.sellerAgeFromProfile(_profile!);
+    // Public view: city/country only (never a street address) and age only when
+    // the freelancer opted in (server-provided age_years).
+    final address = ProfileService.publicLocationFromProfile(_profile!);
+    final age = ProfileService.publicAgeFromProfile(_profile!);
     final skills = ProfileService.sellerSkillsFromProfile(_profile!);
     final reviewStats = ProfileService.resolveReviewDisplay(
       profile: _profile,
@@ -487,7 +489,7 @@ class _FreelancerPublicProfileState extends State<FreelancerPublicProfile> {
                       if (age != null)
                         _detailRow(l10n.ageLabel, l10n.ageYearsOld(age)),
                       if (address != null && address.isNotEmpty)
-                        _detailRow(l10n.address, address),
+                        _detailRow(l10n.locationLabel, address),
                     ],
                   ),
                 ),

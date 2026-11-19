@@ -1702,7 +1702,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String ageHiddenOnProfile(int age) {
-    return 'বয়স $age (প্রোফাইলে জন্ম তারিখ দেখানো হয় না)';
+    return 'বয়স $age';
   }
 
   @override
@@ -1713,7 +1713,24 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get agePrivacyHint =>
-      'আপনার বয়স প্রোফাইলে দেখানো হয়। জন্ম তারিখ কখনো দেখানো হয় না।';
+      'আপনার জন্ম তারিখ কখনো দেখানো হয় না। নিচের সুইচটি চালু করলেই কেবল আপনার বয়স পাবলিক প্রোফাইলে দেখানো হবে।';
+
+  @override
+  String get showAgeOnProfile => 'আমার প্রোফাইলে আমার বয়স দেখান';
+
+  @override
+  String get showAgeOnProfileHint =>
+      'ডিফল্টভাবে বন্ধ। এটি চালু থাকলেই নিয়োগকর্তারা আপনার বয়স (পূর্ণ বছরে) দেখতে পাবেন।';
+
+  @override
+  String get updateRequiredTitle => 'আপডেট প্রয়োজন';
+
+  @override
+  String get updateRequiredBody =>
+      'HupWorks-এর এই সংস্করণ আর সমর্থিত নয়। চালিয়ে যেতে অ্যাপটি আপডেট করুন।';
+
+  @override
+  String get updateRequiredButton => 'অ্যাপ আপডেট করুন';
 
   @override
   String get dateOfBirth => 'জন্ম তারিখ';

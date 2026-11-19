@@ -31,6 +31,7 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
 
   String _selectedGender = L10nLabels.genderMale;
   DateTime? _dateOfBirth;
+  bool _showAge = false; // age consent, off by default
   List<SellerSkill> _skills = [];
   bool _isLoading = true;
   bool _isSaving = false;
@@ -70,6 +71,7 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
               ProfileService.sellerAboutFromProfile(profile) ?? '';
           _skills = ProfileService.sellerSkillsFromProfile(profile);
           _dateOfBirth = ProfileService.sellerDateOfBirthFromProfile(profile);
+          _showAge = ProfileService.sellerShowAgeFromProfile(profile);
           _profileImageUrl =
               ProfileImage.normalize(profile['profile_image_url'] as String?);
           _isLoading = false;
@@ -158,6 +160,7 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
         skills: _skills,
         dateOfBirth: _dateOfBirth,
         address: _addressController.text.trim(),
+        showAge: _showAge,
         clearPublicCountryCity: false,
       );
       if (mounted) {
@@ -343,7 +346,29 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 32.0),
+                  const SizedBox(height: 8),
+                  // Transparent Material: the page body is a plain Container, and a
+                  // ListTile needs a Material ancestor for ink/background.
+                  Material(
+                    color: Colors.transparent,
+                    child: SwitchListTile.adaptive(
+                      contentPadding: EdgeInsets.zero,
+                      value: _showAge,
+                      onChanged: _dateOfBirth == null
+                          ? null
+                          : (v) => setState(() => _showAge = v),
+                      title: Text(
+                        l10n.showAgeOnProfile,
+                        style: kTextStyle.copyWith(color: kNeutralColor),
+                      ),
+                      subtitle: Text(
+                        l10n.showAgeOnProfileHint,
+                        style: kTextStyle.copyWith(
+                            color: kLightNeutralColor, fontSize: 12),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24.0),
                   _sectionTitle(l10n.professional),
                   _field(_jobTitleController, l10n.jobTitle, l10n.jobTitleHint),
                   const SizedBox(height: 20.0),

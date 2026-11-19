@@ -1711,7 +1711,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String ageHiddenOnProfile(int age) {
-    return 'Leeftijd $age (geboortedatum verborgen op profiel)';
+    return 'Leeftijd $age';
   }
 
   @override
@@ -1722,7 +1722,24 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get agePrivacyHint =>
-      'Je leeftijd wordt op je profiel getoond. Je geboortedatum wordt nooit weergegeven.';
+      'Je geboortedatum wordt nooit weergegeven. Je leeftijd staat alleen op je openbare profiel als je de schakelaar hieronder aanzet.';
+
+  @override
+  String get showAgeOnProfile => 'Toon mijn leeftijd op mijn profiel';
+
+  @override
+  String get showAgeOnProfileHint =>
+      'Standaard uit. Werkgevers zien je leeftijd in hele jaren alleen als dit aan staat.';
+
+  @override
+  String get updateRequiredTitle => 'Update vereist';
+
+  @override
+  String get updateRequiredBody =>
+      'Deze versie van HupWorks wordt niet meer ondersteund. Werk de app bij om verder te gaan.';
+
+  @override
+  String get updateRequiredButton => 'App bijwerken';
 
   @override
   String get dateOfBirth => 'Geboortedatum';

@@ -3205,7 +3205,7 @@ abstract class AppLocalizations {
   /// No description provided for @ageHiddenOnProfile.
   ///
   /// In en, this message translates to:
-  /// **'Age {age} (birth date is hidden on profile)'**
+  /// **'Age {age}'**
   String ageHiddenOnProfile(int age);
 
   /// No description provided for @birthDateSaved.
@@ -3223,8 +3223,38 @@ abstract class AppLocalizations {
   /// No description provided for @agePrivacyHint.
   ///
   /// In en, this message translates to:
-  /// **'Your age is shown on your profile. Your birth date is never displayed.'**
+  /// **'Your birth date is never displayed. Your age is only shown on your public profile if you turn the switch below on.'**
   String get agePrivacyHint;
+
+  /// No description provided for @showAgeOnProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Show my age on my profile'**
+  String get showAgeOnProfile;
+
+  /// No description provided for @showAgeOnProfileHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Off by default. Employers see your age in whole years only when this is on.'**
+  String get showAgeOnProfileHint;
+
+  /// No description provided for @updateRequiredTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update required'**
+  String get updateRequiredTitle;
+
+  /// No description provided for @updateRequiredBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This version of HupWorks is no longer supported. Please update the app to continue.'**
+  String get updateRequiredBody;
+
+  /// No description provided for @updateRequiredButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Update the app'**
+  String get updateRequiredButton;
 
   /// No description provided for @dateOfBirth.
   ///

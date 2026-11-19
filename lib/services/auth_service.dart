@@ -197,7 +197,7 @@ class AuthService {
     Map<String, dynamic>? data;
     try {
       data = await _client
-          .from('profiles')
+          .from('my_profile')
           .select('role, seller_onboarding_completed')
           .eq('id', user.id)
           .maybeSingle();

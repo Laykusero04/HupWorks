@@ -13,7 +13,7 @@ class CharityCauseService {
 
     try {
       final row = await _client
-          .from('profiles')
+          .from('my_profile')
           .select('charity_cause')
           .eq('id', user.id)
           .maybeSingle();

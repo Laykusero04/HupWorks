@@ -10,7 +10,7 @@ class ClientHomeService {
     if (user == null) return null;
 
     final data =
-        await _client.from('profiles').select().eq('id', user.id).single();
+        await _client.from('my_profile').select().eq('id', user.id).single();
     return data;
   }
 

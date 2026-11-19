@@ -527,7 +527,7 @@ create policy "Users can view their own notifications"
 create policy "Users can update their own notifications"
   on notifications for update using (auth.uid() = user_id);
 
-`1create or replace function public.create_notification(
+create or replace function public.create_notification(
   p_user_id uuid,
   p_title text,
   p_body text default null,

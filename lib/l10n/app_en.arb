@@ -749,7 +749,7 @@
   "address": "Address",
   "enterFullAddress": "Enter your full address",
   "tapSetBirthDate": "Tap to set your birth date",
-  "ageHiddenOnProfile": "Age {age} (birth date is hidden on profile)",
+  "ageHiddenOnProfile": "Age {age}",
   "@ageHiddenOnProfile": {
     "placeholders": {
       "age": {
@@ -759,7 +759,12 @@
   },
   "birthDateSaved": "Birth date saved",
   "ageLabel": "Age",
-  "agePrivacyHint": "Your age is shown on your profile. Your birth date is never displayed.",
+  "agePrivacyHint": "Your birth date is never displayed. Your age is only shown on your public profile if you turn the switch below on.",
+  "showAgeOnProfile": "Show my age on my profile",
+  "showAgeOnProfileHint": "Off by default. Employers see your age in whole years only when this is on.",
+  "updateRequiredTitle": "Update required",
+  "updateRequiredBody": "This version of HupWorks is no longer supported. Please update the app to continue.",
+  "updateRequiredButton": "Update the app",
   "dateOfBirth": "Date of birth",
   "profileDescription": "Profile description",
   "profileDescriptionHint": "Write a brief description about you…",

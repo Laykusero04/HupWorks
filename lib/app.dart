@@ -9,6 +9,7 @@ import 'core/locale/locale_scope.dart';
 import 'core/chat/chat_unread_scope.dart';
 import 'core/notifications/notification_scope.dart';
 import 'core/theme/app_theme.dart';
+import 'core/version/app_version_gate.dart';
 import 'data/repositories/category_repository.dart';
 import 'data/repositories/chat_repository.dart';
 import 'data/repositories/dashboard_repository.dart';
@@ -80,8 +81,10 @@ class _HupWorksAppState extends State<HupWorksApp> {
                     localizationsDelegates:
                         AppLocalizations.localizationsDelegates,
                     builder: (context, child) {
-                      return OfflineAware(
-                        child: child ?? const SizedBox.shrink(),
+                      return AppVersionGate(
+                        child: OfflineAware(
+                          child: child ?? const SizedBox.shrink(),
+                        ),
                       );
                     },
                   );

@@ -8,8 +8,7 @@ class ServiceDetailsService {
       String serviceId) async {
     final data = await _client
         .from('services')
-        .select(
-            '*, profiles!seller_id(id, name, email, profile_image_url, rating)')
+        .select('*, profiles!seller_id(id, name, profile_image_url, rating)')
         .eq('id', serviceId)
         .single();
     return data;

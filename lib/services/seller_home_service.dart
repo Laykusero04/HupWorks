@@ -11,12 +11,19 @@ class SellerHomeService {
     final user = _client.auth.currentUser;
     if (user == null) return null;
 
-    final data = await _client
-        .from('profiles')
-        .select('*, seller_profiles(*)')
-        .eq('id', user.id)
-        .single();
-    return data;
+    // Own rows through the owner-only views (FIX B, R1), merged into the same
+    // shape the old `profiles` + embedded `seller_profiles` query returned.
+    final profile =
+        await _client.from('my_profile').select().eq('id', user.id).single();
+    final sellerRow = await _client
+        .from('my_seller_profile')
+        .select()
+        .eq('user_id', user.id)
+        .maybeSingle();
+    return {
+      ...Map<String, dynamic>.from(profile),
+      'seller_profiles': sellerRow,
+    };
   }
 
   /// Work-tracker metrics for freelancers.
@@ -239,7 +246,7 @@ class SellerHomeService {
     if (user == null) return {};
 
     final data = await _client
-        .from('seller_profiles')
+        .from('my_seller_profile')
         .select('impressions_count, interactions_count, reach_count')
         .eq('user_id', user.id)
         .single();

@@ -36,7 +36,8 @@ class Profile extends Equatable {
       id: json['id'] as String,
       role: json['role'] as String,
       name: json['name'] as String,
-      email: json['email'] as String,
+      // Other users' rows no longer include email (FIX B); only the owner's does.
+      email: (json['email'] as String?) ?? '',
       phone: json['phone'] as String?,
       country: json['country'] as String?,
       city: json['city'] as String?,
@@ -45,7 +46,8 @@ class Profile extends Equatable {
       bio: json['bio'] as String?,
       rating: (json['rating'] as num?)?.toDouble() ?? 0,
       balance: (json['balance'] as num?)?.toDouble() ?? 0,
-      createdAt: DateTime.parse(json['created_at'] as String),
+      createdAt: DateTime.tryParse(json['created_at'] as String? ?? '') ??
+          DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
     );
   }
 

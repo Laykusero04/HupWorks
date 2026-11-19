@@ -1700,7 +1700,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String ageHiddenOnProfile(int age) {
-    return 'Age $age (birth date is hidden on profile)';
+    return 'Age $age';
   }
 
   @override
@@ -1711,7 +1711,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get agePrivacyHint =>
-      'Your age is shown on your profile. Your birth date is never displayed.';
+      'Your birth date is never displayed. Your age is only shown on your public profile if you turn the switch below on.';
+
+  @override
+  String get showAgeOnProfile => 'Show my age on my profile';
+
+  @override
+  String get showAgeOnProfileHint =>
+      'Off by default. Employers see your age in whole years only when this is on.';
+
+  @override
+  String get updateRequiredTitle => 'Update required';
+
+  @override
+  String get updateRequiredBody =>
+      'This version of HupWorks is no longer supported. Please update the app to continue.';
+
+  @override
+  String get updateRequiredButton => 'Update the app';
 
   @override
   String get dateOfBirth => 'Date of birth';

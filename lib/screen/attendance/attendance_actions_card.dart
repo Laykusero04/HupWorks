@@ -269,7 +269,12 @@ class _AttendanceActionsCardState extends State<AttendanceActionsCard> {
         children: [
           GuideAnchor.wrap(
             widget.modeAnchor,
-            Row(
+            // Wrap (not Row): title + mode chip + status overflowed by ~8px
+            // on a 402pt iPhone at default text size, and far more in NL/XL.
+            Wrap(
+              spacing: 8,
+              runSpacing: 6,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 Text(
                   l10n.attendance,
@@ -279,9 +284,7 @@ class _AttendanceActionsCardState extends State<AttendanceActionsCard> {
                     fontSize: 13,
                   ),
                 ),
-                const SizedBox(width: 8),
                 _statusChip(mode, l10n, primary),
-                const Spacer(),
                 if (widget.statusLabel != null)
                   Text(
                     widget.statusLabel!,

@@ -3523,7 +3523,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get employerVerifyUpgradeHint =>
-      'Vul je profiel in om jobs te plaatsen. Optioneel verifiëren met persoonlijke ID of bedrijfsdocumenten voor een geverifieerde badge.';
+      'Werkgeversverificatie is verplicht om jobs te plaatsen. Verifieer met persoonlijke ID of bedrijfsdocumenten; zodra een beheerder goedkeurt, kun je jobs plaatsen en krijg je een geverifieerde badge.';
 
   @override
   String get chooseVerificationPath => 'Kies verificatiemethode';
@@ -4911,7 +4911,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get guideEmpVerifScoreDesc =>
-      'Verificatie is optioneel. Zodra een beheerder je Selfie met ID accepteert, krijg je punten en een Geverifieerd-badge.';
+      'Verificatie is verplicht om jobs te plaatsen. Zodra een beheerder je ID-selfie of bedrijfsdocumenten accepteert, kun je plaatsen en krijg je een Geverifieerd-badge.';
 
   @override
   String get guideEmpVerifHistoryTitle => 'Aannamegeschiedenis';
@@ -5738,4 +5738,45 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get skillsTierLow => '1–3★-vaardigheden';
+
+  @override
+  String get authTermsOpenFailed =>
+      'Kon de Servicevoorwaarden niet openen. Probeer het later opnieuw.';
+
+  @override
+  String get employerVerifyRequiredTitle =>
+      'Verifieer je werkgeversaccount om jobs te plaatsen';
+
+  @override
+  String get employerVerifyRequiredBody =>
+      'Werkgeversverificatie is verplicht. Je kunt jobs plaatsen zodra een beheerder je persoonlijke ID of bedrijfsdocumenten heeft goedgekeurd.';
+
+  @override
+  String get employerVerifyRejectedBody =>
+      'Je laatste verificatie is afgewezen. Dien opnieuw in om jobs te plaatsen. Werkgeversverificatie is verplicht.';
+
+  @override
+  String get employerVerifyPendingTitle => 'Verificatie wordt beoordeeld';
+
+  @override
+  String get employerVerifyPendingBody =>
+      'Je werkgeversverificatie wordt beoordeeld. Je kunt jobs plaatsen zodra een beheerder deze goedkeurt.';
+
+  @override
+  String get employerVerifyStartButton => 'Nu verifiëren';
+
+  @override
+  String get employerVerifyViewStatusButton => 'Verificatiestatus bekijken';
+
+  @override
+  String get employerVerifyRequiredPostError =>
+      'Plaatsen is geblokkeerd totdat je werkgeversverificatie is goedgekeurd.';
+
+  @override
+  String get employerVerifyCheckFailedTitle =>
+      'Je verificatie kon niet worden gecontroleerd';
+
+  @override
+  String get employerVerifyCheckFailedBody =>
+      'We konden je werkgeversverificatie niet controleren. Controleer je verbinding en probeer het opnieuw.';
 }

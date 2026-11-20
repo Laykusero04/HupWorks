@@ -6386,7 +6386,7 @@ abstract class AppLocalizations {
   /// No description provided for @employerVerifyUpgradeHint.
   ///
   /// In en, this message translates to:
-  /// **'Complete your profile to post jobs. Optionally verify with a personal ID or company documents for a Verified employer badge.'**
+  /// **'Employer verification is required to post jobs. Verify with a personal ID or company documents; once an admin approves it you can post jobs and get a Verified employer badge.'**
   String get employerVerifyUpgradeHint;
 
   /// No description provided for @chooseVerificationPath.
@@ -8762,7 +8762,7 @@ abstract class AppLocalizations {
   /// No description provided for @guideEmpVerifScoreDesc.
   ///
   /// In en, this message translates to:
-  /// **'Verification is optional. Once an admin accepts your Selfie with ID, it adds points and a Verified badge.'**
+  /// **'Verification is required to post jobs. Once an admin accepts your ID selfie or company docs, you can post and get a Verified badge.'**
   String get guideEmpVerifScoreDesc;
 
   /// No description provided for @guideEmpVerifHistoryTitle.
@@ -10150,6 +10150,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'1–3★ skills'**
   String get skillsTierLow;
+
+  /// No description provided for @authTermsOpenFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open the Terms of Service. Please try again later.'**
+  String get authTermsOpenFailed;
+
+  /// No description provided for @employerVerifyRequiredTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify your employer account to post jobs'**
+  String get employerVerifyRequiredTitle;
+
+  /// No description provided for @employerVerifyRequiredBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Employer verification is required (verplicht). You can post jobs once an admin has approved your personal ID or company documents.'**
+  String get employerVerifyRequiredBody;
+
+  /// No description provided for @employerVerifyRejectedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your last verification was rejected. Submit it again to post jobs. Employer verification is required (verplicht).'**
+  String get employerVerifyRejectedBody;
+
+  /// No description provided for @employerVerifyPendingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification under review'**
+  String get employerVerifyPendingTitle;
+
+  /// No description provided for @employerVerifyPendingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your employer verification is under review. You can post jobs as soon as an admin approves it.'**
+  String get employerVerifyPendingBody;
+
+  /// No description provided for @employerVerifyStartButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify now'**
+  String get employerVerifyStartButton;
+
+  /// No description provided for @employerVerifyViewStatusButton.
+  ///
+  /// In en, this message translates to:
+  /// **'View verification status'**
+  String get employerVerifyViewStatusButton;
+
+  /// No description provided for @employerVerifyRequiredPostError.
+  ///
+  /// In en, this message translates to:
+  /// **'Posting is blocked until your employer verification is approved.'**
+  String get employerVerifyRequiredPostError;
+
+  /// No description provided for @employerVerifyCheckFailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t check your verification'**
+  String get employerVerifyCheckFailedTitle;
+
+  /// No description provided for @employerVerifyCheckFailedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t check your employer verification. Check your connection and try again.'**
+  String get employerVerifyCheckFailedBody;
 }
 
 class _AppLocalizationsDelegate

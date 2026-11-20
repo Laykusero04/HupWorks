@@ -5,6 +5,11 @@ class AppInfo {
   /// Comes from kAppVersionName, which a test keeps equal to pubspec.yaml.
   static const String appVersion = kAppVersionName;
 
+  ///------------------------legal--------------------------------
+  /// Public Terms of Service page (NL + EN on the page itself). Single source
+  /// for every "Terms" link in the app.
+  static const String termsUrl = 'https://hupworks-web.vercel.app/terms.html';
+
   ///------------------------Splash_screen_logo-------------------
   static const String splashLogo = 'images/HupWorks.png';
 

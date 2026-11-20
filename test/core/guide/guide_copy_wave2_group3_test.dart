@@ -42,7 +42,8 @@ void main() {
       expect(nl.containsKey(k) && nl.containsKey(d), true, reason: k);
     }
     for (final k in en.keys.where((k) => k.startsWith('guideEmpVerif'))) {
-      expect((en[k] as String).toLowerCase().contains('required'), false,
+      // T-0171: employer verification is now required, never "optional".
+      expect((en[k] as String).toLowerCase().contains('optional'), false,
           reason: k);
     }
   });

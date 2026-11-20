@@ -3501,7 +3501,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get employerVerifyUpgradeHint =>
-      'চাকরি পোস্ট করতে প্রোফাইল সম্পূর্ণ করুন। যাচাইকৃত ব্যাজের জন্য ব্যক্তিগত আইডি বা কোম্পানি নথি দিয়ে যাচাই করতে পারেন।';
+      'চাকরি পোস্ট করতে নিয়োগকর্তা যাচাই বাধ্যতামূলক। ব্যক্তিগত আইডি বা কোম্পানি নথি দিয়ে যাচাই করুন; অ্যাডমিন অনুমোদন করলে আপনি চাকরি পোস্ট করতে পারবেন এবং যাচাইকৃত ব্যাজ পাবেন।';
 
   @override
   String get chooseVerificationPath => 'যাচাইয়ের পথ বেছে নিন';
@@ -4870,7 +4870,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get guideEmpVerifScoreDesc =>
-      'Verification is optional. Once an admin accepts your Selfie with ID, it adds points and a Verified badge.';
+      'চাকরি পোস্ট করতে যাচাই বাধ্যতামূলক। অ্যাডমিন আপনার আইডি সেলফি বা কোম্পানি নথি গ্রহণ করলে আপনি পোস্ট করতে পারবেন এবং যাচাইকৃত ব্যাজ পাবেন।';
 
   @override
   String get guideEmpVerifHistoryTitle => 'Hiring history';
@@ -5690,4 +5690,44 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get skillsTierLow => '1–3★ দক্ষতা';
+
+  @override
+  String get authTermsOpenFailed =>
+      'সেবার শর্তাবলী খোলা যায়নি। পরে আবার চেষ্টা করুন।';
+
+  @override
+  String get employerVerifyRequiredTitle =>
+      'চাকরি পোস্ট করতে আপনার নিয়োগকর্তা অ্যাকাউন্ট যাচাই করুন';
+
+  @override
+  String get employerVerifyRequiredBody =>
+      'নিয়োগকর্তা যাচাই বাধ্যতামূলক (verplicht)। অ্যাডমিন আপনার ব্যক্তিগত আইডি বা কোম্পানি নথি অনুমোদন করলে আপনি চাকরি পোস্ট করতে পারবেন।';
+
+  @override
+  String get employerVerifyRejectedBody =>
+      'আপনার শেষ যাচাই প্রত্যাখ্যান করা হয়েছে। চাকরি পোস্ট করতে আবার জমা দিন। নিয়োগকর্তা যাচাই বাধ্যতামূলক।';
+
+  @override
+  String get employerVerifyPendingTitle => 'যাচাই পর্যালোচনাধীন';
+
+  @override
+  String get employerVerifyPendingBody =>
+      'আপনার নিয়োগকর্তা যাচাই পর্যালোচনাধীন। অ্যাডমিন অনুমোদন করলেই আপনি চাকরি পোস্ট করতে পারবেন।';
+
+  @override
+  String get employerVerifyStartButton => 'এখনই যাচাই করুন';
+
+  @override
+  String get employerVerifyViewStatusButton => 'যাচাইয়ের অবস্থা দেখুন';
+
+  @override
+  String get employerVerifyRequiredPostError =>
+      'আপনার নিয়োগকর্তা যাচাই অনুমোদিত না হওয়া পর্যন্ত পোস্ট করা বন্ধ।';
+
+  @override
+  String get employerVerifyCheckFailedTitle => 'আপনার যাচাই পরীক্ষা করা যায়নি';
+
+  @override
+  String get employerVerifyCheckFailedBody =>
+      'আপনার নিয়োগকর্তা যাচাই পরীক্ষা করা যায়নি। ইন্টারনেট সংযোগ দেখে আবার চেষ্টা করুন।';
 }

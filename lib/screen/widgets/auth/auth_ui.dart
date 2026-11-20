@@ -1,4 +1,6 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:freelancer/core/utils/terms_link.dart';
 import 'package:freelancer/l10n/l10n.dart';
 
 import '../constant.dart';
@@ -327,21 +329,48 @@ class AuthFooterLink extends StatelessWidget {
   }
 }
 
-class AuthTermsRow extends StatelessWidget {
+class AuthTermsRow extends StatefulWidget {
   const AuthTermsRow({
     super.key,
     required this.checked,
     required this.onChanged,
     required this.accentColor,
+    this.launcher = defaultTermsLauncher,
   });
 
   final bool checked;
   final ValueChanged<bool?> onChanged;
   final Color accentColor;
 
+  /// Opens the terms URL. Injectable so tests do not hit the platform.
+  final TermsLauncher launcher;
+
+  @override
+  State<AuthTermsRow> createState() => _AuthTermsRowState();
+}
+
+class _AuthTermsRowState extends State<AuthTermsRow> {
+  late final TapGestureRecognizer _termsTap;
+
+  @override
+  void initState() {
+    super.initState();
+    _termsTap = TapGestureRecognizer()
+      ..onTap = () => openTermsOfService(context, launcher: widget.launcher);
+  }
+
+  @override
+  void dispose() {
+    _termsTap.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final checked = widget.checked;
+    final onChanged = widget.onChanged;
+    final accentColor = widget.accentColor;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -378,6 +407,7 @@ class AuthTermsRow extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                       fontSize: 13,
                     ),
+                    recognizer: _termsTap,
                   ),
                 ],
               ),

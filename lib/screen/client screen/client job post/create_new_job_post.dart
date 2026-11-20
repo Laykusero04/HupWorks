@@ -12,11 +12,13 @@ import 'package:freelancer/core/utils/attendance_mode.dart';
 import 'package:freelancer/core/utils/app_date_format.dart';
 import 'package:freelancer/core/utils/category_name.dart';
 import 'package:freelancer/core/utils/client_profile_completeness.dart';
+import 'package:freelancer/core/utils/employer_verification_gate.dart';
 import 'package:freelancer/core/utils/localized_category.dart';
 import 'package:freelancer/core/utils/shift_schedule.dart';
 import 'package:freelancer/router/route_names.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/services/category_service.dart';
+import 'package:freelancer/services/employer_verification_service.dart';
 import 'package:freelancer/services/job_posts_service.dart';
 import 'package:freelancer/services/profile_service.dart';
 import 'package:freelancer/services/skill_service.dart';
@@ -29,6 +31,7 @@ import '../../widgets/constant.dart';
 import '../../widgets/attendance_mode_picker.dart';
 import '../../widgets/job_location_fields.dart';
 import '../../widgets/skill_picker_field.dart';
+import 'employer_verification_required_gate.dart';
 
 class CreateNewJobPost extends StatefulWidget {
   const CreateNewJobPost({super.key});
@@ -62,6 +65,8 @@ class _CreateNewJobPostState extends State<CreateNewJobPost>
   bool _isCategoriesLoading = true;
   bool _checkingGate = true;
   bool _canPost = false;
+  bool _gateLoadFailed = false;
+  EmployerPostAccess _verifyAccess = EmployerPostAccess.required;
   List<String> _missingFields = const [];
   int _step = 0;
   DateTime? _workDate;
@@ -99,7 +104,10 @@ class _CreateNewJobPostState extends State<CreateNewJobPost>
 
   // Only the form (not the loading or "cannot post" pages) has targets.
   @override
-  bool get guideDataReady => !_checkingGate && _canPost;
+  bool get guideDataReady =>
+      !_checkingGate &&
+      _canPost &&
+      _verifyAccess == EmployerPostAccess.approved;
 
   @override
   String get guideSkipLabel => context.l10n.guideSkip;
@@ -270,8 +278,14 @@ class _CreateNewJobPostState extends State<CreateNewJobPost>
   Future<void> _checkPostGate() async {
     try {
       final profile = await ProfileService.getProfile(forceRefresh: true);
+      // "Ever approved" marker lives on the employer's own verification row.
+      final verification =
+          await EmployerVerificationService.getOwnVerification();
       if (!mounted) return;
       setState(() {
+        _gateLoadFailed = false;
+        _verifyAccess = EmployerVerificationGate.accessFor(profile,
+            verification: verification);
         _canPost = ClientProfileCompleteness.canPostJobs(profile);
         _missingFields = ClientProfileCompleteness.missingForJobPost(profile);
         _checkingGate = false;
@@ -280,6 +294,8 @@ class _CreateNewJobPostState extends State<CreateNewJobPost>
     } catch (_) {
       if (!mounted) return;
       setState(() {
+        _gateLoadFailed = true;
+        _verifyAccess = EmployerPostAccess.required;
         _canPost = false;
         _missingFields = const ['photo', 'phone', 'city', 'bio'];
         _checkingGate = false;
@@ -542,8 +558,13 @@ class _CreateNewJobPostState extends State<CreateNewJobPost>
       }
     } catch (e) {
       if (mounted) {
+        final blocked = EmployerVerificationGate.isBlockedByServer(e);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.errorWithDetail('$e'))),
+          SnackBar(
+            content: Text(blocked
+                ? context.l10n.employerVerifyRequiredPostError
+                : context.l10n.errorWithDetail('$e')),
+          ),
         );
       }
     } finally {
@@ -572,6 +593,31 @@ class _CreateNewJobPostState extends State<CreateNewJobPost>
           centerTitle: true,
         ),
         body: const LoadingWidget(),
+      );
+    }
+
+    // Status could not be loaded: say so (with Retry) instead of claiming
+    // verification is missing. The server still decides on the insert.
+    if (_gateLoadFailed) {
+      return EmployerVerificationCheckFailed(
+        onRetry: () async {
+          setState(() => _checkingGate = true);
+          await _checkPostGate();
+        },
+      );
+    }
+
+    // Employer verification is required before posting (T-0171). Checked
+    // before the profile gate: the verification screen is the way forward.
+    if (_verifyAccess != EmployerPostAccess.approved) {
+      return EmployerVerificationRequiredGate(
+        access: _verifyAccess,
+        onVerify: () async {
+          await context.push(AppRoutes.clientProfileVerify);
+          if (!mounted) return;
+          setState(() => _checkingGate = true);
+          await _checkPostGate();
+        },
       );
     }
 

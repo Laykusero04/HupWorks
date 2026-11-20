@@ -3496,7 +3496,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get employerVerifyUpgradeHint =>
-      'Complete your profile to post jobs. Optionally verify with a personal ID or company documents for a Verified employer badge.';
+      'Employer verification is required to post jobs. Verify with a personal ID or company documents; once an admin approves it you can post jobs and get a Verified employer badge.';
 
   @override
   String get chooseVerificationPath => 'Choose how to verify';
@@ -4865,7 +4865,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get guideEmpVerifScoreDesc =>
-      'Verification is optional. Once an admin accepts your Selfie with ID, it adds points and a Verified badge.';
+      'Verification is required to post jobs. Once an admin accepts your ID selfie or company docs, you can post and get a Verified badge.';
 
   @override
   String get guideEmpVerifHistoryTitle => 'Hiring history';
@@ -5684,4 +5684,45 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get skillsTierLow => '1–3★ skills';
+
+  @override
+  String get authTermsOpenFailed =>
+      'Could not open the Terms of Service. Please try again later.';
+
+  @override
+  String get employerVerifyRequiredTitle =>
+      'Verify your employer account to post jobs';
+
+  @override
+  String get employerVerifyRequiredBody =>
+      'Employer verification is required (verplicht). You can post jobs once an admin has approved your personal ID or company documents.';
+
+  @override
+  String get employerVerifyRejectedBody =>
+      'Your last verification was rejected. Submit it again to post jobs. Employer verification is required (verplicht).';
+
+  @override
+  String get employerVerifyPendingTitle => 'Verification under review';
+
+  @override
+  String get employerVerifyPendingBody =>
+      'Your employer verification is under review. You can post jobs as soon as an admin approves it.';
+
+  @override
+  String get employerVerifyStartButton => 'Verify now';
+
+  @override
+  String get employerVerifyViewStatusButton => 'View verification status';
+
+  @override
+  String get employerVerifyRequiredPostError =>
+      'Posting is blocked until your employer verification is approved.';
+
+  @override
+  String get employerVerifyCheckFailedTitle =>
+      'Couldn\'t check your verification';
+
+  @override
+  String get employerVerifyCheckFailedBody =>
+      'We couldn\'t check your employer verification. Check your connection and try again.';
 }

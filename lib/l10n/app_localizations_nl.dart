@@ -3844,7 +3844,7 @@ class AppLocalizationsNl extends AppLocalizations {
       'Deze persoon ontvangt alleen berichten van mensen met wie die al werkt.';
 
   @override
-  String get platformShareTitle => 'Jouw aandeel';
+  String get platformShareTitle => 'Jouw aandelen';
 
   @override
   String get platformShareMenuSubtitle => 'Zie het werk dat via jou loopt';

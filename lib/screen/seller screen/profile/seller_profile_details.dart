@@ -21,6 +21,8 @@ import '../../widgets/profile_skeleton.dart';
 import '../../widgets/seller_skills_display.dart';
 import '../../widgets/seller_standing_badge.dart';
 import '../../widgets/verification_score_card.dart';
+import 'package:freelancer/services/user_private_details_service.dart';
+import '../../widgets/private_details/personal_details_trust_item.dart';
 import '../../widgets/verification_status_badge.dart';
 
 class SellerProfileDetails extends StatefulWidget {
@@ -45,7 +47,17 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
 
   Future<void> _load() async {
     try {
-      final profile = await ProfileService.getSellerProfileForEdit();
+      var profile = await ProfileService.getSellerProfileForEdit();
+      // The age shown to the owner follows the new private date of birth.
+      try {
+        final newer = await UserPrivateDetailsService.getMine();
+        if (profile != null && newer?.dateOfBirth != null) {
+          profile = {
+            ...profile,
+            'private_date_of_birth': newer!.dateOfBirth!.toIso8601String(),
+          };
+        }
+      } catch (_) {}
       if (!mounted) return;
       final userId = profile?['id'] as String?;
       final reviews = userId != null
@@ -296,6 +308,7 @@ class _SellerProfileDetailsState extends State<SellerProfileDetails> {
                 onTap: openVerification,
                 compact: true,
               ),
+              PersonalDetailsTrustItem(accent: brand),
               if (bio != null && bio.trim().isNotEmpty) ...[
                 const SizedBox(height: 12),
                 Text(

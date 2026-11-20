@@ -11,6 +11,7 @@ import 'package:freelancer/core/utils/profile_avatar_picker.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
 import 'package:freelancer/screen/widgets/verification_score_card.dart';
+import 'package:freelancer/screen/widgets/private_details/personal_details_trust_item.dart';
 import 'package:freelancer/screen/widgets/verification_submit_bar.dart';
 import 'package:freelancer/screen/widgets/verification_status_badge.dart';
 import 'package:freelancer/services/profile_service.dart';
@@ -309,6 +310,7 @@ class _SellerIdentityVerificationScreenState
                       l10n.guideIdentityScoreTitle,
                       l10n.guideIdentityScoreDesc),
                 ),
+                const PersonalDetailsTrustItem(accent: kSellerPrimary),
                 const SizedBox(height: 16),
                 GuideAnchor.wrap(
                     _anchor(_guideStatusKey, l10n.guideIdentityStatusTitle,

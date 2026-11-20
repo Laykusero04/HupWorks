@@ -12,6 +12,7 @@ import 'package:freelancer/core/utils/profile_avatar_picker.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
 import 'package:freelancer/screen/widgets/verification_score_card.dart';
+import 'package:freelancer/screen/widgets/private_details/personal_details_trust_item.dart';
 import 'package:freelancer/screen/widgets/verification_submit_bar.dart';
 import 'package:freelancer/screen/widgets/verification_status_badge.dart';
 import 'package:freelancer/services/employer_verification_service.dart';
@@ -418,6 +419,7 @@ class _EmployerVerificationScreenState extends State<EmployerVerificationScreen>
                       l10n.guideEmpVerifScoreTitle,
                       l10n.guideEmpVerifScoreDesc),
                 ),
+                const PersonalDetailsTrustItem(accent: kPrimaryColor),
                 const SizedBox(height: 16),
                 Center(child: VerificationStatusBadge(status: badgeStatus)),
                 const SizedBox(height: 12),

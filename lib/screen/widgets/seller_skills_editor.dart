@@ -217,6 +217,8 @@ class _SellerSkillsEditorState extends State<SellerSkillsEditor> {
             for (var i = 0; i < _fiveStar.length; i++) ...[
               if (i > 0) const SizedBox(height: 8),
               SkillSlotTile(
+                accent: kSellerPrimary,
+                accentFill: kSecondaryFill,
                 index: i + 1,
                 name: _fiveStar[i].name,
                 isCustom: _fiveStar[i].isCustom,
@@ -244,6 +246,8 @@ class _SellerSkillsEditorState extends State<SellerSkillsEditor> {
             for (var i = 0; i < _fourStar.length; i++) ...[
               if (i > 0) const SizedBox(height: 8),
               SkillSlotTile(
+                accent: kSellerPrimary,
+                accentFill: kSecondaryFill,
                 index: i + 1,
                 name: _fourStar[i].name,
                 isCustom: _fourStar[i].isCustom,
@@ -271,6 +275,8 @@ class _SellerSkillsEditorState extends State<SellerSkillsEditor> {
             for (var i = 0; i < _lowStar.length; i++) ...[
               if (i > 0) const SizedBox(height: 8),
               SkillSlotTile(
+                accent: kSellerPrimary,
+                accentFill: kSecondaryFill,
                 index: i + 1,
                 name: _lowStar[i].name,
                 isCustom: _lowStar[i].isCustom,
@@ -379,8 +385,8 @@ class _AddSkillButton extends StatelessWidget {
       icon: const Icon(Icons.add, size: 18),
       label: Text(label),
       style: OutlinedButton.styleFrom(
-        foregroundColor: kPrimaryText,
-        side: BorderSide(color: kPrimaryColor.withValues(alpha: 0.4)),
+        foregroundColor: kSecondaryText,
+        side: BorderSide(color: kSellerPrimary.withValues(alpha: 0.4)),
         minimumSize: const Size(double.infinity, 44),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),

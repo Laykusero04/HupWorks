@@ -1726,7 +1726,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get showAgeOnProfileHint =>
-      'ডিফল্টভাবে বন্ধ। এটি চালু থাকলেই নিয়োগকর্তারা আপনার বয়স (পূর্ণ বছরে) দেখতে পাবেন।';
+      'ডিফল্টভাবে বন্ধ। চালু থাকলে নিয়োগকর্তারা শুধু আপনার বয়স (পূর্ণ বছরে) দেখেন, জন্মতারিখ কখনোই নয়। এটি নিচের আপনার ব্যক্তিগত জন্মতারিখ থেকে হিসাব করা হয়।';
 
   @override
   String get updateRequiredTitle => 'আপডেট প্রয়োজন';
@@ -5730,4 +5730,149 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get employerVerifyCheckFailedBody =>
       'আপনার নিয়োগকর্তা যাচাই পরীক্ষা করা যায়নি। ইন্টারনেট সংযোগ দেখে আবার চেষ্টা করুন।';
+
+  @override
+  String get pdTitle => 'শুরুর আগে কিছু তথ্য';
+
+  @override
+  String get pdLead =>
+      'আপনার বয়স ১৬ বা তার বেশি কি না যাচাই করতে আমাদের আপনার জন্মতারিখ দরকার। এটি গোপন থাকে এবং অন্য কোনো ব্যবহারকারীকে কখনও দেখানো হয় না।';
+
+  @override
+  String get pdSkipHint =>
+      'আপাতত এটি এড়িয়ে যেতে পারেন। ব্যক্তিগত তথ্য না দেওয়া পর্যন্ত আপনার ট্রাস্ট স্কোর কম থাকবে।';
+
+  @override
+  String get pdDobLabel => 'জন্মতারিখ';
+
+  @override
+  String get pdDobDay => 'দিন';
+
+  @override
+  String get pdDobMonth => 'মাস';
+
+  @override
+  String get pdDobYear => 'বছর';
+
+  @override
+  String get pdDobErrorEmpty => 'আপনার জন্মতারিখ লিখুন।';
+
+  @override
+  String get pdDobErrorInvalid =>
+      'এই তারিখটি সঠিক নয়। দিন, মাস ও বছর দেখে নিন।';
+
+  @override
+  String get pdDobErrorFuture => 'জন্মতারিখ ভবিষ্যতের হতে পারে না।';
+
+  @override
+  String get pdDobErrorUnder16 =>
+      'HupWorks-এ সাইন আপ করতে আপনার বয়স ১৬ বা তার বেশি হতে হবে।';
+
+  @override
+  String get pdConsentIntro => 'আমি সম্মত আছি: ';
+
+  @override
+  String get pdConsentPrivacy => 'গোপনীয়তা নীতি';
+
+  @override
+  String get pdConsentAnd => ' এবং ';
+
+  @override
+  String get pdConsentTerms => 'শর্তাবলী';
+
+  @override
+  String get pdConsentOutro =>
+      '। আমি বুঝি যে HupWorks আমার জন্মতারিখ, নাম ও ঠিকানা গোপনে সংরক্ষণ করে এবং শুধু বয়স যাচাই, চুক্তি ও ইনভয়েসের জন্য ব্যবহার করে।';
+
+  @override
+  String get pdConsentRequired => 'এগিয়ে যেতে বক্সে টিক দিন।';
+
+  @override
+  String get pdSaveError =>
+      'সংরক্ষণ করা যায়নি। ইন্টারনেট সংযোগ দেখে আবার চেষ্টা করুন।';
+
+  @override
+  String get pdTryAgain => 'আবার চেষ্টা করুন';
+
+  @override
+  String get pdInvalidValue =>
+      'একটি তথ্য গ্রহণযোগ্য নয়। দেখে নিয়ে আবার চেষ্টা করুন।';
+
+  @override
+  String get pdLinkOpenFailed => 'লিংকটি খোলা যায়নি। পরে আবার চেষ্টা করুন।';
+
+  @override
+  String get pdSaved => 'ব্যক্তিগত তথ্য সংরক্ষিত হয়েছে';
+
+  @override
+  String get pdSectionTitle => 'ব্যক্তিগত তথ্য (গোপন)';
+
+  @override
+  String get pdSectionCallout =>
+      'শুধু আপনিই এই তথ্য দেখতে পারেন। এগুলো কখনও আপনার পাবলিক প্রোফাইলে দেখানো হয় না।';
+
+  @override
+  String get pdLegalName => 'আইনগত নাম';
+
+  @override
+  String get pdLegalNameHint =>
+      'আপনার আইডি অনুযায়ী। এটি আপনার পাবলিক নাম নয়।';
+
+  @override
+  String get pdStreet => 'রাস্তা ও বাড়ির নম্বর';
+
+  @override
+  String get pdPostal => 'পোস্টাল কোড';
+
+  @override
+  String get pdErrLegalName => 'আপনার আইনগত নাম লিখুন, অথবা ঘরটি খালি রাখুন।';
+
+  @override
+  String get pdErrStreet =>
+      'রাস্তা ও বাড়ির নম্বর লিখুন, অথবা ঘরটি খালি রাখুন।';
+
+  @override
+  String get pdErrPostal => '1234 AB ফরম্যাট ব্যবহার করুন।';
+
+  @override
+  String get pdNotAddedYet =>
+      'এখনও যোগ করা হয়নি। আইনগত নাম ও ঠিকানা ঐচ্ছিক। তবে জন্মতারিখ আমরা চাই।';
+
+  @override
+  String get pdConsentRowTitle => 'সম্মতি';
+
+  @override
+  String pdConsentRowValue(String version, String date) {
+    return 'সংস্করণ $version, $date তারিখে সম্মত';
+  }
+
+  @override
+  String get pdTrustTitle => 'ব্যক্তিগত তথ্য';
+
+  @override
+  String get pdTrustMissing =>
+      'আপনার ব্যক্তিগত তথ্য সম্পূর্ণ করুন। এগুলো গোপন থাকে।';
+
+  @override
+  String get pdTrustDone => 'যোগ করা হয়েছে। শুধু আপনিই দেখতে পারেন।';
+
+  @override
+  String get pdTrustAdd => 'ব্যক্তিগত তথ্য যোগ করুন';
+
+  @override
+  String pdConsentVersionCaption(String version) {
+    return 'সম্মতির লেখার সংস্করণ: $version';
+  }
+
+  @override
+  String get pdSignupDobHelper =>
+      'আপনার বয়স ১৬ বা তার বেশি হতে হবে। এটি আমাদের কাছে গোপন থাকে।';
+
+  @override
+  String get pdLoadError =>
+      'আপনার তথ্য লোড করা যায়নি। ইন্টারনেট সংযোগ দেখে আবার চেষ্টা করুন।';
+
+  @override
+  String get pdPublicSavedPrivateFailed =>
+      'আপনার প্রোফাইল সংরক্ষিত হয়েছে, কিন্তু ব্যক্তিগত তথ্য হয়নি। দেখে নিয়ে আবার চেষ্টা করুন।';
 }

@@ -18,6 +18,8 @@ import '../core/guide/guide_step.dart';
 import '../core/onboarding/onboarding_prefs.dart';
 import '../core/utils/app_logger.dart';
 import '../services/auth_service.dart';
+import '../services/personal_details_gate.dart';
+import '../services/profile_service.dart';
 
 // Old screens — used during incremental migration
 import '../screen/splash screen/mt_splash_screen.dart';
@@ -62,6 +64,7 @@ import '../screen/seller screen/setup seller profile/setup_profile.dart';
 import '../screen/attendance/attendance_scan_screen.dart';
 import '../screen/attendance/seller_attendance_hub_screen.dart';
 import '../screen/widgets/auth/update_password_screen.dart';
+import '../screen/widgets/private_details/personal_details_screen.dart';
 import '../screen/widgets/platform_contribution_screen.dart';
 import '../screen/widgets/shell_tab_header.dart';
 import 'route_names.dart';
@@ -185,6 +188,17 @@ GoRouter createRouter() {
         return AuthService.homePathForRole(role);
       }
 
+      // First sign-in: date of birth + consent (skippable). Freelancers get
+      // here only after the setup wizard (handled above). Skip is remembered,
+      // so this never loops.
+      final isPersonalDetails = location == AppRoutes.personalDetails;
+      if (role != null && PersonalDetailsGate.needsPrompt) {
+        return isPersonalDetails ? null : AppRoutes.personalDetails;
+      }
+      if (isPersonalDetails) {
+        return AuthService.homePathForRole(role);
+      }
+
       // Signed in — bounce other auth screens to the correct home (splash navigates itself)
       if (isPublicAuthRoute && !isSellerSetup) {
         if (role == null) {
@@ -246,6 +260,16 @@ GoRouter createRouter() {
       GoRoute(
         path: AppRoutes.updatePassword,
         builder: (context, state) => const UpdatePasswordScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.personalDetails,
+        builder: (context, state) => const _PersonalDetailsRoute(),
+      ),
+      GoRoute(
+        path: AppRoutes.personalDetailsEdit,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) =>
+            const _PersonalDetailsRoute(fromTrust: true),
       ),
 
       // Client shell with bottom nav
@@ -1087,6 +1111,35 @@ class _ShellBottomNavTile extends StatelessWidget {
   }
 }
 
+/// Builds [PersonalDetailsScreen] with the role colour and navigation (T-0172).
+class _PersonalDetailsRoute extends StatelessWidget {
+  const _PersonalDetailsRoute({this.fromTrust = false});
+
+  final bool fromTrust;
+
+  @override
+  Widget build(BuildContext context) {
+    final role = AuthService.cachedRole;
+    final accent = role == 'seller' ? kSellerPrimary : kPrimaryColor;
+    void done() {
+      if (fromTrust) {
+        if (context.canPop()) context.pop();
+      } else {
+        context.go(AuthService.homePathForRole(role));
+      }
+    }
+
+    return PersonalDetailsScreen(
+      accent: accent,
+      fromTrust: fromTrust,
+      onDone: done,
+      onSignOut: AuthService.signOut,
+      fallbackDobLoader:
+          role == 'seller' ? ProfileService.getOwnOldSellerDateOfBirth : null,
+    );
+  }
+}
+
 /// Bridges Supabase auth + [profiles.role] loading to GoRouter redirects.
 class _SupabaseAuthRefreshStream extends ChangeNotifier {
   _SupabaseAuthRefreshStream(Stream<AuthState> stream) {
@@ -1109,6 +1162,7 @@ class _SupabaseAuthRefreshStream extends ChangeNotifier {
     final session = authState.session;
     if (session == null) {
       RoleCache.clear();
+      PersonalDetailsGate.reset();
       AuthService.passwordRecoveryPending = false;
       notifyListeners();
       return;
@@ -1123,6 +1177,11 @@ class _SupabaseAuthRefreshStream extends ChangeNotifier {
       AppLogger.error('Router.ensureRoleCached', e, st);
       // Keep previous cache if refresh fails; redirect will wait or use last value.
     }
+    // Tell the router the role is ready first, so the gate's network calls can
+    // never delay the normal redirect.
+    notifyListeners();
+    // Never throws and is time-limited; then re-evaluate for the details step.
+    await PersonalDetailsGate.refresh();
     notifyListeners();
   }
 

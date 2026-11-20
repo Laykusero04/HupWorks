@@ -171,8 +171,9 @@ do $$
 begin
   if exists (
     select 1 from information_schema.view_table_usage
-    where table_schema = 'public' and table_name = 'user_private_details') then
-    raise exception 'FAIL a view reads user_private_details';
+    where table_schema = 'public' and table_name = 'user_private_details'
+      and view_name <> 'seller_public_age') then
+    raise exception 'FAIL a view other than seller_public_age reads user_private_details';
   end if;
   if exists (
     select 1 from information_schema.columns

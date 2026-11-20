@@ -336,7 +336,11 @@ class AuthTermsRow extends StatefulWidget {
     required this.onChanged,
     required this.accentColor,
     this.launcher = defaultTermsLauncher,
+    this.errorText,
   });
+
+  /// Inline error under the row (icon + text), for example "agree to continue".
+  final String? errorText;
 
   final bool checked;
   final ValueChanged<bool?> onChanged;
@@ -371,7 +375,7 @@ class _AuthTermsRowState extends State<AuthTermsRow> {
     final checked = widget.checked;
     final onChanged = widget.onChanged;
     final accentColor = widget.accentColor;
-    return Row(
+    final row = Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
@@ -414,6 +418,38 @@ class _AuthTermsRowState extends State<AuthTermsRow> {
             ),
           ),
         ),
+      ],
+    );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        row,
+        if (widget.errorText != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 6, left: 34),
+            child: Semantics(
+              liveRegion: true,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const ExcludeSemantics(
+                    child: Icon(Icons.error_outline,
+                        size: 16, color: Color(0xFFB3261E)),
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      widget.errorText!,
+                      style: kTextStyle.copyWith(
+                          color: const Color(0xFFB3261E),
+                          fontSize: 12,
+                          height: 1.35),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
       ],
     );
   }

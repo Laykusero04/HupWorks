@@ -12,6 +12,13 @@ class AppRoutes {
   static const updatePassword = '/auth/update-password';
   static const sellerSetupProfile = '/auth/seller/setup-profile';
 
+  /// First-sign-in date of birth + consent step (skippable, T-0172).
+  static const personalDetails = '/personal-details';
+
+  /// Same step opened from the "Personal details" trust item (back arrow, no
+  /// skip). Both roles.
+  static const personalDetailsEdit = '/profile/personal-details';
+
   // Client shell tabs
   static const clientHome = '/client';
   static const clientChat = '/client/chat';

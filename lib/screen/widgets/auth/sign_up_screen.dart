@@ -1,10 +1,13 @@
 import 'package:freelancer/core/utils/auth_error_message.dart';
+import 'package:freelancer/core/utils/dob_input.dart';
 import 'package:freelancer/core/utils/password_strength.dart';
 import 'package:flutter/material.dart';
 import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/screen/widgets/auth/auth_ui.dart';
 import 'package:freelancer/screen/widgets/constant.dart';
+import 'package:freelancer/screen/widgets/private_details/dob_field.dart';
 import 'package:freelancer/services/auth_service.dart';
+import 'package:freelancer/services/personal_details_gate.dart';
 import 'package:go_router/go_router.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -25,7 +28,11 @@ class SignUpScreen extends StatefulWidget {
     required this.subtitle,
     required this.roleLabel,
     required this.onSignedUp,
+    this.now,
   });
+
+  /// UTC "today" override for tests (age boundary).
+  final DateTime? now;
 
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
@@ -42,6 +49,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmController = TextEditingController();
+  final _dob = DobController();
+  DobError? _dobError;
+  bool _termsError = false;
 
   @override
   void dispose() {
@@ -50,6 +60,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmController.dispose();
+    _dob.dispose();
     super.dispose();
   }
 
@@ -60,46 +71,50 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final email = _emailController.text.trim();
     final password = _passwordController.text;
 
-    if (firstName.isEmpty ||
+    // Evaluate everything at once so the user sees all problems together:
+    // form fields and password rules as a snackbar (first one), date of birth
+    // and Terms inline. The age rule is shared with the DB check (UTC date).
+    final dob = _dob.validate(now: widget.now);
+    final missing = firstName.isEmpty ||
         lastName.isEmpty ||
         email.isEmpty ||
-        password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.pleaseFillAllFields)),
-      );
-      return;
+        password.isEmpty;
+    String? snack;
+    if (missing) {
+      snack = l10n.pleaseFillAllFields;
+    } else if (password.length < 6) {
+      snack = l10n.authPasswordMinLength;
+    } else if (password != _confirmController.text) {
+      snack = l10n.authPasswordsDoNotMatch;
     }
-
-    if (password.length < 6) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.authPasswordMinLength)),
-      );
-      return;
+    setState(() {
+      _dobError = dob.error;
+      _termsError = !_isCheck;
+    });
+    if (snack != null) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(snack)));
     }
-
-    if (password != _confirmController.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.authPasswordsDoNotMatch)),
-      );
-      return;
-    }
-
-    if (!_isCheck) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.authMustAgreeTerms)),
-      );
-      return;
-    }
+    // Under-16 block (T-0172): refuse before any account is created.
+    if (snack != null || !dob.isValid || !_isCheck) return;
 
     setState(() => _isLoading = true);
 
     try {
-      await AuthService.signUp(
+      final response = await AuthService.signUp(
         email: email,
         password: password,
         name: '$firstName $lastName',
         role: widget.role,
       );
+
+      // Keep the date of birth in memory and store it as soon as the account
+      // has a session (immediately, or after email confirmation). Failure to
+      // store never blocks signup; the first-sign-in step asks again.
+      PendingSignupDob.hold(email, dob.date!);
+      if (response.session != null) {
+        await PendingSignupDob.flushFor(email);
+      }
 
       if (mounted) {
         await widget.onSignedUp(context, email);
@@ -187,10 +202,31 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
           ),
           const SizedBox(height: 16),
+          DobField(
+            controller: _dob,
+            accent: accent,
+            autofill: true,
+            enabled: !_isLoading,
+            errorText:
+                _dobError == null ? null : dobErrorText(l10n, _dobError!),
+            onChanged: () {
+              if (_dobError != null) setState(() => _dobError = null);
+            },
+          ),
+          const SizedBox(height: 6),
+          Text(
+            l10n.pdSignupDobHelper,
+            style: kTextStyle.copyWith(color: kSubTitleColor, fontSize: 12),
+          ),
+          const SizedBox(height: 16),
           AuthTermsRow(
             checked: _isCheck,
             accentColor: accent,
-            onChanged: (v) => setState(() => _isCheck = v ?? false),
+            errorText: _termsError ? l10n.authMustAgreeTerms : null,
+            onChanged: (v) => setState(() {
+              _isCheck = v ?? false;
+              if (_isCheck) _termsError = false;
+            }),
           ),
           const SizedBox(height: 20),
           AuthPrimaryButton(
@@ -245,9 +281,8 @@ class _PasswordStrengthHint extends StatelessWidget {
     };
     // Bars may use the bright amber; label text needs WCAG AA (4.5:1) on white,
     // so Medium text uses a darker amber (#8A6100, ~7:1).
-    final labelColor = strength == PasswordStrength.medium
-        ? const Color(0xFF8A6100)
-        : color;
+    final labelColor =
+        strength == PasswordStrength.medium ? const Color(0xFF8A6100) : color;
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Column(

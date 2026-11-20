@@ -414,6 +414,23 @@ class ProfileService {
     };
   }
 
+  /// The signed-in freelancer's OLD date of birth (owner-only old table), used
+  /// only as a read-only prefill. Null when none, not a seller, or on error.
+  static Future<DateTime?> getOwnOldSellerDateOfBirth() async {
+    try {
+      final user = _client.auth.currentUser;
+      if (user == null) return null;
+      final row = await _client
+          .from('seller_private_details')
+          .select('date_of_birth')
+          .eq('user_id', user.id)
+          .maybeSingle();
+      return parseDateOfBirth(row?['date_of_birth']);
+    } catch (_) {
+      return null;
+    }
+  }
+
   /// Persist seller extended + private profile fields.
   ///
   /// Date of birth and street address are written ONLY to the owner-only
@@ -433,6 +450,11 @@ class ProfileService {
     String? postalCode,
     bool? showAge,
     bool clearPublicCountryCity = true,
+
+    /// False on the Edit profile screen: the private date of birth and address
+    /// now live in the new owner-only private-details table, so this old table is left untouched
+    /// (a null date here would otherwise wipe the old value).
+    bool updatePrivateDetails = true,
   }) async {
     final user = _client.auth.currentUser;
     if (user == null) throw Exception('Not logged in');
@@ -453,21 +475,23 @@ class ProfileService {
         .update(sellerUpdates)
         .eq('user_id', user.id);
 
-    final street = streetAddress ?? address;
-    await _client.from('seller_private_details').upsert({
-      'user_id': user.id,
-      'date_of_birth': dateOfBirth != null
-          ? '${dateOfBirth.year.toString().padLeft(4, '0')}-'
-              '${dateOfBirth.month.toString().padLeft(2, '0')}-'
-              '${dateOfBirth.day.toString().padLeft(2, '0')}'
-          : null,
-      if (street != null)
-        'street_address': street.trim().isEmpty ? null : street.trim(),
-      if (state != null) 'state': state.trim().isEmpty ? null : state.trim(),
-      if (postalCode != null)
-        'postal_code': postalCode.trim().isEmpty ? null : postalCode.trim(),
-      'updated_at': DateTime.now().toUtc().toIso8601String(),
-    });
+    if (updatePrivateDetails) {
+      final street = streetAddress ?? address;
+      await _client.from('seller_private_details').upsert({
+        'user_id': user.id,
+        'date_of_birth': dateOfBirth != null
+            ? '${dateOfBirth.year.toString().padLeft(4, '0')}-'
+                '${dateOfBirth.month.toString().padLeft(2, '0')}-'
+                '${dateOfBirth.day.toString().padLeft(2, '0')}'
+            : null,
+        if (street != null)
+          'street_address': street.trim().isEmpty ? null : street.trim(),
+        if (state != null) 'state': state.trim().isEmpty ? null : state.trim(),
+        if (postalCode != null)
+          'postal_code': postalCode.trim().isEmpty ? null : postalCode.trim(),
+        'updated_at': DateTime.now().toUtc().toIso8601String(),
+      });
+    }
 
     if (clearPublicCountryCity) {
       await _client.from('profiles').update({
@@ -577,6 +601,9 @@ class ProfileService {
 
   /// Full DOB for edit form only — not shown in public UI.
   static DateTime? sellerDateOfBirthFromProfile(Map<String, dynamic> profile) {
+    // Newer private date of birth, merged in by the screen when it exists.
+    final newer = parseDateOfBirth(profile['private_date_of_birth']);
+    if (newer != null) return newer;
     final private = sellerPrivateDetailsFromProfile(profile);
     final fromPrivate = parseDateOfBirth(private?['date_of_birth']);
     if (fromPrivate != null) return fromPrivate;

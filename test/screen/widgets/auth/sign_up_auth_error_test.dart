@@ -122,12 +122,16 @@ void main() {
   /// the real async Supabase call finish and the snackbar appear.
   Future<void> submitSignUp(WidgetTester tester, AppLocalizations l10n) async {
     final fields = find.byType(TextField);
-    expect(fields, findsNWidgets(5));
+    // 5 text fields + 3 date-of-birth fields (T-0172).
+    expect(fields, findsNWidgets(8));
     await tester.enterText(fields.at(0), 'QA');
     await tester.enterText(fields.at(1), 'Tester');
     await tester.enterText(fields.at(2), 'qa.tester@example.invalid');
     await tester.enterText(fields.at(3), 'not-a-real-pass');
     await tester.enterText(fields.at(4), 'not-a-real-pass');
+    await tester.enterText(fields.at(5), '14');
+    await tester.enterText(fields.at(6), '03');
+    await tester.enterText(fields.at(7), '1998');
     await tester.ensureVisible(find.byType(Checkbox));
     await tester.tap(find.byType(Checkbox));
     await tester.pump();
@@ -145,7 +149,8 @@ void main() {
   final en = lookupAppLocalizations(const Locale('en'));
   final nl = lookupAppLocalizations(const Locale('nl'));
 
-  testWidgets('database error (500) shows friendly EN text, not raw exception',
+  testWidgets(
+      'database error (500) shows friendly EN text, not raw exception',
       (tester) => runGuarded(() async {
             networkDown = () => false;
             nextSignUpResponse = () => apiError(
@@ -162,12 +167,14 @@ void main() {
             expect(tester.takeException(), isNull);
           }));
 
-  testWidgets('rate limit (429) shows friendly NL text at XL text scale',
+  testWidgets(
+      'rate limit (429) shows friendly NL text at XL text scale',
       (tester) => runGuarded(() async {
             networkDown = () => false;
-            nextSignUpResponse = () => apiError(429,
-                'over_email_send_rate_limit', 'email rate limit exceeded');
-            await pumpSignUp(tester, locale: const Locale('nl'), textScale: 1.5);
+            nextSignUpResponse = () => apiError(
+                429, 'over_email_send_rate_limit', 'email rate limit exceeded');
+            await pumpSignUp(tester,
+                locale: const Locale('nl'), textScale: 1.5);
             await submitSignUp(tester, nl);
 
             expect(find.text(nl.authErrorRateLimit), findsOneWidget);
@@ -176,7 +183,8 @@ void main() {
             expect(tester.takeException(), isNull);
           }));
 
-  testWidgets('network failure shows the network message, not generic',
+  testWidgets(
+      'network failure shows the network message, not generic',
       (tester) => runGuarded(() async {
             networkDown = () => true;
             await pumpSignUp(tester, locale: const Locale('en'));

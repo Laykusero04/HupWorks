@@ -10,6 +10,15 @@ class AppInfo {
   /// for every "Terms" link in the app.
   static const String termsUrl = 'https://hupworks-web.vercel.app/terms.html';
 
+  /// Public Privacy Policy page; the consent text version below refers to it.
+  static const String privacyUrl =
+      'https://hupworks-web.vercel.app/privacy.html';
+
+  /// Version of the privacy/consent wording shown on the personal-details
+  /// step. Bump it when the wording or the linked policy changes materially;
+  /// users with an older stored version are asked again (T-0172).
+  static const String privacyConsentVersion = 'privacy-2026-11';
+
   ///------------------------Splash_screen_logo-------------------
   static const String splashLogo = 'images/HupWorks.png';
 

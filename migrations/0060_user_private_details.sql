@@ -4,11 +4,15 @@
 --   * Rows are created lazily by the app (upsert after sign-in). handle_new_user is NOT touched.
 --   * RLS: authenticated users can select / insert / update ONLY their own row.
 --     No delete policy (rows go via cascade / delete_own_account). Nothing for anon.
---   * Not exposed through any view, RPC or realtime publication. Never copy these
---     columns into profiles or any public view.
+--   * Not exposed through any RPC or realtime publication. Never copy these columns
+--     into profiles or any public view. ONE exception: the view seller_public_age
+--     (0054) now takes the whole-year age from user_private_details.date_of_birth
+--     (falling back to seller_private_details), still only when the freelancer
+--     turned show_age on. It exposes the age in years, never the date.
 --   * Admin reads: service role only, through the admin API; each read must be written
 --     to admin_audit_log (0052) as "viewed user X" with NO field values.
--- Additive. Safe to apply before any app release.
+-- Needs 0054 (seller_public_age) to be applied already (it is live).
+-- Safe to apply before any app release.
 begin;
 
 create table if not exists public.user_private_details (
@@ -134,5 +138,25 @@ $$;
 revoke all on function public.delete_own_account() from public;
 grant execute on function public.delete_own_account() to authenticated;
 grant execute on function public.delete_own_account() to service_role;
+
+-- seller_public_age (0054): same columns, grants, security_barrier and show_age
+-- gating. The age now comes from the NEW private date of birth, falling back to
+-- the old seller_private_details value for freelancers who have not entered it
+-- in the new table yet. Only whole years are exposed, never the date.
+create or replace view public.seller_public_age
+  with (security_barrier = true) as
+  select
+    sp.user_id,
+    case
+      when sp.show_age
+        and coalesce(upd.date_of_birth, spd.date_of_birth) is not null
+        then date_part('year', age(coalesce(upd.date_of_birth, spd.date_of_birth)))::int
+    end as age_years
+  from public.seller_profiles sp
+  left join public.user_private_details upd on upd.user_id = sp.user_id
+  left join public.seller_private_details spd on spd.user_id = sp.user_id;
+
+revoke all on public.seller_public_age from public, anon, authenticated;
+grant select on public.seller_public_age to anon, authenticated;
 
 commit;

@@ -1724,7 +1724,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get showAgeOnProfileHint =>
-      'Off by default. Employers see your age in whole years only when this is on.';
+      'Off by default. When on, employers see only your age in whole years, never your date of birth. It is calculated from your private date of birth below.';
 
   @override
   String get updateRequiredTitle => 'Update required';
@@ -5725,4 +5725,150 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get employerVerifyCheckFailedBody =>
       'We couldn\'t check your employer verification. Check your connection and try again.';
+
+  @override
+  String get pdTitle => 'A few details before you start';
+
+  @override
+  String get pdLead =>
+      'We need your date of birth to check that you are 16 or older. It stays private and is never shown to other users.';
+
+  @override
+  String get pdSkipHint =>
+      'You can skip this for now. Your trust score stays lower until you add your personal details.';
+
+  @override
+  String get pdDobLabel => 'Date of birth';
+
+  @override
+  String get pdDobDay => 'Day';
+
+  @override
+  String get pdDobMonth => 'Month';
+
+  @override
+  String get pdDobYear => 'Year';
+
+  @override
+  String get pdDobErrorEmpty => 'Enter your date of birth.';
+
+  @override
+  String get pdDobErrorInvalid =>
+      'That date doesn\'t exist. Check the day, month and year.';
+
+  @override
+  String get pdDobErrorFuture => 'Date of birth can\'t be in the future.';
+
+  @override
+  String get pdDobErrorUnder16 =>
+      'You must be 16 or older to sign up for HupWorks.';
+
+  @override
+  String get pdConsentIntro => 'I agree to the ';
+
+  @override
+  String get pdConsentPrivacy => 'Privacy Policy';
+
+  @override
+  String get pdConsentAnd => ' and the ';
+
+  @override
+  String get pdConsentTerms => 'Terms';
+
+  @override
+  String get pdConsentOutro =>
+      '. I understand that HupWorks stores my date of birth, name and address privately and only uses them for age checks, contracts and invoices.';
+
+  @override
+  String get pdConsentRequired => 'Tick the box to continue.';
+
+  @override
+  String get pdSaveError =>
+      'Couldn\'t save. Check your connection and try again.';
+
+  @override
+  String get pdTryAgain => 'Try again';
+
+  @override
+  String get pdInvalidValue =>
+      'One of the details isn\'t accepted. Check them and try again.';
+
+  @override
+  String get pdLinkOpenFailed =>
+      'Could not open the link. Please try again later.';
+
+  @override
+  String get pdSaved => 'Personal details saved';
+
+  @override
+  String get pdSectionTitle => 'Personal details (private)';
+
+  @override
+  String get pdSectionCallout =>
+      'Only you can see these details. They never appear on your public profile.';
+
+  @override
+  String get pdLegalName => 'Legal name';
+
+  @override
+  String get pdLegalNameHint => 'As on your ID. This is not your public name.';
+
+  @override
+  String get pdStreet => 'Street and house number';
+
+  @override
+  String get pdPostal => 'Postal code';
+
+  @override
+  String get pdErrLegalName =>
+      'Enter your legal name, or leave the field empty.';
+
+  @override
+  String get pdErrStreet =>
+      'Enter your street and house number, or leave the field empty.';
+
+  @override
+  String get pdErrPostal => 'Use the format 1234 AB.';
+
+  @override
+  String get pdNotAddedYet =>
+      'Not added yet. Legal name and address are optional. We do ask for your date of birth.';
+
+  @override
+  String get pdConsentRowTitle => 'Consent';
+
+  @override
+  String pdConsentRowValue(String version, String date) {
+    return 'Version $version, accepted on $date';
+  }
+
+  @override
+  String get pdTrustTitle => 'Personal details';
+
+  @override
+  String get pdTrustMissing =>
+      'Complete your personal details. They stay private.';
+
+  @override
+  String get pdTrustDone => 'Added. Only you can see them.';
+
+  @override
+  String get pdTrustAdd => 'Add personal details';
+
+  @override
+  String pdConsentVersionCaption(String version) {
+    return 'Consent text version: $version';
+  }
+
+  @override
+  String get pdSignupDobHelper =>
+      'You must be 16 or older. We keep this private.';
+
+  @override
+  String get pdLoadError =>
+      'Couldn\'t load your details. Check your connection and try again.';
+
+  @override
+  String get pdPublicSavedPrivateFailed =>
+      'Your profile was saved, but your private details were not. Check them and try again.';
 }

@@ -7,6 +7,7 @@ import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/screen/widgets/editable_profile_avatar.dart';
+import 'package:freelancer/screen/widgets/private_details/private_details_section.dart';
 import 'package:freelancer/services/profile_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -30,6 +31,7 @@ class _ClientEditProfileState extends State<ClientEditProfile> {
   String _selectedGender = 'Male';
   bool _isLoading = true;
   bool _isSaving = false;
+  final _privateKey = GlobalKey<PrivateDetailsSectionState>();
   String? _profileImageUrl;
   bool _uploadingPhoto = false;
   double? _latitude;
@@ -108,6 +110,14 @@ class _ClientEditProfileState extends State<ClientEditProfile> {
     setState(() => _isSaving = true);
 
     try {
+      // Order (T-0172 fix round 2): check the private details locally (no
+      // write), save the public profile, then write the private details. If
+      // that last write fails the user is told the profile was saved but the
+      // private details were not, and stays on the page with values intact.
+      if (!(_privateKey.currentState?.validate() ?? true)) {
+        if (mounted) setState(() => _isSaving = false);
+        return;
+      }
       await ProfileService.updateProfile({
         'name': _nameController.text.trim(),
         'phone': _phoneController.text.trim(),
@@ -118,6 +128,17 @@ class _ClientEditProfileState extends State<ClientEditProfile> {
         if (_latitude != null) 'latitude': _latitude,
         if (_longitude != null) 'longitude': _longitude,
       });
+
+      final privateOk = await _privateKey.currentState?.save() ?? true;
+      if (!privateOk) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(context.l10n.pdPublicSavedPrivateFailed)),
+          );
+          setState(() => _isSaving = false);
+        }
+        return;
+      }
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -310,7 +331,12 @@ class _ClientEditProfileState extends State<ClientEditProfile> {
                     );
                   },
                 ),
-                const SizedBox(height: 10.0),
+                const SizedBox(height: 32.0),
+                PrivateDetailsSection(
+                  key: _privateKey,
+                  accent: kPrimaryColor,
+                ),
+                const SizedBox(height: 24.0),
               ],
             ),
           ),

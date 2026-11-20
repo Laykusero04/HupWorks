@@ -3235,7 +3235,7 @@ abstract class AppLocalizations {
   /// No description provided for @showAgeOnProfileHint.
   ///
   /// In en, this message translates to:
-  /// **'Off by default. Employers see your age in whole years only when this is on.'**
+  /// **'Off by default. When on, employers see only your age in whole years, never your date of birth. It is calculated from your private date of birth below.'**
   String get showAgeOnProfileHint;
 
   /// No description provided for @updateRequiredTitle.
@@ -10216,6 +10216,258 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'We couldn\'t check your employer verification. Check your connection and try again.'**
   String get employerVerifyCheckFailedBody;
+
+  /// No description provided for @pdTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A few details before you start'**
+  String get pdTitle;
+
+  /// No description provided for @pdLead.
+  ///
+  /// In en, this message translates to:
+  /// **'We need your date of birth to check that you are 16 or older. It stays private and is never shown to other users.'**
+  String get pdLead;
+
+  /// No description provided for @pdSkipHint.
+  ///
+  /// In en, this message translates to:
+  /// **'You can skip this for now. Your trust score stays lower until you add your personal details.'**
+  String get pdSkipHint;
+
+  /// No description provided for @pdDobLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of birth'**
+  String get pdDobLabel;
+
+  /// No description provided for @pdDobDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Day'**
+  String get pdDobDay;
+
+  /// No description provided for @pdDobMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get pdDobMonth;
+
+  /// No description provided for @pdDobYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Year'**
+  String get pdDobYear;
+
+  /// No description provided for @pdDobErrorEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your date of birth.'**
+  String get pdDobErrorEmpty;
+
+  /// No description provided for @pdDobErrorInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'That date doesn\'t exist. Check the day, month and year.'**
+  String get pdDobErrorInvalid;
+
+  /// No description provided for @pdDobErrorFuture.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of birth can\'t be in the future.'**
+  String get pdDobErrorFuture;
+
+  /// No description provided for @pdDobErrorUnder16.
+  ///
+  /// In en, this message translates to:
+  /// **'You must be 16 or older to sign up for HupWorks.'**
+  String get pdDobErrorUnder16;
+
+  /// No description provided for @pdConsentIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'I agree to the '**
+  String get pdConsentIntro;
+
+  /// No description provided for @pdConsentPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get pdConsentPrivacy;
+
+  /// No description provided for @pdConsentAnd.
+  ///
+  /// In en, this message translates to:
+  /// **' and the '**
+  String get pdConsentAnd;
+
+  /// No description provided for @pdConsentTerms.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms'**
+  String get pdConsentTerms;
+
+  /// No description provided for @pdConsentOutro.
+  ///
+  /// In en, this message translates to:
+  /// **'. I understand that HupWorks stores my date of birth, name and address privately and only uses them for age checks, contracts and invoices.'**
+  String get pdConsentOutro;
+
+  /// No description provided for @pdConsentRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Tick the box to continue.'**
+  String get pdConsentRequired;
+
+  /// No description provided for @pdSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save. Check your connection and try again.'**
+  String get pdSaveError;
+
+  /// No description provided for @pdTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get pdTryAgain;
+
+  /// No description provided for @pdInvalidValue.
+  ///
+  /// In en, this message translates to:
+  /// **'One of the details isn\'t accepted. Check them and try again.'**
+  String get pdInvalidValue;
+
+  /// No description provided for @pdLinkOpenFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open the link. Please try again later.'**
+  String get pdLinkOpenFailed;
+
+  /// No description provided for @pdSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal details saved'**
+  String get pdSaved;
+
+  /// No description provided for @pdSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal details (private)'**
+  String get pdSectionTitle;
+
+  /// No description provided for @pdSectionCallout.
+  ///
+  /// In en, this message translates to:
+  /// **'Only you can see these details. They never appear on your public profile.'**
+  String get pdSectionCallout;
+
+  /// No description provided for @pdLegalName.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal name'**
+  String get pdLegalName;
+
+  /// No description provided for @pdLegalNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'As on your ID. This is not your public name.'**
+  String get pdLegalNameHint;
+
+  /// No description provided for @pdStreet.
+  ///
+  /// In en, this message translates to:
+  /// **'Street and house number'**
+  String get pdStreet;
+
+  /// No description provided for @pdPostal.
+  ///
+  /// In en, this message translates to:
+  /// **'Postal code'**
+  String get pdPostal;
+
+  /// No description provided for @pdErrLegalName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your legal name, or leave the field empty.'**
+  String get pdErrLegalName;
+
+  /// No description provided for @pdErrStreet.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your street and house number, or leave the field empty.'**
+  String get pdErrStreet;
+
+  /// No description provided for @pdErrPostal.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the format 1234 AB.'**
+  String get pdErrPostal;
+
+  /// No description provided for @pdNotAddedYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not added yet. Legal name and address are optional. We do ask for your date of birth.'**
+  String get pdNotAddedYet;
+
+  /// No description provided for @pdConsentRowTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Consent'**
+  String get pdConsentRowTitle;
+
+  /// No description provided for @pdConsentRowValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version}, accepted on {date}'**
+  String pdConsentRowValue(String version, String date);
+
+  /// No description provided for @pdTrustTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal details'**
+  String get pdTrustTitle;
+
+  /// No description provided for @pdTrustMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete your personal details. They stay private.'**
+  String get pdTrustMissing;
+
+  /// No description provided for @pdTrustDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Added. Only you can see them.'**
+  String get pdTrustDone;
+
+  /// No description provided for @pdTrustAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add personal details'**
+  String get pdTrustAdd;
+
+  /// No description provided for @pdConsentVersionCaption.
+  ///
+  /// In en, this message translates to:
+  /// **'Consent text version: {version}'**
+  String pdConsentVersionCaption(String version);
+
+  /// No description provided for @pdSignupDobHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'You must be 16 or older. We keep this private.'**
+  String get pdSignupDobHelper;
+
+  /// No description provided for @pdLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your details. Check your connection and try again.'**
+  String get pdLoadError;
+
+  /// No description provided for @pdPublicSavedPrivateFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Your profile was saved, but your private details were not. Check them and try again.'**
+  String get pdPublicSavedPrivateFailed;
 }
 
 class _AppLocalizationsDelegate

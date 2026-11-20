@@ -9,11 +9,21 @@ import 'package:freelancer/l10n/l10n.dart';
 import 'package:freelancer/l10n/l10n_labels.dart';
 import 'package:freelancer/screen/widgets/button_global.dart';
 import 'package:freelancer/screen/widgets/editable_profile_avatar.dart';
+import 'package:freelancer/screen/widgets/private_details/private_details_section.dart';
 import 'package:freelancer/screen/widgets/seller_skills_editor.dart';
 import 'package:freelancer/services/profile_service.dart';
+import 'package:freelancer/services/user_private_details_service.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../widgets/constant.dart';
+
+/// Seller role colour (teal) for focused fields; the global default is orange.
+final _sellerInputDecoration = kInputDecoration.copyWith(
+  focusedBorder: const OutlineInputBorder(
+    borderRadius: BorderRadius.all(Radius.circular(6.0)),
+    borderSide: BorderSide(color: kSecondaryFill, width: 2),
+  ),
+);
 
 class SellerEditProfile extends StatefulWidget {
   const SellerEditProfile({Key? key}) : super(key: key);
@@ -25,16 +35,23 @@ class SellerEditProfile extends StatefulWidget {
 class _SellerEditProfileState extends State<SellerEditProfile> {
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
-  final _addressController = TextEditingController();
   final _jobTitleController = TextEditingController();
   final _aboutController = TextEditingController();
 
   String _selectedGender = L10nLabels.genderMale;
-  DateTime? _dateOfBirth;
+  // Read-only fallback values from the old seller_private_details row. They
+  // prefill the new private section; nothing is written unless the user edits.
+  DateTime? _oldDob;
+  String? _oldStreet;
+  String? _oldPostal;
+  // Valid 16+ date of birth currently known (typed in the private section or
+  // the old value); drives the show-age switch.
+  DateTime? _knownDob;
   bool _showAge = false; // age consent, off by default
   List<SellerSkill> _skills = [];
   bool _isLoading = true;
   bool _isSaving = false;
+  final _privateKey = GlobalKey<PrivateDetailsSectionState>();
   String? _profileImageUrl;
   bool _uploadingPhoto = false;
 
@@ -48,7 +65,6 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
   void dispose() {
     _nameController.dispose();
     _phoneController.dispose();
-    _addressController.dispose();
     _jobTitleController.dispose();
     _aboutController.dispose();
     super.dispose();
@@ -62,15 +78,25 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
         setState(() {
           _nameController.text = profile['name'] ?? '';
           _phoneController.text = profile['phone'] ?? '';
-          _addressController.text =
-              ProfileService.sellerAddressFromProfile(profile) ?? '';
           _selectedGender = profile['gender'] ?? L10nLabels.genderMale;
           _jobTitleController.text =
               ProfileService.sellerJobTitleFromProfile(profile) ?? '';
           _aboutController.text =
               ProfileService.sellerAboutFromProfile(profile) ?? '';
           _skills = ProfileService.sellerSkillsFromProfile(profile);
-          _dateOfBirth = ProfileService.sellerDateOfBirthFromProfile(profile);
+          _oldDob = ProfileService.sellerDateOfBirthFromProfile(profile);
+          final old = ProfileService.sellerPrivateDetailsFromProfile(profile);
+          final street = (old?['street_address'] as String?)?.trim();
+          _oldStreet = (street == null || street.isEmpty) ? null : street;
+          final postal = (old?['postal_code'] as String?)?.trim();
+          _oldPostal = (postal != null &&
+                  UserPrivateDetailsService.isValidNlPostalCode(postal))
+              ? UserPrivateDetailsService.normalizeNlPostalCode(postal)
+              : null;
+          _knownDob = (_oldDob != null &&
+                  UserPrivateDetailsService.isOldEnough(_oldDob!))
+              ? _oldDob
+              : null;
           _showAge = ProfileService.sellerShowAgeFromProfile(profile);
           _profileImageUrl =
               ProfileImage.normalize(profile['profile_image_url'] as String?);
@@ -87,27 +113,6 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
         );
       }
     }
-  }
-
-  Future<void> _pickDateOfBirth() async {
-    final now = DateTime.now();
-    final initial = _dateOfBirth ?? DateTime(now.year - 25);
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: initial,
-      firstDate: DateTime(1920),
-      lastDate: now,
-    );
-    if (picked != null && mounted) {
-      setState(() => _dateOfBirth = picked);
-    }
-  }
-
-  String _formatDobPickerLabel(DateTime? dob, AppLocalizations l10n) {
-    if (dob == null) return l10n.tapSetBirthDate;
-    final age = ProfileService.ageFromDateOfBirth(dob.toIso8601String());
-    if (age != null) return l10n.ageHiddenOnProfile(age);
-    return l10n.birthDateSaved;
   }
 
   Future<void> _changePhoto() async {
@@ -149,6 +154,15 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
 
     setState(() => _isSaving = true);
     try {
+      // Order (T-0172 fix round 2): 1) check the private details locally, no
+      // write, so a typing mistake never leaves a half-saved page; 2) save the
+      // public profile; 3) write the private details. If step 3 still fails
+      // (network), the user is told the profile was saved but the private
+      // details were not, and stays on the page with everything typed.
+      if (!(_privateKey.currentState?.validate() ?? true)) {
+        if (mounted) setState(() => _isSaving = false);
+        return;
+      }
       await ProfileService.updateProfile({
         'name': _nameController.text.trim(),
         'phone': _phoneController.text.trim(),
@@ -158,11 +172,19 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
         jobTitle: _jobTitleController.text.trim(),
         about: _aboutController.text.trim(),
         skills: _skills,
-        dateOfBirth: _dateOfBirth,
-        address: _addressController.text.trim(),
-        showAge: _showAge,
+        showAge: _showAge && _knownDob != null,
         clearPublicCountryCity: false,
+        updatePrivateDetails: false,
       );
+      final privateOk = await _privateKey.currentState?.save() ?? true;
+      if (!privateOk) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(context.l10n.pdPublicSavedPrivateFailed)));
+          setState(() => _isSaving = false);
+        }
+        return;
+      }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(context.l10n.profileUpdatedShort)));
@@ -204,6 +226,9 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
       backgroundColor: kDarkWhite,
       appBar: AppBar(
         backgroundColor: kDarkWhite,
+        // No Material 3 scrolled-under tint (it turned pink/orange).
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
         elevation: 0,
         iconTheme: const IconThemeData(color: kNeutralColor),
         title: Text(
@@ -222,7 +247,7 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
             buttontext: _isSaving ? l10n.updating : l10n.updateProfile,
             buttonTextColor: kWhite,
             buttonDecoration: kButtonDecoration.copyWith(
-              color: _isSaving ? kLightNeutralColor : kPrimaryFill,
+              color: _isSaving ? kLightNeutralColor : kSecondaryFill,
               borderRadius: BorderRadius.circular(30.0),
             ),
             onPressed: _isSaving ? null : _handleSave,
@@ -253,6 +278,7 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
                       imageUrl: _profileImageUrl,
                       size: 96,
                       uploading: _uploadingPhoto,
+                      accent: kSellerPrimary,
                       onTap: _changePhoto,
                     ),
                   ),
@@ -270,20 +296,6 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
                   const SizedBox(height: 20.0),
                   _field(_phoneController, l10n.phoneNo, l10n.enterPhoneNo,
                       type: TextInputType.phone),
-                  const SizedBox(height: 20.0),
-                  TextFormField(
-                    controller: _addressController,
-                    keyboardType: TextInputType.multiline,
-                    maxLines: 3,
-                    cursorColor: kNeutralColor,
-                    textInputAction: TextInputAction.newline,
-                    decoration: kInputDecoration.copyWith(
-                      labelText: l10n.address,
-                      hintText: l10n.enterFullAddress,
-                      alignLabelWithHint: true,
-                      border: const OutlineInputBorder(),
-                    ),
-                  ),
                   const SizedBox(height: 20.0),
                   FormField(
                     builder: (FormFieldState<dynamic> field) => InputDecorator(
@@ -333,20 +345,6 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
                         color: kLightNeutralColor, fontSize: 12),
                   ),
                   const SizedBox(height: 8),
-                  InkWell(
-                    onTap: _pickDateOfBirth,
-                    child: InputDecorator(
-                      decoration: kInputDecoration.copyWith(
-                        labelText: l10n.dateOfBirth,
-                        border: const OutlineInputBorder(),
-                      ),
-                      child: Text(
-                        _formatDobPickerLabel(_dateOfBirth, l10n),
-                        style: kTextStyle.copyWith(color: kSubTitleColor),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
                   // Transparent Material: the page body is a plain Container, and a
                   // ListTile needs a Material ancestor for ink/background.
                   Material(
@@ -354,7 +352,7 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
                     child: SwitchListTile.adaptive(
                       contentPadding: EdgeInsets.zero,
                       value: _showAge,
-                      onChanged: _dateOfBirth == null
+                      onChanged: _knownDob == null
                           ? null
                           : (v) => setState(() => _showAge = v),
                       title: Text(
@@ -377,7 +375,7 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
                     keyboardType: TextInputType.multiline,
                     maxLines: 6,
                     cursorColor: kNeutralColor,
-                    decoration: kInputDecoration.copyWith(
+                    decoration: _sellerInputDecoration.copyWith(
                       labelText: l10n.profileDescription,
                       hintText: l10n.profileDescriptionHint,
                       alignLabelWithHint: true,
@@ -403,6 +401,18 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
                     skills: _skills,
                     onChanged: (skills) => setState(() => _skills = skills),
                   ),
+                  const SizedBox(height: 32.0),
+                  PrivateDetailsSection(
+                    key: _privateKey,
+                    accent: kSellerPrimary,
+                    fallbackDob: _oldDob,
+                    fallbackStreet: _oldStreet,
+                    fallbackPostal: _oldPostal,
+                    onDobChanged: (d) => setState(() {
+                      _knownDob = d;
+                      if (d == null) _showAge = false;
+                    }),
+                  ),
                   const SizedBox(height: 24.0),
                 ],
               ),
@@ -420,7 +430,7 @@ class _SellerEditProfileState extends State<SellerEditProfile> {
       keyboardType: type,
       cursorColor: kNeutralColor,
       textInputAction: TextInputAction.next,
-      decoration: kInputDecoration.copyWith(
+      decoration: _sellerInputDecoration.copyWith(
         labelText: label,
         labelStyle: kTextStyle.copyWith(color: kNeutralColor),
         hintText: hint,

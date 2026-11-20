@@ -349,7 +349,15 @@ class SkillSlotTile extends StatelessWidget {
     this.onClear,
     this.trailing,
     this.isCustom = false,
+    this.accent = kPrimaryColor,
+    this.accentFill = kPrimaryFill,
   });
+
+  /// Role colour for the tint and border (decoration) and for the number badge
+  /// fill (white text, AA). Defaults to the client orange; the freelancer
+  /// skills editor passes the seller teal.
+  final Color accent;
+  final Color accentFill;
 
   final int index;
   final String? name;
@@ -362,7 +370,7 @@ class SkillSlotTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final selected = name != null && name!.trim().isNotEmpty;
     return Material(
-      color: selected ? kPrimaryColor.withValues(alpha: 0.06) : kDarkWhite,
+      color: selected ? accent.withValues(alpha: 0.06) : kDarkWhite,
       borderRadius: BorderRadius.circular(10),
       child: InkWell(
         onTap: onTap,
@@ -373,7 +381,7 @@ class SkillSlotTile extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
               color: selected
-                  ? kPrimaryColor.withValues(alpha: 0.35)
+                  ? accent.withValues(alpha: 0.35)
                   : kBorderColorTextField,
             ),
           ),
@@ -382,7 +390,7 @@ class SkillSlotTile extends StatelessWidget {
               CircleAvatar(
                 radius: 13,
                 backgroundColor: selected
-                    ? kPrimaryFill
+                    ? accentFill
                     : kBorderColorTextField.withValues(alpha: 0.5),
                 child: Text(
                   '$index',

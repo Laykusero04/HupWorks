@@ -1735,7 +1735,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get showAgeOnProfileHint =>
-      'Standaard uit. Werkgevers zien je leeftijd in hele jaren alleen als dit aan staat.';
+      'Standaard uit. Als dit aan staat, zien werkgevers alleen je leeftijd in hele jaren, nooit je geboortedatum. Die wordt berekend uit je privé geboortedatum hieronder.';
 
   @override
   String get updateRequiredTitle => 'Update vereist';
@@ -5779,4 +5779,151 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get employerVerifyCheckFailedBody =>
       'We konden je werkgeversverificatie niet controleren. Controleer je verbinding en probeer het opnieuw.';
+
+  @override
+  String get pdTitle => 'Nog een paar gegevens';
+
+  @override
+  String get pdLead =>
+      'We vragen je geboortedatum om te checken of je 16 of ouder bent. Die blijft privé en wordt nooit aan andere gebruikers getoond.';
+
+  @override
+  String get pdSkipHint =>
+      'Je kunt dit nu overslaan. Je betrouwbaarheidsscore blijft lager totdat je je persoonlijke gegevens toevoegt.';
+
+  @override
+  String get pdDobLabel => 'Geboortedatum';
+
+  @override
+  String get pdDobDay => 'Dag';
+
+  @override
+  String get pdDobMonth => 'Maand';
+
+  @override
+  String get pdDobYear => 'Jaar';
+
+  @override
+  String get pdDobErrorEmpty => 'Vul je geboortedatum in.';
+
+  @override
+  String get pdDobErrorInvalid =>
+      'Deze datum bestaat niet. Controleer dag, maand en jaar.';
+
+  @override
+  String get pdDobErrorFuture =>
+      'Je geboortedatum kan niet in de toekomst liggen.';
+
+  @override
+  String get pdDobErrorUnder16 =>
+      'Je moet 16 jaar of ouder zijn om je aan te melden bij HupWorks.';
+
+  @override
+  String get pdConsentIntro => 'Ik ga akkoord met het ';
+
+  @override
+  String get pdConsentPrivacy => 'Privacybeleid';
+
+  @override
+  String get pdConsentAnd => ' en de ';
+
+  @override
+  String get pdConsentTerms => 'Algemene voorwaarden';
+
+  @override
+  String get pdConsentOutro =>
+      '. Ik begrijp dat HupWorks mijn geboortedatum, naam en adres privé opslaat en alleen gebruikt voor leeftijdscontrole, contracten en facturen.';
+
+  @override
+  String get pdConsentRequired => 'Vink het vakje aan om door te gaan.';
+
+  @override
+  String get pdSaveError =>
+      'Opslaan mislukt. Controleer je verbinding en probeer het opnieuw.';
+
+  @override
+  String get pdTryAgain => 'Opnieuw proberen';
+
+  @override
+  String get pdInvalidValue =>
+      'Een van de gegevens wordt niet geaccepteerd. Controleer ze en probeer het opnieuw.';
+
+  @override
+  String get pdLinkOpenFailed =>
+      'Kan de link niet openen. Probeer het later opnieuw.';
+
+  @override
+  String get pdSaved => 'Persoonlijke gegevens opgeslagen';
+
+  @override
+  String get pdSectionTitle => 'Persoonlijke gegevens (privé)';
+
+  @override
+  String get pdSectionCallout =>
+      'Alleen jij ziet deze gegevens. Ze staan nooit op je openbare profiel.';
+
+  @override
+  String get pdLegalName => 'Wettelijke naam';
+
+  @override
+  String get pdLegalNameHint => 'Zoals op je ID. Dit is niet je openbare naam.';
+
+  @override
+  String get pdStreet => 'Straat en huisnummer';
+
+  @override
+  String get pdPostal => 'Postcode';
+
+  @override
+  String get pdErrLegalName =>
+      'Vul je wettelijke naam in, of laat het veld leeg.';
+
+  @override
+  String get pdErrStreet =>
+      'Vul je straat en huisnummer in, of laat het veld leeg.';
+
+  @override
+  String get pdErrPostal => 'Gebruik de notatie 1234 AB.';
+
+  @override
+  String get pdNotAddedYet =>
+      'Nog niet ingevuld. Wettelijke naam en adres zijn optioneel. Je geboortedatum vragen we wel.';
+
+  @override
+  String get pdConsentRowTitle => 'Toestemming';
+
+  @override
+  String pdConsentRowValue(String version, String date) {
+    return 'Versie $version, akkoord op $date';
+  }
+
+  @override
+  String get pdTrustTitle => 'Persoonlijke gegevens';
+
+  @override
+  String get pdTrustMissing =>
+      'Rond je persoonlijke gegevens af. Ze blijven privé.';
+
+  @override
+  String get pdTrustDone => 'Toegevoegd. Alleen jij ziet ze.';
+
+  @override
+  String get pdTrustAdd => 'Persoonlijke gegevens toevoegen';
+
+  @override
+  String pdConsentVersionCaption(String version) {
+    return 'Versie toestemmingstekst: $version';
+  }
+
+  @override
+  String get pdSignupDobHelper =>
+      'Je moet 16 of ouder zijn. We houden dit privé.';
+
+  @override
+  String get pdLoadError =>
+      'Je gegevens konden niet worden geladen. Controleer je verbinding en probeer het opnieuw.';
+
+  @override
+  String get pdPublicSavedPrivateFailed =>
+      'Je profiel is opgeslagen, maar je privégegevens niet. Controleer ze en probeer het opnieuw.';
 }

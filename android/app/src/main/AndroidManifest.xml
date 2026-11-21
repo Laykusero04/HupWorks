@@ -13,6 +13,13 @@
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         tools:node="remove"/>
+    <!-- UCropActivity below is locked to portrait, which makes Android imply a
+         REQUIRED android.hardware.screen.portrait feature. Play then hides the
+         app from devices without it (some tablets, desktop, Android XR).
+         Declare the screen features optional; the crop screen still opens in
+         portrait where supported. -->
+    <uses-feature android:name="android.hardware.screen.portrait" android:required="false"/>
+    <uses-feature android:name="android.hardware.screen.landscape" android:required="false"/>
     <application
         android:label="HupWorks"
         android:name="${applicationName}"
